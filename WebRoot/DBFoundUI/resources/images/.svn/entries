@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   name="default"
+   kind="dir"/>
+</wc-entries>

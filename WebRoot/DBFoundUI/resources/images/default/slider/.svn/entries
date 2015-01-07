@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images/default/slider"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="slider-thumb.png"
+   text-time="2015-01-06T02:33:02.267018Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="24a893c9606f3a6892eb62f29a08870c"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.401748Z"/>
+<entry
+   committed-rev="55527"
+   name="slider-v-thumb.png"
+   text-time="2015-01-06T02:33:02.272018Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="2fc3430dc351d9a118e048b9aafb7c3c"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.995724Z"/>
+<entry
+   committed-rev="55527"
+   name="slider-bg.png"
+   text-time="2015-01-06T02:33:02.264018Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="0903ad3af985419767a60a5b025e0a18"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:47.893604Z"/>
+<entry
+   committed-rev="55527"
+   name="slider-v-bg.png"
+   text-time="2015-01-06T02:33:02.269018Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="0682c28925a7296730f7f221e4a76b96"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.664763Z"/>
+</wc-entries>

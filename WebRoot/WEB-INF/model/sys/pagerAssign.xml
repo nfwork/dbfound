@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+
+	<param name="ac_id" dataType="number" />
+	<param name="user_id" sourcePath="session.user_id" dataType="number" />
+	<param name="function_id" dataType="number" />
+	<param name="assign_id" dataType="number" />
+
+	<query pagerSize="10">
+		<sql>
+		 <![CDATA[
+				SELECT a.assign_id,
+				       a.ac_id,
+				       a.function_id
+			      FROM sys_pager_assign a
+				 WHERE a.ac_id = ${@ac_id}
+		 ]]>
+		</sql>
+	</query>
+
+	<execute name="add">
+		<sqls>
+			<executeSql>
+			      <![CDATA[
+			        INSERT INTO sys_pager_assign
+				            (ac_id,
+				             function_id,
+				             create_by,
+				             create_date,
+				             last_update_by,
+				             last_update_date)
+					 VALUES (${@ac_id},
+					         ${@function_id},
+						     ${@user_id},
+							 NOW(),
+							 ${@user_id},
+							 NOW())
+				 ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="update">
+		<sqls>
+			<executeSql>
+			      <![CDATA[
+			        update sys_pager_assign a
+			           set function_id  = ${@function_id},
+			               last_update_by = ${@user_id} ,
+					       last_update_date = NOW() 
+				      where a.assign_id =${@assign_id}
+				 ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="delete">
+		<sqls>
+			<executeSql>
+				delete from sys_pager_assign where assign_id =${@assign_id}
+			</executeSql>
+		</sqls>
+	</execute>
+
+</model>

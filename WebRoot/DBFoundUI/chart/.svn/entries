@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/chart"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="highcharts.js"
+   text-time="2015-01-06T02:33:00.152897Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="a53aa47e57a8aaa529b48578e50e4e4c"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="jquery.min.js"
+   text-time="2015-01-06T02:33:00.173898Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="0b6ecf17e30037994d3ffee51b525914"
+   last-author="huangjiong"
+   kind="file"/>
+</wc-entries>

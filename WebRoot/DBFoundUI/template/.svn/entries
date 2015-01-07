@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/template"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="pieChart.ftl"
+   text-time="2015-01-06T02:33:02.741045Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="aa7284bc9dbdba288a7d5ebd9cdd5de3"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="tree.ftl"
+   text-time="2015-01-06T02:33:02.757046Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="80c5d9d5d9a6f253bd16d3b0e9236086"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="panel.ftl"
+   text-time="2015-01-06T02:33:02.738045Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="22eb7cb79e309dfa2c8cee1fb629e046"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="form.ftl"
+   text-time="2015-01-06T02:33:02.709043Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="253ae29cab72e2656e2fd2b45babaea3"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="menu.ftl"
+   text-time="2015-01-06T02:33:02.730044Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="85fd735732ca79a5e2a3002e8164083e"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="grid.ftl"
+   text-time="2015-01-06T02:33:02.717043Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="df0ce30ae1415bc9fbc70b630bd794d7"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="treeGrid.ftl"
+   text-time="2015-01-06T02:33:02.761046Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="03283d55e5e4df4dab265aa5cd39603e"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="dataSet.ftl"
+   text-time="2015-01-06T02:33:02.696042Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="6afb2ea503244d341662b2889336e81c"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="barChart.ftl"
+   text-time="2015-01-06T02:33:02.681041Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="270a8707daa481a6e3df7b6c9070858f"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="dataStore.ftl"
+   text-time="2015-01-06T02:33:02.698042Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="1889f387a632302e5d4c33e0eb655df7"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="includeLibrary.ftl"
+   text-time="2015-01-06T02:56:47.764552Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="0330df7fd30b03dc8646ad4682aa4c03"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="buttonGroup.ftl"
+   text-time="2015-01-06T02:33:02.694042Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="a780fcd6088ad381d9c132ef2b2e086f"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="lineChart.ftl"
+   text-time="2015-01-06T02:33:02.727044Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="e8ec9bcae7a7b387be498eb55932a7fb"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="tabs.ftl"
+   text-time="2015-01-06T02:33:02.743045Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="7afee670f62a882ab07d65a4a1f9862d"
+   last-author="huangjiong"
+   kind="file"/>
+</wc-entries>

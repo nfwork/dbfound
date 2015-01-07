@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+	<query pagerSize="10">
+		<sql>
+		  <![CDATA[
+			SELECT
+			    r.role_id,
+				r.role_code,
+				r.role_description,
+				r.last_update_by,
+				DATE_FORMAT(r.create_date,'%Y-%m-%d') create_date,
+				DATE_FORMAT(r.last_update_date,'%Y-%m-%d') last_update_date,
+				(select user_code from sys_user where user_id =r.last_update_by) user_code,
+			    (select CONCAT(CONCAT(user_code,'-'),user_name) from sys_user where user_id =r.last_update_by) last_update_user
+			FROM sys_role r
+			#WHERE_CLAUSE#
+			order by r.role_code
+		   ]]>
+		</sql>
+		<filter name="timefrom" express="create_date &gt;= ${@timefrom} " />
+		<filter name="timeto" express="create_date &lt;= ${@timeto} " />
+		<filter name="role_code" express="role_code like ${@role_code} " />
+		<filter name="user_id" express="last_update_by = ${@user_id} " />
+		<filter name="role_description" express="role_description like ${@role_description} " />
+	</query>
+
+	<execute name="add">
+		<param name="role_id" dataType="number" ioType="out" />
+		<param name="role_code" dataType="varchar" />
+		<param name="role_description" dataType="varchar" />
+		<param name="user_id" dataType="number" scope="session" />
+		<sqls>
+			<collisionSql
+				where="exists (select 1 from sys_role where role_code= ${@role_code})"
+				message="角色编号:#{@role_code} 已经使用！" />
+			<executeSql generatedKeyParam="role_id">
+			   <![CDATA[
+				INSERT INTO sys_role
+					(role_code,
+					role_description,
+					create_by,
+					last_update_by,
+					create_date,
+					last_update_date)
+				VALUES (${@role_code},
+					${@role_description},
+					${@user_id},
+					${@user_id},
+					NOW(),
+					NOW())
+				 ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="update">
+		<param name="role_id" dataType="number" />
+		<param name="role_description" dataType="varchar" />
+		<param name="user_id" dataType="number" sourcePath="session.user_id" />
+		<sqls>
+			<executeSql>
+			  <![CDATA[
+				update sys_role set
+					role_description = ${@role_description} ,
+					last_update_by = ${@user_id} ,
+					last_update_date = NOW()
+				where role_id = ${@role_id}
+				]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="delete">
+		<param name="role_id" dataType="number" />
+		<sqls>
+			<collisionSql
+				where="exists (select 1 from sys_user where role_id= ${@role_id})"
+				message="该角色已经分配给用户，不能删除！" />
+			<executeSql>
+			  <![CDATA[
+				delete from sys_role where role_id= ${@role_id}
+			  ]]>
+			</executeSql>
+			<executeSql>
+				delete from sys_power where role_id= ${@role_id}
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<query name="combo">
+		<sql>
+		  <![CDATA[
+			SELECT
+				r.role_id ,
+				CONCAT(CONCAT(role_code,'-'),role_description) role_name
+			FROM sys_role r
+			order by role_code
+		  ]]>
+		</sql>
+	</query>
+</model>

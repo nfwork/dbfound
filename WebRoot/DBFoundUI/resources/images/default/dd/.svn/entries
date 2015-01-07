@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images/default/dd"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="drop-no.gif"
+   text-time="2015-01-06T02:33:00.956943Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="ae536c37391ba78143b5c8283cec8d13"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:52.036841Z"/>
+<entry
+   committed-rev="55527"
+   name="drop-yes.gif"
+   text-time="2015-01-06T02:33:00.964943Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="f3216326c00890259e84f1726dd1043f"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.850659Z"/>
+<entry
+   committed-rev="55527"
+   name="drop-add.gif"
+   text-time="2015-01-06T02:33:00.946942Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="95eb34ac70a1a3c95ef39ab826a89491"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.968723Z"/>
+</wc-entries>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+	<query>
+		<sql>
+		 <![CDATA[
+			SELECT f.*,
+				  (select CONCAT(CONCAT(module_code,'-'),module_name) from sys_module where module_id = f.function_module ) module_code_name,
+				  (select CONCAT(CONCAT(user_code,'-'),user_name) from sys_user where user_id =f.last_update_by) last_update_user
+			FROM SYS_FUNCTION f
+			#WHERE_CLAUSE#
+			ORDER BY f.function_code
+		  ]]>
+		</sql>
+		<filter name="timefrom" express="create_date &gt;= ${@timefrom}  " />
+		<filter name="timeto" express="create_date &lt;= ${@timeto} " />
+		<filter name="function_code" express="function_code like ${@function_code} " />
+		<filter name="function_des" express="function_des like ${@function_des} " />
+		<filter name="module_id" express="function_module in (#{@module_id}) " />
+	</query>
+
+	<query name="combo">
+		<sql>
+		 <![CDATA[
+			SELECT f.function_id,
+			       concat(concat(f.function_code,'-'),f.function_des)  function_des
+				 FROM SYS_FUNCTION f
+			ORDER BY f.function_code
+		  ]]>
+		</sql>
+	</query>
+
+	<query pagerSize="9" name="load">
+		<sql>
+		 <![CDATA[
+			SELECT *,
+				  (select CONCAT(CONCAT(module_code,'-'),module_name) from sys_module where module_id = f.function_module ) module_code_name,
+				  (select CONCAT(CONCAT(user_code,'-'),user_name) from sys_user where user_id =f.last_update_by) last_update_user
+			FROM SYS_FUNCTION f
+			ORDER BY f.function_code desc
+			limit 1, 8
+		  ]]>
+		</sql>
+	</query>
+
+	<execute name="add">
+		<param name="function_code" dataType="varchar" />
+		<param name="function_des" dataType="varchar" />
+		<param name="jsp_pager" dataType="varchar" />
+		<param name="image" dataType="varchar" />
+		<param name="priority" dataType="number" />
+		<param name="function_module" dataType="number" />
+		<param name="user_id" dataType="number" scope="session" />
+		<sqls>
+			<collisionSql
+				where="exists (select 1 from sys_function where function_code= ${@function_code} )"
+				message="功能编号:#{@function_code} 已经使用！" />
+			<executeSql>
+			 <![CDATA[
+				INSERT INTO sys_function
+					(function_code,
+					function_des,
+					jsp_pager,
+					image,
+					priority,
+					function_module,
+					create_by,
+					create_date,
+					last_update_by,
+					last_update_date)
+				VALUES
+					(${@function_code},
+					${@function_des},
+					${@jsp_pager},
+					${@image},
+					${@priority},
+					${@function_module},
+					${@user_id},
+					NOW(),
+					${@user_id},
+					NOW())
+			 ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="update">
+		<param name="function_des" dataType="varchar" />
+		<param name="jsp_pager" dataType="varchar" />
+		<param name="image" dataType="varchar" />
+		<param name="priority" dataType="number" />
+		<param name="function_module" dataType="number" />
+		<param name="function_id" dataType="number" />
+		<param name="user_id" dataType="number" scope="session" />
+		<sqls>
+			<executeSql>
+			<![CDATA[
+				update sys_function set 
+					function_des = ${@function_des} ,
+					jsp_pager = ${@jsp_pager} ,
+					image=${@image},
+					priority =${@priority},
+					function_module =${@function_module},
+					last_update_by = ${@user_id} ,
+					last_update_date = NOW() 
+				where function_id = ${@function_id} 
+			  ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="delete">
+		<param name="function_id" dataType="number" />
+		<sqls>
+			<executeSql>
+				delete from sys_power where function_id= ${@function_id}
+			</executeSql>
+			<executeSql>
+				delete from sys_function where function_id= ${@function_id}
+			</executeSql>
+		</sqls>
+	</execute>
+</model>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images/default/sizer"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="ne-handle.gif"
+   text-time="2015-01-06T02:33:02.187013Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="8e268b962dc909d275997b572ff17a72"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.039670Z"/>
+<entry
+   committed-rev="55527"
+   name="s-handle.gif"
+   text-time="2015-01-06T02:33:02.237016Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="5e3338cb09e9df7f52383d6b1423fc86"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.638704Z"/>
+<entry
+   committed-rev="55527"
+   name="nw-handle-dark.gif"
+   text-time="2015-01-06T02:33:02.227015Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="4a361e6920b2e34a39fd425a515c83b9"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.741653Z"/>
+<entry
+   committed-rev="55527"
+   name="e-handle-dark.gif"
+   text-time="2015-01-06T02:33:02.171012Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="b86289f41d7ad1a7401dd2b2a9b3c3d8"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.027726Z"/>
+<entry
+   committed-rev="55527"
+   name="e-handle.gif"
+   text-time="2015-01-06T02:33:02.174012Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="510edc95ebaa36306916c50ca10596f7"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.770654Z"/>
+<entry
+   committed-rev="55527"
+   name="nw-handle.gif"
+   text-time="2015-01-06T02:33:02.230016Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="1120600505249c38c3d1cc2ab120cd13"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.306799Z"/>
+<entry
+   committed-rev="55527"
+   name="se-handle-dark.gif"
+   text-time="2015-01-06T02:33:02.240016Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="f3d8d8aac23e3e9633072e2366cda847"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.534641Z"/>
+<entry
+   committed-rev="55527"
+   name="se-handle.gif"
+   text-time="2015-01-06T02:33:02.253017Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="71edc3f63f79f447d2c81ee09e1fbbc3"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.665820Z"/>
+<entry
+   committed-rev="55527"
+   name="square.gif"
+   text-time="2015-01-06T02:33:02.256017Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="4431ea1954bfd2a9cea0931f07fc7ffa"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.706822Z"/>
+<entry
+   committed-rev="55527"
+   name="sw-handle-dark.gif"
+   text-time="2015-01-06T02:33:02.258017Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="44b2400d873cf8a23d84424827cde44d"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.950779Z"/>
+<entry
+   committed-rev="55527"
+   name="sw-handle.gif"
+   text-time="2015-01-06T02:33:02.261017Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="c3e0befc4208a51180344765fd7deeda"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.677821Z"/>
+<entry
+   committed-rev="55527"
+   name="s-handle-dark.gif"
+   text-time="2015-01-06T02:33:02.233016Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="4a6bf15d308a4ae580dd03cbd431a95c"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.247682Z"/>
+<entry
+   committed-rev="55527"
+   name="ne-handle-dark.gif"
+   text-time="2015-01-06T02:33:02.178013Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="115f71b851c7f0b5f354caa7b8dfff15"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.318743Z"/>
+</wc-entries>

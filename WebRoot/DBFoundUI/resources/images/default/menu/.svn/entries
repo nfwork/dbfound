@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images/default/menu"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="menu-parent.gif"
+   text-time="2015-01-06T02:33:01.880996Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="d303ad7e3ced891736e80f77e1d4e51d"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.964780Z"/>
+<entry
+   committed-rev="55527"
+   name="group-checked.gif"
+   text-time="2015-01-06T02:33:01.871995Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="f7973443d91e5e074013f1b07ee79479"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.523812Z"/>
+<entry
+   committed-rev="55527"
+   name="menu.gif"
+   text-time="2015-01-06T02:33:01.907997Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="ae128d5f3f3a39213f3d4e23aec8728f"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.361631Z"/>
+<entry
+   committed-rev="55527"
+   name="checked.gif"
+   text-time="2015-01-06T02:33:01.856994Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="cb7b3408df56f5585aaa1242cd2f0b45"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.210679Z"/>
+<entry
+   committed-rev="55527"
+   name="item-over.gif"
+   text-time="2015-01-06T02:33:01.873995Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="bb4cdc0ea257834cd5ed01f883387d8f"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:47.863602Z"/>
+<entry
+   committed-rev="55527"
+   name="unchecked.gif"
+   text-time="2015-01-06T02:33:01.910997Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="31846118bddc7945b595ea2090589cf1"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.839715Z"/>
+</wc-entries>

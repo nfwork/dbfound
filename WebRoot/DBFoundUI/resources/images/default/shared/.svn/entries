@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images/default/shared"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="left-btn.gif"
+   text-time="2015-01-06T02:33:02.157011Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="6bf30c6cf0b5d70436c3e463b5532b35"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.587644Z"/>
+<entry
+   committed-rev="55527"
+   name="right-btn.gif"
+   text-time="2015-01-06T02:33:02.161012Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="e7ad3a7f4814791cecf1b90e77e9e139"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.681706Z"/>
+<entry
+   committed-rev="55527"
+   name="hd-sprite.gif"
+   text-time="2015-01-06T02:33:02.144011Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="6a54ae98bef53397d52282201852c204"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.632646Z"/>
+<entry
+   committed-rev="55527"
+   name="glass-bg.gif"
+   text-time="2015-01-06T02:33:02.142011Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="bc2cd5c5ac9b3874d956c892d23f2119"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.201793Z"/>
+<entry
+   committed-rev="55527"
+   name="blue-loading.gif"
+   text-time="2015-01-06T02:33:02.122009Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="dc2fd7c0ed853c56b4ac65710af3bd0a"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.381746Z"/>
+<entry
+   committed-rev="55527"
+   name="warning.gif"
+   text-time="2015-01-06T02:33:02.165012Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="448dc934a7f0dd6092b51f88a1e47b2d"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.570700Z"/>
+<entry
+   committed-rev="55527"
+   name="large-loading.gif"
+   text-time="2015-01-06T02:33:02.147011Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="d96f6517e00399c37a9765e045eaaf22"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.583758Z"/>
+<entry
+   committed-rev="55527"
+   name="loading-balls.gif"
+   text-time="2015-01-06T02:33:02.159012Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="ac062b94ed674aaa50a6c18df92acdf3"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.941721Z"/>
+<entry
+   committed-rev="55527"
+   name="calendar.gif"
+   text-time="2015-01-06T02:33:02.125010Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="81296cff1f97f5365524f2b9dcf626da"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.682649Z"/>
+</wc-entries>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/images"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="logo.png"
+   text-time="2014-10-23T10:40:49.989000Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="e4c8ba0fed6c47ab6c8c0ade8dc32ff4"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.799656Z"/>
+<entry
+   committed-rev="55527"
+   name="menu.jpg"
+   text-time="2015-01-06T02:32:59.923884Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="63cfa88fddb1b39cd5ae38b4e3b2d8a9"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.462808Z"/>
+<entry
+   name="calendar"
+   kind="dir"/>
+<entry
+   committed-rev="55527"
+   name="user.jpg"
+   text-time="2015-01-06T02:32:59.939885Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="bdf614fcebc5364a1cbc7693d60250ee"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.371803Z"/>
+<entry
+   committed-rev="55527"
+   name="relogin.jpg"
+   text-time="2015-01-06T02:32:59.932884Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="46f26587b4c20e581df9fdd9fb2ab202"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.572643Z"/>
+</wc-entries>

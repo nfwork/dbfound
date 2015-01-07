@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images/default/spinner"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="spinner.gif"
+   text-time="2015-01-06T02:33:02.279018Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="7732a49c954f7c297410bbbe49abadb8"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.229795Z"/>
+<entry
+   committed-rev="55527"
+   name="spinner-split.gif"
+   text-time="2015-01-06T02:33:02.275018Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="d228e63edb4c53c58da4065e241a0d19"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.506639Z"/>
+</wc-entries>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/images"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="page_attach.png"
+   text-time="2015-01-06T02:33:00.421912Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="19cccb58bb46829f26d514a098487f97"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:47.829600Z"/>
+<entry
+   committed-rev="55527"
+   name="delete.png"
+   text-time="2015-01-06T02:33:00.412912Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="68461ca5187cd2c6af08786467085f2b"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.040613Z"/>
+<entry
+   committed-rev="55527"
+   name="update.gif"
+   text-time="2015-01-06T02:33:00.463915Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="eaa3ca2eb989e460e9af2f041dd9f669"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.528755Z"/>
+<entry
+   committed-rev="55527"
+   name="panel_bg.png"
+   text-time="2015-01-06T02:33:00.424912Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="211563fa717f4475938e2a72347e32f0"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:47.940607Z"/>
+<entry
+   committed-rev="55527"
+   name="add.gif"
+   text-time="2015-01-06T02:33:00.393911Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="4b603f80a5d9598b08b7c38d6e428868"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.623817Z"/>
+<entry
+   committed-rev="55527"
+   name="email_go.png"
+   text-time="2015-01-06T02:33:00.419912Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="baaa6accd945fcb4480b29ab2e15bded"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.707765Z"/>
+<entry
+   committed-rev="55527"
+   name="spellcheck.png"
+   text-time="2015-01-06T02:33:00.455914Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="aa0615bb3c2cac259ea7bc90ceeed836"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.476809Z"/>
+<entry
+   committed-rev="55527"
+   name="check.png"
+   text-time="2015-01-06T02:33:00.411912Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="aa0615bb3c2cac259ea7bc90ceeed836"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.489695Z"/>
+<entry
+   committed-rev="55527"
+   name="remove.gif"
+   text-time="2015-01-06T02:33:00.440913Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="5b3abbb952fc58b97697be93c6a416e0"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.183678Z"/>
+<entry
+   committed-rev="55527"
+   name="save.gif"
+   text-time="2015-01-06T02:33:00.442913Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="12e78f168dd6c3d30bf033a5e9a0a379"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.460694Z"/>
+<entry
+   committed-rev="55527"
+   name="printer.png"
+   text-time="2015-01-06T02:33:00.437913Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="242421c98dbd8b054fc76a036d04321c"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.346630Z"/>
+<entry
+   committed-rev="55527"
+   name="submit.gif"
+   text-time="2015-01-06T02:33:00.457914Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="70972a3b6955d26b7bf0a5a9aa2b83ae"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.277683Z"/>
+<entry
+   committed-rev="55527"
+   name="bg.jpg"
+   text-time="2015-01-06T02:33:00.408911Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="a98429a9b76d0cda7b9b00cd7f1f08a2"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.389633Z"/>
+<entry
+   committed-rev="55527"
+   name="xls.gif"
+   text-time="2015-01-06T02:33:00.466915Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="2a9ef02ad40857e968ead0fdb679bcc0"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.986781Z"/>
+<entry
+   committed-rev="55527"
+   name="email.png"
+   text-time="2015-01-06T02:33:00.416912Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="baaa6accd945fcb4480b29ab2e15bded"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.246739Z"/>
+<entry
+   committed-rev="55527"
+   name="disk.png"
+   text-time="2015-01-06T02:33:00.414912Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="bb6d3c6dd2b1182ca4877d05f7e67a91"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.374632Z"/>
+</wc-entries>

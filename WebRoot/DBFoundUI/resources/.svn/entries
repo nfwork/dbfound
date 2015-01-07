@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="charts.swf"
+   text-time="2015-01-06T02:33:00.645925Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="923c8afe50fc45ed42d92d6ab83b11f6"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.685764Z"/>
+<entry
+   name="images"
+   kind="dir"/>
+<entry
+   name="css"
+   kind="dir"/>
+<entry
+   committed-rev="55527"
+   name="expressinstall.swf"
+   text-time="2015-01-06T02:33:00.717929Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="8c4bdc47410fc7c000dcd1655e2f3a7a"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.190793Z"/>
+</wc-entries>

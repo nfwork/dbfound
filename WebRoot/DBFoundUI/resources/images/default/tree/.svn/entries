@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images/default/tree"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="folder.gif"
+   text-time="2015-01-06T02:33:02.578035Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="b7209740bb4a825a06beb8698d92c2b1"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:47.926606Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow-end-minus-nl.gif"
+   text-time="2015-01-06T02:33:02.508031Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="5e5bffba157eceee7989db95b919e4d5"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:47.972609Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow-end.gif"
+   text-time="2015-01-06T02:33:02.531033Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="345551384aa325189ba28a1c20f3405e"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.009668Z"/>
+<entry
+   committed-rev="55527"
+   name="arrows.gif"
+   text-time="2015-01-06T02:33:02.481030Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="ab65037de34763ce1b489e5c0f12185d"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.462751Z"/>
+<entry
+   committed-rev="55527"
+   name="drop-over.gif"
+   text-time="2015-01-06T02:33:02.494031Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="d6b303cfa3de8784057d9d7e66cdaa86"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.700650Z"/>
+<entry
+   committed-rev="55527"
+   name="loading.gif"
+   text-time="2015-01-06T02:33:02.590036Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="00ef871b291bc03a497d608a5bd8ec99"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.652819Z"/>
+<entry
+   committed-rev="55527"
+   name="drop-no.gif"
+   text-time="2015-01-06T02:33:02.490030Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="67f83ea04a2eb1c50614a96faf625f25"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.080672Z"/>
+<entry
+   committed-rev="55527"
+   name="drop-under.gif"
+   text-time="2015-01-06T02:33:02.497031Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="55e5dbc9451cfa91423832260b0753aa"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.616645Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow-plus.gif"
+   text-time="2015-01-06T02:33:02.565035Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="945572d06a74b5f952251a86c595f2da"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.085615Z"/>
+<entry
+   committed-rev="55527"
+   name="drop-add.gif"
+   text-time="2015-01-06T02:33:02.485030Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="95eb34ac70a1a3c95ef39ab826a89491"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.941664Z"/>
+<entry
+   committed-rev="55527"
+   name="drop-between.gif"
+   text-time="2015-01-06T02:33:02.487030Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="edb544a0de58547d4a39c526e06e3c82"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.435635Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow-line.gif"
+   text-time="2015-01-06T02:33:02.549034Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="90e478158df476dc989a60daaafc87e6"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.952665Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow-end-plus.gif"
+   text-time="2015-01-06T02:33:02.528033Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="ec1482391363612d9e5f8c7087fddaba"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.344687Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow-plus-nl.gif"
+   text-time="2015-01-06T02:33:02.562035Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="f0f50c0dd3ee6dd4b11c1f245b36eb01"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:47.953608Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow-minus.gif"
+   text-time="2015-01-06T02:33:02.553034Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="71bb1bd44b1274c60d30dba1de472ed7"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.408634Z"/>
+<entry
+   committed-rev="55527"
+   name="s.gif"
+   text-time="2015-01-06T02:33:02.593036Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="fc94fb0c3ed8a8f909dbc7630a0987ff"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.703708Z"/>
+<entry
+   committed-rev="55527"
+   name="drop-yes.gif"
+   text-time="2015-01-06T02:33:02.504031Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="f3216326c00890259e84f1726dd1043f"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.367688Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow-end-plus-nl.gif"
+   text-time="2015-01-06T02:33:02.525032Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="f0f50c0dd3ee6dd4b11c1f245b36eb01"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.854774Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow-end-minus.gif"
+   text-time="2015-01-06T02:33:02.510032Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="a469f6a4394d797c2efeffc70409f6db"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.865660Z"/>
+<entry
+   committed-rev="55527"
+   name="leaf.gif"
+   text-time="2015-01-06T02:33:02.580036Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="23757d6e353f343e3c7edfe28428f198"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.824829Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow.gif"
+   text-time="2015-01-06T02:33:02.568035Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="27679f3b1222ba95d9925885d7d82d02"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.196679Z"/>
+<entry
+   committed-rev="55527"
+   name="elbow-minus-nl.gif"
+   text-time="2015-01-06T02:33:02.551034Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="5e5bffba157eceee7989db95b919e4d5"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.605816Z"/>
+<entry
+   committed-rev="55527"
+   name="folder-open.gif"
+   text-time="2015-01-06T02:33:02.574035Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="c569141d6ae7c61d838ed8af26aa9380"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.422634Z"/>
+</wc-entries>

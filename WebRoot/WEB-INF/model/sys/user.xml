@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+	
+	<query pagerSize="10" >
+		<sql>
+		 <![CDATA[
+			SELECT
+				u.user_id,
+				u.user_name,
+				u.role_id,
+				u.user_code,
+				u.status,
+				DATE_FORMAT(u.create_date,'%Y-%m-%d') create_date,
+				DATE_FORMAT(u.last_update_date,'%Y-%m-%d') last_update_date,
+				(select CONCAT(CONCAT(user_code,'-'),user_name) from sys_user where user_id =u.last_update_by) last_update_user,
+				u.create_date date,
+				u.password
+			FROM SYS_USER u
+			#WHERE_CLAUSE#
+			order by u.user_code
+		 ]]>
+		</sql>
+		<filter name="timefrom" express="create_date &gt;= ${@timefrom}" />
+		<filter name="timeto" express="create_date &lt;= ${@timeto}" />
+		<filter name="user_code" express="user_code like '#{@user_code}'" />
+		<filter name="user_name" express="user_name like ${@user_name}" />
+		<filter name="role_id" express="role_id = ${@role_id}" />
+		<filter name="status_code" express="status = ${@status_code}" />
+	</query>
+	
+	<query name="combo" pagerSize="50" >
+		<sql>
+		 <![CDATA[
+			SELECT
+				u.user_id,
+				u.user_name,
+				u.user_code
+			FROM SYS_USER u
+			order by u.user_code
+		 ]]>
+		</sql>
+	</query>
+
+	<execute name="add">
+		<param name="user_code" dataType="varchar" />
+		<param name="user_name" dataType="varchar" />
+		<param name="password" dataType="varchar"/>
+		<param name="status" dataType="varchar" />
+		<param name="role_id" dataType="number" />
+		<param name="user_id" dataType="number" scope="session" />
+		<sqls>
+			<collisionSql
+				where="exists (select 1 from sys_user where user_code= ${@user_code})"
+				message="用户编号:#{@user_code} 已经使用！" />
+			<executeSql>
+			 <![CDATA[
+			    INSERT INTO sys_user
+				   (user_code,
+					user_name,
+					password,
+					role_id,
+					status,
+					create_by,
+					create_date,
+					last_update_by,
+					last_update_date)
+				VALUES
+					(${@user_code},
+					${@user_name},
+					${@password},
+					${@role_id},
+					${@status},
+					${@user_id},
+					NOW(),
+					${@user_id},
+					NOW())
+			 ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="update">
+		<param name="user_name" dataType="varchar" />
+		<param name="role_id" dataType="number" />
+		<param name="password" dataType="varchar" />
+		<param name="status" dataType="varchar" />
+		<param name="user_id" dataType="number" scope="session" />
+		<param name="uid" sourcePath="user_id" dataType="number" />
+		<sqls>
+			<executeSql>
+			  <![CDATA[
+				update sys_user set 
+					user_name = ${@user_name} ,
+					role_id =${@role_id},
+					password = ${@password} ,
+					status =${@status},
+					last_update_by = ${@user_id} ,
+					last_update_date = NOW() 
+				where user_id = ${@uid} 
+			  ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="delete">
+		<param name="user_id" dataType="number" />
+		<sqls>
+			<executeSql>
+			  <![CDATA[
+				delete from sys_user where user_id= ${@user_id} 
+			  ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+</model>

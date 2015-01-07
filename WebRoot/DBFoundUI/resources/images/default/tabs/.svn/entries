@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images/default/tabs"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="scroller-bg.gif"
+   text-time="2015-01-06T02:33:02.332021Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="43457068d919fadd0e959542cfd81ad2"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.462637Z"/>
+<entry
+   committed-rev="55527"
+   name="tab-strip-bg.gif"
+   text-time="2015-01-06T02:33:02.379024Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="5b1b94e9669aaab4e76e5aba8bf8ec1d"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.148733Z"/>
+<entry
+   committed-rev="55527"
+   name="tab-strip-btm-bg.gif"
+   text-time="2015-01-06T02:33:02.382024Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="f76eec7881fcc7a0f76354d184e0087e"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.595759Z"/>
+<entry
+   committed-rev="55527"
+   name="tabs-sprite.gif"
+   text-time="2015-01-06T02:33:02.403025Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="2562a17ad0076bdd3711d18e62f74c27"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.448636Z"/>
+<entry
+   committed-rev="55527"
+   name="tab-btm-over-left-bg.gif"
+   text-time="2015-01-06T02:33:02.370024Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="f7f13c4c2a7c1e3497b2f8931227df3f"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:52.024840Z"/>
+<entry
+   committed-rev="55527"
+   name="tab-btm-over-right-bg.gif"
+   text-time="2015-01-06T02:33:02.372024Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="7bf3f17738b6c53f6a3f08760eaa5089"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.222680Z"/>
+<entry
+   committed-rev="55527"
+   name="tab-btm-inactive-left-bg.gif"
+   text-time="2015-01-06T02:33:02.357023Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="ed19092d440c5bfbdc864f714f26ee03"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.877718Z"/>
+<entry
+   committed-rev="55527"
+   name="tab-btm-left-bg.gif"
+   text-time="2015-01-06T02:33:02.368023Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="768ac4e5531974feda076cbca7a5cb6e"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.253796Z"/>
+<entry
+   committed-rev="55527"
+   name="scroll-left.gif"
+   text-time="2015-01-06T02:33:02.284019Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="f1ce5158650880e9fe256e739f60dd23"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.252625Z"/>
+<entry
+   committed-rev="55527"
+   name="tab-btm-inactive-right-bg.gif"
+   text-time="2015-01-06T02:33:02.366023Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="c3f340dc9f7f9398e1395f351e706dfd"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.625703Z"/>
+<entry
+   committed-rev="55527"
+   name="tab-btm-right-bg.gif"
+   text-time="2015-01-06T02:33:02.375024Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="dfe63a170d5391d56645dbfed27b5d22"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.925835Z"/>
+<entry
+   committed-rev="55527"
+   name="tab-close.gif"
+   text-time="2015-01-06T02:33:02.377024Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="59304a56f5e0f506bf671aeafb8fc767"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.607759Z"/>
+<entry
+   committed-rev="55527"
+   name="scroll-right.gif"
+   text-time="2015-01-06T02:33:02.329021Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="905ea778cb64c74ef3cd49ae4fa64b71"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.839830Z"/>
+<entry
+   committed-rev="55527"
+   name="tab-strip-bg.png"
+   text-time="2015-01-06T02:33:02.380024Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="d99e3b7b2610f3c85aa943fe139e6afa"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.345802Z"/>
+</wc-entries>

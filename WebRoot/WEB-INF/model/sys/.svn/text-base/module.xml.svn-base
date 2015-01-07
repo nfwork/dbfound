@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+	<query pagerSize="10">
+		<sql>
+		  <![CDATA[
+			SELECT *,
+				(select CONCAT(CONCAT(user_code,'-'),user_name) from
+				sys_user where user_id =f.last_update_by) last_update_user
+			FROM sys_module f
+			#WHERE_CLAUSE#
+			ORDER BY f.priority
+		 ]]>
+		</sql>
+		<filter name="timefrom" express="create_date &gt;= ${@timefrom}  " />
+		<filter name="timeto" express="create_date &lt;= ${@timeto} " />
+		<filter name="module_code" express="module_code like ${@module_code} " />
+		<filter name="module_name" express="module_name like ${@module_name} " />
+		<filter name="user_id" express="last_update_by = ${@user_id} " />
+	</query>
+
+	<execute name="add">
+		<param name="module_code" dataType="varchar" />
+		<param name="module_name" dataType="varchar" />
+		<param name="priority" dataType="number" />
+		<param name="user_id" dataType="number" scope="session" />
+		<param name="image" dataType="varchar" />
+		<sqls>
+			<collisionSql
+				where="exists (select 1 from sys_module where module_code =${@module_code} )"
+				message="模块编号:#{@module_code} 已经使用！" />
+			<executeSql>
+			 <![CDATA[	
+				INSERT INTO sys_module
+					(module_code,
+					module_name,
+					priority,
+					image,
+					create_by,
+					create_date,
+					last_update_by,
+					last_update_date)
+				VALUES
+					(${@module_code},
+					${@module_name},
+					${@priority},
+					${@image},
+					${@user_id},
+					NOW(),
+					${@user_id},
+					NOW())
+			 ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="update">
+		<param name="module_code" dataType="varchar" />
+		<param name="module_name" dataType="varchar" />
+		<param name="module_id" dataType="number" />
+		<param name="priority" dataType="number" />
+		<param name="user_id" dataType="number" scope="session" />
+		<param name="image" dataType="varchar" />
+		<sqls>
+			<executeSql>
+			<![CDATA[
+				update sys_module set
+					module_name = ${@module_name} ,
+					last_update_by = ${@user_id} ,
+					priority =${@priority},
+					image = ${@image},
+					last_update_date = NOW()
+				where module_id = ${@module_id} 
+			 ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<execute name="delete">
+		<param name="module_id" dataType="number" />
+		<sqls>
+			<collisionSql
+				where="exists (select 1 from sys_function where function_module= ${@module_id})"
+				message="该模块下已分配功能，不能删除！" />
+			<executeSql>
+				delete from sys_module where module_id= ${@module_id}
+			</executeSql>
+		</sqls>
+	</execute>
+
+	<query name="combo">
+		<sql>
+		 <![CDATA[
+			SELECT
+				m.module_id module_id,
+				CONCAT(CONCAT(module_code,'-'),module_name) module_name
+			 FROM sys_module m
+			order by m.priority
+		 ]]>
+		</sql>
+	</query>
+</model>

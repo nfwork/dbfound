@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/modules/sys"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="function.jsp"
+   text-time="2015-01-06T02:33:00.062892Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="64ca0ee6b61d25d5868f472b33cca908"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="module.jsp"
+   text-time="2015-01-06T02:33:00.075892Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="05571349a0cc0eedfcae8e339396b908"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="power.jsp"
+   text-time="2015-01-06T02:33:00.079893Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="05d26bc0b60092049aa3a05eb7fe995b"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="user.jsp"
+   text-time="2015-01-06T02:33:00.093893Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="0c4566cbf58bc011481d421919ac84d8"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="userLov.jsp"
+   text-time="2015-01-06T02:33:00.096894Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="02d681fe2d67cb3d5f4bd94b9eafb7cf"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="log.jsp"
+   text-time="2015-01-06T02:33:00.071892Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="ac7d8f8a2ba1fc6d36e4d332468cca9a"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="role.jsp"
+   text-time="2015-01-06T02:33:00.081893Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="bf73d97a31e8104c9480470153d30a1d"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="accessControl.jsp"
+   text-time="2015-01-06T02:33:00.059891Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="fdf63749f85219f0cd5c503810a89e8e"
+   last-author="huangjiong"
+   kind="file"/>
+<entry
+   committed-rev="55527"
+   name="pagerAssign.jsp"
+   text-time="2015-01-06T02:33:00.077892Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="8f73f265abcde8ea0681ccf4b8ec713c"
+   last-author="huangjiong"
+   kind="file"/>
+</wc-entries>

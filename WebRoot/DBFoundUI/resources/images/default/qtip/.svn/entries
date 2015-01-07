@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images/default/qtip"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="tip-sprite.gif"
+   text-time="2015-01-06T02:33:02.090008Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="090b2d83952e682fab43b2ab16be2991"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.548642Z"/>
+<entry
+   committed-rev="55527"
+   name="close.gif"
+   text-time="2015-01-06T02:33:02.068006Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="0379d036250096cae2e42b427b3df2e7"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:50.650762Z"/>
+<entry
+   committed-rev="55527"
+   name="bg.gif"
+   text-time="2015-01-06T02:33:02.062006Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="49c0a530cc16357bb39d51c13065a88f"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.265683Z"/>
+<entry
+   committed-rev="55527"
+   name="tip-anchor-sprite.gif"
+   text-time="2015-01-06T02:33:02.071006Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="f39bc3283b69431ce6e7aed2fe6882b9"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.720823Z"/>
+</wc-entries>

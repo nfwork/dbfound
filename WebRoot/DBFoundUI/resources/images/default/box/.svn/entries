@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="55527"
+   name=""
+   committed-date="2015-01-06T03:10:56.400433Z"
+   url="http://svn.3g.net.cn/svn/server_dev-server_center/newcode/Other/g3manageTemplate/trunk/dbfoundDevelopTemplate/WebRoot/DBFoundUI/resources/images/default/box"
+   last-author="huangjiong"
+   kind="dir"
+   repos="http://svn.3g.net.cn/svn/server_dev-server_center"
+   revision="55527"/>
+<entry
+   committed-rev="55527"
+   name="l.gif"
+   text-time="2015-01-06T02:33:00.781933Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="c4d9dbbdc59ae06b5e9e72a6a865c981"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:48.166620Z"/>
+<entry
+   committed-rev="55527"
+   name="corners.gif"
+   text-time="2015-01-06T02:33:00.765932Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="d2d1bc2085b369ce35ffd20c0121676e"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.490810Z"/>
+<entry
+   committed-rev="55527"
+   name="l-blue.gif"
+   text-time="2015-01-06T02:33:00.767932Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="ced9ffbf66ea39e77083a591f8257267"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.811828Z"/>
+<entry
+   committed-rev="55527"
+   name="corners-blue.gif"
+   text-time="2015-01-06T02:33:00.750931Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="86fd4c5664e0971bfc11959e8442604c"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.986838Z"/>
+<entry
+   committed-rev="55527"
+   name="r.gif"
+   text-time="2015-01-06T02:33:00.811934Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="bf1e1d4a45f951ae656968a8c834f04a"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:47.984609Z"/>
+<entry
+   committed-rev="55527"
+   name="tb.gif"
+   text-time="2015-01-06T02:33:00.831936Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="dd3f63afe7ba90983ba73dad1c66bf2f"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:51.752825Z"/>
+<entry
+   committed-rev="55527"
+   name="r-blue.gif"
+   text-time="2015-01-06T02:33:00.797934Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="82dbb522a80e3246f6297719371a9494"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.503696Z"/>
+<entry
+   committed-rev="55527"
+   name="tb-blue.gif"
+   text-time="2015-01-06T02:33:00.821935Z"
+   committed-date="2015-01-06T03:10:56.400433Z"
+   checksum="7c4b19eb682afdc1bde0640d2321fb25"
+   last-author="huangjiong"
+   kind="file"
+   prop-time="2015-01-06T03:10:49.910720Z"/>
+</wc-entries>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+	<execute name="openLog">
+		<param name="message" value="开启日志成功！" ioType="out" />
+		<sqls>
+			<java className="com.nfwork.dbfound.util.LogUtil" method="openLog" />
+		</sqls>
+	</execute>
+
+	<execute name="closeLog">
+		<param name="message" value="关闭日志成功！" ioType="out" />
+		<sqls>
+			<java className="com.nfwork.dbfound.util.LogUtil" method="closeLog" />
+		</sqls>
+	</execute>
+</model>
