@@ -156,9 +156,6 @@
 			Ext.onReady(function(){
 				menuTree.getRootNode().firstChild.expand();
 			});
-			if("${user_id}"==""){
-				location.href ="${basePath}login.jsp";
-			}
 		</script>
 	</body>
 </html>
