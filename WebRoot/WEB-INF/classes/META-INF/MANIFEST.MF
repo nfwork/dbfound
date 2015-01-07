@@ -1,0 +1,7 @@
+Manifest-Version: 2.0
+Name: dbfoundTags
+Sealed: true
+Implementation-Title: "DBFound Tag Library"
+Implementation-Version: "2.0"
+Implementation-Vendor: "nfwork"
+

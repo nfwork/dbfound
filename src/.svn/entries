@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="1767"
+   name=""
+   committed-date="2014-12-04T02:08:43.743443Z"
+   url="https://dbfound.googlecode.com/svn/trunk/dbfound2.0/src/com/nfwork/dbfound/model"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="dir"
+   uuid="d337f4e6-7775-1ad4-e08c-54b14ab86eee"
+   repos="https://dbfound.googlecode.com/svn"
+   revision="1774"/>
+<entry
+   name="tools"
+   kind="dir"/>
+<entry
+   committed-rev="1728"
+   name="ModelReader.java"
+   text-time="2014-10-24T07:04:49.808523Z"
+   committed-date="2014-10-24T07:46:08.873455Z"
+   checksum="e503c374644a3df5b68951e8a75e74b2"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:44.675970Z"/>
+<entry
+   committed-rev="1728"
+   name="ModelCache.java"
+   text-time="2014-10-24T07:45:34.407346Z"
+   committed-date="2014-10-24T07:46:08.873455Z"
+   checksum="3523b5efa3e4a3a359cf6e746507dc57"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"/>
+<entry
+   name="bean"
+   kind="dir"/>
+<entry
+   name="reflector"
+   kind="dir"/>
+<entry
+   committed-rev="1762"
+   name="ModelEngine.java"
+   text-time="2014-11-13T05:31:18.310597Z"
+   committed-date="2014-11-13T05:32:28.550051Z"
+   checksum="76491395035f64483bdcd094be99968d"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:45.102994Z"/>
+<entry
+   name="base"
+   kind="dir"/>
+</wc-entries>

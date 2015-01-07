@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" xmlns="http://dbfound.googlecode.com/mvc"
+	targetNamespace="http://dbfound.googlecode.com/mvc">
+
+	<xsd:element name="dbfound-mvc">
+		<xsd:complexType>
+			<xsd:choice maxOccurs="unbounded" minOccurs="0">
+				<xsd:element maxOccurs="1" minOccurs="1" name="devMode" />
+				<xsd:element maxOccurs="unbounded" minOccurs="0" name="import" />
+				<xsd:element maxOccurs="unbounded" minOccurs="0" name="action" />
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="devMode">
+		<xsd:complexType>
+			<xsd:attribute name="value" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="import">
+		<xsd:complexType>
+			<xsd:attribute name="file" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="action">
+		<xsd:complexType>
+			<xsd:attribute name="name" />
+			<xsd:attribute name="class" />
+			<xsd:attribute name="singleton" />
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>
