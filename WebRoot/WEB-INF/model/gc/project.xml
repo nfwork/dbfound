@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+	xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
 	<query pagerSize="10">
 		<sql>
 		  <![CDATA[

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>nfwork</groupId>
   <artifactId>dbfound</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>2.3.2</version>
   
   <build>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
