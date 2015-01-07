@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="1725"
+   name=""
+   committed-date="2014-10-23T10:42:33.082829Z"
+   url="https://dbfound.googlecode.com/svn/trunk/dbfound2.0/WebRoot/WEB-INF/model/test"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="dir"
+   uuid="d337f4e6-7775-1ad4-e08c-54b14ab86eee"
+   repos="https://dbfound.googlecode.com/svn"
+   revision="1774"/>
+<entry
+   committed-rev="1725"
+   name="chart.xml"
+   text-time="2014-10-23T10:41:05.355885Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="f85715f0f4efd9408d619c450838cd89"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:56.426210Z"/>
+<entry
+   committed-rev="1725"
+   name="dynamic.xml"
+   text-time="2014-10-23T10:41:05.362885Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="2d11f1479569b07ee82d2dadf7843bbd"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:56.434211Z"/>
+<entry
+   committed-rev="1725"
+   name="example.xml"
+   text-time="2014-10-23T10:41:05.368885Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="cb0e82210e59628244b0f3da0ee316db"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:56.440211Z"/>
+<entry
+   committed-rev="1725"
+   name="user.xml"
+   text-time="2014-10-23T10:41:05.375886Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="75b0cc4d514966cdc79119a8589bee97"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"/>
+<entry
+   committed-rev="1725"
+   name="tree.xml"
+   text-time="2014-10-23T10:41:05.373886Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="b9a9224b5fe020d97539a64ee90fc2ea"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:56.449212Z"/>
+</wc-entries>

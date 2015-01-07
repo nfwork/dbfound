@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="1725"
+   name=""
+   committed-date="2014-10-23T10:42:33.082829Z"
+   url="https://dbfound.googlecode.com/svn/trunk/dbfound2.0/WebRoot/WEB-INF/model/job"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="dir"
+   uuid="d337f4e6-7775-1ad4-e08c-54b14ab86eee"
+   repos="https://dbfound.googlecode.com/svn"
+   revision="1774"/>
+<entry
+   committed-rev="1725"
+   name="jobQuery.xml"
+   text-time="2014-10-23T10:41:05.217877Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="2ce9597851a921e29a09e4a761bb1dee"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:57.057246Z"/>
+<entry
+   committed-rev="1725"
+   name="myJobControl.xml"
+   text-time="2014-10-23T10:41:05.253879Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="3df15399d4621141f11f78fb667be059"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:57.064247Z"/>
+<entry
+   committed-rev="1725"
+   name="jobLine.xml"
+   text-time="2014-10-23T10:41:05.212876Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="9caba064743553dbe3c35135120194de"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:57.072247Z"/>
+<entry
+   committed-rev="1725"
+   name="jobHeader.xml"
+   text-time="2014-10-23T10:41:05.206876Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="7a5acf2813ae60f41904ce401a293c3e"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:57.082248Z"/>
+<entry
+   committed-rev="1725"
+   name="jobCheck.xml"
+   text-time="2014-10-23T10:41:05.179874Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="0c421087c99c8aa158ac1b89bb92721d"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:57.091248Z"/>
+<entry
+   committed-rev="1725"
+   name="jobControl.xml"
+   text-time="2014-10-23T10:41:05.198876Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="b3c3b0ff972aa1ff9194d5b0eb6c073f"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:57.098249Z"/>
+<entry
+   committed-rev="1725"
+   name="jobStatus.xml"
+   text-time="2014-10-23T10:41:05.238878Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="4dda08bd47dfc1536b29e6b9b1f2bbe7"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:57.106249Z"/>
+<entry
+   committed-rev="1725"
+   name="jobAnalysis.xml"
+   text-time="2014-10-23T10:41:05.174874Z"
+   committed-date="2014-10-23T10:42:33.082829Z"
+   checksum="9ca1c6083d2a53d1b9b23d94434e88c5"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:37:57.113250Z"/>
+</wc-entries>

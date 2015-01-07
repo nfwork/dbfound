@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+	<query name="enabled">
+		<sql>
+		 <![CDATA[
+			SELECT
+				u.user_id,
+				u.user_name,
+				u.role_id,
+				u.user_code
+			FROM SYS_USER u
+			where u.status='Y'  
+			order by u.user_code
+		 ]]>
+		</sql>
+	</query>
+	
+	<query name="disabled">
+		<sql>
+		 <![CDATA[
+			SELECT
+				u.user_id,
+				u.user_name,
+				u.role_id,
+				u.user_code
+			FROM SYS_USER u
+			where u.status='N'
+			order by u.user_code
+		 ]]>
+		</sql>
+	</query>
+
+	<execute name="enabled">
+		<param name="user_id" dataType="number"/>
+		<sqls>
+			<executeSql>
+			  <![CDATA[
+				update sys_user set 
+					status = 'Y'
+				where user_id = ${@user_id} 
+			  ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+	
+	<execute name="disabled">
+		<param name="user_id" dataType="number"/>
+		<sqls>
+			<executeSql>
+			  <![CDATA[
+				update sys_user set 
+					status = 'N'
+				where user_id = ${@user_id} 
+			  ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+</model>

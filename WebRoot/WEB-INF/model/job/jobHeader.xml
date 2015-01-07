@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+	<query pagerSize="10">
+	    <param name="user_code" dataType="varchar" scope="session" />
+		<sql>
+		  <![CDATA[
+			SELECT
+			    title,
+				class_id,
+				header_id,
+				(select c.class_name from fnd_class c where c.class_id = t.class_id) class_name,
+			    course_id,
+			    status status_code,
+			    (select  concat(concat(b.branch_code,'-'),b.branch_name) from fnd_branch b,fnd_course c where b.branch_id = c.branch_id and c.course_id= t.course_id) course_name,
+				(SELECT  code_name  FROM sys_code t where t.code='JOB_STATUS'  and t.code_value= status) status_name,
+				end_time,
+				(select teacher_name from fnd_teacher te where te.teacher_id = t.teacher_id) teacher_name,
+				(select count(1) from sys_upload_file f where f.table_name ='job_headers' and pk_value = header_id) att_num,
+				t.last_update_by,
+				DATE_FORMAT(t.create_date,'%Y-%m-%d') create_date,
+				DATE_FORMAT(t.last_update_date,'%Y-%m-%d') last_update_date,
+			    (select CONCAT(CONCAT(user_code,'-'),user_name) from sys_user where user_id =t.last_update_by) last_update_user
+			FROM job_headers t
+			where t.teacher_id = (SELECT teacher_id FROM fnd_teacher s WHERE s.teacher_code = ${@user_code})
+			  and t.status !='END'
+			  #AND_CLAUSE#
+			order by t.create_date desc
+		   ]]>
+		</sql>
+		<filter name="timefrom" express="create_date &gt;= ${@timefrom}  " />
+		<filter name="timeto" express="create_date &lt;= ${@timeto} " />
+		<filter name="class_id" express="class_id = ${@class_id} " />
+		<filter name="course_id" express="course_id = ${@course_id} " />
+		<filter name="status_code" express="t.status = ${@status_code} " />
+		<filter name="title" express="title like ${@title} " />
+	</query>
+	
+	<query name="update_query">
+	    <param name="header_id" dataType="varchar" />
+		<sql>
+		  <![CDATA[
+			SELECT
+			    title,
+				class_id,
+				(select c.class_name from fnd_class c where c.class_id = t.class_id) class_name,
+			    (select concat(concat(b.branch_code,'-'),b.branch_name) from fnd_branch b,fnd_course c where b.branch_id = c.branch_id and c.course_id= t.course_id) course_name,
+				header_id,
+				description,
+			    course_id,
+				(SELECT  code_name  FROM sys_code t where t.code='JOB_STATUS'  and t.code_value= status) status_name,
+				end_time,
+				(select teacher_name from fnd_teacher te where te.teacher_id = t.teacher_id) teacher_name
+			FROM job_headers t
+			where header_id = ${@header_id}
+		   ]]>
+		</sql>
+	</query>
+
+	<execute name="add">
+		<param name="header_id" UUID="true" />
+		<param name="title" dataType="varchar" />
+		<param name="description" dataType="varchar" />
+		<param name="end_time" dataType="varchar" />
+		<param name="class_id" dataType="number" />
+		<param name="teacher_id" dataType="number" />
+		<param name="course_id" dataType="number" />
+		<param name="user_code" dataType="varchar" scope="session" />
+		<param name="user_id" dataType="number" scope="session" />
+		<sqls>
+			<querySql>
+				select teacher_id from fnd_teacher t where t.teacher_code = ${@user_code}
+			</querySql>
+			<executeSql>
+			   <![CDATA[
+				INSERT INTO job_headers
+				   (header_id,
+					class_id,
+					course_id,
+					teacher_id,
+					end_time,
+					status,
+					title,
+					description,
+					create_by,
+					last_update_by,
+					create_date,
+					last_update_date)
+				VALUES (${@header_id},
+				    ${@class_id},
+					${@course_id},
+					${@teacher_id},
+					${@end_time},
+					'NEW',
+					${@title},
+					${@description},
+					${@user_id},
+					${@user_id},
+					NOW(),
+					NOW())
+				 ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+	
+	<execute name="update">
+		<param name="description" dataType="varchar" />
+		<param name="end_time" dataType="varchar" />
+		<param name="class_id" dataType="number" />
+		<param name="course_id" dataType="number" />
+		<param name="header_id" dataType="varchar" />
+		<param name="user_id" dataType="number" scope="session" />
+		<sqls>
+			<executeSql>
+			   <![CDATA[
+				update job_headers
+				   set class_id =${@class_id},
+					course_id =${@course_id},
+					end_time=${@end_time},
+					description =${@description},
+					last_update_by=${@user_id},
+					last_update_date =NOW()
+				where header_id = ${@header_id}
+				 ]]>
+			</executeSql>
+		</sqls>
+	</execute>
+</model>

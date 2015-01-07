@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+
+	<query>
+		<sql>
+		  <![CDATA[
+			SELECT
+			  e.employee_code,
+			  e.employee_id,
+			  e.employee_name,
+			  p.project_name,
+			  p.project_id,
+			  p.price,
+			  SUM(p.price)       total_price,
+ 			  COUNT(1)           total_date,
+ 			  (select count(1) from gc_work_record ar
+ 			    where e.employee_id = ar.employee_id
+ 			     AND p.project_id = ar.project_id
+ 			     and  IFNULL(ar.settlement_flag,'N') = 'Y'
+ 			  ) settle_total_date,
+ 			   (select count(1) from gc_work_record ar
+ 			    where e.employee_id = ar.employee_id
+ 			     AND p.project_id = ar.project_id
+ 			     and  IFNULL(ar.settlement_flag,'N') = 'Y'
+ 			  )*price settle_total_price,
+ 			  (select count(1) from gc_work_record ar
+ 			    where e.employee_id = ar.employee_id
+ 			     AND p.project_id = ar.project_id
+ 			     and  IFNULL(ar.settlement_flag,'N') = 'N'
+ 			  )*price unsettle_total_price,
+ 			  (select count(1) from gc_work_record ar
+ 			    where e.employee_id = ar.employee_id
+ 			     AND p.project_id = ar.project_id
+ 			     and  IFNULL(ar.settlement_flag,'N') = 'N'
+ 			  ) unsettle_total_date
+			FROM gc_employee e,
+			  gc_work_record r,
+			  gc_project p
+			WHERE e.employee_id = r.employee_id
+			    AND p.project_id = r.project_id
+			    #AND_CLAUSE#
+			GROUP BY e.employee_code, e.employee_name, p.project_name, p.price
+		   ]]>
+		</sql>
+		<filter name="project_id" express="p.project_id = ${@project_id}"/>
+		<filter name="employee_id" express="e.employee_id = ${@employee_id}" />
+	</query>
+	
+	<query name="detail">
+		<param name="project_id" dataType="number" />
+		<param name="employee_id" dataType="number" />
+		<sql>
+		  <![CDATA[
+			SELECT
+			  e.employee_code,
+			  e.employee_id,
+			  e.employee_name,
+			  p.project_name,
+			  r.work_date,
+			  p.price,
+			  IFNULL(r.settlement_flag,'N') settlement_flag,
+			  r.settlement_date
+			FROM gc_employee e,
+			  gc_work_record r,
+			  gc_project p
+			WHERE e.employee_id = r.employee_id
+			    AND p.project_id = r.project_id
+			    and p.project_id = ${@project_id}
+			    and e.employee_id = ${@employee_id}
+		   ]]>
+		</sql>
+	</query>
+
+</model>

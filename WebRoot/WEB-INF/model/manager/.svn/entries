@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="1747"
+   name=""
+   committed-date="2014-11-05T08:51:13.138566Z"
+   url="https://dbfound.googlecode.com/svn/trunk/dbfound2.0/WebRoot/WEB-INF/model/manager"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="dir"
+   uuid="d337f4e6-7775-1ad4-e08c-54b14ab86eee"
+   repos="https://dbfound.googlecode.com/svn"
+   revision="1774"/>
+<entry
+   committed-rev="1747"
+   name="fileManager.xml"
+   text-time="2014-11-05T08:47:59.903185Z"
+   committed-date="2014-11-05T08:51:13.138566Z"
+   checksum="2dce5a2706d5c0642649b6b6a8a1d02f"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"/>
+</wc-entries>

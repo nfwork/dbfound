@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+	<query>
+		<sql>
+		  <![CDATA[
+			SELECT
+				concat(concat(teacher_code,'-'),teacher_name) teacher_name, 
+				class_name ,
+				concat(concat(branch_code,'-'),branch_name) branch_name,
+				course_id,
+				t.last_update_by,
+				DATE_FORMAT(t.create_date,'%Y-%m-%d') create_date,
+				DATE_FORMAT(t.last_update_date,'%Y-%m-%d') last_update_date,
+			    (select CONCAT(CONCAT(user_code,'-'),user_name) from sys_user where user_id =t.last_update_by) last_update_user
+			FROM fnd_course t,fnd_class c,fnd_branch b,fnd_teacher te
+		    where t.class_id = c.class_id
+			 and t.branch_id = b.branch_id 
+			 and t.teacher_id = te.teacher_id
+			 and c.enable_flag='Y'
+			 and b.enable_flag='Y'
+			 and t.enable_flag='Y'
+			#AND_CLAUSE#
+			order by c.class_code, t.create_date desc
+		   ]]>
+		</sql>
+		<filter name="timefrom" express="t.create_date &gt;= ${@timefrom}  " />
+		<filter name="timeto" express="t.create_date &lt;= ${@timeto} " />
+		<filter name="branch_id" express="t.branch_id like ${@branch_id} " />
+		<filter name="class_id" express="t.class_id like ${@class_id} " />
+		<filter name="teacher_id" express="t.teacher_id = ${@teacher_id} " />
+	</query>
+
+</model>

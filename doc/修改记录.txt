@@ -1,0 +1,116 @@
+################################################################
+声明：
+dbfound2.0在dbfound1.5发布稳定版后，做了很大的代码重构与调整。
+调整后dbfound2 与 之前的版本不能完全兼容，对应表示遗憾。
+################################################################
+
+主要调整点：
+一、class结构改变，新版本的dbfound以 Context为驱动，运行整个流程。去掉了老版本中的Thread类。
+二、新版本的dbfound提供ModelEngine类，替代掉了之前的WebUtil/ModelUtil类 来进行model的调用。
+三、dbfound框架的初始化进行了调整。支持自动初始化，主要配置信息都在classpath下面的dbfound-conf.xml文件中。运行时可以指定该文件路径。
+四、新版本中去掉了自带的连接池功能，提供对外的ConnectionProvide接口来实现也外面连接池集成。
+五、Model组件filter对象重写 ，重写后继承于param类，具有param的所以属性。取值逻辑与param一致。(老版本中只支持从param中或currentPath中获取)。
+六、UI组件field为combo的时候，在没有hiddenName的情况取值方式改成与name对应，老版本是与valueField。
+七、Model的跟目录改为可配置，默认在classpath下面。
+八、添加Transaction类，进行事务管理。支持事务开启。
+九、异常处理逻辑修改,添加DBFoundPacakgeException来报装异常。
+十、改名model中JavaAction为Java，继承类ActionSupport为JavaSupport。
+十一、修改jsp标签：dataset、query、execute、forword中的name属性为queryName 或executeName。
+十二、修复web应用在war包情况下部署不正常问题。修改FreemarkFactory.java 55行。
+
+##############################################################################################################
+{
+2014年4月5日 修改jsonutil.java 修复多维数组解决不成功问题。
+2014年4月11日 修改dbfound-base.js dbfound-grid.js，修复grid行记录_status状态位被篡改问题。
+
+dbfound 2.0（稳定版） 继国配置模板环境版本，各项目使用版本
+}
+
+##############################################################################################################
+{
+2014年4月23日 修复model中java调用 异常处理问题。JavaSupport.java Java.java WebExcepitonHandle.java
+2014年4月23日 添加grid属性selectFirstRow 确定是否默认选中第一行,默认为true， Grid.java grid.ftl dbfound.tld
+2014年4月24日 修复grid鼠标over时，样式不显示问题 dbfound-grid.js
+2014年4月26日 修复在IE10下面 lov控件打开时显示问题 dbfound-base.js
+2014年5月3日 修复param aotoCookie路径问题。ModelEngine.java
+2014年5月4日 添加chart报表valueSuffix属性，用来添加单位barChart.ftl、lineChart.ftl、pieChart.ftl已经对应的java文件。
+
+dbfound 2.1（bate版）dbfound demo环境 、广告平台项目、伟峰copy demo环境
+}
+
+##############################################################################################################
+{
+2014年6月15日 修复basePath为/时，静态资源加载错误问题，修改IncludeLibrary.java 38行
+2014年6月19日 修复outCookie在basepath为/时，设置不生效问题，修改ModelEngine.java 332行
+2014年8月8日 添加属性设置control为单例模式提升性能，添加ActionBeanFactory.java类
+2014年8月8日 添加DataUtil工具类 实现类型转换
+2014年8月14日12:04:40 添加affectedCountParam参数 返回修改条数
+2014年8月18日17:57:37 添加URLUtil类，对url反斜杠进行处理，兼容jetty处理
+2014年8月18日18:00:28 去掉ehcache，model直接用map进行缓存。
+2014年8月18日18:00:57 添加modelloader类，实现model加载线程安全。
+2014年9月4日17:50:40 添加basePath属性在jsp请求中，修改basePath为http开头的路径，行文件includeLibrary.ftl，includeLibrary.java，DispatcherFilter.java
+2014年9月11日17:40:24 grid属性singleSelect支持el表达式
+
+dbfound 2.1.1（bate）demo项目,  myerp项目中使用
+}
+
+##############################################################################################################
+{
+2014年10月16日09:54:44 修改事务开启提交策略。DispatcherFilter只负责关闭落网的事务。真正的事务开启与关闭有相对应的类自行开启ActionReflect和WebAction
+2014年10月20日17:56:36 修复datautil类 当传入值为"",intvalue报错
+2014年10月21日18:49:25 修改逻辑在grid column没有指定randerer的时候，才使用默认的。不然使用用户指定的
+
+dbfound 2.1.2（bate）gopushweb ,gopushdispatcher项目中使用
+}
+
+##############################################################################################################
+{
+2014年10月22日13:35:36 添加model查询支持object类型参数
+dbfound 2.2.0（bate）gopushweb ,gopushdispatcher项目中使用
+}
+
+##############################################################################################################
+{
+2014年10月23日18:30:44 添加直线图类型支持line 和spline，添加maxLable属性，maxPoint属性
+2014年10月24日15:46:04 添加ConcurrentMap类在缓存中处理同步问题，提示性能（Modelcache Class DTO cache）
+
+dbfound 2.2.1（bate）gopushweb ,gopushdispatcher项目中使用
+}
+
+##############################################################################################################
+{
+2014年10月25日16:28:41 标签Field添加currentTime属性，来获取当前时间
+2014年10月27日10:37:29 修复chart没有数据时 不重画问题
+2014年10月27日10:57:14 修复barchart在有些doctype显示不正常问题
+2014年10月27日11:21:24 修复ui组件在没有滚动体时，右边留出空白问题。修改调整宽度默认是400
+2014年10月28日10:19:16 添加sql.date类型的支持
+2014年10月29日13:48:57 集成modelTool自动生成model文件
+2014年10月31日10:13:14 去掉tabpanel的$D.isScrolling()判断，解决tab不自动调整宽度问题
+2014年10月31日15:46:21 添加conext对象泛型取值方式context.getData("param.a",String.class);
+2014年10月31日15:46:55 添加datautil分发，支持map到bean的转化
+2014年11月5日16:50:18 将file转化处理转移到DispatcherFilter中进行
+
+dbfound 2.3.0 gopushweb ,gopushdispatcher项目中使用
+}
+
+
+##############################################################################################################
+{
+2014年11月11日16:35:09 修复context.getdata指定类型空指针异常
+2014年11月13日10:14:48 加入context夸进程限制
+2014年11月13日13:05:57 修改开启事务或不开启事务，连接的管理方式
+
+dbfound 2.3.1 wecloudmanger项目中使用
+}
+
+
+##############################################################################################################
+{
+2014年12月4日10:11:04 修复表达式中不能有0的问题
+2014年12月17日16:49:00 修复grid 延迟渲染无法选择第一行问题，修改grid.ftl
+2014年12月23日15:51:26 修复number长时 数字显示不全问题。添加css
+	 .x-grid3-body .x-grid3-td-numberer .x-grid3-cell-inner {
+		overflow: visible;
+	 }
+dbfound 2.3.2 wecloudmanger项目中使用
+}

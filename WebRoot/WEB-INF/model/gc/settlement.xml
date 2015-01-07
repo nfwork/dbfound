@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+
+	<query>
+		<param name="project_id" dataType="number" />
+		<sql>
+		  <![CDATA[
+			SELECT
+			  e.employee_code,
+			  e.employee_id,
+			  e.employee_name,
+			  p.project_name,
+			  p.project_id,
+			  p.price,
+			  SUM(p.price)       total_price,
+ 			  COUNT(1)           total_date
+			FROM gc_employee e,
+			  gc_work_record r,
+			  gc_project p
+			WHERE e.employee_id = r.employee_id
+			    AND p.project_id = r.project_id
+			    and p.project_id = ${@project_id}
+			    AND IFNULL(r.settlement_flag,'N') != 'Y'
+			    #AND_CLAUSE#
+			GROUP BY e.employee_code, e.employee_name, p.project_name, p.price
+		   ]]>
+		</sql>
+		<filter name="employee_id" express="e.employee_id = ${@employee_id}" />
+	</query>
+	
+	<query name="detail">
+		<param name="project_id" dataType="number" />
+		<param name="employee_id" dataType="number" />
+		<sql>
+		  <![CDATA[
+			SELECT
+			  e.employee_code,
+			  e.employee_id,
+			  e.employee_name,
+			  p.project_name,
+			  r.work_date,
+			  p.price
+			FROM gc_employee e,
+			  gc_work_record r,
+			  gc_project p
+			WHERE e.employee_id = r.employee_id
+			    AND p.project_id = r.project_id
+			    and p.project_id = ${@project_id}
+			    AND IFNULL(r.settlement_flag,'N') != 'Y'
+			    and e.employee_id = ${@employee_id}
+		   ]]>
+		</sql>
+	</query>
+
+	<execute>
+		<param name="employee_id" dataType="number" />
+		<param name="project_id" dataType="number" />
+		<sqls>
+			<executeSql>
+				  <![CDATA[
+					 update gc_work_record
+					    set settlement_flag = 'Y',
+					        settlement_date = NOW()
+					  where  employee_id = ${@employee_id}
+					  and IFNULL(settlement_flag,'N') != 'Y'
+					  and project_id =  ${@project_id}
+					]]>
+			</executeSql>
+		</sqls>
+	</execute>
+</model>

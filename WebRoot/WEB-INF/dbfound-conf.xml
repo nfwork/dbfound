@@ -10,9 +10,9 @@
 		<dataSourceConnectionProvide className="org.apache.commons.dbcp.BasicDataSource" dialect="MySqlDialect">
 			<properties>
 				<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://192.168.1.111/developTemplate?useUnicode=true&amp;characterEncoding=utf8" />
-				<property name="username" value="jbjava" />
-				<property name="password" value="jb98" />
+				<property name="url" value="jdbc:mysql://127.0.0.1/dbfound?useUnicode=true&amp;characterEncoding=utf8" />
+				<property name="username" value="dbfound" />
+				<property name="password" value="dbfound" />
 				<property name="initialSize" value="5" />
 				<property name="maxActive" value="200" />
 				<property name="maxIdle" value="5" />
@@ -26,7 +26,6 @@
 	<web>
 		<encoding>utf-8</encoding>
 		<mvcConfigFile>${@projectRoot}/WEB-INF/dbfound-mvc.xml</mvcConfigFile>
-		<interceptor>com.sungy.dbfound.AccessCheckInterceptor</interceptor>
 	</web>
 
 </dbfound>

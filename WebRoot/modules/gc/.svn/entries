@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="1539"
+   name=""
+   committed-date="2013-11-22T02:18:13.245755Z"
+   url="https://dbfound.googlecode.com/svn/trunk/dbfound2.0/WebRoot/modules/gc"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="dir"
+   uuid="d337f4e6-7775-1ad4-e08c-54b14ab86eee"
+   repos="https://dbfound.googlecode.com/svn"
+   revision="1774"/>
+<entry
+   committed-rev="1539"
+   name="settlement.jsp"
+   text-time="2014-07-31T01:38:43.226887Z"
+   committed-date="2013-11-22T02:18:13.245755Z"
+   checksum="1b57d37cf5361f3ad95daf38a1830d33"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.134882Z"/>
+<entry
+   committed-rev="1346"
+   name="project.jsp"
+   text-time="2014-07-31T01:38:43.240888Z"
+   committed-date="2013-10-18T06:36:56.808197Z"
+   checksum="7d43924e404d31cefe91dcc970b52a18"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.142882Z"/>
+<entry
+   committed-rev="1346"
+   name="settlementDetail.jsp"
+   text-time="2014-07-31T01:38:43.254889Z"
+   committed-date="2013-10-18T06:36:56.808197Z"
+   checksum="dd8d4c78b6819cd5ab7b07f223bb69e2"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.148883Z"/>
+<entry
+   committed-rev="1346"
+   name="employeeAdd.jsp"
+   text-time="2014-07-31T01:38:43.270890Z"
+   committed-date="2013-10-18T06:36:56.808197Z"
+   checksum="9bfbb57a6666ad2dc0c28ed3d3980798"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.159883Z"/>
+<entry
+   committed-rev="1539"
+   name="workRegistAdd.jsp"
+   text-time="2014-07-31T01:38:43.288891Z"
+   committed-date="2013-11-22T02:18:13.245755Z"
+   checksum="014ef3d4f854c411349a983454e44429"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.167884Z"/>
+<entry
+   committed-rev="1539"
+   name="settlementQuery.jsp"
+   text-time="2014-07-31T01:38:43.302892Z"
+   committed-date="2013-11-22T02:18:13.245755Z"
+   checksum="157e3b00896ad976e60776dccb634286"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.174884Z"/>
+<entry
+   committed-rev="1346"
+   name="settlementQueryDetail.jsp"
+   text-time="2014-07-31T01:38:43.318892Z"
+   committed-date="2013-10-18T06:36:56.808197Z"
+   checksum="75ea63c9277b50eb0083d7aeff37e07d"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.180885Z"/>
+<entry
+   committed-rev="1539"
+   name="test.jsp"
+   text-time="2014-07-31T01:38:43.334893Z"
+   committed-date="2013-11-22T02:18:13.245755Z"
+   checksum="aaa86456179d8651c52f8e0b569cc924"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.188885Z"/>
+<entry
+   committed-rev="1346"
+   name="employee.jsp"
+   text-time="2014-07-31T01:38:43.348894Z"
+   committed-date="2013-10-18T06:36:56.808197Z"
+   checksum="6ec46681f7a030d1a9eec66e4aca1f3a"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.195885Z"/>
+<entry
+   committed-rev="1539"
+   name="workRegist.jsp"
+   text-time="2014-07-31T01:38:43.361895Z"
+   committed-date="2013-11-22T02:18:13.245755Z"
+   checksum="238f6d934eed100db25f9fff6d1b1a4b"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.202886Z"/>
+<entry
+   committed-rev="1539"
+   name="workUnRegist.jsp"
+   text-time="2014-07-31T01:38:43.376896Z"
+   committed-date="2013-11-22T02:18:13.245755Z"
+   checksum="850abbe026351c9195392be113e39ce1"
+   last-author="jiong.huang.0808@gmail.com"
+   kind="file"
+   prop-time="2014-07-31T01:38:43.209886Z"/>
+</wc-entries>

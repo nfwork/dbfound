@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model http://dbfound.googlecode.com/svn/tags/v2/model.xsd">
+	<query name="pie">
+		<sql>
+		  <![CDATA[
+			SELECT 10 total_num , '及格' grade 
+			UNION
+			SELECT 20 total_num , '良好' grade 
+			UNION
+			SELECT 12 total_num , '优秀' grade 
+			UNION
+			SELECT 18 total_num , '不及格' grade 
+			UNION
+			SELECT 3 total_num , '缺考' grade
+		   ]]>
+		</sql>
+	</query>
+	
+	<query name="bar">
+		<sql>
+		  <![CDATA[
+			SELECT 14 total_num_10 , 10 total_num_11 ,15 total_num_12 , '及格' grade 
+			UNION
+			SELECT 24 total_num_10 ,20 total_num_11 , 22 total_num_12 , '良好' grade 
+			UNION
+			SELECT 20 total_num_10 ,12 total_num_11 , 10 total_num_12 , '优秀' grade
+			UNION
+			SELECT 4 total_num_10 ,18 total_num_11 , 15 total_num_12 , '不及格' grade
+			UNION
+			SELECT 1 total_num_10 ,3 total_num_11 ,  1 total_num_12 ,'缺考' grade
+			
+		   ]]>
+		</sql>
+	</query>
+</model>
