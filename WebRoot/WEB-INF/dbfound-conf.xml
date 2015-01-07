@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dbfound xmlns="http://dbfound.googlecode.com/conf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/conf http://dbfound.googlecode.com/svn/tags/v2/conf.xsd">
+<dbfound xmlns="http://dbfound.googlecode.com/conf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/conf https://raw.githubusercontent.com/nfwork/dbfound/master/tags/conf.xsd">
 
 	<system>
 		<openLog>true</openLog>
