@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>nfwork</groupId>
-  <artifactId>dbfound</artifactId>
-  <version>2.3.2</version>
-  
-  <build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>nfwork</groupId>
+	<artifactId>dbfound</artifactId>
+	<version>2.3.2</version>
+
+	<build>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
 		<outputDirectory>${basedir}/WebRoot/WEB-INF/classes</outputDirectory>
 		<resources>
@@ -101,9 +102,9 @@
 			<version>1.3.1</version>
 		</dependency>
 		<dependency>
-			<groupId>jexcelapi</groupId>
+			<groupId>net.sourceforge.jexcelapi</groupId>
 			<artifactId>jxl</artifactId>
-			<version>2.6.9</version>
+			<version>2.6.12</version>
 		</dependency>
 	</dependencies>
 </project>
