@@ -63,7 +63,7 @@ public class DispatcherFilter implements Filter {
 
 				//jsp请求
 				if (actionType == 1) {
-					String basePath = getBasePath(request, response);
+					String basePath = URLUtil.getBasePath(request, response);
 					context.setRequestData("basePath", basePath);
 					if (InterceptorEngine.jspInterceptor(request, response)) {
 						chain.doFilter(request, response);
@@ -148,34 +148,6 @@ public class DispatcherFilter implements Filter {
 			chain.doFilter(request, response);
 		}
 
-	}
-	
-	
-	/**
-	 * 设置basePath
-	 * 
-	 * @param request
-	 * @param response
-	 */
-	public String getBasePath(HttpServletRequest request, HttpServletResponse response) {
-		/*
-		 * String basePath = request.getContextPath(); if
-		 * (basePath.endsWith("/") == false) { basePath = basePath + "/"; }
-		 */
-		StringBuffer requestUrl = request.getRequestURL();
-		String servletPath = request.getServletPath();
-
-		int index = requestUrl.indexOf(servletPath);
-		String basePath = "";
-		if (index == -1) {
-			basePath = requestUrl.toString();
-		} else {
-			basePath = requestUrl.substring(0, index);
-		}
-		if (basePath.endsWith("/") == false) {
-			basePath = basePath + "/";
-		}
-		return basePath;
 	}
 	
 	/**
