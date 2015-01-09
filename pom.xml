@@ -48,6 +48,20 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<name>nexus distribution snapshot repository</name>
+			<url>http://gomaven.3g.net.cn:8075/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>nexus-releases</id>
+			<name>Nexus Release Repository</name>
+			<url>http://gomaven.3g.net.cn:8075/nexus/content/repositories/releases/</url>
+		</repository>
+	</distributionManagement>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.openejb</groupId>
