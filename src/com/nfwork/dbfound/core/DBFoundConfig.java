@@ -32,7 +32,7 @@ import com.nfwork.dbfound.web.i18n.MultiLangUtil;
 
 public class DBFoundConfig {
 
-	public static final String version = "2.3.2";
+	public static final String version = "2.3.3";
 	private static String listenerClass;
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss,SSS");

@@ -37,7 +37,7 @@ public class URLUtil {
 	 * @param request
 	 * @param response
 	 */
-	public static String getBasePath(HttpServletRequest request, HttpServletResponse response) {
+	public static String getBasePath(HttpServletRequest request) {
 		/*
 		 * String basePath = request.getContextPath(); if
 		 * (basePath.endsWith("/") == false) { basePath = basePath + "/"; }

@@ -63,7 +63,7 @@ public class DispatcherFilter implements Filter {
 
 				//jsp请求
 				if (actionType == 1) {
-					String basePath = URLUtil.getBasePath(request, response);
+					String basePath = URLUtil.getBasePath(request);
 					context.setRequestData("basePath", basePath);
 					if (InterceptorEngine.jspInterceptor(request, response)) {
 						chain.doFilter(request, response);

@@ -36,17 +36,12 @@ public class IncludeLibrary extends TagSupport {
 			
 			String basePath = DataUtil.stringValue(request.getAttribute("basePath"));
 			if(DataUtil.isNull(basePath)){
-				basePath = URLUtil.getBasePath(request, response);
+				basePath = URLUtil.getBasePath(request);
 				context.setRequestData("basePath", basePath);
 			}
 			context.setRequestData("basePath", basePath);
 			root.put("basePath", basePath);
 			template.process(root, out);
-
-			// openWindow 不留滚动条位置
-			if (request.getParameter("windowId") != null) {
-				out.println("<style type='text/css'>body{overflow-y:auto;}</style>");
-			}
 		} catch (Exception e) {
 			LogUtil.error(e.getMessage(), e);
 		}
