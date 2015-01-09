@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.model.bean.Param;
 
 /**
@@ -20,7 +19,7 @@ public class LogUtil {
 
 	public static boolean openLog = true;
 
-	private static Log log = LogFactory.getLog("dbfound" + DBFoundConfig.version);
+	private static Log log = LogFactory.getLog("dbfound");
 
 	public static void log(String sql, Map<String, Param> params) {
 		if (openLog) {
