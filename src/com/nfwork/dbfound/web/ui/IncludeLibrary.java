@@ -39,7 +39,6 @@ public class IncludeLibrary extends TagSupport {
 				basePath = URLUtil.getBasePath(request);
 				context.setRequestData("basePath", basePath);
 			}
-			context.setRequestData("basePath", basePath);
 			root.put("basePath", basePath);
 			template.process(root, out);
 		} catch (Exception e) {
