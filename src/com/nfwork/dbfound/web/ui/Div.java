@@ -50,6 +50,7 @@ public class Div extends TagSupport {
 		} catch (IOException e) {
 			LogUtil.error(e.getMessage(), e);
 		}
+		reset(); //重置属性
 		return EVAL_PAGE;
 	}
 
