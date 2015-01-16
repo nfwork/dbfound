@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dom4j.Element;
 
@@ -62,7 +64,6 @@ public class Query extends SqlEntity {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Query cloneEntity() {
 		Query query;
 		try {
@@ -73,19 +74,16 @@ public class Query extends SqlEntity {
 		HashMap<String, Param> params = new HashMap<String, Param>();
 		HashMap<String, Filter> filters = new HashMap<String, Filter>();
 
-		for (Iterator iterator = this.params.entrySet().iterator(); iterator
-				.hasNext();) {
+		for (Iterator iterator = this.params.entrySet().iterator(); iterator.hasNext();) {
 			Map.Entry entry = (Map.Entry) iterator.next();
 			Param param = (Param) entry.getValue();
 			params.put(entry.getKey().toString(), (Param) param.cloneEntity());
 		}
-		for (Iterator iterator = this.filters.entrySet().iterator(); iterator
-				.hasNext();) {
+		for (Iterator iterator = this.filters.entrySet().iterator(); iterator.hasNext();) {
 			Map.Entry entry = (Map.Entry) iterator.next();
 			Filter filter = (Filter) entry.getValue();
 			if (entry.getKey() != null) {
-				filters.put(entry.getKey().toString(), (Filter) filter
-						.cloneEntity());
+				filters.put(entry.getKey().toString(), (Filter) filter.cloneEntity());
 			}
 		}
 
@@ -102,7 +100,7 @@ public class Query extends SqlEntity {
 	 * @throws SQLException
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> List<T> query(Context context, String provideName ,Class<T> object) {
+	public <T> List<T> query(Context context, String provideName, Class<T> object) {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
@@ -133,11 +131,11 @@ public class Query extends SqlEntity {
 			initParam(statement, this.sql, params);
 			dataset = statement.executeQuery();
 			ResultSetMetaData metaset = dataset.getMetaData();
-			
-			//如果对象不为null，利用反射构建object对象
-			if (object!=null) {
-              List<T> list = (List<T>)ReflectorUtil.parseResultList(object, dataset);
-              return list;
+
+			// 如果对象不为null，利用反射构建object对象
+			if (object != null) {
+				List<T> list = (List<T>) ReflectorUtil.parseResultList(object, dataset);
+				return list;
 			}
 
 			int size = metaset.getColumnCount();
@@ -256,7 +254,7 @@ public class Query extends SqlEntity {
 			DBUtil.closeStatement(statement);
 			LogUtil.log(eSql, params);
 		}
-		return (List<T>)data;
+		return (List<T>) data;
 	}
 
 	/**
@@ -266,41 +264,40 @@ public class Query extends SqlEntity {
 	 * @return
 	 */
 	public String initFilter(String ssql) {
-		StringBuffer sql = new StringBuffer(ssql);
+
+		StringBuffer bfsql = new StringBuffer();
 		Collection<Filter> params = filters.values();
-		int place = 0;
-		if ((place = sql.indexOf(WHERE_CLAUSE)) != -1) {
-			String whereSql = "where";
-			for (Filter nfFilter : params) {
-				if (nfFilter.isActive()) {
-					whereSql = whereSql + " " + nfFilter.getExpress() + " and";
-				}
+		for (Filter nfFilter : params) {
+			if (nfFilter.isActive()) {
+				bfsql.append(nfFilter.getExpress()).append(" and ");
 			}
-			if ("where".equals(whereSql)) {
-				return sql.replace(place, place + WHERE_CLAUSE.length(), "")
-						.toString();
-			} else {
-				return sql.replace(place, place + WHERE_CLAUSE.length(),
-						whereSql.substring(0, whereSql.length() - 4))
-						.toString();
-			}
-		} else if ((place = sql.indexOf(AND_CLAUSE)) != -1) {
-			String andSql = "";
-			for (Filter nfFilter : params) {
-				if (nfFilter.isActive()) {
-					andSql = andSql + " and " + nfFilter.getExpress();
-				}
-			}
-			if ("where".equals(andSql)) {
-				return sql.replace(place, place + AND_CLAUSE.length(), "")
-						.toString();
-			} else {
-				return sql.replace(place, place + AND_CLAUSE.length(),
-						andSql.substring(0, andSql.length())).toString();
-			}
-		} else {
-			return ssql;
 		}
+		String fsql = bfsql.length() > 4 ? bfsql.substring(0, bfsql.length() - 4) : null;
+		if (fsql!=null) {
+			fsql = Matcher.quoteReplacement(fsql);
+		}
+
+		Pattern p = Pattern.compile("\\#[A-Z_]+\\#");
+		Matcher m = p.matcher(ssql);
+		StringBuffer buf = new StringBuffer();
+		while (m.find()) {
+			String text = m.group();
+			if (text.equals(WHERE_CLAUSE)) {
+				if (fsql==null) {
+					m.appendReplacement(buf, " ");
+				}else {
+					m.appendReplacement(buf, " where " + fsql);
+				}
+			}else if (text.equals(AND_CLAUSE)) {
+				if (fsql==null) {
+					m.appendReplacement(buf, " ");
+				}else {
+					m.appendReplacement(buf, " and " + fsql);
+				}
+			}
+		}
+		m.appendTail(buf);
+		return buf.toString();
 	}
 
 	/**
@@ -339,14 +336,9 @@ public class Query extends SqlEntity {
 				if (sqlChars[i + 1] == 'r') {
 					if (sqlChars[i + 2] == 'o') {
 						if (sqlChars[i + 3] == 'm') {
-							if (sqlChars[i + 4] == ' '
-									|| sqlChars[i + 4] == '\n'
-									|| sqlChars[i + 4] == '\t') {
-								if (kh == 0
-										&& (dyh % 2 == 0)
-										&& (sqlChars[i - 1] == ' '
-												|| sqlChars[i - 1] == ')'
-												|| sqlChars[i - 1] == '\n' || sqlChars[i - 1] == '\t')) {
+							if (sqlChars[i + 4] == ' ' || sqlChars[i + 4] == '\n' || sqlChars[i + 4] == '\t') {
+								if (kh == 0 && (dyh % 2 == 0)
+										&& (sqlChars[i - 1] == ' ' || sqlChars[i - 1] == ')' || sqlChars[i - 1] == '\n' || sqlChars[i - 1] == '\t')) {
 									from_hold = i;
 									break;
 								} else {
@@ -382,14 +374,10 @@ public class Query extends SqlEntity {
 					if (sqlChars[i + 2] == 'd') {
 						if (sqlChars[i + 3] == 'e') {
 							if (sqlChars[i + 4] == 'r') {
-								if (sqlChars[i + 5] == ' '
-										|| sqlChars[i + 5] == '\n'
-										|| sqlChars[i + 5] == '\t') {
+								if (sqlChars[i + 5] == ' ' || sqlChars[i + 5] == '\n' || sqlChars[i + 5] == '\t') {
 									if (kh == 0
 											&& (dyh % 2 == 0)
-											&& (sqlChars[i - 1] == ' '
-													|| sqlChars[i - 1] == ')'
-													|| sqlChars[i - 1] == '\n' || sqlChars[i - 1] == '\t')) {
+											&& (sqlChars[i - 1] == ' ' || sqlChars[i - 1] == ')' || sqlChars[i - 1] == '\n' || sqlChars[i - 1] == '\t')) {
 										order_hold = i;
 										break;
 									} else {
@@ -413,14 +401,10 @@ public class Query extends SqlEntity {
 					if (sqlChars[i + 2] == 'o') {
 						if (sqlChars[i + 3] == 'u') {
 							if (sqlChars[i + 4] == 'p') {
-								if (sqlChars[i + 5] == ' '
-										|| sqlChars[i + 5] == '\n'
-										|| sqlChars[i + 5] == '\t') {
+								if (sqlChars[i + 5] == ' ' || sqlChars[i + 5] == '\n' || sqlChars[i + 5] == '\t') {
 									if (kh == 0
 											&& (dyh % 2 == 0)
-											&& (sqlChars[i - 1] == ' '
-													|| sqlChars[i - 1] == ')'
-													|| sqlChars[i - 1] == '\n' || sqlChars[i - 1] == '\t')) {
+											&& (sqlChars[i - 1] == ' ' || sqlChars[i - 1] == ')' || sqlChars[i - 1] == '\n' || sqlChars[i - 1] == '\t')) {
 										group_hold = i;
 										break;
 									} else {
@@ -445,8 +429,7 @@ public class Query extends SqlEntity {
 		String cSql = "";
 		if (order_hold == 0) {
 			if (group_hold > 0) {
-				cSql = "select count(1) from (select 1 "
-						+ sql.substring(from_hold) + " ) v";
+				cSql = "select count(1) from (select 1 " + sql.substring(from_hold) + " ) v";
 			} else {
 				cSql = "select count(1) " + sql.substring(from_hold);
 			}
@@ -466,8 +449,7 @@ public class Query extends SqlEntity {
 			count = dataset.getLong(1);
 			length = count;
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("Query执行count查询异常:"
-					+ e.getMessage(), e);
+			throw new DBFoundPackageException("Query执行count查询异常:" + e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
@@ -582,14 +564,12 @@ public class Query extends SqlEntity {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void execute(Context context, Map<String, Param> params,
-			String provideName) {
+	public void execute(Context context, Map<String, Param> params, String provideName) {
 		String currentPath = context.getCurrentPath();
 		if (modelName == null) {
 			modelName = context.getCurrentModel();
 		}
-		List<Map> datas = ModelEngine.query(context, modelName, name,
-				currentPath, false).getDatas();
+		List<Map> datas = ModelEngine.query(context, modelName, name, currentPath, false).getDatas();
 		context.setData(rootPath, datas);
 	}
 
