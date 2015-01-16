@@ -122,3 +122,11 @@ dbfound 2.3.2 wecloudmanger项目中使用
 
 dbfound 2.3.3 myerp项目中使用
 }
+
+##############################################################################################################
+{
+2015年1月15日12:55:38 修改dbfound-base.js 支持html5版本的fullheight
+2015年1月16日11:46:02 修改query.java 支持设置多个#WHERE_CLAUSE# #AND_CLAUSE#
+
+dbfound 2.3.4 myerp项目中使用
+}
