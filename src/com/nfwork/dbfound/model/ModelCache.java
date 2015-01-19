@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.model;
+package com.nfwork.dbfound.model;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;

@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.model.tools;
+package com.nfwork.dbfound.model.tools;
 
 import java.util.Locale;
 

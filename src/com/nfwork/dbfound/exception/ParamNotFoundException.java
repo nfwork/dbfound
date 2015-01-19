@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.exception;
+package com.nfwork.dbfound.exception;
 
 public class ParamNotFoundException extends DBFoundRuntimeException{
 	

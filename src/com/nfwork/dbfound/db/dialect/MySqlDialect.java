@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.db.dialect;
+package com.nfwork.dbfound.db.dialect;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

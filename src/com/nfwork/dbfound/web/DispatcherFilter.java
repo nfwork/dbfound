@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.web;
+package com.nfwork.dbfound.web;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

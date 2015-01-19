@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.util;
+package com.nfwork.dbfound.util;
 
 import java.util.Map;
 import java.util.Set;

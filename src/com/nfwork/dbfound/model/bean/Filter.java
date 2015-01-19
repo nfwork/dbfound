@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.model.bean;
+package com.nfwork.dbfound.model.bean;
 
 public class Filter extends Param {
 

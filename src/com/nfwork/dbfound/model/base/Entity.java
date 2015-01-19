@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.model.base;
+package com.nfwork.dbfound.model.base;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;

@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.model.bean;
+package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.model.base.Entity;
 

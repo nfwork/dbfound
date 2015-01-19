@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.web.ui;
+package com.nfwork.dbfound.web.ui;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.Tag;

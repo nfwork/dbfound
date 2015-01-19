@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.db.dialect;
+package com.nfwork.dbfound.db.dialect;
 
 public interface SqlDialect {
 	

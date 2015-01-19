@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.el;
+package com.nfwork.dbfound.el;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;

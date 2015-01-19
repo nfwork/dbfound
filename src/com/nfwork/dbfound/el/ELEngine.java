@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.el;
+package com.nfwork.dbfound.el;
 
 import javax.servlet.jsp.PageContext;
 

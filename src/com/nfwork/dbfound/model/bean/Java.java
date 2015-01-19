@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.model.bean;
+package com.nfwork.dbfound.model.bean;
 
 import java.util.Map;
 import org.apache.commons.beanutils.MethodUtils;

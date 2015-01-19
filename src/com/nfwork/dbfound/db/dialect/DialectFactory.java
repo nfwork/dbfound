@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.db.dialect;
+package com.nfwork.dbfound.db.dialect;
 
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;

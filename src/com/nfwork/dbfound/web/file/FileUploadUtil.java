@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.web.file;
+package com.nfwork.dbfound.web.file;
 
 import java.io.File;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.db.dialect;
+package com.nfwork.dbfound.db.dialect;
 
 public class SqlServerDialect implements SqlDialect {
 	public String getPagerSql(String sql, int pagerSize, long startWith) {

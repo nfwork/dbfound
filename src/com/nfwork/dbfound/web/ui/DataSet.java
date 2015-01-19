@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.web.ui;
+package com.nfwork.dbfound.web.ui;
 
 import java.io.Writer;
 import java.util.HashMap;

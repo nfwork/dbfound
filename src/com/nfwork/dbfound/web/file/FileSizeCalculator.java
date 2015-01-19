@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.web.file;
+package com.nfwork.dbfound.web.file;
 
 public class FileSizeCalculator {
 	static String[] sizeLabel = { "B", "KB", "MB", "GB" };

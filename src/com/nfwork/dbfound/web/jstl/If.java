@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.web.jstl;
+package com.nfwork.dbfound.web.jstl;
 
 import javax.servlet.jsp.JspException;
 

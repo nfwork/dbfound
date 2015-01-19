@@ -1,4 +1,4 @@
-﻿package com.nfwork.dbfound.model;
+package com.nfwork.dbfound.model;
 
 import java.io.File;
 import java.io.IOException;
