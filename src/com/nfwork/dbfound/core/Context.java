@@ -54,8 +54,8 @@ public class Context {
 
 	/**
 	 * 得到当前的Thread
-	 * 
-	 * @param context
+	 * @param request
+	 * @param response
 	 * @return
 	 */
 	public static Context getCurrentContext(HttpServletRequest request, HttpServletResponse response) {
@@ -152,7 +152,12 @@ public class Context {
 		return DBFoundEL.getData(express, rootDatas);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * 根据表达式得到context内容
+	 * @param express
+	 * @param class1
+	 * @return
+	 */
 	public <T> T getData(String express, Class<T> class1) {
 		Object object = getData(express);
 		if (object == null) {
@@ -227,12 +232,11 @@ public class Context {
 	}
 
 	/**
-	 * 放参数到parm集
+	 * 放参数到param集
 	 * 
 	 * @param name
-	 * @param object
+	 * @param value
 	 */
-	@SuppressWarnings("unchecked")
 	public void setParamData(String name, Object value) {
 		if (name.indexOf(".") > -1) {
 			throw new DBFoundRuntimeException("param不支持多层次参数设定:" + name);
@@ -258,7 +262,6 @@ public class Context {
 	 * @param name
 	 * @param object
 	 */
-	@SuppressWarnings("unchecked")
 	public void setOutParamData(String name, Object object) {
 		if (name.indexOf(".") > -1) {
 			throw new DBFoundRuntimeException("outParam不支持多层次参数设定:" + name);
@@ -281,7 +284,6 @@ public class Context {
 	 * @param name
 	 * @param object
 	 */
-	@SuppressWarnings("unchecked")
 	public void setRequestData(String name, Object object) {
 		if (name.indexOf(".") > -1) {
 			throw new DBFoundRuntimeException("request不支持多层次参数设定:" + name);
@@ -307,7 +309,6 @@ public class Context {
 	 * @param name
 	 * @param object
 	 */
-	@SuppressWarnings("unchecked")
 	public void setSessionData(String name, Object object) {
 		if (name.indexOf(".") > -1) {
 			throw new DBFoundRuntimeException("session不支持多层次参数设定:" + name);
@@ -332,7 +333,6 @@ public class Context {
 	 * 
 	 * @param modelName
 	 * @return
-	 * @throws Exception
 	 */
 	public Model getModel(String modelName) {
 		Model model = ModelCache.get(modelName);
@@ -349,10 +349,8 @@ public class Context {
 
 	/**
 	 * 得到数据库连接
-	 * 
-	 * @param unitName
+	 * @param provideName
 	 * @return
-	 * @throws SQLException
 	 */
 	public Connection getConn(String provideName) {
 
@@ -393,8 +391,6 @@ public class Context {
 
 	/**
 	 * 得到默认数据库连接
-	 * 
-	 * @param unitName
 	 * @return
 	 * @throws SQLException
 	 */

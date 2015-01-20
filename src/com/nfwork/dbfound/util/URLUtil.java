@@ -4,13 +4,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * 清理url中多斜杠问题
- * 
- * @param length
- * @return
+ * @author John
+ *
  */
 public class URLUtil {
 
@@ -35,7 +33,6 @@ public class URLUtil {
 	 * 设置basePath
 	 * 
 	 * @param request
-	 * @param response
 	 */
 	public static String getBasePath(HttpServletRequest request) {
 		/*

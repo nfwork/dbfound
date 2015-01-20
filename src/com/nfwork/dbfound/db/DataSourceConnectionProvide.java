@@ -61,7 +61,6 @@ public class DataSourceConnectionProvide extends ConnectionProvide {
 	 * 初始化外部连接池
 	 * 
 	 * @param dataSource
-	 * @throws Exception
 	 */
 	public synchronized void init(String dataSource) {
 		Context initContext = null;

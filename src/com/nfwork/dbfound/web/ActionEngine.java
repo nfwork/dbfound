@@ -25,10 +25,8 @@ public class ActionEngine {
 	/**
 	 * 将配置文件dbfound-mvc.xml中的Action的信息放到Map actionBeans中
 	 * 
-	 * @param file
-	 * @return
+	 * @param f
 	 */
-
 	@SuppressWarnings("unchecked")
 	public static void init(File f) {
 		file = f;
@@ -105,7 +103,6 @@ public class ActionEngine {
 	/**
 	 * 查找ActionBean
 	 * 
-	 * @param actionBeans
 	 * @param key
 	 * @return
 	 */

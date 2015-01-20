@@ -93,13 +93,12 @@ public class Query extends SqlEntity {
 	}
 
 	/**
-	 * 查询结构集 以list<map>对象返回
-	 * 
-	 * @param statement
+	 * 查询结构集 以list的map对象返回
+	 * @param context
+	 * @param provideName
+	 * @param object
 	 * @return
-	 * @throws SQLException
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> List<T> query(Context context, String provideName, Class<T> object) {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
@@ -259,8 +258,7 @@ public class Query extends SqlEntity {
 
 	/**
 	 * 初始化过滤条件
-	 * 
-	 * @param sql
+	 * @param ssql
 	 * @return
 	 */
 	public String initFilter(String ssql) {
@@ -314,7 +312,6 @@ public class Query extends SqlEntity {
 	 * 统计sql查询总共的条数
 	 * 
 	 * @return
-	 * @throws SQLException
 	 */
 	public long countItems(Connection conn) {
 		char[] sqlChars = sql.toLowerCase().toCharArray();

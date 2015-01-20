@@ -18,14 +18,11 @@ public class ParseUtil {
 	static String replaceString = "\\#\\{\\@[ a-zA-Z_0-9\u4E00-\u9FA5]*\\}";
 
 	/**
-	 * 静态参数 初始化 #{@paramName}
-	 * 
+	 * 静态参数 初始化
 	 * @param sql
 	 * @param params
-	 * @param outParams
 	 * @return
 	 */
-	
 	public static String parse(String sql, Map<String, Param> params) {
 		if (sql == null || "".equals(sql)) {
 			return "";

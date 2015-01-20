@@ -4,9 +4,8 @@ import java.util.Random;
 
 /**
  * 参数随机数key值 UUID
- * 
- * @param length
- * @return
+ * @author John
+ *
  */
 public class UUIDUtil {
 

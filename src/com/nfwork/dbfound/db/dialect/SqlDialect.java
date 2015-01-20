@@ -13,7 +13,7 @@ public interface SqlDialect {
 	
 	/**
 	 * whensql ,条件过滤
-	 * @param sql
+	 * @param when
 	 */
 	public String getWhenSql(String when) ;
 	

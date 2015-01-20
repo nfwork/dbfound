@@ -348,7 +348,6 @@ public class JsonUtil {
 	 * @param DataFormat
 	 *            返回的日期格式
 	 * @return 转换后的日期数组
-	 * @throws ParseException
 	 */
 	public static Date[] jsonToDateArray(String jsonString, String DataFormat) {
 		JSONArray jsonArray = JSONArray.fromObject(jsonString);
@@ -418,18 +417,17 @@ public class JsonUtil {
 	}
 
 	/**
-	 * 将Json格式的字符串转换成Map<String,Object>对象返回
+	 * 将Json格式的字符串转换成Map对象返回
 	 * 
 	 * @param jsonString
 	 *            需要进行转换的Json格式字符串
-	 * @return 转换后的Map<String,Object>对象
+	 * @return 转换后的Map对象
 	 */
 	public static Map<String, Object> jsonToMap(String jsonString) {
 		JSONObject jsonObject = JSONObject.fromObject(jsonString);
 		return jsonToMap(jsonObject);
 	}
 
-	@SuppressWarnings("unchecked")
 	private static Map<String, Object> jsonToMap(JSONObject jsonObject) {
 		Iterator keyIter = jsonObject.keys();
 		String key;

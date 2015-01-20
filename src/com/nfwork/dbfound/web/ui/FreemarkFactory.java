@@ -36,7 +36,7 @@ public class FreemarkFactory {
 	/**
 	 * 初始化路径
 	 * 
-	 * @param ftlPath
+	 * @param context
 	 */
 	public synchronized static void init(ServletContext context) {
 		if (config == null) {

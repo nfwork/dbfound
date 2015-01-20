@@ -153,7 +153,7 @@ public class ButtonGroup extends TagSupport {
 	/**
 	 * 老版本兼容性处理
 	 * 
-	 * @param height
+	 * @param width
 	 */
 	public void setWidth(int width) {
 		if (width != 0) {

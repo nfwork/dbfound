@@ -4,7 +4,6 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,18 +17,8 @@ import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.json.converter.Converter;
 import com.nfwork.dbfound.json.converter.ConverterRegistry;
 
-@SuppressWarnings("unchecked")
 public class JSONObject {
 
-	/**
-	 * 从bean得到jsonobject
-	 * 
-	 * @param bean
-	 * @return
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
-	 * @throws IllegalAccessException
-	 */
 	public static JSONObject fromBean(Object bean) {
 		if (bean == null) {
 			return new JSONObject(true);

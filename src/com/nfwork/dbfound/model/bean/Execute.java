@@ -37,7 +37,6 @@ public class Execute extends SqlEntity {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Execute cloneEntity() {
 		Execute execute;
 		try {
@@ -61,11 +60,8 @@ public class Execute extends SqlEntity {
 
 	/**
 	 * 执行对应的sql集合
-	 * 
-	 * @param statement
-	 * @return
-	 * @throws SQLException
-	 * @throws Exception
+	 * @param context
+	 * @param provideName
 	 */
 	public void execute(Context context, String provideName){
 		if (sqls != null) {

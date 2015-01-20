@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
 public class JSONArray {
 
 	public static JSONArray fromArray(Object[] array) {
@@ -20,20 +19,10 @@ public class JSONArray {
 		return new JSONArray(collection);
 	}
 
-	/**
-	 * Creates a JSONArray from a JSONTokener.
-	 * 
-	 * @param tokenern
-	 *            a JSONTokener
-	 */
 	public static JSONArray fromJSONTokener(JSONTokener tokener) {
 		return new JSONArray(tokener);
 	}
 
-	/**
-	 * Creates a JSONArray.<br>
-	 * Inspects the object type to call the correct JSONArray factory method.
-	 */
 	public static JSONArray fromObject(Object object) {
 		if (object instanceof Collection) {
 			return fromCollection((Collection) object);
@@ -71,28 +60,14 @@ public class JSONArray {
 		}
 	}
 
-	/**
-	 * Constructs a JSONArray from a string in JSON format.
-	 * 
-	 * @param str
-	 *            A string in JSON format
-	 */
 	public static JSONArray fromString(String string) {
 		return new JSONArray(string);
 	}
 
-	// ------------------------------------------------------
-
-	/**
-	 * Creates a java array from a JSONArray.
-	 */
 	public static Object[] toArray(JSONArray jsonArray) {
 		return toArray(jsonArray, null);
 	}
 
-	/**
-	 * Creates a java array from a JSONArray.
-	 */
 	public static Object[] toArray(JSONArray jsonArray, Class objectClass) {
 		Object[] array = new Object[jsonArray.length()];
 		int size = jsonArray.length();

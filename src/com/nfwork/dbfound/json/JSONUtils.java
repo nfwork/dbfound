@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
 public final class JSONUtils {
 	private static String javaVersion = "1.3.1";
 
@@ -242,19 +241,6 @@ public final class JSONUtils {
 		return s;
 	}
 
-	/**
-	 * Produce a string in double quotes with backslash sequences in all the
-	 * right places. A backslash will be inserted within </, allowing JSON text
-	 * to be delivered in HTML. In JSON text, a string cannot contain a control
-	 * character or an unescaped quote or backslash.<br>
-	 * <strong>CAUTION:</strong> if <code>string</code> represents a javascript
-	 * function, translation of characters will not take place. This will
-	 * produce a non-conformant JSON text.
-	 * 
-	 * @param string
-	 *            A String
-	 * @return A String correctly formatted for insertion in a JSON text.
-	 */
 	public static String quote(String string) {
 		if (string == null || string.length() == 0) {
 			return "\"\"";

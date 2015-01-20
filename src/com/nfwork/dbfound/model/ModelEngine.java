@@ -30,21 +30,53 @@ public class ModelEngine {
 
 	public static final String defaultPath = "param";
 
+	/**
+	 * 查询 根据传入的class返回对应的对象集合
+	 * @param context
+	 * @param modelName
+	 * @param queryName
+	 * @param object
+	 * @return
+	 */
 	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, Class<T> object) {
 		return query(context, modelName, queryName, defaultPath, true, object);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * 查询 返回一个list的Map集合
+	 * @param context
+	 * @param modelName
+	 * @param queryName
+	 * @return
+	 */
 	public static QueryResponseObject query(Context context, String modelName, String queryName) {
 		return query(context, modelName, queryName, defaultPath, true, null);
 	}
 	
-	@SuppressWarnings("unchecked")
+	/**
+	 * 可指定当前路径，是否自动分页的查询
+	 * @param context
+	 * @param modelName
+	 * @param queryName
+	 * @param currentPath
+	 * @param autoPaging
+	 * @return
+	 */
 	public static QueryResponseObject query(Context context, String modelName, String queryName, String currentPath,
 			boolean autoPaging) {
 		return query(context, modelName, queryName, currentPath, autoPaging, null);
 	}
 
+	/**
+	 * 查询 可以指定当前路径、是否自动分页、返回对象的查询 
+	 * @param context
+	 * @param modelName
+	 * @param queryName
+	 * @param currentPath
+	 * @param autoPaging
+	 * @param obect
+	 * @return
+	 */
 	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName,
 			String currentPath, boolean autoPaging, Class<T> obect) {
 		
@@ -142,16 +174,14 @@ public class ModelEngine {
 		return batchExecute(context, modelName, executeName, defaultBatchPath);
 	}
 
-	/***
+	/**
 	 * 批量执行操作
-	 * 
-	 * @param response
-	 * @param request
+	 * @param context
 	 * @param modelName
 	 * @param executeName
-	 * @throws Exception
+	 * @param sourcePath
+	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static ResponseObject batchExecute(Context context, String modelName, String executeName, String sourcePath) {
 		
 		LogUtil.info("-----------------------batch execute begin------------------------------");
@@ -230,14 +260,13 @@ public class ModelEngine {
 		return execute(context, modelName, executeName, defaultPath);
 	}
 
-	/***
+	/**
 	 * 执行操作
-	 * 
-	 * @param response
-	 * @param request
+	 * @param context
 	 * @param modelName
 	 * @param executeName
-	 * @throws Exception
+	 * @param currentPath
+	 * @return
 	 */
 	public static ResponseObject execute(Context context, String modelName, String executeName, String currentPath) {
 		
@@ -269,11 +298,9 @@ public class ModelEngine {
 
 	/**
 	 * 执行execute
-	 * 
-	 * @param pageContext
+	 * @param context
 	 * @param model
 	 * @param execute
-	 * @throws Exception
 	 */
 	private static void execute(Context context, Model model, Execute execute) {
 
@@ -295,11 +322,8 @@ public class ModelEngine {
 
 	/**
 	 * 处理参数 放入session、cookie、或者以outParam返回
-	 * 
-	 * @param execute
-	 * @param response
-	 * @param request
 	 * @param context
+	 * @param params
 	 * @return
 	 */
 	private static Map<String, Object> getOutParams(Context context, Map<String, Param> params) {
@@ -350,11 +374,9 @@ public class ModelEngine {
 
 	/**
 	 * 参数设定
-	 * 
 	 * @param nfParam
-	 * @param request
-	 * @param outParams
-	 * @throws Exception
+	 * @param context
+	 * @param cp
 	 */
 	private static void setParam(Param nfParam, Context context, String cp) {
 

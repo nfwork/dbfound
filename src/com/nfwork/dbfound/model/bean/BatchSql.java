@@ -32,7 +32,6 @@ public class BatchSql extends SqlEntity {
 	private String sourcePath;
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void execute(Context context, Map<String, Param> params,
 			String provideName) {
 
@@ -71,14 +70,12 @@ public class BatchSql extends SqlEntity {
 
 	/**
 	 * 执行cursor查询 将结果放到cursorValues
-	 * 
-	 * @param conn
+	 * @param context
 	 * @param params
 	 * @param provideName
 	 * @param cursorValues
 	 * @throws SQLException
 	 */
-	@SuppressWarnings("unchecked")
 	public void executeCursor(Context context, Map<String, Param> params,
 			String provideName, List<Map> cursorValues) throws SQLException {
 
