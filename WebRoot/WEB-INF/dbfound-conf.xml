@@ -5,6 +5,8 @@
 		<openLog>true</openLog>
 		<modeRootPath>${@projectRoot}/WEB-INF/model</modeRootPath>
 		<queryLimit>true</queryLimit>
+		<queryLimitSize>5000</queryLimitSize>
+		<reportQueryLimitSize>50000</reportQueryLimitSize>
 	</system>
 
 	<database>
