@@ -18,7 +18,6 @@ public class FileUploadUtil {
 
 	public static int maxUploadSize = 10; // 单位M
 
-	@SuppressWarnings( { "deprecation", "unchecked" })
 	public static void initFileUpload(Context context) {
 		try {
 			if (ServletFileUpload.isMultipartContent(context.request)) { // 创建文件处理工厂，它用于生成

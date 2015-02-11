@@ -20,6 +20,7 @@
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="1" minOccurs="0" name="encoding" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="uploadFolder" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="maxUploadSize" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="i18nProvide" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="mvcConfigFile" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="interceptor" />

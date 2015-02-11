@@ -137,6 +137,7 @@ dbfound 2.3.4 myerp项目中使用
 	public boolean queryLimit = true;
 	public int queryLimitSize = 5000; 
 	判断是否要现在查询结果集大小
+2015年2月11日12:59:45 添加maxUploadSize控制上传文件大小
 
 dbfound 2.3.5 myerp项目中使用
 }

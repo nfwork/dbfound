@@ -30,6 +30,7 @@
 		<encoding>utf-8</encoding>
 		<mvcConfigFile>${@projectRoot}/WEB-INF/dbfound-mvc.xml</mvcConfigFile>
 		<interceptor>dbfount.test.core.AccessCheckInterceptor</interceptor>
+		<maxUploadSize>20</maxUploadSize>
 	</web>
 
 </dbfound>
