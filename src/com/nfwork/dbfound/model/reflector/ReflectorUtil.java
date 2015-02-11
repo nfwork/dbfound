@@ -7,18 +7,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.util.DataUtil;
 
 public class ReflectorUtil {
 
-	public static <T> List<T> parseResultList(Class<T> clazz, ResultSet rs) {
+	public static <T> List<T> parseResultList(Class<T> clazz, ResultSet rs, Context context) {
 		List<T> array = new ArrayList<T>();
 		try {
 			if (rs != null) {
 				ResultSetMetaData md = rs.getMetaData();
 				int columnCount = md.getColumnCount();
 				Reflector reflector = Reflector.forClass(clazz);
+
+				int totalCounts = 0;
 				while (rs.next()) {
+					if (context.queryLimit && ++totalCounts > context.queryLimitSize) {
+						break;
+					}
 					ObjectFactory objectFactory = new DefaultObjectFactory();
 					T obj = objectFactory.create(clazz);
 					for (int i = 1; i <= columnCount; i++) {
@@ -49,7 +55,7 @@ public class ReflectorUtil {
 										columnvalue = rs.getBoolean(i);
 									} else if (fieldtype.equals(Date.class)) {
 										columnvalue = rs.getTimestamp(i);
-									} else if ( fieldtype.equals(java.sql.Date.class)) {
+									} else if (fieldtype.equals(java.sql.Date.class)) {
 										Timestamp timestamp = rs.getTimestamp(i);
 										columnvalue = new java.sql.Date(timestamp.getTime());
 									} else if (fieldtype.equals(String.class)) {

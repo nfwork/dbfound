@@ -41,8 +41,6 @@ public class Query extends SqlEntity {
 	private static final String WHERE_CLAUSE = "#WHERE_CLAUSE#";
 	private static final String AND_CLAUSE = "#AND_CLAUSE#";
 
-	private int maxSize = 5000;
-
 	@Override
 	public void init(Element element) {
 		params = new HashMap<String, Param>();
@@ -133,7 +131,7 @@ public class Query extends SqlEntity {
 
 			// 如果对象不为null，利用反射构建object对象
 			if (object != null) {
-				List<T> list = (List<T>) ReflectorUtil.parseResultList(object, dataset);
+				List<T> list = (List<T>) ReflectorUtil.parseResultList(object, dataset,context);
 				return list;
 			}
 
@@ -144,7 +142,7 @@ public class Query extends SqlEntity {
 			}
 			int totalCounts = 0;
 			while (dataset.next()) {
-				if (++totalCounts > maxSize) {
+				if (context.queryLimit && ++totalCounts > context.queryLimitSize) {
 					break;
 				}
 				Map<String, Object> mapdata = new HashMap<String, Object>();
@@ -555,11 +553,6 @@ public class Query extends SqlEntity {
 		this.modelName = modelName;
 	}
 
-	public void setMaxSize(int maxSize) {
-		this.maxSize = maxSize;
-	}
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(Context context, Map<String, Param> params, String provideName) {
 		String currentPath = context.getCurrentPath();

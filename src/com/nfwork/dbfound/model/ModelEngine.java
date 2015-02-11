@@ -94,7 +94,7 @@ public class ModelEngine {
 				throw new QueryNotFoundException("在名为" + modelName + "的model中，没有找到名为" + queryName + "的query对象");
 			}
 			if (context.isExport) {
-				query.setMaxSize(50000);
+				context.queryLimitSize = Context.reportQueryLimitSize;
 			}
 
 			query.setCurrentPath(currentPath);

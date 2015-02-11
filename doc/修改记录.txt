@@ -130,3 +130,13 @@ dbfound 2.3.3 myerp项目中使用
 
 dbfound 2.3.4 myerp项目中使用
 }
+
+##############################################################################################################
+{
+2015年2月11日10:51:34 添加context参数
+	public boolean queryLimit = true;
+	public int queryLimitSize = 5000; 
+	判断是否要现在查询结果集大小
+
+dbfound 2.3.5 myerp项目中使用
+}

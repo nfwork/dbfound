@@ -27,7 +27,10 @@ import com.nfwork.dbfound.util.LogUtil;
 public class Context {
 
 	public boolean outMessage = true;
-	public boolean isExport;
+	public boolean isExport = false;
+	public boolean queryLimit = true;
+	public int queryLimitSize = 5000;
+	public static final int reportQueryLimitSize = 50000;
 	public HttpServletRequest request;
 	public HttpServletResponse response;
 
