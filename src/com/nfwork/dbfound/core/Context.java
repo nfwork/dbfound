@@ -28,9 +28,9 @@ public class Context {
 
 	public boolean outMessage = true;
 	public boolean isExport = false;
-	public boolean queryLimit = true;
-	public int queryLimitSize = 5000;
-	public static final int reportQueryLimitSize = 50000;
+	public boolean queryLimit = DBFoundConfig.getQueryLimit();
+	public int queryLimitSize = DBFoundConfig.getQueryLimitSize();
+	public int reportQueryLimitSize = DBFoundConfig.getReportQueryLimitSize();
 	public HttpServletRequest request;
 	public HttpServletResponse response;
 

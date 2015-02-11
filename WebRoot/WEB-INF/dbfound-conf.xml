@@ -4,6 +4,7 @@
 	<system>
 		<openLog>true</openLog>
 		<modeRootPath>${@projectRoot}/WEB-INF/model</modeRootPath>
+		<queryLimit>true</queryLimit>
 	</system>
 
 	<database>

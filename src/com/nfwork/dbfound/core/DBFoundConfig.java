@@ -22,6 +22,7 @@ import com.nfwork.dbfound.db.DataSourceConnectionProvide;
 import com.nfwork.dbfound.db.JdbcConnectionProvide;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelReader;
+import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.web.ActionEngine;
 import com.nfwork.dbfound.web.DispatcherFilter;
@@ -41,6 +42,9 @@ public class DBFoundConfig {
 	private static String configFilePath;
 	private static String classpath;
 	private static String projectRoot;
+	private static boolean queryLimit = true;
+	private static int queryLimitSize = 5000;
+	private static int reportQueryLimitSize = 50000;
 
 	public static void destory() {
 		for (DataSourceConnectionProvide provide : dsp) {
@@ -334,6 +338,38 @@ public class DBFoundConfig {
 				info.append("(modeRootPath = " + modeRootPath + ")");
 			}
 		}
+		
+		// 设置queryLimit
+		Element queryLimitElement = system.element("queryLimit");
+		if (queryLimitElement != null) {
+			String queryLimitvalue = queryLimitElement.getTextTrim();
+			if (DataUtil.isNotNull(queryLimitvalue)) {
+				if (queryLimitvalue.equals("false")) {
+					queryLimit = false;
+				}
+				info.append("(queryLimit = " + queryLimit + ")");
+			}
+		}
+		
+		// 设置queryLimitsize
+		Element queryLimitSizeElement = system.element("queryLimitSize");
+		if (queryLimitSizeElement != null) {
+			String queryLimitSizeElementValue = queryLimitSizeElement.getTextTrim();
+			if (DataUtil.isNotNull(queryLimitSizeElementValue)) {
+				queryLimitSize = DataUtil.intValue(queryLimitSizeElementValue);
+				info.append("(queryLimitSize = " + queryLimitSize + ")");
+			}
+		}
+		
+		// 设置reportqueryLimitsize
+		Element reportQueryLimitSizeElement = system.element("reportQueryLimitSize");
+		if (reportQueryLimitSizeElement != null) {
+			String reportQueryLimitSizeElementValue = reportQueryLimitSizeElement.getTextTrim();
+			if (DataUtil.isNotNull(reportQueryLimitSizeElementValue)) {
+				reportQueryLimitSize = DataUtil.intValue(reportQueryLimitSizeElementValue);
+				info.append("(reportQueryLimitSize = " + reportQueryLimitSize + ")");
+			}
+		}
 
 		// 设置启动监听类
 		Element listener = system.element("startListener");
@@ -418,4 +454,16 @@ public class DBFoundConfig {
 		DBFoundConfig.projectRoot = PathFormat.format(projectRoot);
 	}
 
+	public static boolean getQueryLimit() {
+		return queryLimit;
+	}
+
+	public static int getQueryLimitSize() {
+		return queryLimitSize;
+	}
+
+	public static int getReportQueryLimitSize() {
+		return reportQueryLimitSize;
+	}
+	
 }
