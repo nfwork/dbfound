@@ -141,3 +141,12 @@ dbfound 2.3.4 myerp项目中使用
 
 dbfound 2.3.5 myerp项目中使用
 }
+
+##############################################################################################################
+{
+2015年9月9日19:35:21 DBFoundConfig.java mvc配置文件 默认读取classpath下面的dbfound-mvc.conf 之前的版本可以不读
+2015年9月9日19:36:50 DispatcherFilter.java 不设置默认classpath为project下面/WEB-INF/classes
+
+dbfound 2.3.6 
+}
+

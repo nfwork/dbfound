@@ -262,7 +262,7 @@ public class DispatcherFilter implements Filter {
 	public void init(FilterConfig cf) throws ServletException {
 		configFilePath = cf.getInitParameter("configFilePath");
 
-		DBFoundConfig.setClasspath(cf.getServletContext().getRealPath("/WEB-INF/classes"));
+		//DBFoundConfig.setClasspath(cf.getServletContext().getRealPath("/WEB-INF/classes"));
 		DBFoundConfig.setProjectRoot(cf.getServletContext().getRealPath(""));
 
 		if (configFilePath != null && !configFilePath.equals("")) {

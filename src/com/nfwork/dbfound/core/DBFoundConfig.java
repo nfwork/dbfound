@@ -263,20 +263,20 @@ public class DBFoundConfig {
 
 		// 初始化dbfound mvc
 		Element mvc = web.element("mvcConfigFile");
-		if (mvc != null) {
-			String mvcFile = mvc.getTextTrim();
-			if (!"".equals(mvcFile)) {
-				mvcFile = getRealValue(mvcFile);
-				File file = new File(mvcFile);
-				if (file.exists()) {
-					ActionEngine.init(file);
-					System.out.println(dateFormat.format(new Date()) + " init mvc success, config file(" + mvcFile + ")");
-				} else {
-					System.out.println(dateFormat.format(new Date()) + " init mvc failed, because file(" + mvcFile + ") not found");
-				}
-			}
+		String mvcFile = null;
+		if (mvc == null || "".equals(mvc.getTextTrim())) {
+			mvcFile = "${@classpath}/dbfound-mvc.xml";
+		} else {
+			mvcFile = mvc.getTextTrim();
 		}
-
+		mvcFile = getRealValue(mvcFile);
+		File file = new File(mvcFile);
+		if (file.exists()) {
+			ActionEngine.init(file);
+			System.out.println(dateFormat.format(new Date()) + " init mvc success, config file(" + mvcFile + ")");
+		}else {
+			System.out.println(dateFormat.format(new Date()) + " init mvc cancel, because file(" + mvcFile + ") not found");
+		}
 	}
 
 	private static void initSystem(Element system) {
