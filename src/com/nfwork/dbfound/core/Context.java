@@ -50,7 +50,7 @@ public class Context {
 		String runName = Thread.currentThread().getName();
 		if (createThreadName.equals(runName) == false) {
 			throw new DBFoundRuntimeException(String
-					.format("Context事务不能夸线程使用，创建线程:%s,运行线程：%s", createThreadName, runName));
+					.format("Context transaction can not user by diffrent thread，create thread:%s, run thread：%s", createThreadName, runName));
 		}
 		return transaction;
 	}
@@ -212,7 +212,7 @@ public class Context {
 			name = name.substring(9);
 			setOutParamData(name, object);
 		} else if (name.equals("param") || name.equals("outParam") || name.equals("request") || name.equals("session")) {
-			throw new DBFoundRuntimeException("thread内置数据集合对象(param,request,session,outParam)不能设定");
+			throw new DBFoundRuntimeException("context inner object (param,request,session,outParam) can not set");
 		} else {
 			setRootData(name, object);
 		}
@@ -226,7 +226,7 @@ public class Context {
 	 */
 	private void setRootData(String name, Object object) {
 		if (name.indexOf(".") > -1) {
-			throw new DBFoundRuntimeException("不支持多层次参数设定:" + name);
+			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
 		if (request != null) {
 			request.setAttribute(name, object);
@@ -242,7 +242,7 @@ public class Context {
 	 */
 	public void setParamData(String name, Object value) {
 		if (name.indexOf(".") > -1) {
-			throw new DBFoundRuntimeException("param不支持多层次参数设定:" + name);
+			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
 		if (paramDatas == null) {
 			Object o = rootDatas.get("param");
@@ -267,7 +267,7 @@ public class Context {
 	 */
 	public void setOutParamData(String name, Object object) {
 		if (name.indexOf(".") > -1) {
-			throw new DBFoundRuntimeException("outParam不支持多层次参数设定:" + name);
+			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
 		if (outParamDatas == null) {
 			Object o = rootDatas.get("outParam");
@@ -289,7 +289,7 @@ public class Context {
 	 */
 	public void setRequestData(String name, Object object) {
 		if (name.indexOf(".") > -1) {
-			throw new DBFoundRuntimeException("request不支持多层次参数设定:" + name);
+			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
 		if (requestDatas == null) {
 			Object o = rootDatas.get("request");
@@ -314,7 +314,7 @@ public class Context {
 	 */
 	public void setSessionData(String name, Object object) {
 		if (name.indexOf(".") > -1) {
-			throw new DBFoundRuntimeException("session不支持多层次参数设定:" + name);
+			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
 		if (sessionDatas == null) {
 			Object o = rootDatas.get("session");
@@ -361,7 +361,7 @@ public class Context {
 		String runName = Thread.currentThread().getName();
 		if (createThreadName.equals(runName) == false) {
 			throw new DBFoundRuntimeException(String
-					.format("Context数据库连接不能夸线程使用，创建线程:%s,运行线程：%s", createThreadName, runName));
+					.format("Context transaction can not user by diffrent thread，create thread:%s, run thread：%s", createThreadName, runName));
 		}
 
 		if (transaction.isOpen()) {
@@ -425,7 +425,7 @@ public class Context {
 				Connection connection = connObject.connection;
 				provide.closeConnection(connection);
 			} catch (Exception e) {
-				LogUtil.error("数据库连接关闭异常:" + e.getMessage(), e);
+				LogUtil.error("database connection close exception:" + e.getMessage(), e);
 			}
 		}
 		connMap.clear();
