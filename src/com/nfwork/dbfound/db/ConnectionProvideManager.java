@@ -16,7 +16,7 @@ public class ConnectionProvideManager {
 		synchronized (provides) {
 			ConnectionProvide s = provides.get(provideName);
 			if (s != null) {
-				LogUtil.info("关闭原有同名数据源(" + provides + ")，释放相应资源");
+				LogUtil.info("close provide (" + provides + "),release resource");
 				provides.remove(provideName);
 			}
 			provides.put(provideName, provide);
@@ -34,8 +34,8 @@ public class ConnectionProvideManager {
 	public static ConnectionProvide getConnectionProvide(String provideName) {
 		ConnectionProvide provide = provides.get(provideName);
 		if (provide == null) {
-			throw new DBFoundRuntimeException("系统没有找到ConnectionProvide："
-					+ provideName + ", 请确认是否注册或进行初始化");
+			throw new DBFoundRuntimeException("can not found ConnectionProvide："
+					+ provideName + ", please check config");
 		}
 		return provide;
 	}

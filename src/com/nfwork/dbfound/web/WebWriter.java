@@ -20,7 +20,7 @@ public class WebWriter {
 		try {
 			ExcelWriter.excelExport(context, result);
 		} catch (Exception e) {
-			LogUtil.warn("response Excel输出异常：" + e.getMessage());
+			LogUtil.warn("response Excel writer exception：" + e.getMessage());
 		}
 	}
 
@@ -38,7 +38,7 @@ public class WebWriter {
 				i = reader.read(b);
 			}
 		} catch (Exception e) {
-			LogUtil.warn("response输出异常：" + e.getMessage());
+			LogUtil.warn("response writer exception：" + e.getMessage());
 		} finally {
 			if (writer != null) {
 				if (reader != null) {

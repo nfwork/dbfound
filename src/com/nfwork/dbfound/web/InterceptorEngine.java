@@ -8,7 +8,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.web.base.Interceptor;
 
-public class InterceptorEngine {
+public class InterceptorEngine{
 
 	static Interceptor interceptor;
 
@@ -22,8 +22,8 @@ public class InterceptorEngine {
 				interceptor.init();
 				inited = true;
 			} else {
-				throw new DBFoundRuntimeException("传入类" + className
-						+ "，没有实现com.nfwork.dbfound.web.base.AccessFilter接口");
+				throw new DBFoundRuntimeException("class:" + className
+						+ ", not implements com.nfwork.dbfound.web.base.AccessFilter");
 			}
 		} catch (Exception e) {
 			LogUtil.error("access filter init failed", e);

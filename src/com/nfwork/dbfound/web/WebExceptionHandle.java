@@ -19,7 +19,7 @@ public class WebExceptionHandle {
 		try {
 			if (exception instanceof SocketException
 					|| exception.getCause() instanceof SocketException) {
-				LogUtil.warn("客户端连接断开异常:" + exception.getMessage());
+				LogUtil.warn("client socket exception:" + exception.getMessage());
 				return;
 			}
 			if (exception instanceof FileDownLoadInterrupt) {

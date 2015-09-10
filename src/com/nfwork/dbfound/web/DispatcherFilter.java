@@ -38,8 +38,7 @@ public class DispatcherFilter implements Filter {
 	/**
 	 * 处理请求
 	 */
-	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException,
-			ServletException {
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
 		HttpServletResponse response = (HttpServletResponse) resp;
 		HttpServletRequest request = (HttpServletRequest) req;
 
@@ -54,14 +53,14 @@ public class DispatcherFilter implements Filter {
 					request.setCharacterEncoding(WebWriter.getEncoding());// 编码设置
 				}
 				Context context = Context.getCurrentContext(request, response);
-				
-				//初始化文件上传组件
+
+				// 初始化文件上传组件
 				FileUploadUtil.initFileUpload(context);
 
 				// 开启事务
 				transaction = context.getTransaction();
 
-				//jsp请求
+				// jsp请求
 				if (actionType == 1) {
 					String basePath = URLUtil.getBasePath(request);
 					context.setRequestData("basePath", basePath);
@@ -72,8 +71,8 @@ public class DispatcherFilter implements Filter {
 					requestUrl = URLUtil.clearUrl(requestUrl);
 					int indexPlace = requestUrl.indexOf(".");
 					String modelName = requestUrl.substring(1, indexPlace);
-					
-					//query请求
+
+					// query请求
 					if (actionType == 2) {
 						String name = requestUrl.substring(indexPlace + 6);
 						if ("".equals(name)) {
@@ -84,9 +83,9 @@ public class DispatcherFilter implements Filter {
 						if (InterceptorEngine.queryInterceptor(context, modelName, name)) {
 							WebAction.query(context, modelName, name);
 						}
-					} 
-					
-					//execute请求
+					}
+
+					// execute请求
 					else if (actionType == 3) {
 						String name = requestUrl.substring(indexPlace + 8);
 						if ("".equals(name)) {
@@ -98,8 +97,8 @@ public class DispatcherFilter implements Filter {
 							WebAction.execute(context, modelName, name);
 						}
 					}
-					
-					//export导出请求
+
+					// export导出请求
 					else if (actionType == 4) {
 						String name = requestUrl.substring(indexPlace + 7);
 						if ("".equals(name)) {
@@ -111,8 +110,8 @@ public class DispatcherFilter implements Filter {
 							ExcelWriter.excelExport(context, modelName, name);
 						}
 					}
-					
-					//do Java请求
+
+					// do Java请求
 					else if (actionType == 5) {
 						String method = requestUrl.substring(indexPlace + 3);
 						if ("".equals(method)) {
@@ -123,11 +122,10 @@ public class DispatcherFilter implements Filter {
 						ActionBean actionBean = ActionEngine.findActionBean(modelName); // 得到对应的class类的名字
 						if (actionBean != null) {
 							if (InterceptorEngine.doInterceptor(context, actionBean.getClassName(), method)) {
-								ActionReflect.reflect(context, actionBean.getClassName(), method, actionBean
-										.isSingleton());
+								ActionReflect.reflect(context, actionBean.getClassName(), method, actionBean.isSingleton());
 							}
 						} else {
-							String message = "没有找到 ：" + requestUrl.substring(1) + "对应的class类，请查看配置文件";
+							String message = "cant not found url:" + requestUrl.substring(1) + " mapping class, please theck config";
 							throw new DBFoundRuntimeException(message);
 						}
 					}
@@ -149,13 +147,13 @@ public class DispatcherFilter implements Filter {
 		}
 
 	}
-	
+
 	/**
 	 * 分析Action type
 	 */
-	public int analysisActionType(String requestUrl){
+	public int analysisActionType(String requestUrl) {
 		int actionType = 0;
-		
+
 		char[] uriChars = requestUrl.toCharArray();
 		int uriLength = uriChars.length;
 
@@ -255,14 +253,14 @@ public class DispatcherFilter implements Filter {
 		}
 		return actionType;
 	}
-	
+
 	/**
 	 * DBFound引擎初始化
 	 */
 	public void init(FilterConfig cf) throws ServletException {
 		configFilePath = cf.getInitParameter("configFilePath");
 
-		//DBFoundConfig.setClasspath(cf.getServletContext().getRealPath("/WEB-INF/classes"));
+		// DBFoundConfig.setClasspath(cf.getServletContext().getRealPath("/WEB-INF/classes"));
 		DBFoundConfig.setProjectRoot(cf.getServletContext().getRealPath(""));
 
 		if (configFilePath != null && !configFilePath.equals("")) {
@@ -283,6 +281,7 @@ public class DispatcherFilter implements Filter {
 
 	/**
 	 * 得到configfile路径
+	 * 
 	 * @return
 	 */
 	public static String getConfigFilePath() {

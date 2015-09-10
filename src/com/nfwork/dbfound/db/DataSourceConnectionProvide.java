@@ -53,7 +53,7 @@ public class DataSourceConnectionProvide extends ConnectionProvide {
 		try {
 			return dataSource.getConnection();
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("创建数据库连接异常:" + e.getMessage(), e);
+			throw new DBFoundPackageException("create connection excepiton:" + e.getMessage(), e);
 		}
 	}
 

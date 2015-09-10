@@ -44,10 +44,10 @@ public class JdbcConnectionProvide extends ConnectionProvide {
 			Class.forName(driverClass);
 			return DriverManager.getConnection(url, username, password);
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("创建数据库连接异常：" + e.getMessage(), e);
+			throw new DBFoundPackageException("create connection exception：" + e.getMessage(), e);
 		} catch (ClassNotFoundException ee) {
 			throw new DBFoundPackageException(
-					"JDBC驱动程序加载异常：" + ee.getMessage(), ee);
+					"jdbc driver not found：" + ee.getMessage(), ee);
 		}
 	}
 

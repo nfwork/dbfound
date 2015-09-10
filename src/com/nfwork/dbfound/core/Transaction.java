@@ -49,7 +49,7 @@ public class Transaction {
 					Connection connection = connObject.connection;
 					provide.closeConnection(connection);
 				} catch (Exception e) {
-					LogUtil.error("事务关闭异常:" + e.getMessage(), e);
+					LogUtil.error("transaction close exception:" + e.getMessage(), e);
 				}
 			}
 			connMap.clear();
@@ -68,7 +68,7 @@ public class Transaction {
 			try {
 				connObject.connection.commit();
 			} catch (Exception e) {
-				LogUtil.error("事务提交异常:" + e.getMessage(), e);
+				LogUtil.error("transaction commit exception:" + e.getMessage(), e);
 			}
 		}
 	}
@@ -91,14 +91,14 @@ public class Transaction {
 				try {
 					connObject.connection.commit();
 				} catch (Exception e) {
-					LogUtil.error("事务提交异常:" + e.getMessage(), e);
+					LogUtil.error("transaction commit exception:" + e.getMessage(), e);
 				}
 				try {
 					ConnectionProvide provide = connObject.provide;
 					Connection connection = connObject.connection;
 					provide.closeConnection(connection);
 				} catch (Exception e) {
-					LogUtil.error("事务关闭异常:" + e.getMessage(), e);
+					LogUtil.error("transaction close exception:" + e.getMessage(), e);
 				}
 			}
 			connMap.clear();
@@ -117,7 +117,7 @@ public class Transaction {
 			try {
 				connObject.connection.rollback();
 			} catch (SQLException e) {
-				LogUtil.error("事务回滚异常:" + e.getMessage(), e);
+				LogUtil.error("transaction rollback exception:" + e.getMessage(), e);
 			}
 		}
 	}

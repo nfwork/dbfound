@@ -89,7 +89,7 @@ public class ActionEngine {
 
 	static void refresh() {
 		if (file.lastModified() > fileLastModify) {
-			LogUtil.info("刷新dbfound-mvc.xml文件，读取配置映射信息。");
+			LogUtil.info("refresh file dbfound-mvc.xml");
 			fileLastModify = file.lastModified();
 			SAXReader reader = new SAXReader();
 			try {

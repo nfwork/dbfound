@@ -32,6 +32,7 @@ public class ModelEngine {
 
 	/**
 	 * 查询 根据传入的class返回对应的对象集合
+	 * 
 	 * @param context
 	 * @param modelName
 	 * @param queryName
@@ -44,6 +45,7 @@ public class ModelEngine {
 
 	/**
 	 * 查询 返回一个list的Map集合
+	 * 
 	 * @param context
 	 * @param modelName
 	 * @param queryName
@@ -52,9 +54,10 @@ public class ModelEngine {
 	public static QueryResponseObject query(Context context, String modelName, String queryName) {
 		return query(context, modelName, queryName, defaultPath, true, null);
 	}
-	
+
 	/**
 	 * 可指定当前路径，是否自动分页的查询
+	 * 
 	 * @param context
 	 * @param modelName
 	 * @param queryName
@@ -62,13 +65,13 @@ public class ModelEngine {
 	 * @param autoPaging
 	 * @return
 	 */
-	public static QueryResponseObject query(Context context, String modelName, String queryName, String currentPath,
-			boolean autoPaging) {
+	public static QueryResponseObject query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging) {
 		return query(context, modelName, queryName, currentPath, autoPaging, null);
 	}
 
 	/**
-	 * 查询 可以指定当前路径、是否自动分页、返回对象的查询 
+	 * 查询 可以指定当前路径、是否自动分页、返回对象的查询
+	 * 
 	 * @param context
 	 * @param modelName
 	 * @param queryName
@@ -77,9 +80,9 @@ public class ModelEngine {
 	 * @param obect
 	 * @return
 	 */
-	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName,
-			String currentPath, boolean autoPaging, Class<T> obect) {
-		
+	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging,
+			Class<T> obect) {
+
 		LogUtil.info("-----------------------query begin--------------------------------------");
 		try {
 			if (queryName == null || "".equals(queryName))
@@ -91,7 +94,7 @@ public class ModelEngine {
 
 			Query query = model.getQuery(queryName);
 			if (query == null) {
-				throw new QueryNotFoundException("在名为" + modelName + "的model中，没有找到名为" + queryName + "的query对象");
+				throw new QueryNotFoundException("can not found Query:" + queryName + ", on Model:" + modelName);
 			}
 			if (context.isExport) {
 				context.queryLimitSize = context.reportQueryLimitSize;
@@ -176,6 +179,7 @@ public class ModelEngine {
 
 	/**
 	 * 批量执行操作
+	 * 
 	 * @param context
 	 * @param modelName
 	 * @param executeName
@@ -183,7 +187,7 @@ public class ModelEngine {
 	 * @return
 	 */
 	public static ResponseObject batchExecute(Context context, String modelName, String executeName, String sourcePath) {
-		
+
 		LogUtil.info("-----------------------batch execute begin------------------------------");
 		try {
 			if (executeName == null || "".equals(executeName))
@@ -233,14 +237,14 @@ public class ModelEngine {
 						} else if ("OLD".equals(status)) {
 							en = "update";
 						} else {
-							throw new ExecuteNotFoundException("没有找到（_status）状态位，无法寻找对应的Execute对象");
+							throw new ExecuteNotFoundException("cant not found (_status) field，can not found Execute");
 						}
 					} else {
 						en = executeName;
 					}
 					execute = model.getExecute(en);
 					if (execute == null) {
-						throw new ExecuteNotFoundException("在名为" + modelName + "的model中，没有找到名为" + en + "的execute对象");
+						throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
 					}
 					execute.setCurrentPath(currentPath);
 					execute(context, model, execute);
@@ -262,6 +266,7 @@ public class ModelEngine {
 
 	/**
 	 * 执行操作
+	 * 
 	 * @param context
 	 * @param modelName
 	 * @param executeName
@@ -269,7 +274,7 @@ public class ModelEngine {
 	 * @return
 	 */
 	public static ResponseObject execute(Context context, String modelName, String executeName, String currentPath) {
-		
+
 		LogUtil.info("-----------------------execute begin------------------------------------");
 		try {
 			if (executeName == null || "".equals(executeName))
@@ -279,7 +284,7 @@ public class ModelEngine {
 
 			Execute execute = model.getExecute(executeName);
 			if (execute == null) {
-				throw new ExecuteNotFoundException("在名为" + modelName + "的model中，没有找到名为" + executeName + "的execute对象");
+				throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
 			}
 			execute.setCurrentPath(currentPath);
 			execute(context, model, execute);
@@ -298,6 +303,7 @@ public class ModelEngine {
 
 	/**
 	 * 执行execute
+	 * 
 	 * @param context
 	 * @param model
 	 * @param execute
@@ -322,6 +328,7 @@ public class ModelEngine {
 
 	/**
 	 * 处理参数 放入session、cookie、或者以outParam返回
+	 * 
 	 * @param context
 	 * @param params
 	 * @return
@@ -374,6 +381,7 @@ public class ModelEngine {
 
 	/**
 	 * 参数设定
+	 * 
 	 * @param nfParam
 	 * @param context
 	 * @param cp
@@ -394,7 +402,7 @@ public class ModelEngine {
 
 		// 如果是文件类型 就直接从request里面取值
 		if ("file".equals(nfParam.getDataType())) {
-			Object requestValue = context.getData("param."+nfParam.getName());
+			Object requestValue = context.getData("param." + nfParam.getName());
 			if (requestValue != null && requestValue instanceof FileItem) {
 				FileItem item = (FileItem) requestValue;
 				nfParam.setValue(item);

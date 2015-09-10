@@ -31,7 +31,7 @@ public class ActionReflect {
 				
 				WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(result));
 			} else {
-				throw new DBFoundRuntimeException("返回的对象必须为ResponseObject的实例");
+				throw new DBFoundRuntimeException("return object must extends ResponseObject");
 			}
 		}
 	}
