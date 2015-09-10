@@ -38,6 +38,9 @@ public class DBFoundConfig {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 	private static List<DataSourceConnectionProvide> dsp = new ArrayList<DataSourceConnectionProvide>();
 
+	public static final String CLASSPATH = "${@classpath}";
+	public static final String PROJECT_ROOT = "${@projectRoot}";
+
 	private static boolean inited = false;
 	private static String configFilePath;
 	private static String classpath;
@@ -69,7 +72,7 @@ public class DBFoundConfig {
 
 	public synchronized static void init(String confFile) {
 		if (confFile == null || "".equals(confFile)) {
-			confFile = "${@classpath}/dbfound-conf.xml";
+			confFile = CLASSPATH + "/dbfound-conf.xml";
 		}
 		if (inited) {
 			return;
@@ -83,16 +86,16 @@ public class DBFoundConfig {
 			System.out.println("**************************************************************************");
 			System.out.println(dateFormat.format(new Date()) + " NFWork dbfound service init begin");
 			SAXReader reader = new SAXReader();
-			File file = new File(getRealValue(confFile));
+			File file = new File(getRealPath(confFile));
 			Document doc = null;
 			if (file.exists()) {
 				System.out.println(dateFormat.format(new Date()) + " user config file: " + PathFormat.format(file.getAbsolutePath()));
 				doc = reader.read(file);
-			} else if (confFile.startsWith("${@classpath}")) {
+			} else if (confFile.startsWith(CLASSPATH)) {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
 				InputStream inputStream = null;
 				try {
-					URL url = loader.getResource(confFile.substring(14));
+					URL url = loader.getResource(confFile.substring(CLASSPATH.length() + 1));
 					if (url != null) {
 						if (url.getFile() != null) {
 							file = new File(url.getFile());
@@ -140,7 +143,7 @@ public class DBFoundConfig {
 						listener.execute();
 						System.out.println(dateFormat.format(new Date()) + " invoke listenerClass success");
 					} catch (Exception e) {
-						LogUtil.error("执行启动监听类失败", e);
+						LogUtil.error("invoke listenerClass faild", e);
 					}
 				}
 			} else {
@@ -150,7 +153,7 @@ public class DBFoundConfig {
 			System.out.println(dateFormat.format(new Date()) + " NFWork dbfound service init success");
 			System.out.println("**************************************************************************");
 		} catch (Exception e) {
-			LogUtil.error("dbfound初始化失败，请检查相应配置", e);
+			LogUtil.error("dbfound init faild，please check config", e);
 			if (e instanceof RuntimeException) {
 				throw (RuntimeException) e;
 			}
@@ -241,7 +244,7 @@ public class DBFoundConfig {
 		if (folder != null) {
 			String path = folder.getTextTrim();
 			if (!"".equals(path)) {
-				path = getRealValue(path);
+				path = getRealPath(path);
 				FileUtil.init(path);
 				info.append("(uploadFolder = " + path + ")");
 			}
@@ -273,14 +276,14 @@ public class DBFoundConfig {
 		Element mvc = web.element("mvcConfigFile");
 		String mvcFile = null;
 		if (mvc == null || "".equals(mvc.getTextTrim())) {
-			mvcFile = "${@classpath}/dbfound-mvc.xml";
+			mvcFile = CLASSPATH + "/dbfound-mvc.xml";
 		} else {
 			mvcFile = mvc.getTextTrim();
 		}
-		File file = new File(getRealValue(mvcFile));
-		if (!file.exists() && mvcFile.startsWith("${@classpath}")) {
+		File file = new File(getRealPath(mvcFile));
+		if (!file.exists() && mvcFile.startsWith(CLASSPATH)) {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			URL url = loader.getResource(mvcFile.substring(14));
+			URL url = loader.getResource(mvcFile.substring(CLASSPATH.length() + 1));
 			if (url != null) {
 				if (url.getFile() != null) {
 					file = new File(url.getFile());
@@ -288,10 +291,10 @@ public class DBFoundConfig {
 			}
 		}
 		if (file.exists()) {
-			System.out.println(dateFormat.format(new Date()) + " init mvc success, config file(" + mvcFile + ")");
+			System.out.println(dateFormat.format(new Date()) + " init mvc success, config file(" + file.getAbsolutePath() + ")");
 			ActionEngine.init(file);
 		} else {
-			System.out.println(dateFormat.format(new Date()) + " init mvc cancel, because file(" + mvcFile + ") not found");
+			System.out.println(dateFormat.format(new Date()) + " init mvc cancel, because file(" + getRealPath(mvcFile) + ") not found");
 		}
 	}
 
@@ -317,7 +320,6 @@ public class DBFoundConfig {
 		if (modeRoot != null) {
 			String modeRootPath = modeRoot.getTextTrim();
 			if (!"".equals(modeRootPath)) {
-				modeRootPath = getRealValue(modeRootPath);
 				ModelReader.setModelLoadRoot(modeRootPath);
 				info.append("(modeRootPath = " + modeRootPath + ")");
 			}
@@ -368,11 +370,11 @@ public class DBFoundConfig {
 		System.out.println(info);
 	}
 
-	private static String getRealValue(String value) {
-		value = value.replace("${@classpath}", getClasspath());
-		String webRoot = getProjectRoot();
-		if (webRoot != null) {
-			value = value.replace("${@projectRoot}", webRoot);
+	public static String getRealPath(String value) {
+		value = value.replace(CLASSPATH, getClasspath());
+		String projectRoot = getProjectRoot();
+		if (projectRoot != null) {
+			value = value.replace(PROJECT_ROOT, projectRoot);
 		}
 		return value;
 	}

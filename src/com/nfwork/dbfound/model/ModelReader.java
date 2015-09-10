@@ -17,14 +17,11 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.model.bean.Model;
+import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
 
 public class ModelReader {
-
-	static String modelLoadRoot;
-	static String modelLoadRootLock = "";
-	static String classpath;
-	static String classpathLock = "";
+	static String modelLoadRoot = DBFoundConfig.CLASSPATH;
 
 	/**
 	 * 读取一个model
@@ -40,16 +37,11 @@ public class ModelReader {
 		Document doc = null;
 		String fileLocation = null;
 
-		if (modelLoadRoot == null) {
-			synchronized (modelLoadRootLock) {
-				if (modelLoadRoot == null) {
-					classpath = DBFoundConfig.getClasspath();
-					modelLoadRoot = classpath;
-				}
-			}
+		if (DataUtil.isNull(modelLoadRoot)) {
+			modelLoadRoot = DBFoundConfig.CLASSPATH;
 		}
 		String filePath = modelLoadRoot + "/" + modelName + ".xml";
-		File file = new File(filePath);
+		File file = new File(DBFoundConfig.getRealPath(filePath));
 
 		if (file.exists()) {
 			fileLocation = file.getAbsolutePath();
@@ -60,8 +52,8 @@ public class ModelReader {
 				throw new DBFoundPackageException(message, e);
 			}
 		} else {
-			if (filePath.startsWith(classpath)) {
-				String cPath = filePath.substring(classpath.length() + 1);
+			if (filePath.startsWith(DBFoundConfig.CLASSPATH)) {
+				String cPath = filePath.substring(DBFoundConfig.CLASSPATH.length() + 1);
 
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
 				InputStream inputStream = null;
