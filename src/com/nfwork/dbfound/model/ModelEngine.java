@@ -164,7 +164,7 @@ public class ModelEngine {
 				ro.setTotalCounts(totalCounts);
 			}
 			ro.setSuccess(true);
-			ro.setMessage("操作成功!");
+			ro.setMessage("success");
 			ro.setOutParam(getOutParams(context, query.getParams()));
 			return ro;
 		} finally {
@@ -222,7 +222,7 @@ public class ModelEngine {
 			// 向客服端传送成功消息
 			ResponseObject ro = new ResponseObject();
 			ro.setSuccess(true);
-			ro.setMessage("操作成功!");
+			ro.setMessage("success");
 
 			if (size > 0) {
 				for (int j = 0; j < size; j++) {
@@ -292,7 +292,7 @@ public class ModelEngine {
 			// 向客服端传送成功消息
 			ResponseObject ro = new ResponseObject();
 			ro.setSuccess(true);
-			ro.setMessage("操作成功!");
+			ro.setMessage("success");
 			ro.setOutParam(getOutParams(context, execute.getParams()));
 			return ro;
 		} finally {
