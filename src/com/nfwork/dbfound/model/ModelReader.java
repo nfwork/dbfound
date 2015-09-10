@@ -43,7 +43,8 @@ public class ModelReader {
 		if (modelLoadRoot == null) {
 			synchronized (modelLoadRootLock) {
 				if (modelLoadRoot == null) {
-					modelLoadRoot = DBFoundConfig.getClasspath();
+					classpath = DBFoundConfig.getClasspath();
+					modelLoadRoot = classpath;
 				}
 			}
 		}
@@ -55,18 +56,10 @@ public class ModelReader {
 			try {
 				doc = reader.read(file);
 			} catch (DocumentException e) {
-				String message = "modelReader 读取文件异常，file:" + fileLocation;
+				String message = "modelReader exception，file:" + fileLocation;
 				throw new DBFoundPackageException(message, e);
 			}
 		} else {
-			if (classpath == null) {
-				synchronized (classpathLock) {
-					if (classpath == null) {
-						classpath = DBFoundConfig.getClasspath();
-					}
-				}
-			}
-
 			if (filePath.startsWith(classpath)) {
 				String cPath = filePath.substring(classpath.length() + 1);
 
@@ -77,17 +70,29 @@ public class ModelReader {
 					URL url = loader.getResource(cPath);
 
 					if (url != null) {
-						try {
-							inputStream = url.openStream();
-							doc = reader.read(inputStream);
-						} catch (Exception e) {
-							String message = "modelReader读取文件流异常";
-							throw new DBFoundPackageException(message, e);
+						if (url.getFile() != null) {
+							file = new File(url.getFile());
 						}
-						fileLocation = url.getFile();
+						if (file.exists()) {
+							fileLocation = file.getAbsolutePath();
+							try {
+								doc = reader.read(file);
+							} catch (DocumentException e) {
+								String message = "modelReader exception, file:" + fileLocation;
+								throw new DBFoundPackageException(message, e);
+							}
+						} else {
+							fileLocation = url.getFile();
+							try {
+								inputStream = url.openStream();
+								doc = reader.read(inputStream);
+							} catch (Exception e) {
+								String message = "modelReader exception, url:" + fileLocation;
+								throw new DBFoundPackageException(message, e);
+							}
+						}
 					} else {
-						throw new DBFoundRuntimeException("ModelReader 没有找到文件：" + modelName
-								+ ".xml, 请确认在classpath 或jar中 文件是否存在。");
+						throw new DBFoundRuntimeException("ModelReader not found file：" + modelName + ".xml, please check config");
 					}
 				} finally {
 					if (inputStream != null) {
@@ -98,8 +103,7 @@ public class ModelReader {
 					}
 				}
 			} else {
-				throw new DBFoundRuntimeException("ModelReader 没有找到文件：" + modelLoadRoot + "/" + modelName
-						+ ".xml 请确认配置");
+				throw new DBFoundRuntimeException("ModelReader not found file：" + modelLoadRoot + "/" + modelName + ".xml , please check config");
 			}
 		}
 
@@ -112,7 +116,7 @@ public class ModelReader {
 
 		fileLocation = PathFormat.format(fileLocation);
 		model.setFileLocation(fileLocation);
-		LogUtil.info("read model success,model file location: " + fileLocation);
+		LogUtil.info("read model success, model file location: " + fileLocation);
 		return model;
 	}
 
@@ -136,8 +140,7 @@ public class ModelReader {
 				readerChrild(unit, entity);
 				entity.run();
 			} catch (Exception e) {
-				LogUtil.error(e.getMessage(), e);
-				throw new DBFoundRuntimeException("文件读取异常，请检查xml文件语法！");
+				throw new DBFoundRuntimeException("ModelReader exception", e);
 			}
 		}
 	}
@@ -166,5 +169,5 @@ public class ModelReader {
 	public static void setModelLoadRoot(String modelLoadRoot) {
 		ModelReader.modelLoadRoot = modelLoadRoot;
 	}
-	
+
 }

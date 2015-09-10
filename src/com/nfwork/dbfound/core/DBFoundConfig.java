@@ -94,9 +94,17 @@ public class DBFoundConfig {
 				try {
 					URL url = loader.getResource(confFile.substring(14));
 					if (url != null) {
-						System.out.println(dateFormat.format(new Date()) + " user config file: " + PathFormat.format(url.getFile()));
-						inputStream = url.openStream();
-						doc = reader.read(inputStream);
+						if (url.getFile() != null) {
+							file = new File(url.getFile());
+						}
+						if (file.exists()) {
+							System.out.println(dateFormat.format(new Date()) + " user config file: " + PathFormat.format(file.getAbsolutePath()));
+							doc = reader.read(file);
+						} else {
+							System.out.println(dateFormat.format(new Date()) + " user config file: " + PathFormat.format(url.getFile()));
+							inputStream = url.openStream();
+							doc = reader.read(inputStream);
+						}
 					}
 				} finally {
 					if (inputStream != null) {
@@ -171,7 +179,7 @@ public class DBFoundConfig {
 				provide.regist();
 				System.out.println(dateFormat.format(new Date()) + " regist jdbcConnProvide success, provideName:" + provideName);
 			} else {
-				throw new DBFoundRuntimeException("使用jdbc方式连接，url、driverClass、username、dialect不能为空");
+				throw new DBFoundRuntimeException("user jdbc type，url driverClass username dialect can not be null");
 			}
 		}
 
@@ -199,7 +207,7 @@ public class DBFoundConfig {
 				dsp.add(provide);
 				System.out.println(dateFormat.format(new Date()) + " regist dataSourceConnProvide success, provideName:" + provideName);
 			} else {
-				throw new DBFoundRuntimeException("使用dataSource方式连接，dataSource、dialect不能为空");
+				throw new DBFoundRuntimeException("user dataSource type，dataSource dialect can not null");
 			}
 		}
 	}
@@ -269,12 +277,20 @@ public class DBFoundConfig {
 		} else {
 			mvcFile = mvc.getTextTrim();
 		}
-		mvcFile = getRealValue(mvcFile);
-		File file = new File(mvcFile);
+		File file = new File(getRealValue(mvcFile));
+		if (!file.exists() && mvcFile.startsWith("${@classpath}")) {
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			URL url = loader.getResource(mvcFile.substring(14));
+			if (url != null) {
+				if (url.getFile() != null) {
+					file = new File(url.getFile());
+				}
+			}
+		}
 		if (file.exists()) {
-			ActionEngine.init(file);
 			System.out.println(dateFormat.format(new Date()) + " init mvc success, config file(" + mvcFile + ")");
-		}else {
+			ActionEngine.init(file);
+		} else {
 			System.out.println(dateFormat.format(new Date()) + " init mvc cancel, because file(" + mvcFile + ") not found");
 		}
 	}
