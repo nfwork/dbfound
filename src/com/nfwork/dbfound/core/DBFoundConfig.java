@@ -291,10 +291,11 @@ public class DBFoundConfig {
 			}
 		}
 		if (file.exists()) {
-			System.out.println(dateFormat.format(new Date()) + " init mvc success, config file(" + file.getAbsolutePath() + ")");
+			System.out.println(dateFormat.format(new Date()) + " init mvc success, config file: " + PathFormat.format(file.getAbsolutePath()) + ")");
 			ActionEngine.init(file);
 		} else {
-			System.out.println(dateFormat.format(new Date()) + " init mvc cancel, because file(" + getRealPath(mvcFile) + ") not found");
+			System.out.println(dateFormat.format(new Date()) + " init mvc cancel, because file: " + PathFormat.format(getRealPath(mvcFile))
+					+ ") not found");
 		}
 	}
 
