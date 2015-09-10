@@ -196,9 +196,11 @@ td.ux-grid-hd-group-cell {
 }
 
 .x-panel-header {
-		background-image: url(../../images/panel_bg.png) !important;
+	background-image: url(../../images/panel_bg.png) !important;
 }
-
+ul.x-tab-strip-top {
+	background-image: url(../../images/panel_bg.png);
+}
 .x-grid3-body .x-grid3-td-numberer .x-grid3-cell-inner {
 overflow: visible;
 }
