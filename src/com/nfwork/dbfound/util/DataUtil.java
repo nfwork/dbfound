@@ -45,30 +45,28 @@ public class DataUtil {
 				if (reflector.hasSetter(propertyname)) {
 					Object columnvalue = entry.getValue();
 					if (columnvalue != null) {
+						Class<?> fieldtype = reflector.getSetterType(propertyname);
+						if (fieldtype.equals(Integer.class) || fieldtype.equals(int.class)) {
+							columnvalue = DataUtil.intValue(columnvalue);
+						} else if (fieldtype.equals(Long.class) || fieldtype.equals(long.class)) {
+							columnvalue = DataUtil.longValue(columnvalue);
+						} else if (fieldtype.equals(Float.class) || fieldtype.equals(float.class)) {
+							columnvalue = DataUtil.floatValue(columnvalue);
+						} else if (fieldtype.equals(Double.class) || fieldtype.equals(double.class)) {
+							columnvalue = DataUtil.doubleValue(columnvalue);
+						} else if (fieldtype.equals(Date.class) || fieldtype.equals(java.sql.Date.class)) {
+							columnvalue = DataUtil.dateValue(columnvalue);
+						} else if (fieldtype.equals(String.class)) {
+							columnvalue = DataUtil.stringValue(columnvalue);
+						} else if (fieldtype.equals(Short.class) || fieldtype.equals(short.class)) {
+							columnvalue = DataUtil.shortValue(columnvalue);
+						} else if (fieldtype.equals(Byte.class) || fieldtype.equals(byte.class)) {
+							columnvalue = DataUtil.byteValue(columnvalue);
+						}
 						try {
-							Class<?> fieldtype = reflector.getSetterType(propertyname);
-
-							if (fieldtype.equals(Integer.class) || fieldtype.equals(int.class)) {
-								columnvalue = DataUtil.intValue(columnvalue);
-							} else if (fieldtype.equals(Long.class) || fieldtype.equals(long.class)) {
-								columnvalue = DataUtil.longValue(columnvalue);
-							} else if (fieldtype.equals(Float.class) || fieldtype.equals(float.class)) {
-								columnvalue = DataUtil.floatValue(columnvalue);
-							} else if (fieldtype.equals(Double.class) || fieldtype.equals(double.class)) {
-								columnvalue = DataUtil.doubleValue(columnvalue);
-							} else if (fieldtype.equals(Date.class) || fieldtype.equals(java.sql.Date.class)) {
-								columnvalue = DataUtil.dateValue(columnvalue);
-							} else if (fieldtype.equals(String.class)) {
-								columnvalue = DataUtil.stringValue(columnvalue);
-							} else if (fieldtype.equals(Short.class) || fieldtype.equals(short.class)) {
-								columnvalue = DataUtil.shortValue(columnvalue);
-							} else if (fieldtype.equals(Byte.class) || fieldtype.equals(byte.class)) {
-								columnvalue = DataUtil.byteValue(columnvalue);
-							}
-
 							reflector.getSetInvoker(propertyname).invoke(obj, new Object[] { columnvalue });
 						} catch (Exception e) {
-							LogUtil.error(e.getMessage(), e);
+							throw new RuntimeException(e);
 						}
 					}
 				}
@@ -106,9 +104,9 @@ public class DataUtil {
 		} else {
 			String value = o.toString().trim();
 			SimpleDateFormat format;
-			if (value.length()==10) {
+			if (value.length() == 10) {
 				format = new SimpleDateFormat("yyyy-MM-dd");
-			}else {
+			} else {
 				format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			}
 			try {
