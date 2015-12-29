@@ -4,6 +4,10 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
 	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 	<jsp-config>
+		<taglib>
+			<taglib-uri>dbfound-tags</taglib-uri>
+			<taglib-location>/WEB-INF/classes/META-INF/dbfound.tld</taglib-location>
+		</taglib>
 		<jsp-property-group>
 			<url-pattern>*.jsp</url-pattern>
 			<trim-directive-whitespaces>true</trim-directive-whitespaces>
