@@ -212,6 +212,7 @@ Ext.DateTimePicker = Ext.extend(Ext.DatePicker, {
     setValue: function(value){
     	Ext.DateTimePicker.superclass.setValue.apply(this, arguments);
         var old = this.value;
+        
         if (!this.tf) {
             this.tf = new Ext.ux.form.TimePickerField();
             this.tf.ownerCt = this;
@@ -221,12 +222,34 @@ Ext.DateTimePicker = Ext.extend(Ext.DatePicker, {
         var s = value.format('s');
         if(h==="00"&&i==="00"&&s==="00"){
         	 this.value = this.getDateTime(value);
+        	 var a = this;
+        	
+        	 setTimeout(function(){
+        		 a.tf.hoursSpinner.setValue(0);
+    			 a.tf.minutesSpinner.setValue(0);
+    			 a.tf.secondsSpinner.setValue(0);
+				 if(a.precision=='i'){
+					 a.tf.secondsSpinner.disable();
+				 }else if(a.precision=='H'){
+				     a.tf.minutesSpinner.disable();
+				     a.tf.secondsSpinner.disable();
+				 }
+	        }, 50);
         }else{
         	var a = this;
 	        setTimeout(function(){
 				 a.tf.hoursSpinner.setValue(h);
-			     a.tf.minutesSpinner.setValue(i);
-			     a.tf.secondsSpinner.setValue(s);
+				 a.tf.minutesSpinner.setValue(i);
+				 a.tf.secondsSpinner.setValue(s);
+				 if(a.precision=='i'){
+					 a.tf.secondsSpinner.disable();
+				     a.tf.secondsSpinner.setValue(0);
+				 }else if(a.precision=='H'){
+					 a.tf.minutesSpinner.setValue(0);
+				     a.tf.minutesSpinner.disable();
+				     a.tf.secondsSpinner.setValue(0);
+				     a.tf.secondsSpinner.disable();
+				 }
 	             a.value = a.getDateTime(value);
 	        }, 50);
         }
@@ -341,6 +364,7 @@ Ext.ux.form.DateTimeField = Ext.extend(Ext.form.DateField, {
 	format:'Y-m-d H:i:s',
     dateFormat: 'Y-m-d',
     timeFormat: 'H:i:s',
+    precision:'s',
     defaultAutoCreate: {
         tag: "input",
         type: "text",
@@ -367,6 +391,7 @@ Ext.ux.form.DateTimeField = Ext.extend(Ext.form.DateField, {
         Ext.apply(this.menu.picker, {
             minDate: this.minValue,
             maxDate: this.maxValue,
+            precision:this.precision,
             disabledDatesRE: this.ddMatch,
             disabledDatesText: this.disabledDatesText,
             disabledDays: this.disabledDays,

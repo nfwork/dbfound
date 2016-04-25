@@ -32,6 +32,7 @@ public class Column extends EventTag {
 	private boolean editable = true; // combo，lov之类的弹出组件 是否可以编辑
 	private boolean hidden;
 	private String vtype;
+	private String precision;
 
 	public int doEndTag() throws JspTagException {
 		Tag t = findAncestorWithClass(this, Columns.class);
@@ -149,6 +150,9 @@ public class Column extends EventTag {
 							+ "','" + displayField + "'," + options + ");}";
 				}
 			} else if ("datetimefield".equals(column.editor)) {
+				if (DataUtil.isNotNull(precision)) {
+					editorConfig = editorConfig + ", precision:'"+precision+"'";
+				}
 				editorConfig = editorConfig + "}";
 				column.editor = "new Ext.ux.form.DateTimeField(" + editorConfig + ")";
 				
@@ -349,4 +353,12 @@ public class Column extends EventTag {
 		this.vtype = vtype;
 	}
 
+	public String getPrecision() {
+		return precision;
+	}
+
+	public void setPrecision(String precision) {
+		this.precision = precision;
+	}
+	
 }

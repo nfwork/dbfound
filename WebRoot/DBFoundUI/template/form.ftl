@@ -82,6 +82,7 @@
 							   <#if field.hideLabel>hideLabel : true,</#if>
 							   <#if field.items??>items : ${field.items},</#if>
 							   <#if field.id??>id : "${field.id}",</#if>
+							   <#if field.precision??>precision : "${field.precision}",</#if>
 							   <#if field.upper> enableKeyEvents : true,</#if>
 							   <#if field.emptyText??> emptyText : "${field.emptyText}",</#if>
 							   <#if field.prompt??> fieldLabel : "<#if field.required><font color = red>*</font> </#if>${field.prompt}",</#if>

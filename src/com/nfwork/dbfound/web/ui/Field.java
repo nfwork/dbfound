@@ -47,6 +47,7 @@ public class Field extends EventTag {
 	private String vtype;
 	private String parentField;
 	private String currentTime;
+	private String precision;
 
 	public int doEndTag() throws JspTagException {
 		Tag t = findAncestorWithClass(this, Line.class);
@@ -370,6 +371,14 @@ public class Field extends EventTag {
 
 	public void setCurrentTime(String currentTime) {
 		this.currentTime = currentTime;
+	}
+
+	public String getPrecision() {
+		return precision;
+	}
+
+	public void setPrecision(String precision) {
+		this.precision = precision;
 	}
 	
 }
