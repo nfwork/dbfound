@@ -145,8 +145,7 @@
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql"
 				type="executeSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" 
-				type="querySql_type"/>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql"/>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java"
 				type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql"
@@ -266,10 +265,6 @@
 	<xsd:complexType name="collisionSql_type">
 		<xsd:attribute name="where" />
 		<xsd:attribute name="message" />
-	</xsd:complexType>
-	
-	<xsd:complexType name="querySql_type">
-		<xsd:attribute name="queryTimeout" />
 	</xsd:complexType>
 
 </xsd:schema>

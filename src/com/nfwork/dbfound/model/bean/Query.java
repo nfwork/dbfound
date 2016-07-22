@@ -38,6 +38,7 @@ public class Query extends SqlEntity {
 	private String currentPath;
 	private String rootPath;
 	private String modelName;
+	private Integer queryTimeout;
 	private static final String WHERE_CLAUSE = "#WHERE_CLAUSE#";
 	private static final String AND_CLAUSE = "#AND_CLAUSE#";
 
@@ -92,6 +93,7 @@ public class Query extends SqlEntity {
 
 	/**
 	 * 查询结构集 以list的map对象返回
+	 * 
 	 * @param context
 	 * @param provideName
 	 * @param object
@@ -124,6 +126,9 @@ public class Query extends SqlEntity {
 		ResultSet dataset = null;
 		try {
 			statement = conn.prepareStatement(eSql);
+			if (queryTimeout != null) {
+				statement.setQueryTimeout(queryTimeout);
+			}
 			// 参数设定
 			initParam(statement, this.sql, params);
 			dataset = statement.executeQuery();
@@ -131,7 +136,7 @@ public class Query extends SqlEntity {
 
 			// 如果对象不为null，利用反射构建object对象
 			if (object != null) {
-				List<T> list = (List<T>) ReflectorUtil.parseResultList(object, dataset,context);
+				List<T> list = (List<T>) ReflectorUtil.parseResultList(object, dataset, context);
 				return list;
 			}
 
@@ -256,6 +261,7 @@ public class Query extends SqlEntity {
 
 	/**
 	 * 初始化过滤条件
+	 * 
 	 * @param ssql
 	 * @return
 	 */
@@ -269,7 +275,7 @@ public class Query extends SqlEntity {
 			}
 		}
 		String fsql = bfsql.length() > 4 ? bfsql.substring(0, bfsql.length() - 4) : null;
-		if (fsql!=null) {
+		if (fsql != null) {
 			fsql = Matcher.quoteReplacement(fsql);
 		}
 
@@ -279,15 +285,15 @@ public class Query extends SqlEntity {
 		while (m.find()) {
 			String text = m.group();
 			if (text.equals(WHERE_CLAUSE)) {
-				if (fsql==null) {
+				if (fsql == null) {
 					m.appendReplacement(buf, " ");
-				}else {
+				} else {
 					m.appendReplacement(buf, " where " + fsql);
 				}
-			}else if (text.equals(AND_CLAUSE)) {
-				if (fsql==null) {
+			} else if (text.equals(AND_CLAUSE)) {
+				if (fsql == null) {
 					m.appendReplacement(buf, " ");
-				}else {
+				} else {
 					m.appendReplacement(buf, " and " + fsql);
 				}
 			}
@@ -551,6 +557,14 @@ public class Query extends SqlEntity {
 
 	public void setModelName(String modelName) {
 		this.modelName = modelName;
+	}
+
+	public Integer getQueryTimeout() {
+		return queryTimeout;
+	}
+
+	public void setQueryTimeout(Integer queryTimeout) {
+		this.queryTimeout = queryTimeout;
 	}
 
 	@Override
