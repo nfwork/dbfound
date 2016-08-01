@@ -1,5 +1,8 @@
 package com.nfwork.dbfound.model.bean;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.nfwork.dbfound.model.base.Entity;
 
 public class Param extends Entity {
@@ -70,6 +73,10 @@ public class Param extends Entity {
 	}
 
 	public String getStringValue() {
+		if (value instanceof Date) {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			return format.format(value);
+		}
 		if (value != null) {
 			return value.toString();
 		}
