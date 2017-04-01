@@ -151,11 +151,12 @@
 	    						
 	    						<#if  button.action?? >
 	    						    if ($D.validate(records,${grid.id})){
+	    						    	var action = this.action;
 		    						    <#if button.showConfirm >
 				    						$D.showConfirm("${button.comfirmMessage}", function(btn) {
 				    							  if(btn=="no")return;
 					    				</#if>	 
-	    						    	$D.submit(records,this.action,${grid.id}_ds,${button.afterAction},"",this);
+	    						    	$D.submit(records,action,${grid.id}_ds,${button.afterAction},"",this);
 	    						    	<#if button.showConfirm  >
 					    					});
 					    				</#if>	
