@@ -17,8 +17,11 @@ public class GridButton extends TagSupport implements Cloneable {
 	private String title;
 	private String beforeAction;
 	private String afterAction = "null";
+	
 	private String id;
 	private boolean disabled ;
+	private boolean showConfirm;
+	private String comfirmMessage;
 
 	public int doEndTag() throws JspTagException {
 		Tag t = findAncestorWithClass(this, ToolBar.class);
@@ -71,6 +74,22 @@ public class GridButton extends TagSupport implements Cloneable {
 
 	public void setTitle(String title) {
 		this.title =MultiLangUtil.getValue(title,pageContext) ;
+	}
+
+	public boolean isShowConfirm() {
+		return showConfirm;
+	}
+
+	public void setShowConfirm(boolean showConfirm) {
+		this.showConfirm = showConfirm;
+	}
+
+	public String getComfirmMessage() {
+		return comfirmMessage;
+	}
+
+	public void setComfirmMessage(String comfirmMessage) {
+		this.comfirmMessage = MultiLangUtil.getValue(comfirmMessage,pageContext) ;;
 	}
 
 	public String getBeforeAction() {
