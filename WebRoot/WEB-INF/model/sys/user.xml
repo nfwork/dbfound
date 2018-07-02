@@ -2,6 +2,7 @@
 <model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
 	
 	<query pagerSize="10" >
+		<param name="sort"/>
 		<sql>
 		 <![CDATA[
 			SELECT
@@ -17,7 +18,7 @@
 				u.password
 			FROM SYS_USER u
 			#WHERE_CLAUSE#
-			order by u.user_code
+			#{@sort}
 		 ]]>
 		</sql>
 		<filter name="timefrom" express="create_date &gt;= ${@timefrom}" />

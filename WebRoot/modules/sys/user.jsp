@@ -74,5 +74,11 @@
 			</d:columns>
 		</d:grid>
 		
+		<script type="text/javascript">
+			userGrid.on("sortchange",function(grid,sortInfo){
+				userGrid.getStore().baseParams["sort"] = "order by "+ sortInfo.field +" " + sortInfo.direction;
+				userGrid.query();
+			})
+		</script>
 	</body>
 </html>
