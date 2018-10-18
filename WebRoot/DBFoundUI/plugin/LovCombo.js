@@ -40,7 +40,7 @@ Ext.ux.form.LovCombo = Ext.extend(Ext.form.ComboBox, {
 		this.onLoad = this.onLoad.createSequence(function() {
 			if(this.el) {
 				var v = this.el.dom.value;
-				this.el.dom.value = '';
+				//this.el.dom.value = '';
 				this.el.dom.value = v;
 			}
 		});
