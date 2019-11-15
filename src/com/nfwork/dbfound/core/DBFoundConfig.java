@@ -451,4 +451,40 @@ public class DBFoundConfig {
 		return reportQueryLimitSize;
 	}
 
+	public static String getListenerClass() {
+		return listenerClass;
+	}
+
+	public static void setListenerClass(String listenerClass) {
+		DBFoundConfig.listenerClass = listenerClass;
+	}
+
+	public static SimpleDateFormat getDateFormat() {
+		return dateFormat;
+	}
+
+	public static void setDateFormat(SimpleDateFormat dateFormat) {
+		DBFoundConfig.dateFormat = dateFormat;
+	}
+
+	public static List<DataSourceConnectionProvide> getDsp() {
+		return dsp;
+	}
+
+	public static void setDsp(List<DataSourceConnectionProvide> dsp) {
+		DBFoundConfig.dsp = dsp;
+	}
+
+	public static void setQueryLimit(boolean queryLimit) {
+		DBFoundConfig.queryLimit = queryLimit;
+	}
+
+	public static void setQueryLimitSize(int queryLimitSize) {
+		DBFoundConfig.queryLimitSize = queryLimitSize;
+	}
+
+	public static void setReportQueryLimitSize(int reportQueryLimitSize) {
+		DBFoundConfig.reportQueryLimitSize = reportQueryLimitSize;
+	}
+	
 }
