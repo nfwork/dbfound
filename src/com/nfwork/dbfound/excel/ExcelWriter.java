@@ -118,7 +118,7 @@ public class ExcelWriter {
 			writeExcel(file, result, columns);
 
 			// 向外输出excel
-			context.response.setContentType("application/x-download;");
+			context.response.setContentType("application/x-download");
 			context.response.setHeader("Content-Disposition",
 					"attachment;filename=export.xls");
 			sout = context.response.getOutputStream(); // 图片输出的输出流
