@@ -40,6 +40,7 @@
 							<xsd:restriction base="xsd:NMTOKEN">
 								<xsd:enumeration value="varchar" />
 								<xsd:enumeration value="number" />
+								<xsd:enumeration value="date" />
 								<xsd:enumeration value="file" />
 							</xsd:restriction>
 						</xsd:simpleType>
@@ -83,6 +84,7 @@
 				<xsd:restriction base="xsd:NMTOKEN">
 					<xsd:enumeration value="varchar" />
 					<xsd:enumeration value="number" />
+					<xsd:enumeration value="date" />
 					<xsd:enumeration value="file" />
 				</xsd:restriction>
 			</xsd:simpleType>

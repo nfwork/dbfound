@@ -433,7 +433,8 @@ public class ModelEngine {
 		} else {
 			// 判断sourcePath 是绝对路径，还是相当路径
 			if (sourcePath.startsWith(ELEngine.sessionScope) || sourcePath.startsWith(ELEngine.requestScope)
-					|| sourcePath.startsWith(ELEngine.outParamScope) || sourcePath.startsWith(ELEngine.paramScope)) {
+					|| sourcePath.startsWith(ELEngine.outParamScope) || sourcePath.startsWith(ELEngine.paramScope)
+					|| sourcePath.startsWith(ELEngine.cookieScope) || sourcePath.startsWith(ELEngine.headerScope)) {
 				realPath = sourcePath;
 			} else {
 				realPath = currentPath + "." + sourcePath;

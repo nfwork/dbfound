@@ -3,6 +3,7 @@ package com.nfwork.dbfound.model.bean;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -108,7 +109,14 @@ public abstract class SqlEntity extends Sqls {
 				} else {
 					statement.setDouble(cursor, Double.parseDouble(paramValue));
 				}
-			} else if (paramDataType.equals("file")) {
+			} else if(paramDataType.equals("date")){
+				if(nfParam.getValue() instanceof Date){
+					Date date =  (Date)nfParam.getValue();
+					statement.setDate(cursor, new java.sql.Date(date.getTime()));
+				}else{
+					statement.setString(cursor, paramValue);
+				}
+			}else if (paramDataType.equals("file")) {
 				FileItem item = null;
 				try {
 					String saveType = nfParam.getFileSaveType();

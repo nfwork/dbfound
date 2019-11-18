@@ -7,6 +7,8 @@ public class ELEngine {
 	public static final String requestScope = "request.";
 	public static final String paramScope = "param.";
 	public static final String outParamScope = "outParam.";
+	public static final String cookieScope = "cookie.";
+	public static final String headerScope = "header.";
 
 	public static String parse(PageContext pageContext, String text)
 			throws Exception {
