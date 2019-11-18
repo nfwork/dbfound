@@ -63,7 +63,8 @@ public abstract class SqlEntity extends Sqls {
 	 * @throws SQLException
 	 * @throws NumberFormatException
 	 */
-	public void initParam(PreparedStatement statement, String sql, Map<String, Param> params) throws NumberFormatException, SQLException {
+	public void initParam(PreparedStatement statement, String sql, Map<String, Param> params)
+			throws NumberFormatException, SQLException {
 
 		String paramValue;
 		String paramDataType;
@@ -109,8 +110,7 @@ public abstract class SqlEntity extends Sqls {
 				if (nfParam.getValue() instanceof java.sql.Date) {
 					java.sql.Date date = (java.sql.Date) nfParam.getValue();
 					statement.setDate(cursor, date);
-				}
-				if (nfParam.getValue() instanceof Date) {
+				} else if (nfParam.getValue() instanceof Date) {
 					Date date = (Date) nfParam.getValue();
 					statement.setTimestamp(cursor, new Timestamp(date.getTime()));
 				} else {

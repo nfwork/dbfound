@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
@@ -24,9 +26,9 @@ public class QuerySql extends SqlEntity {
 
 	private static final long serialVersionUID = -8182147424516469176L;
 
-	public void execute(Context context, Map<String, Param> params,
-			String provideName) {
-		
+	@SuppressWarnings("deprecation")
+	public void execute(Context context, Map<String, Param> params, String provideName) {
+
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
@@ -54,21 +56,25 @@ public class QuerySql extends SqlEntity {
 
 					Param param = params.get(columnName);
 					if (param == null) {
-						throw new ParamNotFoundException("param: " + columnName
-								+ " 没有定义");
+						throw new ParamNotFoundException("param: " + columnName + " 没有定义");
 					}
 					String paramType = param.getDataType();
 					if ("varchar".equals(paramType)) {
 						param.setValue(value);
 					} else if ("number".equals(paramType)) {
-						if (value == null || value.endsWith(".0")
-								|| value.indexOf(".") == -1) {
+						if (value == null || value.endsWith(".0") || value.indexOf(".") == -1) {
 							param.setValue(dataset.getLong(i));
 						} else {
 							param.setValue(dataset.getDouble(i));
 						}
 					} else if ("date".equals(paramType)) {
-						param.setValue(dataset.getDate(i));
+						Timestamp timestamp = dataset.getTimestamp(i, Calendar.getInstance());
+						if (timestamp != null && timestamp.getHours() == 0 && timestamp.getMinutes() == 0
+								&& timestamp.getSeconds() == 0) {
+							param.setValue(dataset.getDate(i, Calendar.getInstance()));
+						} else {
+							param.setValue(timestamp);
+						}
 					} else if ("file".equals(paramType)) {
 						blobExecute(columnName, dataset, params, param, i);
 					}
@@ -76,8 +82,7 @@ public class QuerySql extends SqlEntity {
 				}
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("querySql执行异常:"
-					+ e.getMessage(), e);
+			throw new DBFoundPackageException("querySql执行异常:" + e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
@@ -85,8 +90,7 @@ public class QuerySql extends SqlEntity {
 		}
 	}
 
-	private void blobExecute(String columnName, ResultSet dataset,
-			Map<String, Param> params, Param param, int index) {
+	private void blobExecute(String columnName, ResultSet dataset, Map<String, Param> params, Param param, int index) {
 		try {
 
 			if ("out".equals(param.getIoType())) {
@@ -96,8 +100,7 @@ public class QuerySql extends SqlEntity {
 					try {
 						if (in != null) {
 							String fileName = UUIDUtil.getUUID() + ".dbf";
-							File file = new File(FileUtil
-									.getUploadFolder(null), fileName);
+							File file = new File(FileUtil.getUploadFolder(null), fileName);
 							out = new FileOutputStream(file);
 							byte b[] = new byte[2048];
 							int i = in.read(b);
@@ -121,8 +124,7 @@ public class QuerySql extends SqlEntity {
 				}
 			}
 		} catch (Exception e) {
-			throw new DBFoundPackageException("lob 字段处理异常:"
-					+ e.getMessage(), e);
+			throw new DBFoundPackageException("lob 字段处理异常:" + e.getMessage(), e);
 		}
 	}
 }
