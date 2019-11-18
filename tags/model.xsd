@@ -50,6 +50,8 @@
 								<xsd:enumeration value="session" />
 								<xsd:enumeration value="request" />
 								<xsd:enumeration value="param" />
+								<xsd:enumeration value="cookie" />
+								<xsd:enumeration value="header" />
 								<xsd:enumeration value="outParam" />
 							</xsd:restriction>
 						</xsd:simpleType>
@@ -91,6 +93,8 @@
 					<xsd:enumeration value="session" />
 					<xsd:enumeration value="request" />
 					<xsd:enumeration value="param" />
+					<xsd:enumeration value="cookie" />
+					<xsd:enumeration value="header" />
 					<xsd:enumeration value="outParam" />
 				</xsd:restriction>
 			</xsd:simpleType>

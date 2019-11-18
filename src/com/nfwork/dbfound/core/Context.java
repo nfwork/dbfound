@@ -9,6 +9,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -43,32 +44,50 @@ public class Context {
 	private Map<String, Object> outParamDatas;
 	private Map<String, Object> requestDatas;
 	private Map<String, Object> sessionDatas;
+	private Map<String, Object> cookieDatas;
+	private Map<String, Object> headerDatas;
+	private boolean openSession;
+
 	private Transaction transaction = new Transaction();
 	private String createThreadName = Thread.currentThread().getName();
 
 	public Transaction getTransaction() {
 		String runName = Thread.currentThread().getName();
 		if (createThreadName.equals(runName) == false) {
-			throw new DBFoundRuntimeException(String
-					.format("Context transaction can not user by diffrent thread，create thread:%s, run thread：%s", createThreadName, runName));
+			throw new DBFoundRuntimeException(String.format("Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
+					createThreadName, runName));
 		}
 		return transaction;
 	}
 
 	/**
-	 * 得到当前的Thread
+	 * 得到当前的context，开启session
+	 * 
 	 * @param request
 	 * @param response
 	 * @return
 	 */
 	public static Context getCurrentContext(HttpServletRequest request, HttpServletResponse response) {
+		return getCurrentContext(request, response, true);
+	}
+	
+	/**
+	 * 得到当前 context，是否需要开启session
+	 * @param request
+	 * @param response
+	 * @param openSession
+	 * @return
+	 */
+	public static Context getCurrentContext(HttpServletRequest request, HttpServletResponse response , boolean openSession) {
 		Object context = request.getAttribute("_currentContext");
 		if (context == null) {
-			context = new Context(request, response);
+			context = new Context(request, response, openSession);
 			request.setAttribute("_currentContext", context);
 		}
 		return (Context) context;
 	}
+	
+	
 
 	public Context() {
 		rootDatas = new HashMap<String, Object>();
@@ -86,16 +105,60 @@ public class Context {
 		rootDatas = datas;
 	}
 
-	private Context(HttpServletRequest request, HttpServletResponse response) {
+	private Context(HttpServletRequest request, HttpServletResponse response, boolean openSession) {
 		rootDatas = new HashMap<String, Object>();
 
 		cloneParamData(request);
 		cloneRequestData(request);
-		cloneSessionData(request.getSession());
+		cloneHeaderData(request);
+		cloneCookieData(request);
+		if (openSession) {
+			cloneSessionData(request.getSession());
+		}
 
 		inWebContainer = true;
+		this.openSession = openSession;
 		this.request = request;
 		this.response = response;
+	}
+
+	/**
+	 * cloneCookieData
+	 * 
+	 * @param request
+	 */
+	public void cloneCookieData(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			if (cookieDatas == null) {
+				cookieDatas = new HashMap<String, Object>();
+				rootDatas.put("cookie", cookieDatas);
+			}
+			for (Cookie cookie : cookies) {
+				if (cookie.getName() != null) {
+					cookieDatas.put(cookie.getName(), cookie);
+				}
+			}
+		}
+	}
+
+	/**
+	 * clone header data
+	 * 
+	 * @param request
+	 */
+	public void cloneHeaderData(HttpServletRequest request) {
+		Enumeration<String> enumeration = request.getHeaderNames();
+		if (headerDatas == null) {
+			headerDatas = new HashMap<String, Object>();
+			rootDatas.put("header", headerDatas);
+		}
+		while (enumeration.hasMoreElements()) {
+			String key = enumeration.nextElement();
+			if (key != null) {
+				headerDatas.put(key, request.getHeader(key));
+			}
+		}
 	}
 
 	/**
@@ -103,6 +166,9 @@ public class Context {
 	 */
 	@SuppressWarnings("unchecked")
 	public void cloneSessionData(HttpSession session) {
+		if(this.openSession == false){
+			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
+		}
 		Enumeration<String> enumeration = session.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String paramName = enumeration.nextElement();
@@ -137,7 +203,7 @@ public class Context {
 	/**
 	 * 复制request数据
 	 */
-	@SuppressWarnings( { "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public void cloneRequestData(HttpServletRequest request) {
 		Enumeration<String> enumeration = request.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
@@ -157,6 +223,7 @@ public class Context {
 
 	/**
 	 * 根据表达式得到context内容
+	 * 
 	 * @param express
 	 * @param class1
 	 * @return
@@ -313,6 +380,9 @@ public class Context {
 	 * @param object
 	 */
 	public void setSessionData(String name, Object object) {
+		if(this.openSession == false){
+			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
+		}
 		if (name.indexOf(".") > -1) {
 			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
@@ -352,6 +422,7 @@ public class Context {
 
 	/**
 	 * 得到数据库连接
+	 * 
 	 * @param provideName
 	 * @return
 	 */
@@ -360,8 +431,8 @@ public class Context {
 		// 校验是否夸线程
 		String runName = Thread.currentThread().getName();
 		if (createThreadName.equals(runName) == false) {
-			throw new DBFoundRuntimeException(String
-					.format("Context transaction can not user by diffrent thread，create thread:%s, run thread：%s", createThreadName, runName));
+			throw new DBFoundRuntimeException(String.format("Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
+					createThreadName, runName));
 		}
 
 		if (transaction.isOpen()) {
@@ -394,6 +465,7 @@ public class Context {
 
 	/**
 	 * 得到默认数据库连接
+	 * 
 	 * @return
 	 * @throws SQLException
 	 */
