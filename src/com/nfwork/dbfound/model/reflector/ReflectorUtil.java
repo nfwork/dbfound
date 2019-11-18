@@ -5,6 +5,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -55,12 +56,12 @@ public class ReflectorUtil {
 							} else if (fieldtype.equals(Boolean.class) || fieldtype.equals(boolean.class)) {
 								columnvalue = rs.getBoolean(i);
 							} else if (fieldtype.equals(Timestamp.class)) {
-								columnvalue = rs.getTimestamp(i);
+								columnvalue = rs.getTimestamp(i, Calendar.getInstance());
 							} else if (fieldtype.equals(java.sql.Date.class)) {
-								columnvalue = rs.getDate(i);
+								columnvalue = rs.getDate(i, Calendar.getInstance());
 							} else if (fieldtype.equals(Date.class)) {
-								columnvalue = rs.getTimestamp(i);
-							}  else if (fieldtype.equals(String.class)) {
+								columnvalue = rs.getTimestamp(i, Calendar.getInstance());
+							} else if (fieldtype.equals(String.class)) {
 								columnvalue = rs.getString(i);
 							}
 
