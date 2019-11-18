@@ -7,6 +7,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -217,32 +218,16 @@ public class Query extends SqlEntity {
 						}
 						break;
 					case Types.DATE:
-						if (value.length() > 19) {
-							mapdata.put(columnName, value.subSequence(0, 19));
-						} else {
-							mapdata.put(columnName, value);
-						}
+						mapdata.put(columnName, dataset.getDate(i, Calendar.getInstance()));
 						break;
 					case Types.TIME:
-						if (value.length() > 19) {
-							mapdata.put(columnName, value.subSequence(0, 19));
-						} else {
-							mapdata.put(columnName, value);
-						}
-						break;
 					case Types.TIMESTAMP:
-						if (value.length() > 19) {
-							mapdata.put(columnName, value.subSequence(0, 19));
-						} else {
-							mapdata.put(columnName, value);
-						}
+						mapdata.put(columnName, dataset.getTimestamp(i, Calendar.getInstance()));
 						break;
-					case Types.BLOB:
-						break;
+					// case Types.BLOB: break;
 					// case Types.CLOB: break;
 					// case Types.NCLOB: break;
-					case Types.LONGVARBINARY:
-						break;
+					// case Types.LONGVARBINARY: break;
 					default:
 						mapdata.put(columnName, value);
 					}

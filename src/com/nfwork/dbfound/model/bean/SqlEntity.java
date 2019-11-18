@@ -3,6 +3,7 @@ package com.nfwork.dbfound.model.bean;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 
-
 public abstract class SqlEntity extends Sqls {
 
 	private static final long serialVersionUID = 3035666882993092230L;
@@ -29,7 +29,7 @@ public abstract class SqlEntity extends Sqls {
 	protected static String replaceString = "\\$\\{\\@[ a-zA-Z_0-9\u4E00-\u9FA5]*\\}";
 
 	@Override
-	public void run(){
+	public void run() {
 		Entity entity = getParent();
 		if (entity instanceof Sqls) {
 			Sqls sqls = (Sqls) entity;
@@ -38,13 +38,12 @@ public abstract class SqlEntity extends Sqls {
 	}
 
 	@Override
-	public void init(Element element){
+	public void init(Element element) {
 		sql = element.getTextTrim();
 		super.init(element);
 	}
 
-	public abstract void execute(Context context, Map<String, Param> params,
-			String provideName) ;
+	public abstract void execute(Context context, Map<String, Param> params, String provideName);
 
 	/**
 	 * 得到最后执行的sql语句
@@ -64,9 +63,7 @@ public abstract class SqlEntity extends Sqls {
 	 * @throws SQLException
 	 * @throws NumberFormatException
 	 */
-	public void initParam(PreparedStatement statement, String sql,
-			Map<String, Param> params) throws NumberFormatException,
-			SQLException {
+	public void initParam(PreparedStatement statement, String sql, Map<String, Param> params) throws NumberFormatException, SQLException {
 
 		String paramValue;
 		String paramDataType;
@@ -102,21 +99,24 @@ public abstract class SqlEntity extends Sqls {
 				} else if (paramValue.indexOf(".") == -1) {
 					statement.setLong(cursor, Long.parseLong(paramValue));
 				} else if (paramValue.endsWith(".0")) {
-					paramValue = paramValue.substring(0,
-							paramValue.length() - 2);
+					paramValue = paramValue.substring(0, paramValue.length() - 2);
 					nfParam.setValue(paramValue);
 					statement.setLong(cursor, Long.parseLong(paramValue));
 				} else {
 					statement.setDouble(cursor, Double.parseDouble(paramValue));
 				}
-			} else if(paramDataType.equals("date")){
-				if(nfParam.getValue() instanceof Date){
-					Date date =  (Date)nfParam.getValue();
-					statement.setDate(cursor, new java.sql.Date(date.getTime()));
-				}else{
+			} else if (paramDataType.equals("date")) {
+				if (nfParam.getValue() instanceof java.sql.Date) {
+					java.sql.Date date = (java.sql.Date) nfParam.getValue();
+					statement.setDate(cursor, date);
+				}
+				if (nfParam.getValue() instanceof Date) {
+					Date date = (Date) nfParam.getValue();
+					statement.setTimestamp(cursor, new Timestamp(date.getTime()));
+				} else {
 					statement.setString(cursor, paramValue);
 				}
-			}else if (paramDataType.equals("file")) {
+			} else if (paramDataType.equals("file")) {
 				FileItem item = null;
 				try {
 					String saveType = nfParam.getFileSaveType();
@@ -124,16 +124,12 @@ public abstract class SqlEntity extends Sqls {
 					if (o != null) {
 						item = (FileItem) o;
 						if ("db".equals(saveType)) {
-							statement.setBinaryStream(cursor, item
-									.getInputStream(), (int) item.getSize());
+							statement.setBinaryStream(cursor, item.getInputStream(), (int) item.getSize());
 						} else {
 							String filename = UUIDUtil.getUUID() + ".uf";
-							String fileFoldName = FileUtil
-									.getUploadFolderName();
-							item.write(new File(FileUtil
-									.getUploadFolder(fileFoldName), filename));
-							statement.setString(cursor, fileFoldName + "/"
-									+ filename);
+							String fileFoldName = FileUtil.getUploadFolderName();
+							item.write(new File(FileUtil.getUploadFolder(fileFoldName), filename));
+							statement.setString(cursor, fileFoldName + "/" + filename);
 						}
 					}
 				} catch (Exception e) {

@@ -46,7 +46,7 @@ public class Context {
 	private Map<String, Object> sessionDatas;
 	private Map<String, Object> cookieDatas;
 	private Map<String, Object> headerDatas;
-	private boolean openSession;
+	private boolean openSession = true;
 
 	private Transaction transaction = new Transaction();
 	private String createThreadName = Thread.currentThread().getName();

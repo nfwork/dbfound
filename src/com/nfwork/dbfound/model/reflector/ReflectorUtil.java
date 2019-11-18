@@ -54,12 +54,13 @@ public class ReflectorUtil {
 								columnvalue = rs.getDouble(i);
 							} else if (fieldtype.equals(Boolean.class) || fieldtype.equals(boolean.class)) {
 								columnvalue = rs.getBoolean(i);
-							} else if (fieldtype.equals(Date.class)) {
+							} else if (fieldtype.equals(Timestamp.class)) {
 								columnvalue = rs.getTimestamp(i);
 							} else if (fieldtype.equals(java.sql.Date.class)) {
-								Timestamp timestamp = rs.getTimestamp(i);
-								columnvalue = new java.sql.Date(timestamp.getTime());
-							} else if (fieldtype.equals(String.class)) {
+								columnvalue = rs.getDate(i);
+							} else if (fieldtype.equals(Date.class)) {
+								columnvalue = rs.getTimestamp(i);
+							}  else if (fieldtype.equals(String.class)) {
 								columnvalue = rs.getString(i);
 							}
 

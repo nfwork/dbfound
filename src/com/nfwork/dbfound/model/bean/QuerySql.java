@@ -67,6 +67,8 @@ public class QuerySql extends SqlEntity {
 						} else {
 							param.setValue(dataset.getDouble(i));
 						}
+					} else if ("date".equals(paramType)) {
+						param.setValue(dataset.getDate(i));
 					} else if ("file".equals(paramType)) {
 						blobExecute(columnName, dataset, params, param, i);
 					}
