@@ -1,6 +1,8 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -117,19 +119,30 @@ public abstract class SqlEntity extends Sqls {
 					statement.setString(cursor, paramValue);
 				}
 			} else if (paramDataType.equals("file")) {
-				FileItem item = null;
 				try {
 					String saveType = nfParam.getFileSaveType();
 					Object o = nfParam.getValue();
 					if (o != null) {
-						item = (FileItem) o;
-						if ("db".equals(saveType)) {
-							statement.setBinaryStream(cursor, item.getInputStream(), (int) item.getSize());
-						} else {
-							String filename = UUIDUtil.getUUID() + ".uf";
-							String fileFoldName = FileUtil.getUploadFolderName();
-							item.write(new File(FileUtil.getUploadFolder(fileFoldName), filename));
-							statement.setString(cursor, fileFoldName + "/" + filename);
+						if(o instanceof FileItem){
+							FileItem item = (FileItem) o;
+							if ("db".equals(saveType)) {
+								statement.setBinaryStream(cursor, item.getInputStream(), (int) item.getSize());
+							} else {
+								String filename = UUIDUtil.getUUID() + ".uf";
+								String fileFoldName = FileUtil.getUploadFolderName();
+								item.write(new File(FileUtil.getUploadFolder(fileFoldName), filename));
+								statement.setString(cursor, fileFoldName + "/" + filename);
+							}
+						}else if(o instanceof File){
+							File file = (File) o;
+							if ("db".equals(saveType)) {
+								statement.setBinaryStream(cursor, new FileInputStream(file), file.length());
+							} 
+						}else if(o instanceof InputStream){
+							InputStream inputStream = (InputStream) o;
+							if ("db".equals(saveType)) {
+								statement.setBinaryStream(cursor, inputStream);
+							} 
 						}
 					}
 				} catch (Exception e) {
