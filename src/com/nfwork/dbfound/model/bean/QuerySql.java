@@ -26,7 +26,6 @@ public class QuerySql extends SqlEntity {
 
 	private static final long serialVersionUID = -8182147424516469176L;
 
-	@SuppressWarnings("deprecation")
 	public void execute(Context context, Map<String, Param> params, String provideName) {
 
 		Connection conn = context.getConn(provideName);
@@ -69,11 +68,18 @@ public class QuerySql extends SqlEntity {
 						}
 					} else if ("date".equals(paramType)) {
 						Timestamp timestamp = dataset.getTimestamp(i, Calendar.getInstance());
-						if (timestamp != null && timestamp.getHours() == 0 && timestamp.getMinutes() == 0
-								&& timestamp.getSeconds() == 0) {
-							param.setValue(dataset.getDate(i, Calendar.getInstance()));
-						} else {
+						if (timestamp == null) {
 							param.setValue(timestamp);
+						} else {
+							Calendar calendar = Calendar.getInstance();
+							calendar.setTime(timestamp);
+
+							if (timestamp != null && calendar.get(Calendar.HOUR_OF_DAY) == 0 && calendar.get(Calendar.MINUTE) == 0
+									&& calendar.get(Calendar.SECOND) == 0) {
+								param.setValue(dataset.getDate(i, Calendar.getInstance()));
+							} else {
+								param.setValue(timestamp);
+							}
 						}
 					} else if ("file".equals(paramType)) {
 						blobExecute(columnName, dataset, params, param, i);

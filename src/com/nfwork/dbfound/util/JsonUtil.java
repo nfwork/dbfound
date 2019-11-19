@@ -210,9 +210,9 @@ public class JsonUtil {
 		return sb.toString();
 	}
 
-	@SuppressWarnings("unchecked")
 	private static String objectToJson(Object obj) {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		StringBuilder json = new StringBuilder();
 		if (obj == null) {
 			json.append("\"\"");
@@ -224,6 +224,8 @@ public class JsonUtil {
 			json.append("\"").append(stringToJson(obj.toString())).append("\"");
 		} else if (obj instanceof Object[]) {
 			json.append(arrayToJson((Object[]) obj));
+		} else if (obj instanceof java.sql.Date) {
+			json.append("\"").append(dateFormat.format(obj)).append("\"");
 		} else if (obj instanceof Date) {
 			json.append("\"").append(format.format(obj)).append("\"");
 		} else if (obj instanceof List) {

@@ -147,6 +147,7 @@ public class Query extends SqlEntity {
 				colNames[i] = metaset.getColumnLabel(i).toLowerCase();
 			}
 			int totalCounts = 0;
+			Calendar defaultCalendar = Calendar.getInstance();
 			while (dataset.next()) {
 				if (context.queryLimit && ++totalCounts > context.queryLimitSize) {
 					break;
@@ -218,11 +219,11 @@ public class Query extends SqlEntity {
 						}
 						break;
 					case Types.DATE:
-						mapdata.put(columnName, dataset.getDate(i, Calendar.getInstance()));
+						mapdata.put(columnName, dataset.getDate(i, defaultCalendar));
 						break;
 					case Types.TIME:
 					case Types.TIMESTAMP:
-						mapdata.put(columnName, dataset.getTimestamp(i, Calendar.getInstance()));
+						mapdata.put(columnName, dataset.getTimestamp(i, defaultCalendar));
 						break;
 					// case Types.BLOB: break;
 					// case Types.CLOB: break;

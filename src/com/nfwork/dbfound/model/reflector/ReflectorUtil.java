@@ -18,6 +18,9 @@ public class ReflectorUtil {
 		List<T> array = new ArrayList<T>();
 
 		if (rs != null) {
+			
+			Calendar defaultCalendar = Calendar.getInstance();
+			
 			ResultSetMetaData md = rs.getMetaData();
 			int columnCount = md.getColumnCount();
 			Reflector reflector = Reflector.forClass(clazz);
@@ -56,11 +59,11 @@ public class ReflectorUtil {
 							} else if (fieldtype.equals(Boolean.class) || fieldtype.equals(boolean.class)) {
 								columnvalue = rs.getBoolean(i);
 							} else if (fieldtype.equals(Timestamp.class)) {
-								columnvalue = rs.getTimestamp(i, Calendar.getInstance());
+								columnvalue = rs.getTimestamp(i, defaultCalendar);
 							} else if (fieldtype.equals(java.sql.Date.class)) {
-								columnvalue = rs.getDate(i, Calendar.getInstance());
+								columnvalue = rs.getDate(i, defaultCalendar);
 							} else if (fieldtype.equals(Date.class)) {
-								columnvalue = rs.getTimestamp(i, Calendar.getInstance());
+								columnvalue = rs.getTimestamp(i, defaultCalendar);
 							} else if (fieldtype.equals(String.class)) {
 								columnvalue = rs.getString(i);
 							}
