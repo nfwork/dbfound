@@ -2,7 +2,8 @@
 dbfound快速应用开发平台
 <p>
   DBFound API开发文档： <a href='https://my.oschina.net/nfwork/blog/322892'>https://my.oschina.net/nfwork/blog/322892</a><br>
-  DBfound + SpringBoot 集成文档 <a href='https://my.oschina.net/nfwork/blog/3130250'>https://my.oschina.net/nfwork/blog/3130250</a>
+  DBfound + SpringBoot 集成文档 <a href='https://my.oschina.net/nfwork/blog/3130250'>https://my.oschina.net/nfwork/blog/3130250</a><br>
+  dbfound ui组件grid 实现后端sql排序： <a href='https://my.oschina.net/nfwork/blog/3131708'>https://my.oschina.net/nfwork/blog/3131708</a><br>
 </p>
 <p>
 DBFound宗旨：解决开发技术复杂、难度高、开发速度慢等问题。
