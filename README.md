@@ -1,6 +1,10 @@
 # dbfound
 dbfound快速应用开发平台
 <p>
+  DBFound API开发文档： <a href='https://my.oschina.net/nfwork/blog/322892'>https://my.oschina.net/nfwork/blog/322892</a><br>
+  DBfound + SpringBoot 集成文档 <a href='https://my.oschina.net/nfwork/blog/3130250'>https://my.oschina.net/nfwork/blog/3130250</a>
+</p>
+<p>
 DBFound宗旨：解决开发技术复杂、难度高、开发速度慢等问题。
               提供快速、便利、高效率的开发平台。
 </p>
