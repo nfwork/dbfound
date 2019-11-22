@@ -3,7 +3,7 @@
 
 	<system>
 		<openLog>true</openLog>
-		<modeRootPath>${@projectRoot}/WEB-INF/model</modeRootPath>
+		<modeRootPath>${@classpath}/model</modeRootPath>
 		<queryLimit>true</queryLimit>
 		<queryLimitSize>5000</queryLimitSize>
 		<reportQueryLimitSize>50000</reportQueryLimitSize>
@@ -23,12 +23,10 @@
 				<property name="validationQuery" value="select 1" />
 			</properties>
 		</dataSourceConnectionProvide>
-
 	</database>
 
 	<web>
 		<encoding>utf-8</encoding>
-		<mvcConfigFile>${@projectRoot}/WEB-INF/dbfound-mvc.xml</mvcConfigFile>
 		<interceptor>dbfount.test.core.AccessCheckInterceptor</interceptor>
 		<maxUploadSize>20</maxUploadSize>
 	</web>

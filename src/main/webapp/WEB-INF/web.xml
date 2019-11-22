@@ -17,10 +17,6 @@
 	<filter>
 		<filter-name>DBFound</filter-name>
 		<filter-class>com.nfwork.dbfound.web.DispatcherFilter</filter-class>
-		<init-param>
-			<param-name>configFilePath</param-name>
-			<param-value>${@projectRoot}/WEB-INF/dbfound-conf.xml</param-value>
-		</init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>DBFound</filter-name>
