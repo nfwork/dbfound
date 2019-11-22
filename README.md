@@ -1,34 +1,47 @@
-# dbfound
-dbfound快速应用开发平台
-<p>
-  DBFound 开发环境搭建： <a href='https://my.oschina.net/nfwork/blog/3132793'>https://my.oschina.net/nfwork/blog/3132793</a><br>
-  DBFound API开发文档： <a href='https://my.oschina.net/nfwork/blog/322892'>https://my.oschina.net/nfwork/blog/322892</a><br>
-  DBfound + SpringBoot 集成文档 <a href='https://my.oschina.net/nfwork/blog/3130250'>https://my.oschina.net/nfwork/blog/3130250</a><br>
-  dbfound ui组件grid 实现后端sql排序： <a href='https://my.oschina.net/nfwork/blog/3131708'>https://my.oschina.net/nfwork/blog/3131708</a><br>
-</p>
-<p>
-DBFound宗旨：解决开发技术复杂、难度高、开发速度慢等问题。
-              提供快速、便利、高效率的开发平台。
-</p>
-<p>
-DBFound特性：
-</p>
-<p>
-简叙：
-    在如移动互联网行业，管理后台具有一些明显的特点，1、系统多；2、系统小；3、开发周期短，上线快，4、需求变化快。为了满足这些个性化的要求，我们需要一套针对性的快速应用开发平台，来满足这个需求。
-    同时由于开发人员流动大，所以开发平台的简易程度也直接影响到了系统的交接与运维；
-    面对如此场景，一款新的快速应用开发平台应运而生--dbfound快递应用开发平台。
-</p>
-<p>
-无缝的数据交互：
-   dbfound实现了前后端无缝的数据交互。只需要指定后端的响应地址。系统自动将数据传送到后端java中进行处理。
-   中间通过数据容器Context，js与java之间直接进行Object对象交互。无须额外的格式转化。
-</p>
-<p>
-智能存储：
-   dbfound model实现与数据库进行交互的，程序中无须管理数据库连接、事务、资源的释放、数据格式转化等繁琐问题。
-   将sql配置在model（一个xml文件）中，调用指定model实现智能的数据库交互。 
-   dbfound model实现了热部署，我们可以实时改变sql语句，大大的缩短调试而重启服务器的次数。
-   框架提供了浏览器远程ajax调用model的接口，model将二维表结构转化为List-Map格式，然后转化为json格式传递给前台。
-   整个过程对程序员来说是透明的。程序员要做的只是配一个xml文件。
-</p>
+## 前言
+
+    dbfound是笔者在2011年开始起草的一个持久层框架，2012年发布1.0版本，在googlecode开源；2014年迁移到github；目前最新版本2.4.5。
+
+    框架最初的想法是提供一个容器，把sql以xml载体，部署运行在容器中，就可以对外提供curd等接口服务；这就是dbfound的起源；dbfound为快捷而生。
+
+    期初的dbfound只提供了rest http接口来操控数据库，在1.3版本后出现了一个新的灵感，如果有一套UI框架 也像配置sql一样 来配置界面，并且能与保存sql的xml绑定，而进行自动的增删改查，那会是一个怎么样的东西；于是有了dbfoundui。dbfoundui为款速ui开发而生，极大的简化了web前端编程的难度。
+
+    最初的dbfound结合后面的dbfoundui，组成了现在的dbfound；dbfound为快捷而生。dbfound注重后端的数据库编程，简化编程技术难点、缩减编程时间成本，对于管理后台类的数据接口非常实用；dbfoundui注重前端界面编码，以标签可配置的方式 提供简介的界面开发，在管理管理领域得到广泛认可。
+
+## dbfound环境搭建
+
+    dbfound提供了两种开发模式，一种是纯dbfound框架搭建，一种是dbfound+springboot架构；
+
+    详细的环境搭建步骤，请参考：[https://my.oschina.net/nfwork/blog/3132793](https://my.oschina.net/nfwork/blog/3132793)
+
+    我们也提供了两种架构的demo：
+
+    纯dbfound架构demo：**[https://github.com/nfwork/dbfound-demo](https://github.com/nfwork/dbfound-demo) **
+
+    dbfound+springboot架构demo：**[https://github.com/nfwork/dbfound-springboot-demo](https://github.com/nfwork/dbfound-springboot-demo) **
+
+## dbfound 开发api文档
+
+    dbfound api文档请参考：[https://my.oschina.net/nfwork/blog/322892](https://my.oschina.net/nfwork/blog/322892)
+
+## 项目开源地址
+
+    dbfound开源github地址：[https://github.com/nfwork/dbfound](https://github.com/nfwork/dbfound)
+
+    dbfound-spring-boot-starter开源地址：[https://github.com/nfwork/dbfound-spring-boot-starter](https://github.com/nfwork/dbfound-spring-boot-starter)
+
+## dbfound互联网后台案例介绍
+
+    互联网管理后台快速解决方案dbfound；[https://my.oschina.net/nfwork/blog/351012](https://my.oschina.net/nfwork/blog/351012)
+
+## dbfound与springboot集成介绍
+
+    dbfound与springboot集成文档：[https://my.oschina.net/nfwork/blog/3130250](https://my.oschina.net/nfwork/blog/3130250)
+
+## dbfound三层架构介绍
+
+    dbfound三层架构使用，dbfound自身的mvc 和 dbfound+springboot架构下的 springmvc
+
+    [https://my.oschina.net/nfwork/blog/323182](https://my.oschina.net/nfwork/blog/323182)
+
+
