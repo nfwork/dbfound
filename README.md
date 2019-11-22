@@ -23,6 +23,8 @@
 ## dbfound 开发api文档
 
     dbfound api文档请参考：[https://my.oschina.net/nfwork/blog/322892](https://my.oschina.net/nfwork/blog/322892)
+    
+    dbfound api github wiki：[https://github.com/nfwork/dbfound/wiki](https://github.com/nfwork/dbfound/wiki)
 
 ## 项目开源地址
 
