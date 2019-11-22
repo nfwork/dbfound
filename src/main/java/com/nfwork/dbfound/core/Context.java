@@ -46,7 +46,7 @@ public class Context {
 	private Map<String, Object> sessionDatas;
 	private Map<String, Object> cookieDatas;
 	private Map<String, Object> headerDatas;
-	private boolean openSession = true;
+	private static boolean openSession = true;
 
 	private Transaction transaction = new Transaction();
 	private String createThreadName = Thread.currentThread().getName();
@@ -54,7 +54,8 @@ public class Context {
 	public Transaction getTransaction() {
 		String runName = Thread.currentThread().getName();
 		if (createThreadName.equals(runName) == false) {
-			throw new DBFoundRuntimeException(String.format("Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
+			throw new DBFoundRuntimeException(String.format(
+					"Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
 					createThreadName, runName));
 		}
 		return transaction;
@@ -68,17 +69,19 @@ public class Context {
 	 * @return
 	 */
 	public static Context getCurrentContext(HttpServletRequest request, HttpServletResponse response) {
-		return getCurrentContext(request, response, true);
+		return getCurrentContext(request, response, openSession);
 	}
-	
+
 	/**
 	 * 得到当前 context，是否需要开启session
+	 * 
 	 * @param request
 	 * @param response
 	 * @param openSession
 	 * @return
 	 */
-	public static Context getCurrentContext(HttpServletRequest request, HttpServletResponse response , boolean openSession) {
+	public static Context getCurrentContext(HttpServletRequest request, HttpServletResponse response,
+			boolean openSession) {
 		Object context = request.getAttribute("_currentContext");
 		if (context == null) {
 			context = new Context(request, response, openSession);
@@ -86,8 +89,6 @@ public class Context {
 		}
 		return (Context) context;
 	}
-	
-	
 
 	public Context() {
 		rootDatas = new HashMap<String, Object>();
@@ -117,7 +118,7 @@ public class Context {
 		}
 
 		inWebContainer = true;
-		this.openSession = openSession;
+		Context.openSession = openSession;
 		this.request = request;
 		this.response = response;
 	}
@@ -166,7 +167,7 @@ public class Context {
 	 */
 	@SuppressWarnings("unchecked")
 	public void cloneSessionData(HttpSession session) {
-		if(this.openSession == false){
+		if (this.openSession == false) {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
 		}
 		Enumeration<String> enumeration = session.getAttributeNames();
@@ -380,7 +381,7 @@ public class Context {
 	 * @param object
 	 */
 	public void setSessionData(String name, Object object) {
-		if(this.openSession == false){
+		if (this.openSession == false) {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
 		}
 		if (name.indexOf(".") > -1) {
@@ -431,7 +432,8 @@ public class Context {
 		// 校验是否夸线程
 		String runName = Thread.currentThread().getName();
 		if (createThreadName.equals(runName) == false) {
-			throw new DBFoundRuntimeException(String.format("Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
+			throw new DBFoundRuntimeException(String.format(
+					"Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
 					createThreadName, runName));
 		}
 
@@ -529,6 +531,10 @@ public class Context {
 
 	public String getCreateThreadName() {
 		return createThreadName;
+	}
+	
+	public static void setOpenSession(boolean openSession) {
+		Context.openSession = openSession;
 	}
 
 	static {
