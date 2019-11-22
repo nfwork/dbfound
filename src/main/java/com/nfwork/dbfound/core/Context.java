@@ -118,7 +118,6 @@ public class Context {
 		}
 
 		inWebContainer = true;
-		Context.openSession = openSession;
 		this.request = request;
 		this.response = response;
 	}
