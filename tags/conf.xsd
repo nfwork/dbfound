@@ -24,6 +24,7 @@
 			<xsd:element maxOccurs="1" minOccurs="0" name="i18nProvide" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="mvcConfigFile" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="interceptor" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="basePath" />
 		</xsd:choice>
 	</xsd:complexType>
 

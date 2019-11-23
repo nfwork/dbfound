@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
  *
  */
 public class URLUtil {
+	
+	private static String BASE_PATH = "";
 
 	/**
 	 * 清理url中多斜杠问题
@@ -35,23 +37,30 @@ public class URLUtil {
 	 * @param request
 	 */
 	public static String getBasePath(HttpServletRequest request) {
-		/*
-		 * String basePath = request.getContextPath(); if
-		 * (basePath.endsWith("/") == false) { basePath = basePath + "/"; }
-		 */
-		StringBuffer requestUrl = request.getRequestURL();
-		String servletPath = request.getServletPath();
-
-		int index = requestUrl.indexOf(servletPath);
 		String basePath = "";
-		if (index == -1) {
-			basePath = requestUrl.toString();
-		} else {
-			basePath = requestUrl.substring(0, index);
+		
+		if(DataUtil.isNotNull(BASE_PATH)) {
+			basePath = BASE_PATH.replace("${@contextPath}", request.getContextPath()); 
+		}else {
+			StringBuffer requestUrl = request.getRequestURL();
+			String servletPath = request.getServletPath();
+
+			int index = requestUrl.indexOf(servletPath);
+			
+			if (index == -1) {
+				basePath = requestUrl.toString();
+			} else {
+				basePath = requestUrl.substring(0, index);
+			}
 		}
+		
 		if (basePath.endsWith("/") == false) {
 			basePath = basePath + "/";
 		}
 		return basePath;
+	}
+
+	public static void setBasePath(String basePath) {
+		URLUtil.BASE_PATH = basePath;
 	}
 }
