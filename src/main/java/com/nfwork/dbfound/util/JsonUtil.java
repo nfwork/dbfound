@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.nfwork.dbfound.json.JSONArray;
+import com.nfwork.dbfound.json.JSONNull;
 import com.nfwork.dbfound.json.JSONObject;
 
 /**
@@ -438,8 +439,8 @@ public class JsonUtil {
 		while (keyIter.hasNext()) {
 			key = (String) keyIter.next();
 			value = jsonObject.get(key);
-			if (value == null) {
-				valueMap.put(key, value);
+			if (value == null || value instanceof JSONNull) {
+				valueMap.put(key, null);
 			} else if (value instanceof JSONArray) {
 				Object os[] = ((JSONArray) value).toArray();
 				valueMap.put(key, jsonToList(os));
