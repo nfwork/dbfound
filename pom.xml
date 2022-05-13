@@ -11,43 +11,46 @@
 		<java.version>1.6</java.version>
 	</properties>
 
- 	<name>dbfound development platform</name>
-    <url>https://github.com/nfwork/dbfound</url>
-    <description>dbfound development platform</description>
+	<name>dbfound development platform</name>
+	<url>https://github.com/nfwork/dbfound</url>
+	<description>dbfound development platform</description>
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <scm>
-        <connection>scm:git:git://github.com/nfwork/dbfound.git</connection>
-        <developerConnection>scm:git:git@github.com:nfwork/dbfound.git</developerConnection>
-        <url>https://github.com/nfwork/dbfound</url>
-    	<tag>HEAD</tag>
-  	</scm>
-  	<developers>
-        <developer>
-            <id>nfwork</id>
-            <name>nfwork</name>
-            <email>nfwork@163.com</email>
-        </developer>
-    </developers>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<connection>scm:git:git://github.com/nfwork/dbfound.git</connection>
+		<developerConnection>scm:git:git@github.com:nfwork/dbfound.git</developerConnection>
+		<url>https://github.com/nfwork/dbfound</url>
+		<tag>HEAD</tag>
+	</scm>
+	<developers>
+		<developer>
+			<id>nfwork</id>
+			<name>nfwork</name>
+			<email>nfwork@163.com</email>
+		</developer>
+	</developers>
 
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
+				<version>3.0.1</version>
 				<configuration>
 					<attach>true</attach>
 				</configuration>
@@ -63,7 +66,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
+				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -74,6 +77,15 @@
 				</executions>
 				<configuration>
 					<encoding>UTF8</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.2</version>
+				<configuration>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 
