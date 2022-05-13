@@ -41,7 +41,7 @@ public class ReflectorUtil {
 					String propertyname =colNameMap.get(columname);
 					if (propertyname == null){
 						propertyname = reflector.getFieldName(columname);
-						if ( propertyname.equals(columname)) {
+						if (!reflector.hasSetter(propertyname)) {
 							propertyname = StringUtil.underscoreToCamelCase(propertyname);
 						}
 						colNameMap.put(columname,propertyname);
