@@ -47,6 +47,7 @@ public class DBFoundConfig {
 	private static String classpath;
 	private static String projectRoot;
 	private static boolean queryLimit = true;
+	private static boolean underscoreToCamelCase = false;
 	private static int queryLimitSize = 5000;
 	private static int reportQueryLimitSize = 50000;
 
@@ -336,6 +337,19 @@ public class DBFoundConfig {
 			}
 		}
 
+		// 设置驼峰转化开关
+		Element underscoreToCamelCase = system.element("underscoreToCamelCase");
+		if (underscoreToCamelCase != null) {
+			String open = underscoreToCamelCase.getTextTrim();
+			if ("false".equals(open.trim())) {
+				DBFoundConfig.underscoreToCamelCase = false;
+				info.append("(underscoreToCamelCase=false) ");
+			} else if ("true".equals(open.trim())) {
+				DBFoundConfig.underscoreToCamelCase = true;
+				info.append("(underscoreToCamelCase=true) ");
+			}
+		}
+
 		// 设置model跟目录
 		Element modeRoot = system.element("modeRootPath");
 		if (modeRoot != null) {
@@ -501,6 +515,18 @@ public class DBFoundConfig {
 
 	public static void setQueryLimitSize(int queryLimitSize) {
 		DBFoundConfig.queryLimitSize = queryLimitSize;
+	}
+
+	public static boolean isQueryLimit() {
+		return queryLimit;
+	}
+
+	public static boolean isUnderscoreToCamelCase() {
+		return underscoreToCamelCase;
+	}
+
+	public static void setUnderscoreToCamelCase(boolean underscoreToCamelCase) {
+		DBFoundConfig.underscoreToCamelCase = underscoreToCamelCase;
 	}
 
 	public static void setReportQueryLimitSize(int reportQueryLimitSize) {

@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.util.StringUtil;
 import org.dom4j.Element;
 
 import com.nfwork.dbfound.core.Context;
@@ -145,6 +147,9 @@ public class Query extends SqlEntity {
 			String colNames[] = new String[size + 1];
 			for (int i = 1; i < colNames.length; i++) {
 				colNames[i] = metaset.getColumnLabel(i).toLowerCase();
+				if (DBFoundConfig.isUnderscoreToCamelCase()){
+					colNames[i] = StringUtil.underscoreToCamelCase(colNames[i] );
+				}
 			}
 			int totalCounts = 0;
 			Calendar defaultCalendar = Calendar.getInstance();

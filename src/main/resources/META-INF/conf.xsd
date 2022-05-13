@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" xmlns="http://dbfound.googlecode.com/conf"
+	targetNamespace="http://dbfound.googlecode.com/conf">
+
+	<xsd:element name="dbfound">
+		<xsd:complexType>
+			<xsd:choice maxOccurs="unbounded" minOccurs="0">
+				<xsd:element maxOccurs="1" minOccurs="0" name="system"
+					type="system_type" />
+				<xsd:element maxOccurs="1" minOccurs="0" name="web"
+					type="web_type" />
+				<xsd:element maxOccurs="1" minOccurs="0" name="database"
+					type="database_type" />
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:complexType name="web_type">
+		<xsd:choice maxOccurs="unbounded" minOccurs="0">
+			<xsd:element maxOccurs="1" minOccurs="0" name="encoding" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="uploadFolder" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="maxUploadSize" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="i18nProvide" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="mvcConfigFile" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="interceptor" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="basePath" />
+		</xsd:choice>
+	</xsd:complexType>
+
+	<xsd:complexType name="system_type">
+		<xsd:choice maxOccurs="unbounded" minOccurs="0">
+			<xsd:element maxOccurs="1" minOccurs="0" name="openLog" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="underscoreToCamelCase" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="modeRootPath" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="startListener" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="queryLimit" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="queryLimitSize" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="reportQueryLimitSize" />
+		</xsd:choice>
+	</xsd:complexType>
+
+	<xsd:complexType name="database_type">
+		<xsd:choice maxOccurs="unbounded" minOccurs="0">
+			<xsd:element maxOccurs="unbounded" minOccurs="0"
+				name="jdbcConnectionProvide">
+				<xsd:complexType>
+					<xsd:attribute name="provideName" />
+					<xsd:attribute name="driverClass" />
+					<xsd:attribute name="dialect" />
+					<xsd:attribute name="url" />
+					<xsd:attribute name="username" />
+					<xsd:attribute name="password" />
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element maxOccurs="unbounded" minOccurs="0"
+				name="dataSourceConnectionProvide">
+				<xsd:complexType>
+					<xsd:choice maxOccurs="unbounded" minOccurs="0">
+						<xsd:element maxOccurs="unbounded" minOccurs="0"
+							name="properties" type="properties_type" />
+					</xsd:choice>
+					<xsd:attribute name="provideName" />
+					<xsd:attribute name="className" />
+					<xsd:attribute name="dataSource" />
+					<xsd:attribute name="dialect" />
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:choice>
+	</xsd:complexType>
+
+	<xsd:complexType name="properties_type">
+		<xsd:choice maxOccurs="unbounded" minOccurs="0">
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="property"
+				type="property_type" />
+		</xsd:choice>
+	</xsd:complexType>
+
+	<xsd:complexType name="property_type">
+		<xsd:attribute name="name" />
+		<xsd:attribute name="value" />
+	</xsd:complexType>
+</xsd:schema>

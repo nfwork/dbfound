@@ -31,6 +31,7 @@
 	<xsd:complexType name="system_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="1" minOccurs="0" name="openLog" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="underscoreToCamelCase" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="modeRootPath" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="startListener" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="queryLimit" />

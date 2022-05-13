@@ -4,13 +4,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.StringUtil;
 
 public class ReflectorUtil {
 
@@ -25,6 +23,8 @@ public class ReflectorUtil {
 			int columnCount = md.getColumnCount();
 			Reflector reflector = Reflector.forClass(clazz);
 
+			Map<String,String> colNameMap = new HashMap<String, String>();
+
 			int totalCounts = 0;
 			while (rs.next()) {
 				if (context.queryLimit && ++totalCounts > context.queryLimitSize) {
@@ -37,7 +37,16 @@ public class ReflectorUtil {
 					if (DataUtil.isNull(columname)) {
 						columname = md.getColumnName(i);
 					}
-					String propertyname = reflector.getFieldName(columname);
+
+					String propertyname =colNameMap.get(columname);
+					if (propertyname == null){
+						propertyname = reflector.getFieldName(columname);
+						if ( propertyname.equals(columname)) {
+							propertyname = StringUtil.underscoreToCamelCase(propertyname);
+						}
+						colNameMap.put(columname,propertyname);
+					}
+
 					if (reflector.hasSetter(propertyname)) {
 						Object columnvalue = rs.getObject(i);
 						if (columnvalue != null) {
