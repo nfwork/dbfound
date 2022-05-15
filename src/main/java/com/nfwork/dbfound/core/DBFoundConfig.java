@@ -406,7 +406,7 @@ public class DBFoundConfig {
 			}
 		}
 
-		Element modelModifyCheckElement = system.element("dateFormat");
+		Element modelModifyCheckElement = system.element("modelModifyCheck");
 		if (modelModifyCheckElement != null) {
 			String modelModifyCheckConfig = modelModifyCheckElement.getTextTrim();
 			if (!"".equals(modelModifyCheckConfig)) {
