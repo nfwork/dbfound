@@ -406,6 +406,19 @@ public class DBFoundConfig {
 			}
 		}
 
+		Element modelModifyCheckElement = system.element("dateFormat");
+		if (modelModifyCheckElement != null) {
+			String modelModifyCheckConfig = modelModifyCheckElement.getTextTrim();
+			if (!"".equals(modelModifyCheckConfig)) {
+				if ("true".equals(modelModifyCheckConfig)){
+					modelModifyCheck = true;
+				}else{
+					modelModifyCheck = false;
+				}
+				info.append("(modelModifyCheck = " + modelModifyCheckConfig + ")");
+			}
+		}
+
 		Element dateFormatElement = system.element("dateFormat");
 		if (dateFormatElement != null) {
 			String dateFormatConfig = dateFormatElement.getTextTrim();
@@ -578,4 +591,6 @@ public class DBFoundConfig {
 	public static String getDateFormat() {
 		return dateFormat;
 	}
+
+
 }
