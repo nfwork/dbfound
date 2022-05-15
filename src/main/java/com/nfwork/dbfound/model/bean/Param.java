@@ -3,6 +3,7 @@ package com.nfwork.dbfound.model.bean;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.model.base.Entity;
 
 public class Param extends Entity {
@@ -77,7 +78,7 @@ public class Param extends Entity {
 			return null;
 		} else {
 			if (value instanceof Date) {
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
 				return format.format(value);
 			} else {
 				return value.toString();

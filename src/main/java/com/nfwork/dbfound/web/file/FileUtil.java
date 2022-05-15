@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletConfig;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.model.base.ParamsAware;
 import com.nfwork.dbfound.model.bean.Param;
@@ -18,7 +19,7 @@ public class FileUtil implements ParamsAware {
 
 	Map<String, Param> params;
 
-	private static SimpleDateFormat format = new SimpleDateFormat("yyyyMM");
+	private static SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
 
 	public static String getDownLoadFolder(String value) {
 		if (value == null) {

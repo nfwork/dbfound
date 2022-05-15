@@ -92,7 +92,7 @@ public class FileManager extends JavaSupport {
 
 		QueryResponseObject object = new QueryResponseObject();
 		List<Map> datas = new ArrayList<Map>();
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
 		for (File file : files) {
 			Map data = new HashMap();
 			data.put("file_type", file.isDirectory() ? 1 : 0);

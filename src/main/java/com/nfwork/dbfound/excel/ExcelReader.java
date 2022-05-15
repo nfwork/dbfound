@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
 import org.apache.commons.fileupload.FileItem;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 
@@ -83,7 +84,7 @@ public class ExcelReader {
 						} else if (dataCell[j].getType() == CellType.DATE) {
 							DateCell dateCell = (DateCell) dataCell[j];
 							data.put(metaData[j], new SimpleDateFormat(
-									"yyyy-MM-dd").format(dateCell.getDate()));
+									DBFoundConfig.getDateFormat()).format(dateCell.getDate()));
 						} else if (dataCell[j].getType() == CellType.NUMBER) {
 							NumberCell numberCell = (NumberCell) dataCell[j];
 							data.put(metaData[j], numberCell.getValue());

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.json.JSONArray;
 import com.nfwork.dbfound.json.JSONNull;
 import com.nfwork.dbfound.json.JSONObject;
@@ -212,8 +213,8 @@ public class JsonUtil {
 	}
 
 	private static String objectToJson(Object obj) {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
 		StringBuilder json = new StringBuilder();
 		if (obj == null) {
 			json.append("\"\"");

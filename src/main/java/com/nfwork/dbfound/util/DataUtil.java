@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.reflector.DefaultObjectFactory;
 import com.nfwork.dbfound.model.reflector.ObjectFactory;
@@ -105,9 +106,9 @@ public class DataUtil {
 			String value = o.toString().trim();
 			SimpleDateFormat format;
 			if (value.length() == 10) {
-				format = new SimpleDateFormat("yyyy-MM-dd");
+				format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
 			} else {
-				format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
 			}
 			try {
 				return format.parse(o.toString());

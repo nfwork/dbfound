@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.Tag;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
@@ -61,13 +62,13 @@ public class Field extends EventTag {
 
 			//当为时间输入框时，支持自动填充当前时间
 			if ("datefield".equals(field.getEditor()) && DataUtil.isNull(value) && DataUtil.isNotNull(currentTime)) {
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
 				Date date = new Date();
 				date.setDate(date.getDate() + DataUtil.intValue(currentTime));
 				field.setValue(format.format(date));
 			} else if ("datetimefield".equals(field.getEditor()) && DataUtil.isNull(value)
 					&& DataUtil.isNotNull(currentTime)) {
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
 				Date date = new Date();
 				date.setDate(date.getDate() + DataUtil.intValue(currentTime));
 				field.setValue(format.format(date));

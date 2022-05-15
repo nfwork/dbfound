@@ -36,7 +36,7 @@ import com.nfwork.dbfound.web.i18n.MultiLangUtil;
 public class DBFoundConfig {
 
 	private static String listenerClass;
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+	private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 	private static List<DataSourceConnectionProvide> dsp = new ArrayList<DataSourceConnectionProvide>();
 
 	public static final String CLASSPATH = "${@classpath}";
@@ -50,6 +50,10 @@ public class DBFoundConfig {
 	private static boolean underscoreToCamelCase = false;
 	private static int queryLimitSize = 5000;
 	private static int reportQueryLimitSize = 50000;
+	private static boolean modelModifyCheck = true;
+	private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+	private static String dateFormat = "yyyy-MM-dd";
+
 
 	public static void destory() {
 		for (DataSourceConnectionProvide provide : dsp) {
@@ -57,7 +61,7 @@ public class DBFoundConfig {
 			if (dataSource != null) {
 				try {
 					System.out.println(
-							dateFormat.format(new Date()) + " dbfound close dataSource :" + provide.getProvideName());
+							simpleDateFormat.format(new Date()) + " dbfound close dataSource :" + provide.getProvideName());
 					MethodUtils.invokeMethod(dataSource, "close", new Object[] {});
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -87,12 +91,12 @@ public class DBFoundConfig {
 		}
 		try {
 			System.out.println("**************************************************************************");
-			System.out.println(dateFormat.format(new Date()) + " NFWork dbfound service init begin");
+			System.out.println(simpleDateFormat.format(new Date()) + " NFWork dbfound service init begin");
 			SAXReader reader = new SAXReader();
 			File file = new File(getRealPath(confFile));
 			Document doc = null;
 			if (file.exists()) {
-				System.out.println(dateFormat.format(new Date()) + " user config file: "
+				System.out.println(simpleDateFormat.format(new Date()) + " user config file: "
 						+ PathFormat.format(file.getAbsolutePath()));
 				doc = reader.read(file);
 			} else if (confFile.startsWith(CLASSPATH)) {
@@ -105,11 +109,11 @@ public class DBFoundConfig {
 							file = new File(url.getFile());
 						}
 						if (file.exists()) {
-							System.out.println(dateFormat.format(new Date()) + " user config file: "
+							System.out.println(simpleDateFormat.format(new Date()) + " user config file: "
 									+ PathFormat.format(file.getAbsolutePath()));
 							doc = reader.read(file);
 						} else {
-							System.out.println(dateFormat.format(new Date()) + " user config file: "
+							System.out.println(simpleDateFormat.format(new Date()) + " user config file: "
 									+ PathFormat.format(url.getFile()));
 							inputStream = url.openStream();
 							doc = reader.read(inputStream);
@@ -147,16 +151,16 @@ public class DBFoundConfig {
 					try {
 						StartListener listener = (StartListener) Class.forName(listenerClass).newInstance();
 						listener.execute();
-						System.out.println(dateFormat.format(new Date()) + " invoke listenerClass success");
+						System.out.println(simpleDateFormat.format(new Date()) + " invoke listenerClass success");
 					} catch (Exception e) {
 						LogUtil.error("invoke listenerClass faild", e);
 					}
 				}
 			} else {
-				System.out.println(dateFormat.format(new Date())
+				System.out.println(simpleDateFormat.format(new Date())
 						+ " config file init skiped, because file not found. filePath:" + file.getAbsolutePath());
 			}
-			System.out.println(dateFormat.format(new Date()) + " NFWork dbfound service init success");
+			System.out.println(simpleDateFormat.format(new Date()) + " NFWork dbfound service init success");
 			System.out.println("**************************************************************************");
 		} catch (Exception e) {
 			LogUtil.error("dbfound init faild，please check config", e);
@@ -188,7 +192,7 @@ public class DBFoundConfig {
 						password);
 				provide.regist();
 				System.out.println(
-						dateFormat.format(new Date()) + " regist jdbcConnProvide success, provideName:" + provideName);
+						simpleDateFormat.format(new Date()) + " regist jdbcConnProvide success, provideName:" + provideName);
 			} else {
 				throw new DBFoundRuntimeException("user jdbc type，url driverClass username dialect can not be null");
 			}
@@ -206,7 +210,7 @@ public class DBFoundConfig {
 			if (dialect != null && dataSource != null && !"".equals(dialect) && !"".equals(dataSource)) {
 				ConnectionProvide provide = new DataSourceConnectionProvide(provideName, dataSource, dialect);
 				provide.regist();
-				System.out.println(dateFormat.format(new Date()) + " regist dataSourceConnProvide success, provideName:"
+				System.out.println(simpleDateFormat.format(new Date()) + " regist dataSourceConnProvide success, provideName:"
 						+ provideName);
 			} else if (dialect != null && className != null && !"".equals(dialect) && !"".equals(className)) {
 				DataSource ds = (DataSource) Class.forName(className).newInstance();
@@ -217,7 +221,7 @@ public class DBFoundConfig {
 				DataSourceConnectionProvide provide = new DataSourceConnectionProvide(provideName, ds, dialect);
 				provide.regist();
 				dsp.add(provide);
-				System.out.println(dateFormat.format(new Date()) + " regist dataSourceConnProvide success, provideName:"
+				System.out.println(simpleDateFormat.format(new Date()) + " regist dataSourceConnProvide success, provideName:"
 						+ provideName);
 			} else {
 				throw new DBFoundRuntimeException("user dataSource type，dataSource dialect can not null");
@@ -227,7 +231,7 @@ public class DBFoundConfig {
 
 	private static void initWeb(Element web) {
 		StringBuffer info = new StringBuffer();
-		info.append(dateFormat.format(new Date()) + " set web Param:");
+		info.append(simpleDateFormat.format(new Date()) + " set web Param:");
 
 		// i18n 初始化
 		Element provide = web.element("i18nProvide");
@@ -311,18 +315,18 @@ public class DBFoundConfig {
 			}
 		}
 		if (file.exists()) {
-			System.out.println(dateFormat.format(new Date()) + " init mvc success, config file: "
+			System.out.println(simpleDateFormat.format(new Date()) + " init mvc success, config file: "
 					+ PathFormat.format(file.getAbsolutePath()) + ")");
 			ActionEngine.init(file);
 		} else {
-			System.out.println(dateFormat.format(new Date()) + " init mvc cancel, because file: "
+			System.out.println(simpleDateFormat.format(new Date()) + " init mvc cancel, because file: "
 					+ PathFormat.format(getRealPath(mvcFile)) + ") not found");
 		}
 	}
 
 	private static void initSystem(Element system) {
 		StringBuffer info = new StringBuffer();
-		info.append(dateFormat.format(new Date()) + " set system Param:");
+		info.append(simpleDateFormat.format(new Date()) + " set system Param:");
 
 		// 设置日志开关
 		Element log = system.element("openLog");
@@ -399,6 +403,24 @@ public class DBFoundConfig {
 			if (!"".equals(className)) {
 				listenerClass = className;
 				info.append("(listenerClass = " + listenerClass + ")");
+			}
+		}
+
+		Element dateFormatElement = system.element("dateFormat");
+		if (dateFormatElement != null) {
+			String dateFormatConfig = dateFormatElement.getTextTrim();
+			if (!"".equals(dateFormatConfig)) {
+				dateFormat = dateFormatConfig;
+				info.append("(dateFormat = " + dateFormatConfig + ")");
+			}
+		}
+
+		Element dateTimeFormatElement = system.element("dateTimeFormat");
+		if (dateTimeFormatElement != null) {
+			String dateTimeFormatConfig = dateTimeFormatElement.getTextTrim();
+			if (!"".equals(dateTimeFormatConfig)) {
+				dateTimeFormat = dateTimeFormatConfig;
+				info.append("(dateTimeFormat = " + dateTimeFormatConfig + ")");
 			}
 		}
 
@@ -493,14 +515,6 @@ public class DBFoundConfig {
 		DBFoundConfig.listenerClass = listenerClass;
 	}
 
-	public static SimpleDateFormat getDateFormat() {
-		return dateFormat;
-	}
-
-	public static void setDateFormat(SimpleDateFormat dateFormat) {
-		DBFoundConfig.dateFormat = dateFormat;
-	}
-
 	public static List<DataSourceConnectionProvide> getDsp() {
 		return dsp;
 	}
@@ -533,4 +547,35 @@ public class DBFoundConfig {
 		DBFoundConfig.reportQueryLimitSize = reportQueryLimitSize;
 	}
 
+	public static boolean isModelModifyCheck() {
+		return modelModifyCheck;
+	}
+
+	public static void setModelModifyCheck(boolean modelModifyCheck) {
+		DBFoundConfig.modelModifyCheck = modelModifyCheck;
+	}
+
+	public static String getDateTimeFormat() {
+		return dateTimeFormat;
+	}
+
+	public static void setDateTimeFormat(String dateTimeFormat) {
+		DBFoundConfig.dateTimeFormat = dateTimeFormat;
+	}
+
+	public static void setDateFormat(String dateFormat) {
+		DBFoundConfig.dateFormat = dateFormat;
+	}
+
+	public static SimpleDateFormat getSimpleDateFormat() {
+		return simpleDateFormat;
+	}
+
+	public static void setSimpleDateFormat(SimpleDateFormat simpleDateFormat) {
+		DBFoundConfig.simpleDateFormat = simpleDateFormat;
+	}
+
+	public static String getDateFormat() {
+		return dateFormat;
+	}
 }
