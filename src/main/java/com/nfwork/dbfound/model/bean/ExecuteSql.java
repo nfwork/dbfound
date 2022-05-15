@@ -23,6 +23,12 @@ public class ExecuteSql extends SqlEntity {
 
 	private String affectedCountParam;
 
+	@Override
+	public void run() {
+		super.run();
+		autoCreateParam(sql,this);
+	}
+
 	public void execute(Context context, Map<String, Param> params, String provideName) {
 
 		Connection conn = context.getConn(provideName);

@@ -15,7 +15,9 @@ import java.util.Map;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.util.DBUtil;
+import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.ParseUtil;
 
 /**
@@ -30,6 +32,12 @@ public class BatchSql extends SqlEntity {
 
 	private String cursor;
 	private String sourcePath;
+
+	@Override
+	public void run() {
+		super.run();
+		autoCreateParam(sql,this);
+	}
 
 	@Override
 	public void execute(Context context, Map<String, Param> params,

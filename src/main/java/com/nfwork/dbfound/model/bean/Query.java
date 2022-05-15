@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
-import com.nfwork.dbfound.util.StringUtil;
+import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
 
 import com.nfwork.dbfound.core.Context;
@@ -25,9 +25,6 @@ import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.reflector.ReflectorUtil;
-import com.nfwork.dbfound.util.DBUtil;
-import com.nfwork.dbfound.util.LogUtil;
-import com.nfwork.dbfound.util.ParseUtil;
 
 public class Query extends SqlEntity {
 
@@ -60,6 +57,9 @@ public class Query extends SqlEntity {
 				model.putQuery("_default", this);
 			} else {
 				model.putQuery(name, this);
+			}
+			if(DataUtil.isNotNull(sql)) {
+				autoCreateParam(sql, params);
 			}
 		} else {
 			super.run();
@@ -198,7 +198,7 @@ public class Query extends SqlEntity {
 						}
 						break;
 					case Types.NUMERIC:
-						if (value.endsWith(".0") || value.indexOf(".") == -1) {
+						if (value.endsWith(".0") || !value.contains(".")) {
 							mapdata.put(columnName, dataset.getLong(i));
 						} else {
 							mapdata.put(columnName, dataset.getDouble(i));
@@ -217,7 +217,7 @@ public class Query extends SqlEntity {
 						mapdata.put(columnName, dataset.getLong(i));
 						break;
 					case Types.REAL:
-						if (value.endsWith(".0") || value.indexOf(".") == -1) {
+						if (value.endsWith(".0") || !value.contains(".")) {
 							mapdata.put(columnName, dataset.getInt(i));
 						} else {
 							mapdata.put(columnName, dataset.getFloat(i));

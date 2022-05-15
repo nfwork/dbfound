@@ -19,6 +19,12 @@ public class WhenSql extends SqlEntity {
 	private String when;
 
 	@Override
+	public void run() {
+		super.run();
+		autoCreateParam(when,this);
+	}
+
+	@Override
 	public void execute(Context context, Map<String, Param> params,
 			String provideName) {
 		// 执行相应操作

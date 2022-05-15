@@ -10,7 +10,9 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.CollisionException;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.util.DBUtil;
+import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.ParseUtil;
 
 /**
@@ -26,8 +28,14 @@ public class CollisionSql extends SqlEntity {
 	private String where;
 	private String message;
 
+	@Override
+	public void run() {
+		super.run();
+		autoCreateParam(where,this);
+	}
+
 	public void execute(Context context, Map<String, Param> params,
-			String provideName){
+						String provideName){
 		
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);

@@ -19,12 +19,19 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.ParseUtil;
+import com.nfwork.dbfound.util.StringUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 
 public class QuerySql extends SqlEntity {
 
 	private static final long serialVersionUID = -8182147424516469176L;
+
+	@Override
+	public void run() {
+		super.run();
+		autoCreateParam(sql,this);
+	}
 
 	public void execute(Context context, Map<String, Param> params, String provideName) {
 
@@ -54,6 +61,11 @@ public class QuerySql extends SqlEntity {
 					String columnName = metaset.getColumnLabel(i).toLowerCase();
 
 					Param param = params.get(columnName);
+					if (param == null){
+						String newName = StringUtil.underscoreToCamelCase(columnName);
+						param = params.get(newName);
+					}
+
 					if (param == null) {
 						throw new ParamNotFoundException("param: " + columnName + " 没有定义");
 					}
@@ -83,6 +95,8 @@ public class QuerySql extends SqlEntity {
 						}
 					} else if ("file".equals(paramType)) {
 						blobExecute(columnName, dataset, params, param, i);
+					}else{
+						param.setValue(value);
 					}
 					param.setSourcePathHistory("querySql");
 				}

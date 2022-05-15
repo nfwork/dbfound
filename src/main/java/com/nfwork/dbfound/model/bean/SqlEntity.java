@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.nfwork.dbfound.util.DataUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.dom4j.Element;
 
@@ -60,6 +61,41 @@ public abstract class SqlEntity extends Sqls {
 	}
 
 	/**
+	 * 自动补齐 Param定义
+	 * since 2.5.0
+	 */
+	public void autoCreateParam(String sql, Map<String, Param> params) {
+		// 设定参数
+		Pattern p = Pattern.compile(replaceString);
+		Matcher m = p.matcher(sql);
+		int cursor = 1; // 游标记录参数的位置
+		while (m.find()) {
+			String paramName = m.group();
+			String name = paramName.substring(3, paramName.length() - 1);
+			if(params.get(name)==null) {
+				Param nfParam = new Param();
+				nfParam.setName(name);
+				nfParam.setDataType("UNKNOWN");
+				params.put(name, nfParam);
+			}
+		}
+	}
+
+	public void autoCreateParam(String sql, Entity entity) {
+		if (DataUtil.isNull(sql))return;
+		Entity entityParent = entity.getParent();
+		while (entityParent != null){
+			if ( entityParent instanceof  Execute){
+				Execute execute = (Execute) entityParent;
+				autoCreateParam(sql, execute.getParams());
+				break;
+			}else{
+				entityParent = entityParent.getParent();
+			}
+		}
+	}
+
+	/**
 	 * 参数设定 sql为原生sql语句，用来寻找参数的位置
 	 * 
 	 * @throws SQLException
@@ -81,7 +117,21 @@ public abstract class SqlEntity extends Sqls {
 			Param nfParam = params.get(pn.trim());
 
 			if (nfParam == null) {
-				throw new ParamNotFoundException("param: " + pn + " 没有定义");
+				throw new ParamNotFoundException("param: " + pn + " not found");
+			}
+
+			if ("UNKNOWN".equals(nfParam.getDataType())){
+				Object value = nfParam.getValue();
+				if (value != null){
+					if (value instanceof Integer || value instanceof Long
+							|| value instanceof Double || value instanceof  Float){
+						nfParam.setDataType("number");
+					}else if(value instanceof Date){
+						nfParam.setDataType("date");
+					}else{
+						nfParam.setDataType("varchar");
+					}
+				}
 			}
 
 			if ("true".equals(nfParam.getUUID())) {

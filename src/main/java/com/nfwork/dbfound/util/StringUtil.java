@@ -3,6 +3,9 @@ package com.nfwork.dbfound.util;
 public class StringUtil {
 
     public static String underscoreToCamelCase(String underscore){
+        if(underscore == null){
+            return null;
+        }
         String[] ss = underscore.split("_");
         if(ss.length ==1){
             return underscore;
