@@ -80,12 +80,12 @@ public class ModelTool {
 		sql2javaType.put(java.sql.Types.VARBINARY, byte[].class);
 		sql2javaType.put(java.sql.Types.LONGVARBINARY, byte[].class);
 	}
-	public static void generateModel(String connectionProvide, String tablename, String pk, String fileName) {
+	public static void generateModel(String connectionProvide, String databse,String tablename, String pk, String fileName) {
 		if (DataUtil.isNull(connectionProvide)) {
 			connectionProvide = "_default";
 		}
 		File file = new File(getRealValue(fileName));
-		Table table = getTable(connectionProvide, tablename);
+		Table table = getTable(connectionProvide, databse,tablename);
 		for (Column column : table.getColumnlist()) {
 			column.setType(getDataType(column.getDataType()));
 			column.setParamName(column.getColumnName());
@@ -98,11 +98,11 @@ public class ModelTool {
 		System.out.println("生成model成功，model路径：" + file.getAbsolutePath());
 	}
 
-	public static void generateModel(String connectionProvide, String tablename, String pk) {
+	public static void generateModel(String connectionProvide, String database,String tablename, String pk) {
 		if (DataUtil.isNull(connectionProvide)) {
 			connectionProvide = "_default";
 		}
-		Table table = getTable(connectionProvide, tablename);
+		Table table = getTable(connectionProvide, database,tablename);
 		for (Column column : table.getColumnlist()) {
 			column.setType(getDataType(column.getDataType()));
 			column.setParamName(column.getColumnName());
@@ -110,13 +110,13 @@ public class ModelTool {
 		generateModel(table, pk, new OutputStreamWriter(System.out));
 	}
 	
-	public static void generateJavaBean(String connectionProvide, String tableName, String packagename){
-		generateJavaBean(connectionProvide, tableName, packagename, null);
+	public static void generateJavaBean(String connectionProvide,String database, String tableName, String packagename){
+		generateJavaBean(connectionProvide, database,tableName, packagename, null);
 	}
 
-	public static void generateJavaBean(String connectionProvide, String tableName, String packagename, String todir){
+	public static void generateJavaBean(String connectionProvide, String database,String tableName, String packagename, String todir){
 
-		Table table = getTable(connectionProvide, tableName);
+		Table table = getTable(connectionProvide, database, tableName);
 		List<Column> columnlist = table.getColumnlist();
 
 		StringBuilder str = new StringBuilder();
@@ -178,12 +178,12 @@ public class ModelTool {
 	}
 
 	
-	public static void generateBeanModel(String connectionProvide, String tablename, String pk, String fileName) {
+	public static void generateBeanModel(String connectionProvide, String database,String tablename, String pk, String fileName) {
 		if (DataUtil.isNull(connectionProvide)) {
 			connectionProvide = "_default";
 		}
 		File file = new File(getRealValue(fileName));
-		Table table = getTable(connectionProvide, tablename);
+		Table table = getTable(connectionProvide, database,tablename);
 		for (Column column : table.getColumnlist()) {
 			column.setType(getDataType(column.getDataType()));
 			column.setParamName(getPropertyName(column.getColumnName()));
@@ -196,11 +196,11 @@ public class ModelTool {
 		System.out.println("生成model成功，model路径：" + file.getAbsolutePath());
 	}
 
-	public static void generateBeanModel(String connectionProvide, String tablename, String pk) {
+	public static void generateBeanModel(String connectionProvide, String database ,String tablename, String pk) {
 		if (DataUtil.isNull(connectionProvide)) {
 			connectionProvide = "_default";
 		}
-		Table table = getTable(connectionProvide, tablename);
+		Table table = getTable(connectionProvide, database,tablename);
 		for (Column column : table.getColumnlist()) {
 			column.setType(getDataType(column.getDataType()));
 			column.setParamName(getPropertyName(column.getColumnName()));
@@ -264,13 +264,13 @@ public class ModelTool {
 		}
 	}
 
-	private static Table getTable(String connectionProvide, String tablename) {
+	private static Table getTable(String connectionProvide, String database ,String tablename) {
 		Context context = new Context();
 		try {
 			Connection connection = context.getConn(connectionProvide);
 
 			DatabaseMetaData dbmetadata = connection.getMetaData();
-			ResultSet rs = dbmetadata.getTables(null, null, tablename, new String[] { "TABLE" });
+			ResultSet rs = dbmetadata.getTables(database,null, tablename, new String[] { "TABLE" });
 
 			List<Table> tablelist = new ArrayList<Table>();
 			while (rs.next()) {
@@ -282,7 +282,7 @@ public class ModelTool {
 			rs.close();
 
 			Table table = (Table) tablelist.get(0);
-			rs = dbmetadata.getColumns(null, null, table.getTableName(), null);
+			rs = dbmetadata.getColumns(database, null, table.getTableName(), null);
 
 			List<Column> columnlist = new ArrayList<Column>();
 			while (rs.next()) {

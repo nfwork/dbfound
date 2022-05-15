@@ -37,6 +37,9 @@
 			<xsd:element maxOccurs="1" minOccurs="0" name="queryLimit" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="queryLimitSize" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="reportQueryLimitSize" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="modelModifyCheck" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="dateTimeFormat" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="dateFormat" />
 		</xsd:choice>
 	</xsd:complexType>
 
