@@ -19,6 +19,7 @@ import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.ParseUtil;
+import com.nfwork.dbfound.util.StringUtil;
 
 /**
  * 批量从数据库查询数据，作为结果集 然后执行
@@ -62,7 +63,11 @@ public class BatchSql extends SqlEntity {
 				for (Iterator iterator = map.entrySet().iterator(); iterator
 						.hasNext();) {
 					Map.Entry entry = (Map.Entry) iterator.next();
-					Param param = params.get(entry.getKey());
+					String paramName = entry.getKey().toString();
+					Param param = params.get(paramName);
+					if(param == null){
+						param = params.get(StringUtil.underscoreToCamelCase(paramName));
+					}
 					if (param != null) {
 						param.setValue(entry.getValue());
 						param.setSourcePathHistory("cursorlist[" + i + "]");
