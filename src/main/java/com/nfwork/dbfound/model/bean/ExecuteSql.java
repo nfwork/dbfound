@@ -13,7 +13,6 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.ParseUtil;
 
 public class ExecuteSql extends SqlEntity {
 
@@ -34,9 +33,7 @@ public class ExecuteSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		// 2012年8月14日22:01:04 添加静态参数设置
-		sql = ParseUtil.parse(sql, params);
-		// end 添加
+		sql = staticParamParse(sql, params);
 
 		String esql = getExecuteSql(sql, params);
 		// 方言处理

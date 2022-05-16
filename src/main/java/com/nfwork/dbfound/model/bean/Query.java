@@ -106,20 +106,14 @@ public class Query extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		// 2012年8月14日22:01:04 添加静态参数设置
-		sql = ParseUtil.parse(sql, params);
-		// end 添加
-
-		// 再次解析filter里面的静态参数 2013年5月20日11:12:27
 		sql = initFilter(sql);
-		sql = ParseUtil.parse(sql, params);
-		// end 修改
+		sql = staticParamParse(sql, params);
 
 		// fileter初始化，数据库方言初始化
 		sql = dialect.parseSql(sql);
 
 		List<Map> data = new ArrayList<Map>();
-		String eSql = getExecuteSql(this.sql);
+		String eSql = getExecuteSql(sql,params);
 
 		if (pagerSize > 0) {
 			eSql = dialect.getPagerSql(eSql, pagerSize, startWith);
@@ -294,16 +288,6 @@ public class Query extends SqlEntity {
 	}
 
 	/**
-	 * 得到最后执行的sql语句
-	 * 
-	 * @return
-	 */
-	public String getExecuteSql(String executeSqlString) {
-		executeSqlString = executeSqlString.replaceAll(replaceString, "?");
-		return executeSqlString;
-	}
-
-	/**
 	 * 统计sql查询总共的条数
 	 * 
 	 * @return
@@ -428,7 +412,7 @@ public class Query extends SqlEntity {
 		} else {
 			cSql = "select count(1) " + sql.substring(from_hold, order_hold);
 		}
-		String ceSql = getExecuteSql(cSql);
+		String ceSql = getExecuteSql(cSql,params);
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
 		long count = 0;

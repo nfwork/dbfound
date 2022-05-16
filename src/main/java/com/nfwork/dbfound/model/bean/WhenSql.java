@@ -10,7 +10,6 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.util.DBUtil;
-import com.nfwork.dbfound.util.ParseUtil;
 
 public class WhenSql extends SqlEntity {
 
@@ -42,9 +41,7 @@ public class WhenSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		// 2012年8月14日22:01:04 添加静态参数设置
-		when = ParseUtil.parse(when, params);
-		// end 添加
+		when = staticParamParse(when, params);
 
 		String sql = dialect.getWhenSql(when);
 		String esql = getExecuteSql(sql, params);

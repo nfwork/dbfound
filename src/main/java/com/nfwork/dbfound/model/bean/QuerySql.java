@@ -18,7 +18,6 @@ import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DBUtil;
-import com.nfwork.dbfound.util.ParseUtil;
 import com.nfwork.dbfound.util.StringUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
@@ -38,9 +37,8 @@ public class QuerySql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		// 2012年8月14日22:01:04 添加静态参数设置
-		sql = ParseUtil.parse(sql, params);
-		// end 添加
+		sql = staticParamParse(sql, params);
+
 		String esql = getExecuteSql(sql, params);
 
 		// 方言处理
@@ -67,13 +65,13 @@ public class QuerySql extends SqlEntity {
 					}
 
 					if (param == null) {
-						throw new ParamNotFoundException("param: " + columnName + " 没有定义");
+						throw new ParamNotFoundException("param: " + columnName + " not defined");
 					}
 					String paramType = param.getDataType();
 					if ("varchar".equals(paramType)) {
 						param.setValue(value);
 					} else if ("number".equals(paramType)) {
-						if (value == null || value.endsWith(".0") || value.indexOf(".") == -1) {
+						if (value == null || value.endsWith(".0") || !value.contains(".")) {
 							param.setValue(dataset.getLong(i));
 						} else {
 							param.setValue(dataset.getDouble(i));
@@ -102,7 +100,7 @@ public class QuerySql extends SqlEntity {
 				}
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("querySql执行异常:" + e.getMessage(), e);
+			throw new DBFoundPackageException("querySql execute exception:" + e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
@@ -144,7 +142,7 @@ public class QuerySql extends SqlEntity {
 				}
 			}
 		} catch (Exception e) {
-			throw new DBFoundPackageException("lob 字段处理异常:" + e.getMessage(), e);
+			throw new DBFoundPackageException("lob field execute exception:" + e.getMessage(), e);
 		}
 	}
 }

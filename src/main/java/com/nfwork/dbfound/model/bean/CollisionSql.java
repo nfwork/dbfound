@@ -10,10 +10,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.CollisionException;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
-import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.util.DBUtil;
-import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.ParseUtil;
 
 /**
  * 碰撞sql，检验where条件是否成立 标出message消息
@@ -40,9 +37,7 @@ public class CollisionSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		// 2012年8月14日22:01:04 添加静态参数设置
-		where = ParseUtil.parse(where, params);
-		// end 添加
+		where = staticParamParse(where, params);
 		
 		String sql = dialect.getWhenSql(where);
 		String esql = getExecuteSql(sql, params);
@@ -59,7 +54,7 @@ public class CollisionSql extends SqlEntity {
 			if (set.next()) {
 				int flag = set.getInt(1);
 				if (flag != 0) {
-					throw new CollisionException(ParseUtil.parse(message, params));
+					throw new CollisionException(staticParamParse(message, params));
 				}
 			}
 		}catch (SQLException e) {

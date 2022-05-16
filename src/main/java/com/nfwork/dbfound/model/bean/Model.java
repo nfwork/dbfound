@@ -3,6 +3,7 @@ package com.nfwork.dbfound.model.bean;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.nfwork.dbfound.web.jstl.ForEach;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.base.Entity;
@@ -29,7 +30,20 @@ public class Model extends Entity {
 
 	@Override
 	public void run() {
-
+		for (Param param : params.values()){
+			for (Execute execute : executes.values()){
+				Param exeParam = execute.getParams().get(param.getName());
+				if (exeParam == null ||  "unknown".equals(exeParam.getDataType())){
+					execute.getParams().put(param.getName(),param);
+				}
+			}
+			for (Query query : querys.values()){
+				Param queryParam = query.getParams().get(param.getName());
+				if (queryParam == null ||  "unknown".equals(queryParam.getDataType())){
+					query.getParams().put(param.getName(),param);
+				}
+			}
+		}
 	}
 
 	public Model(String modelName) {
@@ -41,13 +55,6 @@ public class Model extends Entity {
 		if (query == null) {
 			return null;
 		} else {
-			// 将model中全局的参数设置到query对象中
-			if (params.isEmpty() == false) {
-				Map<String, Param> map = new HashMap<String, Param>();
-				map.putAll(params);
-				map.putAll(query.getParams());
-				query.setParams(map);
-			}
 			return (Query) query.cloneEntity();
 		}
 	}
@@ -69,13 +76,6 @@ public class Model extends Entity {
 		if (execute == null) {
 			return null;
 		} else {
-			// 将model中全局的参数设置到execute对象中
-			if (params.isEmpty() == false) {
-				Map<String, Param> map = new HashMap<String, Param>();
-				map.putAll(params);
-				map.putAll(execute.getParams());
-				execute.setParams(map);
-			}
 			return (Execute) execute.cloneEntity();
 		}
 	}

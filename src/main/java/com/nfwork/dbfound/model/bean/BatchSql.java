@@ -15,10 +15,7 @@ import java.util.Map;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
-import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.util.DBUtil;
-import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.ParseUtil;
 import com.nfwork.dbfound.util.StringUtil;
 
 /**
@@ -95,9 +92,7 @@ public class BatchSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		// 2012年8月14日22:01:04 添加静态参数设置
-		cursor = ParseUtil.parse(cursor, params);
-		// end 添加
+		cursor = staticParamParse(cursor, params);
 
 		String esql = getExecuteSql(cursor, params);
 

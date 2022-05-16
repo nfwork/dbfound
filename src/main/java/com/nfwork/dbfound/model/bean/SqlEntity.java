@@ -29,7 +29,12 @@ public abstract class SqlEntity extends Sqls {
 
 	String sql;
 
-	protected static String replaceString = "\\$\\{\\@[ a-zA-Z_0-9\u4E00-\u9FA5]*\\}";
+	protected final static String paramReplace = "\\{\\@[ a-zA-Z_0-9\u4E00-\u9FA5]*\\}";
+
+	protected final static String dynamicReplace = "\\$" + paramReplace;
+
+	protected final static String staticReplace = "\\#" + paramReplace;
+
 
 	@Override
 	public void run() {
@@ -56,7 +61,7 @@ public abstract class SqlEntity extends Sqls {
 	public String getExecuteSql(String sql, Map<String, Param> params) {
 		String executeSqlString = sql;
 		// 转化执行的sql
-		executeSqlString = executeSqlString.replaceAll(replaceString, "?");
+		executeSqlString = executeSqlString.replaceAll(dynamicReplace, "?");
 		return executeSqlString;
 	}
 
@@ -66,16 +71,16 @@ public abstract class SqlEntity extends Sqls {
 	 */
 	public void autoCreateParam(String sql, Map<String, Param> params) {
 		// 设定参数
-		Pattern p = Pattern.compile(replaceString);
+		Pattern p = Pattern.compile(paramReplace);
 		Matcher m = p.matcher(sql);
 		int cursor = 1; // 游标记录参数的位置
 		while (m.find()) {
 			String paramName = m.group();
-			String name = paramName.substring(3, paramName.length() - 1);
+			String name = paramName.substring(2, paramName.length() - 1).trim();
 			if(params.get(name)==null) {
 				Param nfParam = new Param();
 				nfParam.setName(name);
-				nfParam.setDataType("UNKNOWN");
+				nfParam.setDataType("unknown");
 				params.put(name, nfParam);
 			}
 		}
@@ -108,7 +113,7 @@ public abstract class SqlEntity extends Sqls {
 		String paramDataType;
 
 		// 设定参数
-		Pattern p = Pattern.compile(replaceString);
+		Pattern p = Pattern.compile(dynamicReplace);
 		Matcher m = p.matcher(sql);
 		int cursor = 1; // 游标记录参数的位置
 		while (m.find()) {
@@ -117,22 +122,10 @@ public abstract class SqlEntity extends Sqls {
 			Param nfParam = params.get(pn.trim());
 
 			if (nfParam == null) {
-				throw new ParamNotFoundException("param: " + pn + " not found");
+				throw new ParamNotFoundException("param: " + pn + " not defined");
 			}
 
-			if ("UNKNOWN".equals(nfParam.getDataType())){
-				Object value = nfParam.getValue();
-				if (value != null){
-					if (value instanceof Integer || value instanceof Long
-							|| value instanceof Double || value instanceof  Float){
-						nfParam.setDataType("number");
-					}else if(value instanceof Date){
-						nfParam.setDataType("date");
-					}else{
-						nfParam.setDataType("varchar");
-					}
-				}
-			}
+			initStaticParam(nfParam);
 
 			if ("true".equals(nfParam.getUUID())) {
 				paramValue = UUIDUtil.getUUID();
@@ -149,7 +142,7 @@ public abstract class SqlEntity extends Sqls {
 			} else if (paramDataType.equals("number")) {
 				if ("".equals(paramValue.trim())) {
 					statement.setString(cursor, null);
-				} else if (paramValue.indexOf(".") == -1) {
+				} else if (!paramValue.contains(".")) {
 					statement.setLong(cursor, Long.parseLong(paramValue));
 				} else if (paramValue.endsWith(".0")) {
 					paramValue = paramValue.substring(0, paramValue.length() - 2);
@@ -202,6 +195,63 @@ public abstract class SqlEntity extends Sqls {
 				statement.setString(cursor, paramValue);
 			}
 			cursor++;
+		}
+	}
+
+	/**
+	 * 静态参数 初始化
+	 * @param sql
+	 * @param params
+	 * @return
+	 */
+	public String staticParamParse(String sql, Map<String, Param> params) {
+		if (sql == null || "".equals(sql)) {
+			return "";
+		}
+		String paramValue;
+
+		Pattern p = Pattern.compile(staticReplace);
+		Matcher m = p.matcher(sql);
+		StringBuffer buf = new StringBuffer();
+		while (m.find()) {
+			String param = m.group();
+			String pn = param.substring(3, param.length() - 1);
+			Param nfParam = params.get(pn.trim());
+
+			if (nfParam == null) {
+				throw new ParamNotFoundException("param: " + pn + " not defined");
+			}
+			paramValue = nfParam.getStringValue();
+
+			initStaticParam(nfParam);
+
+			// UUID取值
+			if ("true".equals(nfParam.getUUID())) {
+				paramValue = UUIDUtil.getUUID();
+			}else if (paramValue == null) {
+				paramValue = "";
+			}else {
+				paramValue = paramValue.replace("$", "\\$");
+			}
+			m.appendReplacement(buf, paramValue);
+		}
+		m.appendTail(buf);
+		return buf.toString();
+	}
+
+	private void initStaticParam(Param nfParam){
+		if ("unknown".equals(nfParam.getDataType())){
+			Object value = nfParam.getValue();
+			if (value != null){
+				if (value instanceof Integer || value instanceof Long
+						|| value instanceof Double || value instanceof  Float){
+					nfParam.setDataType("number");
+				}else if(value instanceof Date){
+					nfParam.setDataType("date");
+				}else{
+					nfParam.setDataType("varchar");
+				}
+			}
 		}
 	}
 
