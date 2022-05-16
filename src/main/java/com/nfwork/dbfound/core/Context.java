@@ -48,7 +48,7 @@ public class Context {
 	private Map<String, Object> headerDatas;
 	private static boolean openSession = true;
 
-	private Transaction transaction = new Transaction();
+	private Transaction transaction ;
 	private String createThreadName = Thread.currentThread().getName();
 
 	public Transaction getTransaction() {
@@ -57,6 +57,9 @@ public class Context {
 			throw new DBFoundRuntimeException(String.format(
 					"Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
 					createThreadName, runName));
+		}
+		if (transaction == null){
+			transaction = new Transaction();
 		}
 		return transaction;
 	}

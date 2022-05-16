@@ -5,8 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.dom4j.Attribute;
 import org.dom4j.Element;
-import org.dom4j.tree.DefaultAttribute;
 
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 
@@ -18,10 +18,9 @@ public abstract class Entity implements Serializable, Cloneable {
 
 	public abstract void run();
 
-	@SuppressWarnings("unchecked")
 	public void init(Element element) {
-		List<DefaultAttribute> list = element.attributes();
-		for (DefaultAttribute attribute : list) {
+		List<Attribute> list = element.attributes();
+		for (Attribute attribute : list) {
 			try {
 				BeanUtils.setProperty(this, attribute.getName(), attribute
 						.getValue());
