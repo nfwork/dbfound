@@ -140,10 +140,20 @@ public class Query extends SqlEntity {
 			int size = metaset.getColumnCount();
 			String colNames[] = new String[size + 1];
 			for (int i = 1; i < colNames.length; i++) {
-				colNames[i] = metaset.getColumnLabel(i).toLowerCase();
-				if (DBFoundConfig.isUnderscoreToCamelCase()){
-					colNames[i] = StringUtil.underscoreToCamelCase(colNames[i] );
+				String colName = metaset.getColumnName(i);
+
+				// 判断是否有as 逻辑，如果没有as，强制转化为小写
+				String labName =  metaset.getColumnLabel(i);
+				if (labName.equalsIgnoreCase(colName)){
+					colName = colName.toLowerCase();
+				}else{
+					colName = labName;
 				}
+
+				if (DBFoundConfig.isUnderscoreToCamelCase()){
+					colName = StringUtil.underscoreToCamelCase(colName);
+				}
+				colNames[i] = colName;
 			}
 			int totalCounts = 0;
 			Calendar defaultCalendar = Calendar.getInstance();
@@ -164,72 +174,52 @@ public class Query extends SqlEntity {
 						continue;
 					}
 					switch (columnType) {
-					case Types.VARCHAR:
-						mapdata.put(columnName, value);
-						break;
-					case Types.INTEGER:
-						mapdata.put(columnName, dataset.getInt(i));
-						break;
-					case Types.DOUBLE:
-						if (value.endsWith(".0")) {
-							mapdata.put(columnName, dataset.getLong(i));
-						} else {
-							mapdata.put(columnName, dataset.getDouble(i));
-						}
-						break;
-					case Types.FLOAT:
-						if (value.endsWith(".0")) {
+						case Types.INTEGER:
+						case Types.TINYINT:
+						case Types.SMALLINT:
 							mapdata.put(columnName, dataset.getInt(i));
-						} else {
-							mapdata.put(columnName, dataset.getFloat(i));
-						}
-						break;
-					case Types.DECIMAL:
-						if (value.endsWith(".0") || value.indexOf(".") == -1) {
+							break;
+						case Types.BIGINT:
 							mapdata.put(columnName, dataset.getLong(i));
-						} else {
-							mapdata.put(columnName, dataset.getDouble(i));
-						}
-						break;
-					case Types.NUMERIC:
-						if (value.endsWith(".0") || !value.contains(".")) {
-							mapdata.put(columnName, dataset.getLong(i));
-						} else {
-							mapdata.put(columnName, dataset.getDouble(i));
-						}
-						break;
-					case Types.VARBINARY:
-						if (value.matches("[0123456789]*\\.[0123456789]+")) {
-							mapdata.put(columnName, dataset.getDouble(i));
-						} else if (value.matches("[0123456789]*")) {
-							mapdata.put(columnName, dataset.getLong(i));
-						} else {
+							break;
+						case Types.FLOAT:
+						case Types.REAL:
+							if (value.endsWith(".0") || !value.contains(".")) {
+								mapdata.put(columnName, dataset.getInt(i));
+							} else {
+								mapdata.put(columnName, dataset.getFloat(i));
+							}
+							break;
+						case Types.DOUBLE:
+						case Types.DECIMAL:
+						case Types.NUMERIC:
+							if (value.endsWith(".0") || !value.contains(".")) {
+								mapdata.put(columnName, dataset.getLong(i));
+							} else {
+								mapdata.put(columnName, dataset.getDouble(i));
+							}
+							break;
+						case Types.VARBINARY:
+							if (value.matches("[0123456789]*\\.[0123456789]+")) {
+								mapdata.put(columnName, dataset.getDouble(i));
+							} else if (value.matches("[0123456789]*")) {
+								mapdata.put(columnName, dataset.getLong(i));
+							} else {
+								mapdata.put(columnName, value);
+							}
+							break;
+						case Types.DATE:
+							mapdata.put(columnName, dataset.getDate(i, defaultCalendar));
+							break;
+						case Types.TIME:
+						case Types.TIMESTAMP:
+							mapdata.put(columnName, dataset.getTimestamp(i, defaultCalendar));
+							break;
+						case Types.BOOLEAN:
+							mapdata.put(columnName, dataset.getBoolean(i));
+							break;
+						default:
 							mapdata.put(columnName, value);
-						}
-						break;
-					case Types.BIGINT:
-						mapdata.put(columnName, dataset.getLong(i));
-						break;
-					case Types.REAL:
-						if (value.endsWith(".0") || !value.contains(".")) {
-							mapdata.put(columnName, dataset.getInt(i));
-						} else {
-							mapdata.put(columnName, dataset.getFloat(i));
-						}
-						break;
-					case Types.DATE:
-						mapdata.put(columnName, dataset.getDate(i, defaultCalendar));
-						break;
-					case Types.TIME:
-					case Types.TIMESTAMP:
-						mapdata.put(columnName, dataset.getTimestamp(i, defaultCalendar));
-						break;
-					// case Types.BLOB: break;
-					// case Types.CLOB: break;
-					// case Types.NCLOB: break;
-					// case Types.LONGVARBINARY: break;
-					default:
-						mapdata.put(columnName, value);
 					}
 				}
 				data.add(mapdata);

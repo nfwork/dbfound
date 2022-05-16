@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
 
@@ -33,18 +34,23 @@ public class ReflectorUtil {
 				ObjectFactory objectFactory = new DefaultObjectFactory();
 				T obj = objectFactory.create(clazz);
 				for (int i = 1; i <= columnCount; i++) {
-					String columname = md.getColumnLabel(i);
-					if (DataUtil.isNull(columname)) {
-						columname = md.getColumnName(i);
+					String colName = md.getColumnName(i);
+
+					// 判断是否有as 逻辑，如果没有as，强制转化为小写
+					String labName =  md.getColumnLabel(i);
+					if (labName.equalsIgnoreCase(colName)){
+						colName = colName.toLowerCase();
+					}else{
+						colName = labName;
 					}
 
-					String propertyname =colNameMap.get(columname);
+					String propertyname =colNameMap.get(colName);
 					if (propertyname == null){
-						propertyname = reflector.getFieldName(columname);
+						propertyname = reflector.getFieldName(colName);
 						if (!reflector.hasSetter(propertyname)) {
 							propertyname = StringUtil.underscoreToCamelCase(propertyname);
 						}
-						colNameMap.put(columname,propertyname);
+						colNameMap.put(colName,propertyname);
 					}
 
 					if (reflector.hasSetter(propertyname)) {
