@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.excel;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import javax.servlet.ServletOutputStream;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.ModelEngine;
+import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 
@@ -106,6 +108,30 @@ public class ExcelWriter {
 					.toString(), map.get("content").toString(), Integer
 					.parseInt(map.get("width").toString()));
 			columns[index++] = cellMeta;
+		}
+
+		//数据转化
+		Map<String,Map<String,Object>> mappers = new HashMap<String, Map<String,Object>>();
+		for (Map col : cls){
+			Object object =col.get("mapper");
+			if (DataUtil.isNotNull(object)){
+				Map mapper = (Map)object;
+				Map<String,Object> newMapper  = new HashMap();
+
+				for (Object key: mapper.keySet()){
+					newMapper.put(key.toString(),mapper.get(key));
+				}
+				mappers.put(col.get("name").toString(),newMapper);
+			}
+		}
+		for (Map item : result){
+			for(Map.Entry<String,Map<String,Object>> entry : mappers.entrySet()){
+				String val1 = item.get(entry.getKey()).toString();
+				Object val2 = entry.getValue().get(val1);
+				if(val2 != null){
+					item.put(entry.getKey(),val2);
+				}
+			}
 		}
 
 		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID()

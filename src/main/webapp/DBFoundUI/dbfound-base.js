@@ -196,7 +196,8 @@ $D = DBFound = {
 				var cl = {
 					"name" : columns[i].dataIndex,
 					"content" : columns[i].header,
-					"width" : columns[i].width
+					"width" : columns[i].width,
+					"mapper": grid.exportMappers[columns[i].dataIndex]
 				};
 				cls[i] = cl;
 			}
