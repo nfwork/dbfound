@@ -76,7 +76,6 @@ public abstract class SqlEntity extends Sqls {
 		// 设定参数
 		Pattern p = Pattern.compile(paramReplace);
 		Matcher m = p.matcher(sql);
-		int cursor = 1; // 游标记录参数的位置
 		while (m.find()) {
 			String paramName = m.group();
 			String name = paramName.substring(2, paramName.length() - 1).trim();
@@ -269,7 +268,11 @@ public abstract class SqlEntity extends Sqls {
 	}
 
 	public void log(String sql, Map<String, Param> params) {
-		LogUtil.log(sql, params);
+		LogUtil.log(sql, params.values());
+	}
+
+	public void log(String sql, List<Param> listParam) {
+		LogUtil.log(sql, listParam);
 	}
 
 	public void setSql(String sql) {

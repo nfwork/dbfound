@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	elementFormDefault="qualified" xmlns="http://dbfound.googlecode.com/model"
-	targetNamespace="http://dbfound.googlecode.com/model">
+			elementFormDefault="qualified" xmlns="http://dbfound.googlecode.com/model"
+			targetNamespace="http://dbfound.googlecode.com/model">
 
 	<xsd:element name="model">
 		<xsd:complexType>
 			<xsd:choice maxOccurs="unbounded" minOccurs="0">
 				<xsd:element maxOccurs="unbounded" minOccurs="0" name="param"
-					type="param_type" />
+							 type="param_type" />
 				<xsd:element maxOccurs="unbounded" minOccurs="0" name="query"
-					type="query_type" />
+							 type="query_type" />
 				<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute"
-					type="execute_type" />
+							 type="execute_type" />
 			</xsd:choice>
 			<xsd:attribute name="connectionProvide" />
 		</xsd:complexType>
@@ -20,9 +20,9 @@
 	<xsd:complexType name="query_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="param"
-				type="param_type" />
+						 type="param_type" />
 			<xsd:element maxOccurs="1" minOccurs="1" name="sql"
-				nillable="false" />
+						 nillable="false" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="filter">
 				<xsd:complexType>
 					<xsd:attribute name="active">
@@ -70,9 +70,9 @@
 	<xsd:complexType name="execute_type">
 		<xsd:sequence>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="param"
-				type="param_type" />
+						 type="param_type" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="sqls"
-				type="sqls_type" />
+						 type="sqls_type" />
 		</xsd:sequence>
 		<xsd:attribute name="name" />
 	</xsd:complexType>
@@ -150,16 +150,18 @@
 	<xsd:complexType name="sqls_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql"
-				type="executeSql_type" />
+						 type="executeSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql"
+						 type="batchExecuteSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql"/>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java"
-				type="java_type" />
+						 type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql"
-				type="whenSql_type" />
+						 type="whenSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
-				name="collisionSql" type="collisionSql_type" />
+						 name="collisionSql" type="collisionSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql"
-				type="batchSql_type" />
+						 type="batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
@@ -174,7 +176,7 @@
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
-				name="excelReader">
+						 name="excelReader">
 				<xsd:complexType>
 					<xsd:attribute name="sourceParam" />
 					<xsd:attribute name="rootPath" />
@@ -186,16 +188,16 @@
 	<xsd:complexType name="whenSql_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql"
-				type="executeSql_type" />
+						 type="executeSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java"
-				type="java_type" />
+						 type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql"
-				type="whenSql_type" />
+						 type="whenSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
-				name="collisionSql" type="collisionSql_type" />
+						 name="collisionSql" type="collisionSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql"
-				type="batchSql_type" />
+						 type="batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
@@ -210,7 +212,7 @@
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
-				name="excelReader">
+						 name="excelReader">
 				<xsd:complexType>
 					<xsd:attribute name="sourceParam" />
 					<xsd:attribute name="rootPath" />
@@ -223,16 +225,16 @@
 	<xsd:complexType name="batchSql_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql"
-				type="executeSql_type" />
+						 type="executeSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java"
-				type="java_type" />
+						 type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql"
-				type="whenSql_type" />
+						 type="whenSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
-				name="collisionSql" type="collisionSql_type" />
+						 name="collisionSql" type="collisionSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql"
-				type="batchSql_type" />
+						 type="batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
@@ -247,7 +249,7 @@
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
-				name="excelReader">
+						 name="excelReader">
 				<xsd:complexType>
 					<xsd:attribute name="sourceParam" />
 					<xsd:attribute name="rootPath" />
@@ -261,6 +263,12 @@
 	<xsd:complexType name="executeSql_type" mixed="true">
 		<xsd:attribute name="generatedKeyParam" />
 		<xsd:attribute name="affectedCountParam" />
+	</xsd:complexType>
+
+	<xsd:complexType name="batchExecuteSql_type" mixed="true">
+		<xsd:attribute name="sourcePath" />
+		<xsd:attribute name="affectedCountParam" />
+		<xsd:attribute name="batchSize" />
 	</xsd:complexType>
 
 	<xsd:complexType name="java_type">

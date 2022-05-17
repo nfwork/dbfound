@@ -1,8 +1,6 @@
 package com.nfwork.dbfound.util;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
+import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,12 +19,10 @@ public class LogUtil {
 
 	private static Log log = LogFactory.getLog("dbfound");
 
-	public static void log(String sql, Map<String, Param> params) {
+	public static void log(String sql, Collection<Param> params) {
 		if (openLog) {
 			log.info("execute sql: " + sql);
-			Set<Entry<String, Param>> setp = params.entrySet();
-			for (Entry<String, Param> entry : setp) {
-				Param param = entry.getValue();
+			for (Param param : params) {
 				log.info(String.format("sql param:%s, value:%s, dataType:%s, sourcePath:%s", param.getName(), param
 						.getValue(), param.getDataType(), param.getSourcePathHistory()));
 			}

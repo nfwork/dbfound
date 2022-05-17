@@ -229,7 +229,7 @@ public class Query extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.log(eSql, params);
+			LogUtil.log(eSql, params.values());
 		}
 		return (List<T>) data;
 	}

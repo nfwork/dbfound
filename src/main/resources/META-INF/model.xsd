@@ -151,6 +151,8 @@
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql"
 				type="executeSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql"
+						 type="batchExecuteSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql"/>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java"
 				type="java_type" />
@@ -261,6 +263,12 @@
 	<xsd:complexType name="executeSql_type" mixed="true">
 		<xsd:attribute name="generatedKeyParam" />
 		<xsd:attribute name="affectedCountParam" />
+	</xsd:complexType>
+
+	<xsd:complexType name="batchExecuteSql_type" mixed="true">
+		<xsd:attribute name="sourcePath" />
+		<xsd:attribute name="affectedCountParam" />
+		<xsd:attribute name="batchSize" />
 	</xsd:complexType>
 
 	<xsd:complexType name="java_type">
