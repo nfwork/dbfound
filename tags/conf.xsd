@@ -25,6 +25,7 @@
 			<xsd:element maxOccurs="1" minOccurs="0" name="mvcConfigFile" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="interceptor" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="basePath" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="jsonStringAutoCover" />
 		</xsd:choice>
 	</xsd:complexType>
 

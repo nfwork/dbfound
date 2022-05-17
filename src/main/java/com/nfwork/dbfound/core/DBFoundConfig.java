@@ -5,9 +5,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.sql.DataSource;
 
@@ -51,9 +49,15 @@ public class DBFoundConfig {
 	private static int queryLimitSize = 5000;
 	private static int reportQueryLimitSize = 50000;
 	private static boolean modelModifyCheck = true;
+	private static boolean jsonStringAutoCover = true;
+	private static Set<String> jsonStringForceCoverSet = new HashSet<String>();
+	static {
+		jsonStringForceCoverSet.add("GridData");
+		jsonStringForceCoverSet.add("parameters");
+		jsonStringForceCoverSet.add("columns");
+	}
 	private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd";
-
 
 	public static void destory() {
 		for (DataSourceConnectionProvide provide : dsp) {
@@ -253,6 +257,18 @@ public class DBFoundConfig {
 			}
 		}
 
+		// jsonStringAutoCover 初始化
+		Element jsonElement = web.element("jsonStringAutoCover");
+		if (jsonElement != null) {
+			String autoCover = jsonElement.getTextTrim();
+			if ("true".equals(autoCover)) {
+				jsonStringAutoCover = true;
+			}else{
+				jsonStringAutoCover = false;
+			}
+			info.append("(jsonStringAutoCover = " + jsonStringAutoCover + ")");
+		}
+
 		// 文件上传路径
 		Element folder = web.element("uploadFolder");
 		if (folder != null) {
@@ -290,7 +306,7 @@ public class DBFoundConfig {
 			String className = filter.getTextTrim();
 			if (!"".equals(className)) {
 				InterceptorEngine.init(className);
-				info.append("(accessFilter = " + className + ")");
+				info.append("(interceptor = " + className + ")");
 			}
 		}
 
@@ -592,5 +608,19 @@ public class DBFoundConfig {
 		return dateFormat;
 	}
 
+	public static boolean isJsonStringAutoCover() {
+		return jsonStringAutoCover;
+	}
 
+	public static void setJsonStringAutoCover(boolean jsonStringAutoCover) {
+		DBFoundConfig.jsonStringAutoCover = jsonStringAutoCover;
+	}
+
+	public static Set<String> getJsonStringForceCoverSet() {
+		return jsonStringForceCoverSet;
+	}
+
+	public static void setJsonStringForceCoverSet(Set<String> jsonStringForceCoverSet) {
+		DBFoundConfig.jsonStringForceCoverSet = jsonStringForceCoverSet;
+	}
 }

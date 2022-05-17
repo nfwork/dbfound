@@ -188,13 +188,13 @@ public class Context {
 		while (enumeration.hasMoreElements()) {
 			String paramName = enumeration.nextElement();
 			String value = request.getParameter(paramName);
-			Object object;
-			if (value.startsWith("{") && value.endsWith("}")) {
-				object = JsonUtil.jsonToMap(value);
-			} else if (value.startsWith("[") && value.endsWith("]")) {
-				object = JsonUtil.jsonToList(value);
-			} else {
-				object = value;
+			Object object =value;
+			if(DBFoundConfig.isJsonStringAutoCover() || DBFoundConfig.getJsonStringForceCoverSet().contains(paramName)){
+				if (value.startsWith("{") && value.endsWith("}")) {
+					object = JsonUtil.jsonToMap(value);
+				} else if (value.startsWith("[") && value.endsWith("]")) {
+					object = JsonUtil.jsonToList(value);
+				}
 			}
 			setParamData(paramName, object);
 		}
