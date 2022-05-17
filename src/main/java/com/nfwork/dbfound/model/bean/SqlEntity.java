@@ -3,16 +3,19 @@ package com.nfwork.dbfound.model.bean;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.JsonUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.dom4j.Element;
 
@@ -138,7 +141,17 @@ public abstract class SqlEntity extends Sqls {
 			if (paramValue == null) {
 				statement.setString(cursor, null);
 			} else if (paramDataType.equals("varchar")) {
-				statement.setString(cursor, paramValue);
+				if (nfParam.getValue() instanceof Map ){
+					statement.setString(cursor, JsonUtil.mapToJson((Map)nfParam.getValue()));
+				}else if( nfParam.getValue() instanceof Set ){
+					statement.setString(cursor,JsonUtil.setToJson((Set)nfParam.getValue()));
+				}else if( nfParam.getValue() instanceof List ){
+					statement.setString(cursor,JsonUtil.listToJson((List)nfParam.getValue()));
+				}else if( nfParam.getValue() instanceof Object[]){
+					statement.setString(cursor,JsonUtil.arrayToJson((Object[])nfParam.getValue()));
+				}else {
+					statement.setString(cursor, paramValue);
+				}
 			} else if (paramDataType.equals("number")) {
 				if ("".equals(paramValue.trim())) {
 					statement.setString(cursor, null);
