@@ -39,8 +39,6 @@ public class BatchExecuteSql extends SqlEntity {
 			}
 		}
 
-		Pattern p = Pattern.compile(paramReplace);
-
 		int indexBegin = sql.indexOf(BATCH_TEMPLATE_BEGIN);
 		int indexEnd = sql.indexOf(BATCH_TEMPLATE_END);
 		String esql = sql.substring(0,indexBegin);
@@ -60,17 +58,31 @@ public class BatchExecuteSql extends SqlEntity {
 			Object[] objects = (Object[])data;
 			dataSize = objects.length;
 		}
+		int updateCount = 0;
 		for (int i= 0 ; i < dataSize; i=i+batchSize){
 			int begin = i;
 			int end = i + batchSize;
 			if( end >dataSize) end = dataSize;
-			execute(context,params,provideName,begin,end,esql,tmpSql,endSql);
+			int size = execute(context,params,provideName,begin,end,esql,tmpSql,endSql);
+			updateCount = updateCount +size;
+		}
+
+		// 2014年8月14日11:38:34 添加affectedCountParam
+		if (DataUtil.isNotNull(affectedCountParam)) {
+			Param param = params.get(affectedCountParam);
+			if (param == null) {
+				throw new ParamNotFoundException("param: " + affectedCountParam + " not defined");
+			}
+			param.setValue(updateCount);
+			param.setSourcePathHistory("set by affectedCount");
 		}
 	}
 
-	private void execute(Context context, Map<String, Param> params, String provideName, int begin ,int end, String esql,String tmpSql,String endSql){
+	private int execute(Context context, Map<String, Param> params, String provideName, int begin ,int end, String esql,String tmpSql,String endSql){
 		Map<String, Param> exeParams = new HashMap<String, Param>();
 		List<Param> listParam = new ArrayList<Param>();
+		listParam.addAll(params.values());
+		exeParams.putAll(params);
 
 		for (int i =begin; i< end; i++){
 			for (Param param : params.values()){
@@ -90,10 +102,10 @@ public class BatchExecuteSql extends SqlEntity {
 			}
 		}
 		esql = esql + endSql;
-		execute(context,exeParams,provideName,esql,listParam);
+		return execute(context,exeParams,provideName,esql,listParam);
 	}
 
-	private void execute(Context context, Map<String, Param> params, String provideName,String sql, List<Param> listParam) {
+	private int execute(Context context, Map<String, Param> params, String provideName,String sql, List<Param> listParam) {
 
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
@@ -114,18 +126,7 @@ public class BatchExecuteSql extends SqlEntity {
 				initParam(statement, sql, params);
 				statement.execute();
 
-				// 2014年8月14日11:38:34 添加affectedCountParam
-				if (DataUtil.isNotNull(affectedCountParam)) {
-					int fetchSize = statement.getUpdateCount();
-
-					Param param = params.get(affectedCountParam);
-					if (param == null) {
-						throw new ParamNotFoundException("param: " + affectedCountParam + " not defined");
-					}
-					param.setValue(fetchSize);
-					param.setSourcePathHistory("set by affectedCount");
-				}
-				
+				return statement.getUpdateCount();
 			} finally {
 				DBUtil.closeResultSet(rs);
 				DBUtil.closeStatement(statement);
