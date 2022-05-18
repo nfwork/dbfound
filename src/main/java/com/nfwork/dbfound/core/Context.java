@@ -1,13 +1,12 @@
 package com.nfwork.dbfound.core;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +23,8 @@ import com.nfwork.dbfound.model.bean.Model;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
+import com.nfwork.dbfound.util.StreamUtils;
+import com.nfwork.dbfound.web.WebWriter;
 
 public class Context {
 
@@ -111,6 +112,7 @@ public class Context {
 
 		cloneParamData(request);
 		cloneRequestData(request);
+		cloneRequestBodyData(request);
 		cloneHeaderData(request);
 		cloneCookieData(request);
 		if (openSession) {
@@ -214,6 +216,32 @@ public class Context {
 				continue; // 初始化复制request数据时，不克隆a.b多层次数据。
 			}
 			setRequestData(paramName, request.getAttribute(paramName));
+		}
+	}
+
+	/**
+	 * 复制requestBody数据
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public void cloneRequestBodyData(HttpServletRequest request) {
+		try {
+			String contentType = request.getHeader("Content-Type");
+			if (contentType != null && contentType.contains("application/json")) {
+				InputStream inputStream = request.getInputStream();
+				String payload = StreamUtils.copyToString(inputStream, Charset.forName(WebWriter.getEncoding())).trim();
+				inputStream.close();
+				if (payload.startsWith("{")) {
+					Map<String, Object> map = JsonUtil.jsonToMap(payload);
+					for (Map.Entry<String, Object> entry : map.entrySet()) {
+						setParamData(entry.getKey(), entry.getValue());
+					}
+				} else if (payload.startsWith("[")) {
+					List list = JsonUtil.jsonToList(payload);
+					setParamData("dataList", list);
+				}
+			}
+		}catch (IOException exception){
+			throw new DBFoundRuntimeException(exception);
 		}
 	}
 
