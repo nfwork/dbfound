@@ -2,6 +2,7 @@ package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
+import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DBUtil;
@@ -92,7 +93,15 @@ public class BatchExecuteSql extends SqlEntity {
 					newParam.setSourcePath(sourcePath +"[" + i +"]."+param.getName());
 					newParam.setSourcePathHistory(newParam.getSourcePath());
 					newParam.setValue(context.getData(newParam.getSourcePath()));
+				}else if ( DataUtil.isNotNull(newParam.getSourcePath())
+				            && !newParam.getSourcePath().startsWith(ELEngine.sessionScope) && !newParam.getSourcePath().startsWith(ELEngine.requestScope)
+							&& !newParam.getSourcePath().startsWith(ELEngine.outParamScope) && !newParam.getSourcePath().startsWith(ELEngine.paramScope)
+							&& !newParam.getSourcePath().startsWith(ELEngine.cookieScope) && !newParam.getSourcePath().startsWith(ELEngine.headerScope)) {
+					newParam.setSourcePath(sourcePath +"[" + i +"]."+param.getSourcePath());
+					newParam.setSourcePathHistory(newParam.getSourcePath());
+					newParam.setValue(context.getData(newParam.getSourcePath()));
 				}
+
 				exeParams.put(newParam.getName(),newParam);
 				listParam.add(newParam);
 			}
