@@ -7,6 +7,8 @@ import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.JsonUtil;
 import org.apache.commons.fileupload.FileItem;
@@ -154,7 +158,9 @@ public abstract class SqlEntity extends Sqls {
 			} else if (paramDataType.equals("number")) {
 				if ("".equals(paramValue.trim())) {
 					statement.setString(cursor, null);
-				} else if (!paramValue.contains(".")) {
+				}else if(nfParam.getValue() instanceof Integer){
+					statement.setInt(cursor,(Integer) nfParam.getValue());
+				}else if (!paramValue.contains(".")) {
 					statement.setLong(cursor, Long.parseLong(paramValue));
 				} else if (paramValue.endsWith(".0")) {
 					paramValue = paramValue.substring(0, paramValue.length() - 2);
@@ -164,13 +170,32 @@ public abstract class SqlEntity extends Sqls {
 					statement.setDouble(cursor, Double.parseDouble(paramValue));
 				}
 			} else if (paramDataType.equals("date")) {
+				paramValue = paramValue.trim();
 				if (nfParam.getValue() instanceof java.sql.Date) {
 					java.sql.Date date = (java.sql.Date) nfParam.getValue();
 					statement.setDate(cursor, date);
 				} else if (nfParam.getValue() instanceof Date) {
 					Date date = (Date) nfParam.getValue();
 					statement.setTimestamp(cursor, new Timestamp(date.getTime()));
-				} else {
+				} else if(nfParam.getValue() instanceof Long){
+					statement.setTimestamp(cursor, new Timestamp((Long) nfParam.getValue()));
+				} else if(paramValue.matches("[0123456789]*")){
+					statement.setTimestamp(cursor, new Timestamp(Long.parseLong(paramValue)));
+				} else if(paramValue.length() == DBFoundConfig.getDateFormat().length()){
+					try {
+						SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+						statement.setDate(cursor, new java.sql.Date(format.parse(paramValue).getTime()));
+					}catch (ParseException exception){
+						throw new DBFoundRuntimeException("parse date exception, value :" + paramValue ,exception);
+					}
+				} else if(paramValue.length() == DBFoundConfig.getDateTimeFormat().length()){
+					try {
+						SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+						statement.setTimestamp(cursor, new Timestamp(format.parse(paramValue).getTime()));
+					}catch (ParseException exception){
+						throw new DBFoundRuntimeException("parse datetime exception, value :" + paramValue ,exception);
+					}
+				}else {
 					statement.setString(cursor, paramValue);
 				}
 			} else if (paramDataType.equals("file")) {
