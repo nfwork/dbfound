@@ -142,6 +142,7 @@ public class BatchSql extends SqlEntity {
 						case Types.INTEGER:
 						case Types.TINYINT:
 						case Types.SMALLINT:
+						case Types.BIT:
 							mapdata.put(columnName, dataset.getInt(i));
 							break;
 						case Types.BIGINT:
