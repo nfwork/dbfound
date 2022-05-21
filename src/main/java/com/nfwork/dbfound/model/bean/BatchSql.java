@@ -48,23 +48,25 @@ public class BatchSql extends SqlEntity {
 				throw new DBFoundPackageException(
 						"游标sql执行异常:" + e.getMessage(), e);
 			}
+			sourcePath = "cursorlist";
 		} else {
 			cursorValues = (List<Map>) context.getData(sourcePath);
 		}
 		if (cursorValues != null) {
 			int i = 0;
+			Set<String> nameSet = new HashSet<String>();
+
 			for (Map map : cursorValues) {
-				for (Iterator iterator = map.entrySet().iterator(); iterator
-						.hasNext();) {
-					Map.Entry entry = (Map.Entry) iterator.next();
-					String paramName = entry.getKey().toString();
+				nameSet.addAll((Set<String>) map.keySet());
+
+				for (String paramName : nameSet) {
 					Param param = params.get(paramName);
 					if(param == null){
 						param = params.get(StringUtil.underscoreToCamelCase(paramName));
 					}
 					if (param != null) {
-						param.setValue(entry.getValue());
-						param.setSourcePathHistory("cursorlist[" + i + "]");
+						param.setValue(map.get(paramName));
+						param.setSourcePathHistory( sourcePath + "[" + i + "]."+ paramName);
 					}
 				}
 				i++;
