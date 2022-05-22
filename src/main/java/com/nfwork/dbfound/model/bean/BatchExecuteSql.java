@@ -47,18 +47,20 @@ public class BatchExecuteSql extends SqlEntity {
 		String endSql = sql.substring(indexEnd + BATCH_TEMPLATE_END.length());
 
 		int dataSize =0;
-
 		Object data = context.getData(sourcePath);
-		if(data instanceof  List){
-			List dataList = (List) data;
-			dataSize = dataList.size();
-		}else if(data instanceof Set){
-			Set set = (Set) data;
-			dataSize = set.size();
-		}else if(data instanceof  Object[]){
-			Object[] objects = (Object[])data;
-			dataSize = objects.length;
+		if(data != null) {
+			if (data instanceof List) {
+				List dataList = (List) data;
+				dataSize = dataList.size();
+			} else if (data instanceof Set) {
+				Set set = (Set) data;
+				dataSize = set.size();
+			} else if (data instanceof Object[]) {
+				Object[] objects = (Object[]) data;
+				dataSize = objects.length;
+			}
 		}
+
 		int updateCount = 0;
 		for (int i= 0 ; i < dataSize; i=i+batchSize){
 			int begin = i;
@@ -90,16 +92,14 @@ public class BatchExecuteSql extends SqlEntity {
 				Param newParam = (Param) param.cloneEntity();
 				newParam.setName(newParam.getName()+"_"+i);
 				if (DataUtil.isNull(newParam.getScope()) && DataUtil.isNull(newParam.getSourcePath())){
-					newParam.setSourcePath(sourcePath +"[" + i +"]."+param.getName());
-					newParam.setSourcePathHistory(newParam.getSourcePath());
-					newParam.setValue(context.getData(newParam.getSourcePath()));
+					newParam.setSourcePathHistory(sourcePath +"[" + i +"]."+param.getName());
+					newParam.setValue(context.getData(newParam.getSourcePathHistory()));
 				}else if ( DataUtil.isNotNull(newParam.getSourcePath())
 				            && !newParam.getSourcePath().startsWith(ELEngine.sessionScope) && !newParam.getSourcePath().startsWith(ELEngine.requestScope)
 							&& !newParam.getSourcePath().startsWith(ELEngine.outParamScope) && !newParam.getSourcePath().startsWith(ELEngine.paramScope)
 							&& !newParam.getSourcePath().startsWith(ELEngine.cookieScope) && !newParam.getSourcePath().startsWith(ELEngine.headerScope)) {
-					newParam.setSourcePath(sourcePath +"[" + i +"]."+param.getSourcePath());
-					newParam.setSourcePathHistory(newParam.getSourcePath());
-					newParam.setValue(context.getData(newParam.getSourcePath()));
+					newParam.setSourcePathHistory(sourcePath +"[" + i +"]."+param.getSourcePath());
+					newParam.setValue(context.getData(newParam.getSourcePathHistory()));
 				}
 
 				exeParams.put(newParam.getName(),newParam);

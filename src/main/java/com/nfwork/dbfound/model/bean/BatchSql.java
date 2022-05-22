@@ -11,8 +11,10 @@ import java.util.*;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
+import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.util.DBUtil;
+import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
 
 /**
@@ -38,41 +40,49 @@ public class BatchSql extends SqlEntity {
 	public void execute(Context context, Map<String, Param> params,
 			String provideName) {
 
-		List<Map> cursorValues = null;
 		// 执行游标得到相应的值
 		if (cursor != null) {
-			cursorValues = new ArrayList<Map>();
+			List<Map> cursorValues = new ArrayList<Map>();
 			try {
 				executeCursor(context, params, provideName, cursorValues);
 			} catch (SQLException e) {
 				throw new DBFoundPackageException(
 						"游标sql执行异常:" + e.getMessage(), e);
 			}
-			sourcePath = "cursorlist";
-		} else {
-			cursorValues = (List<Map>) context.getData(sourcePath);
+			sourcePath = "param.cursorlist";
+			context.setParamData("cursorlist",cursorValues);
 		}
-		if (cursorValues != null) {
-			int i = 0;
-			Set<String> nameSet = new HashSet<String>();
 
-			for (Map map : cursorValues) {
-				nameSet.addAll((Set<String>) map.keySet());
+		int dataSize = 0;
+		Object data = context.getData(sourcePath);
+		if(data != null) {
+			if (data instanceof List) {
+				List dataList = (List) data;
+				dataSize = dataList.size();
+			} else if (data instanceof Set) {
+				Set set = (Set) data;
+				dataSize = set.size();
+			} else if (data instanceof Object[]) {
+				Object[] objects = (Object[]) data;
+				dataSize = objects.length;
+			}
+		}
 
-				for (String paramName : nameSet) {
-					Param param = params.get(paramName);
-					if(param == null){
-						param = params.get(StringUtil.underscoreToCamelCase(paramName));
-					}
-					if (param != null) {
-						param.setValue(map.get(paramName));
-						param.setSourcePathHistory( sourcePath + "[" + i + "]."+ paramName);
-					}
+		for (int i=0 ; i < dataSize ; i++) {
+			for (Param param : params.values()){
+				if (DataUtil.isNull(param.getScope()) && DataUtil.isNull(param.getSourcePath())){
+					param.setSourcePathHistory(sourcePath +"[" + i +"]."+param.getName());
+					param.setValue(context.getData(param.getSourcePathHistory()));
+				}else if ( DataUtil.isNotNull(param.getSourcePath())
+						&& !param.getSourcePath().startsWith(ELEngine.sessionScope) && !param.getSourcePath().startsWith(ELEngine.requestScope)
+						&& !param.getSourcePath().startsWith(ELEngine.outParamScope) && !param.getSourcePath().startsWith(ELEngine.paramScope)
+						&& !param.getSourcePath().startsWith(ELEngine.cookieScope) && !param.getSourcePath().startsWith(ELEngine.headerScope)) {
+					param.setSourcePathHistory(sourcePath +"[" + i +"]."+param.getSourcePath());
+					param.setValue(context.getData(param.getSourcePathHistory()));
 				}
-				i++;
-				for (SqlEntity sql : sqlList) {
-					sql.execute(context, params, provideName);
-				}
+			}
+			for (SqlEntity sql : sqlList) {
+				sql.execute(context, params, provideName);
 			}
 		}
 	}
