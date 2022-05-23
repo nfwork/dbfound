@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.excel;
 
 import java.io.*;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +18,8 @@ import jxl.*;
 import jxl.format.Alignment;
 import jxl.format.Colour;
 import jxl.format.UnderlineStyle;
-import jxl.write.Blank;
-import jxl.write.Label;
+import jxl.write.*;
 import jxl.write.Number;
-import jxl.write.WritableFont;
 
 public class ExcelWriter {
 
@@ -70,6 +69,13 @@ public class ExcelWriter {
 					} else if (o instanceof Float) {
 						Number number = new Number(i, index, (Float) o);
 						ws.addCell(number);
+					} else if(o instanceof Date){
+						DateTime  dateTime = new DateTime(i, index, (Date)o);
+						ws.addCell(dateTime);
+					} else {
+						String content = o.toString();
+						Label label = new Label(i, index, content);
+						ws.addCell(label);
 					}
 				}
 				index++;
