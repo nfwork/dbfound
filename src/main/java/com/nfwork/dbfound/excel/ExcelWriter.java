@@ -151,18 +151,17 @@ public class ExcelWriter {
 
 			// 向外输出excel
 			context.response.setContentType("application/x-download");
+			context.response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 			context.response.setHeader("Content-Disposition",
 					"attachment;filename=export.xls");
 			sout = context.response.getOutputStream(); // 图片输出的输出流
 			in = new FileInputStream(file);
 
-			if (in != null) {
-				byte b[] = new byte[2048];
-				int i = in.read(b);
-				while (i != -1) {
-					sout.write(b, 0, i);
-					i = in.read(b);
-				}
+			byte b[] = new byte[2048];
+			int i = in.read(b);
+			while (i != -1) {
+				sout.write(b, 0, i);
+				i = in.read(b);
 			}
 		} finally {
 			if (in != null) {
