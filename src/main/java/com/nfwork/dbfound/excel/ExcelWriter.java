@@ -130,10 +130,26 @@ public class ExcelWriter {
 				mappers.put(col.get("name").toString(),newMapper);
 			}
 		}
+
 		for (Map item : result){
 			for(Map.Entry<String,Map<String,Object>> entry : mappers.entrySet()){
 				String val1 = item.get(entry.getKey()).toString();
 				Object val2 = entry.getValue().get(val1);
+
+				//判断是否逗号隔开的多组值
+				if(val2 == null && val1.contains(",")){
+					String[] vals = val1.split(",");
+					String values = "";
+					for (int i =0; i < vals.length; i++){
+						Object valItem = entry.getValue().get(vals[i].trim());
+						if(i == 0){
+							values = valItem != null ? valItem.toString(): vals[i];
+						}else{
+							values = values + ", " + (valItem != null ? valItem.toString(): vals[i]);
+						}
+					}
+					val2 = values;
+				}
 				if(val2 != null){
 					item.put(entry.getKey(),val2);
 				}
