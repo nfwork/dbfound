@@ -40,6 +40,15 @@ public class BatchExecuteSql extends SqlEntity {
 			}
 		}
 
+		//判断是否相对路径,如果是相对路径则进行转化
+		if(!sourcePath.startsWith(ELEngine.sessionScope) && !sourcePath.startsWith(ELEngine.requestScope)
+				&& !sourcePath.startsWith(ELEngine.outParamScope) && !sourcePath.startsWith(ELEngine.paramScope)
+				&& !sourcePath.startsWith(ELEngine.cookieScope) && !sourcePath.startsWith(ELEngine.headerScope)) {
+			if(DataUtil.isNotNull(context.getCurrentPath())){
+				sourcePath = context.getCurrentPath() +"." +sourcePath;
+			}
+		}
+
 		int indexBegin = sql.indexOf(BATCH_TEMPLATE_BEGIN);
 		int indexEnd = sql.indexOf(BATCH_TEMPLATE_END);
 		String esql = sql.substring(0,indexBegin);

@@ -53,6 +53,15 @@ public class BatchSql extends SqlEntity {
 			context.setParamData("cursorlist",cursorValues);
 		}
 
+		//判断是否相对路径,如果是相对路径则进行转化
+		if(!sourcePath.startsWith(ELEngine.sessionScope) && !sourcePath.startsWith(ELEngine.requestScope)
+			&& !sourcePath.startsWith(ELEngine.outParamScope) && !sourcePath.startsWith(ELEngine.paramScope)
+			&& !sourcePath.startsWith(ELEngine.cookieScope) && !sourcePath.startsWith(ELEngine.headerScope)) {
+			if(DataUtil.isNotNull(context.getCurrentPath())){
+				sourcePath = context.getCurrentPath() +"." +sourcePath;
+			}
+		}
+
 		int dataSize = 0;
 		Object data = context.getData(sourcePath);
 		if(data != null) {
