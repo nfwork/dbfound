@@ -10,7 +10,9 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.CollisionException;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DBUtil;
+import com.nfwork.dbfound.util.DataUtil;
 
 /**
  * 碰撞sql，检验where条件是否成立 标出message消息
@@ -24,17 +26,25 @@ public class CollisionSql extends SqlEntity {
 
 	private String where;
 	private String message;
+	private DBFoundRuntimeException initException;
 
 	@Override
 	public void run() {
 		super.run();
+		if(DataUtil.isNull(where) || DataUtil.isNull(message)){
+			initException = new DBFoundRuntimeException("CollisionSql attribute where and message can not be null");
+			return;
+		}
 		autoCreateParam(where,this);
 		autoCreateParam(message,this);
 	}
 
 	public void execute(Context context, Map<String, Param> params,
 						String provideName){
-		
+		if(initException != null){
+			throw initException;
+		}
+
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 

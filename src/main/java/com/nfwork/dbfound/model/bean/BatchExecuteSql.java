@@ -35,19 +35,33 @@ public class BatchExecuteSql extends SqlEntity {
 	private static  final  String BATCH_TEMPLATE_BEGIN = "#BATCH_TEMPLATE_BEGIN#";
 	private static  final  String BATCH_TEMPLATE_END = "#BATCH_TEMPLATE_END#";
 
+	private DBFoundRuntimeException initException;
+
 	@Override
 	public void run() {
 		super.run();
+
+		if(DataUtil.isNull(sourcePath)){
+			initException = new DBFoundRuntimeException("BatchExecuteSql attribute sourcePath can not be null");
+			return;
+		}
+		if(DataUtil.isNull(sql)){
+			initException = new DBFoundRuntimeException("BatchExecuteSql content sql can not be null");
+			return;
+		}
+
 		autoCreateParam(sql,this);
 
 		//sql 分解
 		int indexBegin = sql.indexOf(BATCH_TEMPLATE_BEGIN);
 		if(indexBegin == -1){
-			throw new DBFoundRuntimeException(BATCH_TEMPLATE_BEGIN + " not found");
+			initException = new DBFoundRuntimeException(BATCH_TEMPLATE_BEGIN + " not found in the sql");
+			return;
 		}
 		int indexEnd = sql.indexOf(BATCH_TEMPLATE_END);
 		if(indexEnd == -1){
-			throw new DBFoundRuntimeException(BATCH_TEMPLATE_END + " not found");
+			initException = new DBFoundRuntimeException(BATCH_TEMPLATE_END + " not found in the sql");
+			return;
 		}
 		beforeTmpSql = sql.substring(0,indexBegin);
 		tmpSql = sql.substring(indexBegin+BATCH_TEMPLATE_BEGIN.length(), indexEnd);
@@ -58,13 +72,11 @@ public class BatchExecuteSql extends SqlEntity {
 	}
 
 	public void execute(Context context, Map<String, Param> params, String provideName){
-		String exeSourcePath = sourcePath;
-		if (DataUtil.isNull(exeSourcePath)){
-			exeSourcePath = "param.GridData";
-			if(context.getData(exeSourcePath)==null){
-				exeSourcePath = "param.dataList";
-			}
+		if(initException != null){
+			throw  initException;
 		}
+		String exeSourcePath = sourcePath;
+
 		//判断是否相对路径,如果是相对路径则进行转化
 		if(!exeSourcePath.startsWith(ELEngine.sessionScope) && !exeSourcePath.startsWith(ELEngine.requestScope)
 				&& !exeSourcePath.startsWith(ELEngine.outParamScope) && !exeSourcePath.startsWith(ELEngine.paramScope)

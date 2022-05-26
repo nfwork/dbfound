@@ -31,15 +31,23 @@ public class BatchSql extends SqlEntity {
 	private String cursor;
 	private String sourcePath;
 
+	private DBFoundRuntimeException initException;
+
 	@Override
 	public void run() {
 		super.run();
-		autoCreateParam(sql,this);
+		if(DataUtil.isNull(sourcePath) && DataUtil.isNull(cursor)){
+			initException = new DBFoundRuntimeException("BatchSql attribute sourcePath and cursor, can not be null on the same time");
+			return;
+		}
 	}
 
 	@Override
 	public void execute(Context context, Map<String, Param> params,
 			String provideName) {
+		if(initException != null){
+			throw  initException;
+		}
 
 		String exeSourcePath = sourcePath;
 
@@ -54,10 +62,6 @@ public class BatchSql extends SqlEntity {
 			}
 			exeSourcePath = "param.cursorlist";
 			context.setParamData("cursorlist",cursorValues);
-		}
-
-		if(DataUtil.isNull(exeSourcePath)){
-			throw  new DBFoundRuntimeException("batchSql sourcePath can not be null");
 		}
 
 		String inCurrentPath = context.getCurrentPath();
