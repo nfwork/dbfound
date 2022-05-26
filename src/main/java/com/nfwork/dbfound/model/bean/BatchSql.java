@@ -40,6 +40,8 @@ public class BatchSql extends SqlEntity {
 	public void execute(Context context, Map<String, Param> params,
 			String provideName) {
 
+		String exeSourcePath = sourcePath;
+
 		// 执行游标得到相应的值
 		if (cursor != null) {
 			List<Map> cursorValues = new ArrayList<Map>();
@@ -49,22 +51,22 @@ public class BatchSql extends SqlEntity {
 				throw new DBFoundPackageException(
 						"游标sql执行异常:" + e.getMessage(), e);
 			}
-			sourcePath = "param.cursorlist";
+			exeSourcePath = "param.cursorlist";
 			context.setParamData("cursorlist",cursorValues);
 		}
 
 		String inCurrentPath = context.getCurrentPath();
 		//判断是否相对路径,如果是相对路径则进行转化
-		if(!sourcePath.startsWith(ELEngine.sessionScope) && !sourcePath.startsWith(ELEngine.requestScope)
-			&& !sourcePath.startsWith(ELEngine.outParamScope) && !sourcePath.startsWith(ELEngine.paramScope)
-			&& !sourcePath.startsWith(ELEngine.cookieScope) && !sourcePath.startsWith(ELEngine.headerScope)) {
+		if(!exeSourcePath.startsWith(ELEngine.sessionScope) && !exeSourcePath.startsWith(ELEngine.requestScope)
+			&& !exeSourcePath.startsWith(ELEngine.outParamScope) && !exeSourcePath.startsWith(ELEngine.paramScope)
+			&& !exeSourcePath.startsWith(ELEngine.cookieScope) && !exeSourcePath.startsWith(ELEngine.headerScope)) {
 			if(DataUtil.isNotNull(inCurrentPath)){
-				sourcePath = inCurrentPath +"." +sourcePath;
+				exeSourcePath = inCurrentPath +"." +exeSourcePath;
 			}
 		}
 
 		int dataSize = 0;
-		Object data = context.getData(sourcePath);
+		Object data = context.getData(exeSourcePath);
 		if(data != null) {
 			if (data instanceof List) {
 				List dataList = (List) data;
@@ -102,7 +104,7 @@ public class BatchSql extends SqlEntity {
 		}
 
 		for (int i=0 ; i < dataSize ; i++) {
-			String currentPath = sourcePath +"[" + i +"]";
+			String currentPath = exeSourcePath +"[" + i +"]";
 
 			//执行过程中改变currentPath
 			context.setCurrentPath(currentPath);
@@ -135,9 +137,9 @@ public class BatchSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		cursor = staticParamParse(cursor, params);
+		String cursorSql = staticParamParse(cursor, params);
 
-		String esql = getExecuteSql(cursor, params);
+		String esql = getExecuteSql(cursorSql, params);
 
 		// 方言处理
 		esql = dialect.parseSql(esql);
@@ -146,7 +148,7 @@ public class BatchSql extends SqlEntity {
 		ResultSet dataset = null;
 		try {
 			// 参数设定
-			initParam(statement, cursor, params);
+			initParam(statement, cursorSql, params);
 			dataset = statement.executeQuery();
 			ResultSetMetaData metaset = dataset.getMetaData();
 

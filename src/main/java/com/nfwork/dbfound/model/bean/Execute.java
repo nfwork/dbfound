@@ -19,7 +19,6 @@ public class Execute extends SqlEntity {
 	private String modelName;
 	private Sqls sqls; // execute对象对应的配置sql
 	private Map<String, Param> params; // query对象对应参数
-	private String currentPath;
 
 	@Override
 	public void init(Element element) {
@@ -53,8 +52,6 @@ public class Execute extends SqlEntity {
 			params.put(entry.getKey().toString(), (Param) param.cloneEntity());
 		}
 		execute.setParams(params);
-		if (sqls != null)
-			execute.setSqls(sqls.cloneEntity());
 		return execute;
 	}
 
@@ -124,14 +121,6 @@ public class Execute extends SqlEntity {
 
 	public void setParams(Map<String, Param> params) {
 		this.params = params;
-	}
-
-	public String getCurrentPath() {
-		return currentPath;
-	}
-
-	public void setCurrentPath(String currentPath) {
-		this.currentPath = currentPath;
 	}
 
 	public String getModelName() {

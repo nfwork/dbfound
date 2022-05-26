@@ -33,9 +33,9 @@ public class ExecuteSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		sql = staticParamParse(sql, params);
+		String executeSql = staticParamParse(sql, params);
 
-		String esql = getExecuteSql(sql, params);
+		String esql = getExecuteSql(executeSql, params);
 		// 方言处理
 		esql = dialect.parseSql(esql);
 
@@ -49,7 +49,7 @@ public class ExecuteSql extends SqlEntity {
 			}
 			try {
 				// 参数设定
-				initParam(statement, sql, params);
+				initParam(statement, executeSql, params);
 				statement.execute();
 				
 				// 2013年9月9日8:47:54 添加主键返回

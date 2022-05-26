@@ -35,7 +35,6 @@ public class Query extends SqlEntity {
 	private long length; // 总共条数
 	private Map<String, Param> params; // query对象对应参数
 	private Map<String, Filter> filters;
-	private String currentPath;
 	private String rootPath;
 	private String modelName;
 	private Integer queryTimeout;
@@ -491,14 +490,6 @@ public class Query extends SqlEntity {
 
 	public void setFilters(Map<String, Filter> filters) {
 		this.filters = filters;
-	}
-
-	public String getCurrentPath() {
-		return currentPath;
-	}
-
-	public void setCurrentPath(String currentPath) {
-		this.currentPath = currentPath;
 	}
 
 	public String getSql() {

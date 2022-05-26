@@ -92,6 +92,10 @@ public class ModelEngine {
 
 			Model model = context.getModel(modelName);
 
+			// 把model、currentPath对象放入到 当前线程里
+			context.setCurrentModel(modelName);
+			context.setCurrentPath(currentPath);
+
 			Query query = model.getQuery(queryName);
 			if (query == null) {
 				throw new QueryNotFoundException("can not found Query:" + queryName + ", on Model:" + modelName);
@@ -100,18 +104,16 @@ public class ModelEngine {
 				context.queryLimitSize = context.reportQueryLimitSize;
 			}
 
-			query.setCurrentPath(currentPath);
-
 			// 初始化查询参数param
 			Collection<Param> params = query.getParams().values();
 			for (Param nfParam : params) {
-				setParam(nfParam, context, query.getCurrentPath());
+				setParam(nfParam, context, currentPath);
 			}
 
 			// 初始化查询过滤参数filter
 			Collection<Filter> filters = query.getFilters().values();
 			for (Filter filter : filters) {
-				setParam(filter, context, query.getCurrentPath());
+				setParam(filter, context, currentPath);
 				Object value = filter.getValue();
 				if (value != null) {
 					if (value instanceof String && !"".equals(value)) {
@@ -246,8 +248,7 @@ public class ModelEngine {
 					if (execute == null) {
 						throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
 					}
-					execute.setCurrentPath(currentPath);
-					execute(context, model, execute);
+					execute(context, model, execute, currentPath);
 				}
 				ro.setOutParam(getOutParams(context, execute.getParams()));
 			}
@@ -286,8 +287,7 @@ public class ModelEngine {
 			if (execute == null) {
 				throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
 			}
-			execute.setCurrentPath(currentPath);
-			execute(context, model, execute);
+			execute(context, model, execute, currentPath);
 
 			// 向客服端传送成功消息
 			ResponseObject ro = new ResponseObject();
@@ -308,10 +308,9 @@ public class ModelEngine {
 	 * @param model
 	 * @param execute
 	 */
-	private static void execute(Context context, Model model, Execute execute) {
+	private static void execute(Context context, Model model, Execute execute, String currentPath) {
 
 		String modelName = model.getModelName();
-		String currentPath = execute.getCurrentPath();
 		LogUtil.info("Execute info (modelName:" + modelName + ", executeName:" + execute.getName() + ")");
 
 		// 把model、currentPath对象放入到 当前线程里

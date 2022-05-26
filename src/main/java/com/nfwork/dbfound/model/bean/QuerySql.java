@@ -37,9 +37,9 @@ public class QuerySql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		sql = staticParamParse(sql, params);
+		String querySql = staticParamParse(sql, params);
 
-		String esql = getExecuteSql(sql, params);
+		String esql = getExecuteSql(querySql, params);
 
 		// 方言处理
 		esql = dialect.parseSql(esql);
@@ -49,7 +49,7 @@ public class QuerySql extends SqlEntity {
 		try {
 			statement = conn.prepareStatement(esql);
 			// 参数设定
-			initParam(statement, sql, params);
+			initParam(statement, querySql, params);
 			dataset = statement.executeQuery();
 			ResultSetMetaData metaset = dataset.getMetaData();
 

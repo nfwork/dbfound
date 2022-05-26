@@ -41,10 +41,11 @@ public class WhenSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		when = staticParamParse(when, params);
+		String whenSql = staticParamParse(when, params);
 
-		String sql = dialect.getWhenSql(when);
-		String esql = getExecuteSql(sql, params);
+		whenSql = dialect.getWhenSql(whenSql);
+
+		String esql = getExecuteSql(whenSql, params);
 
 		// 方言处理
 		esql = dialect.parseSql(esql);
@@ -55,7 +56,7 @@ public class WhenSql extends SqlEntity {
 		try {
 			statement = conn.prepareStatement(esql);
 			// 参数设定
-			initParam(statement, sql, params);
+			initParam(statement, whenSql, params);
 			set = statement.executeQuery();
 			if (set.next()) {
 				flag = set.getInt(1);

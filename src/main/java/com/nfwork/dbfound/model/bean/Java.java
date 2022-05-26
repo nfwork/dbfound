@@ -21,12 +21,17 @@ public class Java extends SqlEntity {
 	private String method;
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public void execute(Context context, Map<String, Param> params,
-			String provideName) {
+	public void run() {
+		super.run();
 		if (method == null || "".equals(method)) {
 			method = "execute";
 		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void execute(Context context, Map<String, Param> params,
+			String provideName) {
 		LogUtil.info("执行Java，类：" + className + ",方法：" + method);
 		try {
 			Class executeClass = Class.forName(className);

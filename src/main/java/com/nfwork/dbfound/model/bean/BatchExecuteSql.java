@@ -58,23 +58,24 @@ public class BatchExecuteSql extends SqlEntity {
 	}
 
 	public void execute(Context context, Map<String, Param> params, String provideName){
-		if (DataUtil.isNull(sourcePath)){
-			sourcePath = "param.GridData";
-			if(context.getData(sourcePath)==null){
-				sourcePath = "param.dataList";
+		String exeSourcePath = sourcePath;
+		if (DataUtil.isNull(exeSourcePath)){
+			exeSourcePath = "param.GridData";
+			if(context.getData(exeSourcePath)==null){
+				exeSourcePath = "param.dataList";
 			}
 		}
 		//判断是否相对路径,如果是相对路径则进行转化
-		if(!sourcePath.startsWith(ELEngine.sessionScope) && !sourcePath.startsWith(ELEngine.requestScope)
-				&& !sourcePath.startsWith(ELEngine.outParamScope) && !sourcePath.startsWith(ELEngine.paramScope)
-				&& !sourcePath.startsWith(ELEngine.cookieScope) && !sourcePath.startsWith(ELEngine.headerScope)) {
+		if(!exeSourcePath.startsWith(ELEngine.sessionScope) && !exeSourcePath.startsWith(ELEngine.requestScope)
+				&& !exeSourcePath.startsWith(ELEngine.outParamScope) && !exeSourcePath.startsWith(ELEngine.paramScope)
+				&& !exeSourcePath.startsWith(ELEngine.cookieScope) && !exeSourcePath.startsWith(ELEngine.headerScope)) {
 			if(DataUtil.isNotNull(context.getCurrentPath())){
-				sourcePath = context.getCurrentPath() +"." +sourcePath;
+				exeSourcePath = context.getCurrentPath() +"." +exeSourcePath;
 			}
 		}
 
 		int dataSize =0;
-		Object data = context.getData(sourcePath);
+		Object data = context.getData(exeSourcePath);
 		if(data != null) {
 			if (data instanceof List) {
 				List dataList = (List) data;
