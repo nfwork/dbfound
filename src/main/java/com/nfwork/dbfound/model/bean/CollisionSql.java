@@ -39,9 +39,9 @@ public class CollisionSql extends SqlEntity {
 		SqlDialect dialect = context.getConnDialect(provideName);
 
 		String whereSql = staticParamParse(where, params);
-		
-		String sql = dialect.getWhenSql(whereSql);
-		String esql = getExecuteSql(sql, params);
+
+		whereSql = dialect.getWhenSql(whereSql);
+		String esql = getExecuteSql(whereSql, params);
 
 		// 方言处理
 		esql = dialect.parseSql(esql);
@@ -50,7 +50,7 @@ public class CollisionSql extends SqlEntity {
 		try {
 			statement = conn.prepareStatement(esql);
 			// 参数设定
-			initParam(statement, sql, params);
+			initParam(statement, whereSql, params);
 			set = statement.executeQuery();
 			if (set.next()) {
 				int flag = set.getInt(1);
