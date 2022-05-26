@@ -87,6 +87,10 @@ public class BatchExecuteSql extends SqlEntity {
 			}
 			param.setValue(updateCount);
 			param.setSourcePathHistory("set by affectedCount");
+
+			if(!"in".equals(param.getIoType())){
+				context.setOutParamData(param.getName(),param.getValue());
+			}
 		}
 	}
 

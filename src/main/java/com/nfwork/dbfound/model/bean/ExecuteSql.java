@@ -62,6 +62,10 @@ public class ExecuteSql extends SqlEntity {
 						}
 						param.setValue(rs.getLong(1));
 						param.setSourcePathHistory("set by generatedKey");
+
+						if(!"in".equals(param.getIoType())){
+							context.setOutParamData(param.getName(),param.getValue());
+						}
 					}
 				}
 				
@@ -75,6 +79,10 @@ public class ExecuteSql extends SqlEntity {
 					}
 					param.setValue(fetchSize);
 					param.setSourcePathHistory("set by affectedCount");
+
+					if(!"in".equals(param.getIoType())){
+						context.setOutParamData(param.getName(),param.getValue());
+					}
 				}
 				
 			} finally {

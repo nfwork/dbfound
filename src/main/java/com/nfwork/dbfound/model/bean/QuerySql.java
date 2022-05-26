@@ -97,6 +97,10 @@ public class QuerySql extends SqlEntity {
 						param.setValue(value);
 					}
 					param.setSourcePathHistory("querySql");
+
+					if(!"in".equals(param.getIoType())){
+						context.setOutParamData(param.getName(),param.getValue());
+					}
 				}
 			}
 		} catch (SQLException e) {
