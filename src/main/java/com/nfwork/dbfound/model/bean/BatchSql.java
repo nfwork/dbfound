@@ -13,6 +13,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
@@ -53,6 +54,10 @@ public class BatchSql extends SqlEntity {
 			}
 			exeSourcePath = "param.cursorlist";
 			context.setParamData("cursorlist",cursorValues);
+		}
+
+		if(DataUtil.isNull(exeSourcePath)){
+			throw  new DBFoundRuntimeException("batchSql sourcePath can not be null");
 		}
 
 		String inCurrentPath = context.getCurrentPath();
