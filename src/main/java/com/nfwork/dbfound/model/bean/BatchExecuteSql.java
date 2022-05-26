@@ -109,7 +109,7 @@ public class BatchExecuteSql extends SqlEntity {
 			int begin = i;
 			int end = i + batchSize;
 			if(end > dataSize) end = dataSize;
-			int size = execute(context,params,provideName,begin,end);
+			int size = execute(context,params,exeSourcePath,provideName,begin,end);
 			updateCount = updateCount +size;
 		}
 
@@ -128,7 +128,7 @@ public class BatchExecuteSql extends SqlEntity {
 		}
 	}
 
-	private int execute(Context context, Map<String, Param> params,String provideName, int begin ,int end){
+	private int execute(Context context, Map<String, Param> params, String exeSourcePath,String provideName, int begin ,int end){
 		Map<String, Param> exeParams = new HashMap<String, Param>();
 		List<Param> listParam = new ArrayList<Param>();
 		listParam.addAll(params.values());
@@ -146,7 +146,7 @@ public class BatchExecuteSql extends SqlEntity {
 				newParam.setName(newParam.getName()+"_"+i);
 				if (param.isBatchAssign()){
 					String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
-					newParam.setSourcePathHistory(sourcePath +"[" + i +"]."+ sp);
+					newParam.setSourcePathHistory(exeSourcePath +"[" + i +"]."+ sp);
 					newParam.setValue(context.getData(newParam.getSourcePathHistory()));
 				}
 				exeParams.put(newParam.getName(),newParam);
