@@ -24,6 +24,14 @@ public class BatchExecuteSql extends SqlEntity {
 
 	private Integer batchSize = 100;
 
+	private String beforeTmpSql;
+
+	private String tmpSql;
+
+	private String afterTmpSql;
+
+	private List<String> paramNameList;
+
 	private static  final  String BATCH_TEMPLATE_BEGIN = "#BATCH_TEMPLATE_BEGIN#";
 	private static  final  String BATCH_TEMPLATE_END = "#BATCH_TEMPLATE_END#";
 
@@ -31,6 +39,22 @@ public class BatchExecuteSql extends SqlEntity {
 	public void run() {
 		super.run();
 		autoCreateParam(sql,this);
+
+		//sql 分解
+		int indexBegin = sql.indexOf(BATCH_TEMPLATE_BEGIN);
+		if(indexBegin == -1){
+			throw new DBFoundRuntimeException(BATCH_TEMPLATE_BEGIN + " not found");
+		}
+		int indexEnd = sql.indexOf(BATCH_TEMPLATE_END);
+		if(indexEnd == -1){
+			throw new DBFoundRuntimeException(BATCH_TEMPLATE_END + " not found");
+		}
+		beforeTmpSql = sql.substring(0,indexBegin);
+		tmpSql = sql.substring(indexBegin+BATCH_TEMPLATE_BEGIN.length(), indexEnd);
+		afterTmpSql = sql.substring(indexEnd + BATCH_TEMPLATE_END.length());
+
+		paramNameList = new ArrayList<String>();
+		tmpSql = analysisTmpSql(tmpSql, paramNameList);
 	}
 
 	public void execute(Context context, Map<String, Param> params, String provideName){
@@ -40,7 +64,6 @@ public class BatchExecuteSql extends SqlEntity {
 				sourcePath = "param.dataList";
 			}
 		}
-
 		//判断是否相对路径,如果是相对路径则进行转化
 		if(!sourcePath.startsWith(ELEngine.sessionScope) && !sourcePath.startsWith(ELEngine.requestScope)
 				&& !sourcePath.startsWith(ELEngine.outParamScope) && !sourcePath.startsWith(ELEngine.paramScope)
@@ -49,21 +72,6 @@ public class BatchExecuteSql extends SqlEntity {
 				sourcePath = context.getCurrentPath() +"." +sourcePath;
 			}
 		}
-
-		int indexBegin = sql.indexOf(BATCH_TEMPLATE_BEGIN);
-		if(indexBegin == -1){
-			throw new DBFoundRuntimeException(BATCH_TEMPLATE_BEGIN + " not found");
-		}
-		int indexEnd = sql.indexOf(BATCH_TEMPLATE_END);
-		if(indexEnd == -1){
-			throw new DBFoundRuntimeException(BATCH_TEMPLATE_END + " not found");
-		}
-		String esql = sql.substring(0,indexBegin);
-		String tmpSql = sql.substring(indexBegin+BATCH_TEMPLATE_BEGIN.length(), indexEnd).replaceAll(" ","");
-		String endSql = sql.substring(indexEnd + BATCH_TEMPLATE_END.length());
-
-		List<String> paramNameList = new ArrayList<String>();
-		tmpSql = analysisTmpSql(tmpSql, paramNameList);
 
 		int dataSize =0;
 		Object data = context.getData(sourcePath);
@@ -78,6 +86,10 @@ public class BatchExecuteSql extends SqlEntity {
 				Object[] objects = (Object[]) data;
 				dataSize = objects.length;
 			}
+		}
+
+		if(dataSize ==0 ){
+			return;
 		}
 
 		for (Param param : params.values()){
@@ -95,8 +107,8 @@ public class BatchExecuteSql extends SqlEntity {
 		for (int i= 0 ; i < dataSize; i=i+batchSize){
 			int begin = i;
 			int end = i + batchSize;
-			if( end >dataSize) end = dataSize;
-			int size = execute(context,params,paramNameList,provideName,begin,end,esql,tmpSql,endSql);
+			if(end > dataSize) end = dataSize;
+			int size = execute(context,params,provideName,begin,end);
 			updateCount = updateCount +size;
 		}
 
@@ -115,14 +127,16 @@ public class BatchExecuteSql extends SqlEntity {
 		}
 	}
 
-	private int execute(Context context, Map<String, Param> params, List<String> batchParamNameList,String provideName, int begin ,int end, String esql,String tmpSql,String endSql){
+	private int execute(Context context, Map<String, Param> params,String provideName, int begin ,int end){
 		Map<String, Param> exeParams = new HashMap<String, Param>();
 		List<Param> listParam = new ArrayList<Param>();
 		listParam.addAll(params.values());
 		exeParams.putAll(params);
 
+		String eSql = beforeTmpSql;
+
 		for (int i =begin; i< end; i++){
-			for (String paramName : batchParamNameList){
+			for (String paramName : paramNameList){
 				Param param = params.get(paramName);
 				if(param == null){
 					throw new DBFoundRuntimeException("param: "+ paramName +" not defined");
@@ -137,13 +151,13 @@ public class BatchExecuteSql extends SqlEntity {
 				exeParams.put(newParam.getName(),newParam);
 				listParam.add(newParam);
 			}
-			esql = esql + tmpSql.replaceAll("##",i+"" );
+			eSql = eSql + tmpSql.replaceAll("##",i+"" );
 			if(i < end-1){
-				esql = esql +",";
+				eSql = eSql +",";
 			}
 		}
-		esql = esql + endSql;
-		return execute(context,exeParams,provideName,esql,listParam);
+		eSql = eSql + afterTmpSql;
+		return execute(context,exeParams,provideName,eSql,listParam);
 	}
 
 	private int execute(Context context, Map<String, Param> params, String provideName,String sql, List<Param> listParam) {

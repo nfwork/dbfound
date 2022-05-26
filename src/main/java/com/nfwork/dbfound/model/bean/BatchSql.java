@@ -78,6 +78,10 @@ public class BatchSql extends SqlEntity {
 			}
 		}
 
+		if(dataSize ==0 ){
+			return;
+		}
+
 		List<Param> paramList = new ArrayList<Param>();
 		for (Param param : params.values()){
 			if(!param.isBatchAssign()){
