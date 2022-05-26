@@ -29,6 +29,7 @@ public class CollisionSql extends SqlEntity {
 	public void run() {
 		super.run();
 		autoCreateParam(where,this);
+		autoCreateParam(message,this);
 	}
 
 	public void execute(Context context, Map<String, Param> params,
