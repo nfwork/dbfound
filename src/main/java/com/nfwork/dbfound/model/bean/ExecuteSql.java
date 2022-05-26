@@ -10,6 +10,7 @@ import java.util.Map;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
@@ -22,19 +23,25 @@ public class ExecuteSql extends SqlEntity {
 
 	private String affectedCountParam;
 
+	private String initError;
+
 	@Override
 	public void run() {
 		super.run();
+		if(DataUtil.isNull(sql)){
+			initError = "ExecuteSql content sql can not be null";
+			return;
+		}
 		autoCreateParam(sql,this);
 	}
 
 	public void execute(Context context, Map<String, Param> params, String provideName) {
-
+		if(initError != null){
+			throw new DBFoundRuntimeException(initError);
+		}
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
-
 		String executeSql = staticParamParse(sql, params);
-
 		String esql = getExecuteSql(executeSql, params);
 		// 方言处理
 		esql = dialect.parseSql(esql);

@@ -18,13 +18,13 @@ public class WhenSql extends SqlEntity {
 	private static final long serialVersionUID = 1781803860305201223L;
 
 	private String when;
-	private DBFoundRuntimeException initException;
+	private String initError;
 
 	@Override
 	public void run() {
 		super.run();
 		if(DataUtil.isNull(when)){
-			initException = new DBFoundRuntimeException("WhenSql attribute when can not be null");
+			initError = "WhenSql attribute when can not be null";
 			return;
 		}
 		autoCreateParam(when,this);
@@ -33,8 +33,8 @@ public class WhenSql extends SqlEntity {
 	@Override
 	public void execute(Context context, Map<String, Param> params,
 			String provideName) {
-		if(initException != null){
-			throw initException;
+		if(initError != null){
+			throw new DBFoundRuntimeException(initError);
 		}
 		// 执行相应操作
 		if (fitWhen(context, params, provideName)) {

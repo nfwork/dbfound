@@ -35,18 +35,18 @@ public class BatchExecuteSql extends SqlEntity {
 	private static  final  String BATCH_TEMPLATE_BEGIN = "#BATCH_TEMPLATE_BEGIN#";
 	private static  final  String BATCH_TEMPLATE_END = "#BATCH_TEMPLATE_END#";
 
-	private DBFoundRuntimeException initException;
+	private String initError;
 
 	@Override
 	public void run() {
 		super.run();
 
 		if(DataUtil.isNull(sourcePath)){
-			initException = new DBFoundRuntimeException("BatchExecuteSql attribute sourcePath can not be null");
+			initError = "BatchExecuteSql attribute sourcePath can not be null";
 			return;
 		}
 		if(DataUtil.isNull(sql)){
-			initException = new DBFoundRuntimeException("BatchExecuteSql content sql can not be null");
+			initError = "BatchExecuteSql content sql can not be null";
 			return;
 		}
 
@@ -55,12 +55,12 @@ public class BatchExecuteSql extends SqlEntity {
 		//sql 分解
 		int indexBegin = sql.indexOf(BATCH_TEMPLATE_BEGIN);
 		if(indexBegin == -1){
-			initException = new DBFoundRuntimeException(BATCH_TEMPLATE_BEGIN + " not found in the sql");
+			initError = BATCH_TEMPLATE_BEGIN + " not found in the sql";
 			return;
 		}
 		int indexEnd = sql.indexOf(BATCH_TEMPLATE_END);
 		if(indexEnd == -1){
-			initException = new DBFoundRuntimeException(BATCH_TEMPLATE_END + " not found in the sql");
+			initError = BATCH_TEMPLATE_END + " not found in the sql";
 			return;
 		}
 		beforeTmpSql = sql.substring(0,indexBegin);
@@ -72,8 +72,8 @@ public class BatchExecuteSql extends SqlEntity {
 	}
 
 	public void execute(Context context, Map<String, Param> params, String provideName){
-		if(initException != null){
-			throw  initException;
+		if(initError != null){
+			throw new DBFoundRuntimeException(initError);
 		}
 		String exeSourcePath = sourcePath;
 

@@ -26,13 +26,13 @@ public class CollisionSql extends SqlEntity {
 
 	private String where;
 	private String message;
-	private DBFoundRuntimeException initException;
+	private String initError;
 
 	@Override
 	public void run() {
 		super.run();
 		if(DataUtil.isNull(where) || DataUtil.isNull(message)){
-			initException = new DBFoundRuntimeException("CollisionSql attribute where and message can not be null");
+			initError = "CollisionSql attribute where and message can not be null";
 			return;
 		}
 		autoCreateParam(where,this);
@@ -41,8 +41,8 @@ public class CollisionSql extends SqlEntity {
 
 	public void execute(Context context, Map<String, Param> params,
 						String provideName){
-		if(initException != null){
-			throw initException;
+		if(initError != null){
+			throw new DBFoundRuntimeException(initError);
 		}
 
 		Connection conn = context.getConn(provideName);
