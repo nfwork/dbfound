@@ -4,6 +4,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
@@ -50,10 +51,19 @@ public class BatchExecuteSql extends SqlEntity {
 		}
 
 		int indexBegin = sql.indexOf(BATCH_TEMPLATE_BEGIN);
+		if(indexBegin == -1){
+			throw new DBFoundRuntimeException(BATCH_TEMPLATE_BEGIN + " not found");
+		}
 		int indexEnd = sql.indexOf(BATCH_TEMPLATE_END);
+		if(indexEnd == -1){
+			throw new DBFoundRuntimeException(BATCH_TEMPLATE_END + " not found");
+		}
 		String esql = sql.substring(0,indexBegin);
 		String tmpSql = sql.substring(indexBegin+BATCH_TEMPLATE_BEGIN.length(), indexEnd).replaceAll(" ","");
 		String endSql = sql.substring(indexEnd + BATCH_TEMPLATE_END.length());
+
+		List<String> paramNameList = new ArrayList<String>();
+		tmpSql = analysisTmpSql(tmpSql, paramNameList);
 
 		int dataSize =0;
 		Object data = context.getData(sourcePath);
@@ -70,12 +80,23 @@ public class BatchExecuteSql extends SqlEntity {
 			}
 		}
 
+		for (Param param : params.values()){
+			if (DataUtil.isNotNull(param.getScope())){
+				param.setBatchAssign(false);
+			}else if ( DataUtil.isNotNull(param.getSourcePath())
+					&& (param.getSourcePath().startsWith(ELEngine.sessionScope) || param.getSourcePath().startsWith(ELEngine.requestScope)
+					|| param.getSourcePath().startsWith(ELEngine.outParamScope) || param.getSourcePath().startsWith(ELEngine.paramScope)
+					|| param.getSourcePath().startsWith(ELEngine.cookieScope) || param.getSourcePath().startsWith(ELEngine.headerScope))) {
+				param.setBatchAssign(false);
+			}
+		}
+
 		int updateCount = 0;
 		for (int i= 0 ; i < dataSize; i=i+batchSize){
 			int begin = i;
 			int end = i + batchSize;
 			if( end >dataSize) end = dataSize;
-			int size = execute(context,params,provideName,begin,end,esql,tmpSql,endSql);
+			int size = execute(context,params,paramNameList,provideName,begin,end,esql,tmpSql,endSql);
 			updateCount = updateCount +size;
 		}
 
@@ -94,32 +115,30 @@ public class BatchExecuteSql extends SqlEntity {
 		}
 	}
 
-	private int execute(Context context, Map<String, Param> params, String provideName, int begin ,int end, String esql,String tmpSql,String endSql){
+	private int execute(Context context, Map<String, Param> params, List<String> batchParamNameList,String provideName, int begin ,int end, String esql,String tmpSql,String endSql){
 		Map<String, Param> exeParams = new HashMap<String, Param>();
 		List<Param> listParam = new ArrayList<Param>();
 		listParam.addAll(params.values());
 		exeParams.putAll(params);
 
 		for (int i =begin; i< end; i++){
-			for (Param param : params.values()){
+			for (String paramName : batchParamNameList){
+				Param param = params.get(paramName);
+				if(param == null){
+					throw new DBFoundRuntimeException("param: "+ paramName +" not defined");
+				}
 				Param newParam = (Param) param.cloneEntity();
 				newParam.setName(newParam.getName()+"_"+i);
-				if (DataUtil.isNull(newParam.getScope()) && DataUtil.isNull(newParam.getSourcePath())){
-					newParam.setSourcePathHistory(sourcePath +"[" + i +"]."+param.getName());
-					newParam.setValue(context.getData(newParam.getSourcePathHistory()));
-				}else if ( DataUtil.isNotNull(newParam.getSourcePath())
-				            && !newParam.getSourcePath().startsWith(ELEngine.sessionScope) && !newParam.getSourcePath().startsWith(ELEngine.requestScope)
-							&& !newParam.getSourcePath().startsWith(ELEngine.outParamScope) && !newParam.getSourcePath().startsWith(ELEngine.paramScope)
-							&& !newParam.getSourcePath().startsWith(ELEngine.cookieScope) && !newParam.getSourcePath().startsWith(ELEngine.headerScope)) {
-					newParam.setSourcePathHistory(sourcePath +"[" + i +"]."+param.getSourcePath());
+				if (param.isBatchAssign()){
+					String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
+					newParam.setSourcePathHistory(sourcePath +"[" + i +"]."+ sp);
 					newParam.setValue(context.getData(newParam.getSourcePathHistory()));
 				}
-
 				exeParams.put(newParam.getName(),newParam);
 				listParam.add(newParam);
 			}
-			esql = esql + tmpSql.replaceAll("}","_"+i +"}");
-			if(i<end-1){
+			esql = esql + tmpSql.replaceAll("##",i+"" );
+			if(i < end-1){
 				esql = esql +",";
 			}
 		}
@@ -158,6 +177,21 @@ public class BatchExecuteSql extends SqlEntity {
 		} catch (SQLException e) {
 			throw new DBFoundPackageException("ExecuteSql执行异常:" + e.getMessage(), e);
 		}
+	}
+
+	private String analysisTmpSql(String sql, List<String> batchParamNameList ) {
+		Pattern p = Pattern.compile(paramReplace);
+		Matcher m = p.matcher(sql);
+		StringBuffer buf = new StringBuffer();
+		while (m.find()) {
+			String param = m.group();
+			String pn = param.substring(2, param.length() - 1).trim();
+			batchParamNameList.add(pn);
+			String value = "{@" + pn +"_##}";
+			m.appendReplacement(buf, value);
+		}
+		m.appendTail(buf);
+		return buf.toString();
 	}
 
 	public String getAffectedCountParam() {

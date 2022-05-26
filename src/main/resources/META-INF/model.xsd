@@ -135,6 +135,14 @@
 				</xsd:restriction>
 			</xsd:simpleType>
 		</xsd:attribute>
+		<xsd:attribute name="batchAssign">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="true" />
+					<xsd:enumeration value="false" />
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
 		<xsd:attribute name="sourcePath" />
 		<xsd:attribute name="fileSaveType">
 			<xsd:simpleType>
@@ -189,6 +197,8 @@
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql"
 				type="executeSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql"
+						 type="batchExecuteSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java"
 				type="java_type" />
@@ -226,6 +236,8 @@
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql"
 				type="executeSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql"
+						 type="batchExecuteSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java"
 				type="java_type" />

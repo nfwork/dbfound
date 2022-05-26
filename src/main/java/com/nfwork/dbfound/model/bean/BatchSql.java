@@ -53,12 +53,13 @@ public class BatchSql extends SqlEntity {
 			context.setParamData("cursorlist",cursorValues);
 		}
 
+		String inCurrentPath = context.getCurrentPath();
 		//判断是否相对路径,如果是相对路径则进行转化
 		if(!sourcePath.startsWith(ELEngine.sessionScope) && !sourcePath.startsWith(ELEngine.requestScope)
 			&& !sourcePath.startsWith(ELEngine.outParamScope) && !sourcePath.startsWith(ELEngine.paramScope)
 			&& !sourcePath.startsWith(ELEngine.cookieScope) && !sourcePath.startsWith(ELEngine.headerScope)) {
-			if(DataUtil.isNotNull(context.getCurrentPath())){
-				sourcePath = context.getCurrentPath() +"." +sourcePath;
+			if(DataUtil.isNotNull(inCurrentPath)){
+				sourcePath = inCurrentPath +"." +sourcePath;
 			}
 		}
 
@@ -77,23 +78,43 @@ public class BatchSql extends SqlEntity {
 			}
 		}
 
+		List<Param> paramList = new ArrayList<Param>();
+		for (Param param : params.values()){
+			if(!param.isBatchAssign()){
+				continue;
+			}
+			if (DataUtil.isNotNull(param.getScope())){
+				param.setBatchAssign(false);
+				continue;
+			}
+			if (DataUtil.isNotNull(param.getSourcePath())
+					   && (param.getSourcePath().startsWith(ELEngine.sessionScope) || param.getSourcePath().startsWith(ELEngine.requestScope)
+					        || param.getSourcePath().startsWith(ELEngine.outParamScope) || param.getSourcePath().startsWith(ELEngine.paramScope)
+					        || param.getSourcePath().startsWith(ELEngine.cookieScope) || param.getSourcePath().startsWith(ELEngine.headerScope))) {
+				param.setBatchAssign(false);
+				continue;
+			}
+			paramList.add(param);
+		}
+
 		for (int i=0 ; i < dataSize ; i++) {
-			for (Param param : params.values()){
-				if (DataUtil.isNull(param.getScope()) && DataUtil.isNull(param.getSourcePath())){
-					param.setSourcePathHistory(sourcePath +"[" + i +"]."+param.getName());
-					param.setValue(context.getData(param.getSourcePathHistory()));
-				}else if ( DataUtil.isNotNull(param.getSourcePath())
-						&& !param.getSourcePath().startsWith(ELEngine.sessionScope) && !param.getSourcePath().startsWith(ELEngine.requestScope)
-						&& !param.getSourcePath().startsWith(ELEngine.outParamScope) && !param.getSourcePath().startsWith(ELEngine.paramScope)
-						&& !param.getSourcePath().startsWith(ELEngine.cookieScope) && !param.getSourcePath().startsWith(ELEngine.headerScope)) {
-					param.setSourcePathHistory(sourcePath +"[" + i +"]."+param.getSourcePath());
-					param.setValue(context.getData(param.getSourcePathHistory()));
-				}
+			String currentPath = sourcePath +"[" + i +"]";
+
+			//执行过程中改变currentPath
+			context.setCurrentPath(currentPath);
+			for (Param param : paramList){
+				String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
+				param.setSourcePathHistory(currentPath +"."+sp);
+				param.setValue(context.getData(param.getSourcePathHistory()));
 			}
 			for (SqlEntity sql : sqlList) {
 				sql.execute(context, params, provideName);
 			}
 		}
+
+		//执行完成后恢复原有currentPath
+		context.setCurrentPath(inCurrentPath);
+
 	}
 
 	/**

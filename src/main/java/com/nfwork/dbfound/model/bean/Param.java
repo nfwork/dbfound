@@ -22,6 +22,7 @@ public class Param extends Entity {
 	private String fileSaveType = "db"; // disk ,db
 	private String fileNameParam;
 	private String UUID = "false";
+	private boolean batchAssign = true;
 
 	@Override
 	public void run() {
@@ -150,4 +151,11 @@ public class Param extends Entity {
 		this.autoCookie = autoCookie;
 	}
 
+	public boolean isBatchAssign() {
+		return batchAssign;
+	}
+
+	public void setBatchAssign(boolean batchAssign) {
+		this.batchAssign = batchAssign;
+	}
 }
