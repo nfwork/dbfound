@@ -62,7 +62,16 @@ public class QuerySql extends SqlEntity {
 			if (dataset.next()) {
 				for (int i = 1; i <= metaset.getColumnCount(); i++) {
 					String value = dataset.getString(i);
-					String columnName = metaset.getColumnLabel(i).toLowerCase();
+
+					String columnName = metaset.getColumnName(i);
+
+					// 判断是否有as 逻辑，如果没有as，强制转化为小写
+					String labName =  metaset.getColumnLabel(i);
+					if (labName.equalsIgnoreCase(columnName)){
+						columnName = columnName.toLowerCase();
+					}else{
+						columnName = labName;
+					}
 
 					Param param = params.get(columnName);
 					if (param == null){
