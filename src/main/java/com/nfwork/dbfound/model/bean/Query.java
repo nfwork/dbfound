@@ -64,7 +64,6 @@ public class Query extends SqlEntity {
 
 	public HashMap<String, Param> getCloneParams() {
 		HashMap<String, Param> params = new HashMap<String, Param>();
-		HashMap<String, Filter> filters = new HashMap<String, Filter>();
 		for (Iterator iterator = this.params.entrySet().iterator(); iterator.hasNext();) {
 			Map.Entry entry = (Map.Entry) iterator.next();
 			Param param = (Param) entry.getValue();

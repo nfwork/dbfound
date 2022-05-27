@@ -1,14 +1,10 @@
 package com.nfwork.dbfound.model.bean;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.dom4j.Element;
-
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.ModelEngine;
 
 public class Execute extends SqlEntity {
@@ -47,7 +43,6 @@ public class Execute extends SqlEntity {
 		return params;
 	}
 
-
 	public void executeRun(Context context,Map<String, Param> params, String provideName){
 		if (sqls != null) {
 			for (int i = 0; i < sqls.sqlList.size(); i++) {
@@ -62,26 +57,6 @@ public class Execute extends SqlEntity {
 		String currentPath = context.getCurrentPath();
 		String mName = modelName != null ? modelName : context.getCurrentModel();
 		ModelEngine.execute(context, mName, name, currentPath);
-	}
-
-	/**
-	 * 设定参数
-	 * 
-	 * @param name
-	 * @param value
-	 */
-	public void setParam(String name, String value) {
-		params.get(name).setValue(value);
-	}
-
-	/**
-	 * 得到参数值
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public String getParam(String name) {
-		return params.get(name).getStringValue();
 	}
 
 	public String getName() {
