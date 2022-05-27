@@ -230,7 +230,7 @@ public class ModelEngine {
 					} else {
 						en = executeName;
 					}
-					params = executeRun(context, modelName, executeName, currentPath);
+					params = executeRun(context, modelName, en, currentPath);
 				}
 				ro.setOutParam(getOutParams(context, params));
 			}
