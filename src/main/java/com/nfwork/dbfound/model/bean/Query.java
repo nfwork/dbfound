@@ -85,8 +85,6 @@ public class Query extends SqlEntity {
 		return filters;
 	}
 
-
-
 	/**
 	 * 查询结构集 以list的map对象返回
 	 * 

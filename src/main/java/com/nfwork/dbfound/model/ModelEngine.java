@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.util.*;
 
 import javax.servlet.http.Cookie;
+
+import com.nfwork.dbfound.util.DataUtil;
 import org.apache.commons.fileupload.FileItem;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
@@ -108,25 +110,14 @@ public class ModelEngine {
 			}
 
 			// 初始化查询过滤参数filter
-			HashMap<String, Filter> filters = query.getCloneFilters();
+			Map<String, Filter> filters = query.getCloneFilters();
 			for (Filter filter : filters.values()) {
 				setParam(filter, context, currentPath);
 				Object value = filter.getValue();
-				if (value != null) {
-					if (value instanceof String && !"".equals(value)) {
-						filter.setActive(true);
-						params.put(filter.getName(), filter);
-					} else if (value instanceof Integer && (Integer) value != 0) {
-						filter.setActive(true);
-						params.put(filter.getName(), filter);
-					} else if (value instanceof Long && (Long) value != 0) {
-						filter.setActive(true);
-						params.put(filter.getName(), filter);
-					} else {
-						filter.setActive(true);
-						params.put(filter.getName(), filter);
-					}
-				} else if (filter.isActive()) {
+				if(DataUtil.isNotNull(value)){
+					filter.setActive(true);
+				}
+				if(filter.isActive()){
 					params.put(filter.getName(), filter);
 				}
 			}
