@@ -28,7 +28,7 @@ public class ReflectorUtil {
 
 			int totalCounts = 0;
 			while (rs.next()) {
-				if (context.queryLimit && ++totalCounts > context.queryLimitSize) {
+				if (context.isQueryLimit() && ++totalCounts > context.getQueryLimitSize()) {
 					break;
 				}
 				ObjectFactory objectFactory = new DefaultObjectFactory();

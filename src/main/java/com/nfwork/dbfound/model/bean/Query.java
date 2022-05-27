@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,10 +28,8 @@ import com.nfwork.dbfound.model.reflector.ReflectorUtil;
 public class Query extends SqlEntity {
 
 	private static final long serialVersionUID = 83009892861541099L;
+
 	private String name = "_default"; // query对象的名字
-	private int pagerSize;
-	private long startWith;
-	private long length; // 总共条数
 	private Map<String, Param> params; // query对象对应参数
 	private Map<String, Filter> filters;
 	private String rootPath;
@@ -65,21 +62,19 @@ public class Query extends SqlEntity {
 		}
 	}
 
-	public Query cloneEntity() {
-		Query query;
-		try {
-			query = (Query) this.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new DBFoundPackageException("query克隆异常:" + e.getMessage(), e);
-		}
+	public HashMap<String, Param> getCloneParams() {
 		HashMap<String, Param> params = new HashMap<String, Param>();
 		HashMap<String, Filter> filters = new HashMap<String, Filter>();
-
 		for (Iterator iterator = this.params.entrySet().iterator(); iterator.hasNext();) {
 			Map.Entry entry = (Map.Entry) iterator.next();
 			Param param = (Param) entry.getValue();
 			params.put(entry.getKey().toString(), (Param) param.cloneEntity());
 		}
+		return params;
+	}
+
+	public HashMap<String, Filter> getCloneFilters() {
+		HashMap<String, Filter> filters = new HashMap<String, Filter>();
 		for (Iterator iterator = this.filters.entrySet().iterator(); iterator.hasNext();) {
 			Map.Entry entry = (Map.Entry) iterator.next();
 			Filter filter = (Filter) entry.getValue();
@@ -87,11 +82,10 @@ public class Query extends SqlEntity {
 				filters.put(entry.getKey().toString(), (Filter) filter.cloneEntity());
 			}
 		}
-
-		query.setParams(params);
-		query.setFilters(filters);
-		return query;
+		return filters;
 	}
+
+
 
 	/**
 	 * 查询结构集 以list的map对象返回
@@ -101,22 +95,24 @@ public class Query extends SqlEntity {
 	 * @param object
 	 * @return
 	 */
-	public <T> List<T> query(Context context, String provideName, Class<T> object) {
+	public <T> List<T> query(Context context,Map<String, Param> params, String provideName, Class<T> object) {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		sql = initFilter(sql);
-		sql = staticParamParse(sql, params);
+		String querySql = initFilter(sql, params);
+		querySql = staticParamParse(querySql, params);
 
 		// fileter初始化，数据库方言初始化
-		sql = dialect.parseSql(sql);
+		querySql = dialect.parseSql(querySql);
 
 		List<Map> data = new ArrayList<Map>();
-		String eSql = getExecuteSql(sql,params);
+		String eSql = getExecuteSql(querySql,params);
 
-		if (pagerSize > 0) {
-			eSql = dialect.getPagerSql(eSql, pagerSize, startWith);
+		if (context.getPagerSize() > 0) {
+			eSql = dialect.getPagerSql(eSql, context.getPagerSize(), context.getStartWith());
 		}
+
+		context.setQuerySql(querySql);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
@@ -126,7 +122,7 @@ public class Query extends SqlEntity {
 				statement.setQueryTimeout(queryTimeout);
 			}
 			// 参数设定
-			initParam(statement, this.sql, params);
+			initParam(statement, querySql, params);
 			dataset = statement.executeQuery();
 			ResultSetMetaData metaset = dataset.getMetaData();
 
@@ -157,7 +153,7 @@ public class Query extends SqlEntity {
 			int totalCounts = 0;
 			Calendar defaultCalendar = Calendar.getInstance();
 			while (dataset.next()) {
-				if (context.queryLimit && ++totalCounts > context.queryLimitSize) {
+				if (context.isQueryLimit() && ++totalCounts > context.getQueryLimitSize()) {
 					break;
 				}
 				Map<String, Object> mapdata = new HashMap<String, Object>();
@@ -240,12 +236,11 @@ public class Query extends SqlEntity {
 	 * @param ssql
 	 * @return
 	 */
-	public String initFilter(String ssql) {
-
+	public String initFilter(String ssql,Map<String, Param> params) {
 		StringBuffer bfsql = new StringBuffer();
-		Collection<Filter> params = filters.values();
-		for (Filter nfFilter : params) {
-			if (nfFilter.isActive()) {
+		for (Param param : params.values()) {
+			if (param instanceof Filter){
+				Filter nfFilter = (Filter) param;
 				bfsql.append(nfFilter.getExpress()).append(" and ");
 			}
 		}
@@ -282,8 +277,8 @@ public class Query extends SqlEntity {
 	 * 
 	 * @return
 	 */
-	public long countItems(Connection conn) {
-		char[] sqlChars = sql.toLowerCase().toCharArray();
+	public long countItems(Connection conn, Context context, Map<String, Param> params) {
+		char[] sqlChars = context.getQuerySql().toLowerCase().toCharArray();
 		int dyh = 0;
 		int kh = 0;
 		int from_hold = 0;
@@ -395,12 +390,12 @@ public class Query extends SqlEntity {
 		String cSql = "";
 		if (order_hold == 0) {
 			if (group_hold > 0) {
-				cSql = "select count(1) from (select 1 " + sql.substring(from_hold) + " ) v";
+				cSql = "select count(1) from (select 1 " + context.getQuerySql().substring(from_hold) + " ) v";
 			} else {
-				cSql = "select count(1) " + sql.substring(from_hold);
+				cSql = "select count(1) " + context.getQuerySql().substring(from_hold);
 			}
 		} else {
-			cSql = "select count(1) " + sql.substring(from_hold, order_hold);
+			cSql = "select count(1) " + context.getQuerySql().substring(from_hold, order_hold);
 		}
 		String ceSql = getExecuteSql(cSql,params);
 		PreparedStatement statement = null;
@@ -413,7 +408,6 @@ public class Query extends SqlEntity {
 			dataset = statement.executeQuery();
 			dataset.next();
 			count = dataset.getLong(1);
-			length = count;
 		} catch (SQLException e) {
 			throw new DBFoundPackageException("Query执行count查询异常:" + e.getMessage(), e);
 		} finally {
@@ -422,26 +416,6 @@ public class Query extends SqlEntity {
 			LogUtil.info("execute count sql：" + ceSql);
 		}
 		return count;
-	}
-
-	/**
-	 * 设定参数
-	 * 
-	 * @param name
-	 * @param value
-	 */
-	public void setParam(String name, String value) {
-		params.get(name).setValue(value);
-	}
-
-	/**
-	 * 得到参数值
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public String getParam(String name) {
-		return params.get(name).getStringValue();
 	}
 
 	public String getName() {
@@ -458,30 +432,6 @@ public class Query extends SqlEntity {
 
 	public void setParams(Map<String, Param> params) {
 		this.params = params;
-	}
-
-	public int getPagerSize() {
-		return pagerSize;
-	}
-
-	public void setPagerSize(int pagerSize) {
-		this.pagerSize = pagerSize;
-	}
-
-	public long getStartWith() {
-		return startWith;
-	}
-
-	public void setStartWith(long startWith) {
-		this.startWith = startWith;
-	}
-
-	public long getLength() {
-		return length;
-	}
-
-	public void setLength(long dataLength) {
-		this.length = dataLength;
 	}
 
 	public Map<String, Filter> getFilters() {
@@ -527,10 +477,8 @@ public class Query extends SqlEntity {
 	@Override
 	public void execute(Context context, Map<String, Param> params, String provideName) {
 		String currentPath = context.getCurrentPath();
-		if (modelName == null) {
-			modelName = context.getCurrentModel();
-		}
-		List<Map> datas = ModelEngine.query(context, modelName, name, currentPath, false).getDatas();
+		String mName = modelName != null?modelName : context.getCurrentModel();
+		List<Map> datas = ModelEngine.query(context, mName, name, currentPath, false).getDatas();
 		context.setData(rootPath, datas);
 	}
 

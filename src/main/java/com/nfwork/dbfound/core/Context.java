@@ -28,13 +28,17 @@ import com.nfwork.dbfound.web.WebWriter;
 
 public class Context {
 
-	public boolean outMessage = true;
-	public boolean isExport = false;
-	public boolean queryLimit = DBFoundConfig.getQueryLimit();
-	public int queryLimitSize = DBFoundConfig.getQueryLimitSize();
-	public int reportQueryLimitSize = DBFoundConfig.getReportQueryLimitSize();
+	private boolean outMessage = true;
+	private boolean isExport = false;
+	private boolean queryLimit = DBFoundConfig.getQueryLimit();
+	private int queryLimitSize = DBFoundConfig.getQueryLimitSize();
+	private int reportQueryLimitSize = DBFoundConfig.getReportQueryLimitSize();
 	public HttpServletRequest request;
 	public HttpServletResponse response;
+
+	private int pagerSize = 0;
+	private long startWith = 0;
+	private String querySql;
 
 	private String currentPath;
 	private String currentModel;
@@ -564,6 +568,70 @@ public class Context {
 	
 	public static void setOpenSession(boolean openSession) {
 		Context.openSession = openSession;
+	}
+
+	public int getPagerSize() {
+		return pagerSize;
+	}
+
+	public void setPagerSize(int pagerSize) {
+		this.pagerSize = pagerSize;
+	}
+
+	public long getStartWith() {
+		return startWith;
+	}
+
+	public void setStartWith(long startWith) {
+		this.startWith = startWith;
+	}
+
+	public boolean isOutMessage() {
+		return outMessage;
+	}
+
+	public void setOutMessage(boolean outMessage) {
+		this.outMessage = outMessage;
+	}
+
+	public boolean isExport() {
+		return isExport;
+	}
+
+	public void setExport(boolean export) {
+		isExport = export;
+	}
+
+	public boolean isQueryLimit() {
+		return queryLimit;
+	}
+
+	public void setQueryLimit(boolean queryLimit) {
+		this.queryLimit = queryLimit;
+	}
+
+	public int getQueryLimitSize() {
+		return queryLimitSize;
+	}
+
+	public void setQueryLimitSize(int queryLimitSize) {
+		this.queryLimitSize = queryLimitSize;
+	}
+
+	public int getReportQueryLimitSize() {
+		return reportQueryLimitSize;
+	}
+
+	public void setReportQueryLimitSize(int reportQueryLimitSize) {
+		this.reportQueryLimitSize = reportQueryLimitSize;
+	}
+
+	public String getQuerySql() {
+		return querySql;
+	}
+
+	public void setQuerySql(String querySql) {
+		this.querySql = querySql;
 	}
 
 	static {

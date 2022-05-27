@@ -16,15 +16,7 @@ class WebAction {
 		WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(ro));
 	}
 
-	/***
-	 * 批量执行操作
-	 * 
-	 * @param response
-	 * @param request
-	 * @param modelName
-	 * @param executeName
-	 * @throws Exception
-	 */
+
 	@SuppressWarnings("unchecked")
 	static void execute(Context context, String modelName, String executeName) {
 		Object gridData = context.getData(ModelEngine.defaultBatchPath);
@@ -44,7 +36,7 @@ class WebAction {
 		// 提交关闭事务
 		transaction.commitAndEnd();
 		
-		if (context.outMessage) {
+		if (context.isOutMessage()) {
 			WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(ro));
 		}
 	}

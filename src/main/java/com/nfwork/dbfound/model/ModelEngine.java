@@ -1,10 +1,7 @@
 package com.nfwork.dbfound.model;
 
 import java.sql.Connection;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.Cookie;
 import org.apache.commons.fileupload.FileItem;
@@ -100,74 +97,74 @@ public class ModelEngine {
 			if (query == null) {
 				throw new QueryNotFoundException("can not found Query:" + queryName + ", on Model:" + modelName);
 			}
-			if (context.isExport) {
-				context.queryLimitSize = context.reportQueryLimitSize;
+			if (context.isExport()) {
+				context.setQueryLimitSize(context.getReportQueryLimitSize());
 			}
 
 			// 初始化查询参数param
-			Collection<Param> params = query.getParams().values();
-			for (Param nfParam : params) {
+			HashMap<String, Param> params = query.getCloneParams();
+			for (Param nfParam : params.values()) {
 				setParam(nfParam, context, currentPath);
 			}
 
 			// 初始化查询过滤参数filter
-			Collection<Filter> filters = query.getFilters().values();
-			for (Filter filter : filters) {
+			HashMap<String, Filter> filters = query.getCloneFilters();
+			for (Filter filter : filters.values()) {
 				setParam(filter, context, currentPath);
 				Object value = filter.getValue();
 				if (value != null) {
 					if (value instanceof String && !"".equals(value)) {
 						filter.setActive(true);
-						query.getParams().put(filter.getName(), filter);
+						params.put(filter.getName(), filter);
 					} else if (value instanceof Integer && (Integer) value != 0) {
 						filter.setActive(true);
-						query.getParams().put(filter.getName(), filter);
+						params.put(filter.getName(), filter);
 					} else if (value instanceof Long && (Long) value != 0) {
 						filter.setActive(true);
-						query.getParams().put(filter.getName(), filter);
+						params.put(filter.getName(), filter);
 					} else {
 						filter.setActive(true);
-						query.getParams().put(filter.getName(), filter);
+						params.put(filter.getName(), filter);
 					}
 				} else if (filter.isActive()) {
-					query.getParams().put(filter.getName(), filter);
+					params.put(filter.getName(), filter);
 				}
 			}
 
 			// 设想分页参数
-			long start = 0;
 			if (autoPaging) {
 				String startMessage = context.getString("param.start");
 				if (startMessage != null && startMessage != "") {
-					start = Long.parseLong(startMessage);
-					query.setStartWith(start);
+					long start = Long.parseLong(startMessage);
+					context.setStartWith(start);
 				}
 				String sizeMessage = context.getString("param.limit");
 				if (sizeMessage != null && sizeMessage != "") {
 					int size = Integer.parseInt(sizeMessage);
-					query.setPagerSize(size);
+					context.setPagerSize(size);
 				}
 			}
 
 			// 查询数据，返回结果
 			String provideName = model.getConnectionProvide(context);
-			List<T> datas = query.query(context, provideName, obect);
+			List<T> datas = query.query(context, params, provideName, obect);
 
 			QueryResponseObject<T> ro = new QueryResponseObject<T>();
 			ro.setDatas(datas);
 
 			int dataSize = datas.size();
-			int pSize = query.getPagerSize();
+			int pSize = context.getPagerSize();
+			long start = context.getStartWith();
 			if (autoPaging == false || pSize == 0 || (pSize > dataSize && start == 0)) {
 				ro.setTotalCounts(datas.size());
 			} else {
 				Connection conn = context.getConn(provideName);
-				long totalCounts = query.countItems(conn);
+				long totalCounts = query.countItems(conn,context,params);
 				ro.setTotalCounts(totalCounts);
 			}
 			ro.setSuccess(true);
 			ro.setMessage("success");
-			ro.setOutParam(getOutParams(context, query.getParams()));
+			ro.setOutParam(getOutParams(context, params));
 			return ro;
 		} finally {
 			context.closeConns();

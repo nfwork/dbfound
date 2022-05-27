@@ -90,7 +90,7 @@ public class ExcelWriter {
 	@SuppressWarnings("unchecked")
 	public static void excelExport(Context context, String modelName,
 			String queryName) throws Exception {
-		context.isExport = true;
+		context.setExport(true);
 		// 将parameters中的参数转移到param中
 		Map param = (Map) context.getData("param");
 		Map parameters = (Map) param.get("parameters");

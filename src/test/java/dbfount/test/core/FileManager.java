@@ -107,7 +107,7 @@ public class FileManager extends JavaSupport {
 		object.setDatas(datas);
 		object.setSuccess(true);
 		WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(object));
-		context.outMessage = false;
+		context.setOutMessage(false);
 	}
 
 	public String formatFileSize(long fileS) {// 转换文件大小
