@@ -197,9 +197,6 @@ public class ModelEngine {
 
 			// 批量执行查找客户端数据的路径
 			String batchExecutePath = defaultBatchPath;
-			Execute execute = null;
-
-			Model model = context.getModel(modelName);
 
 			// 查询数据，返回结果
 			if (sourcePath != null && !"".equals(sourcePath)) {
@@ -227,6 +224,7 @@ public class ModelEngine {
 			ro.setMessage("success");
 
 			if (size > 0) {
+				Map<String, Param> params = null;
 				for (int j = 0; j < size; j++) {
 					String en = null;
 					String currentPath = batchExecutePath + "[" + j + "]";
@@ -244,15 +242,10 @@ public class ModelEngine {
 					} else {
 						en = executeName;
 					}
-					execute = model.getExecute(en);
-					if (execute == null) {
-						throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
-					}
-					execute(context, model, execute, currentPath);
+					params = executeRun(context, modelName, executeName, currentPath);
 				}
-				ro.setOutParam(getOutParams(context, execute.getParams()));
+				ro.setOutParam(getOutParams(context, params));
 			}
-
 			return ro;
 
 		} finally {
@@ -278,22 +271,18 @@ public class ModelEngine {
 
 		LogUtil.info("-----------------------execute begin------------------------------------");
 		try {
+			Map<String, Param> params;
+
 			if (executeName == null || "".equals(executeName))
 				executeName = "_default";
 
-			Model model = context.getModel(modelName);
-
-			Execute execute = model.getExecute(executeName);
-			if (execute == null) {
-				throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
-			}
-			execute(context, model, execute, currentPath);
+			params = executeRun(context, modelName, executeName, currentPath);
 
 			// 向客服端传送成功消息
 			ResponseObject ro = new ResponseObject();
 			ro.setSuccess(true);
 			ro.setMessage("success");
-			ro.setOutParam(getOutParams(context, execute.getParams()));
+			ro.setOutParam(getOutParams(context, params));
 			return ro;
 		} finally {
 			context.closeConns();
@@ -301,28 +290,31 @@ public class ModelEngine {
 		}
 	}
 
-	/**
-	 * 执行execute
-	 * 
-	 * @param context
-	 * @param model
-	 * @param execute
-	 */
-	private static void execute(Context context, Model model, Execute execute, String currentPath) {
 
-		String modelName = model.getModelName();
-		LogUtil.info("Execute info (modelName:" + modelName + ", executeName:" + execute.getName() + ")");
+	private static  Map<String, Param> executeRun(Context context, String modelName, String executeName, String currentPath) {
+
+		LogUtil.info("Execute info (modelName:" + modelName + ", executeName:" + executeName + ")");
+
+		Model model = context.getModel(modelName);
+
+		Execute execute = model.getExecute(executeName);
+		if (execute == null) {
+			throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
+		}
 
 		// 把model、currentPath对象放入到 当前线程里
 		context.setCurrentPath(currentPath);
 		context.setCurrentModel(modelName);
 
+		Map<String, Param> params = execute.getCloneParams();
+
 		// 设想sql查询参数
-		Collection<Param> params = execute.getParams().values();
-		for (Param nfParam : params) {
+		for (Param nfParam : params.values()) {
 			setParam(nfParam, context, currentPath);
 		}
-		execute.execute(context, model.getConnectionProvide(context)); // 执行
+		execute.executeRun(context, params, model.getConnectionProvide(context)); // 执行
+
+		return params;
 	}
 
 	/**
@@ -333,7 +325,7 @@ public class ModelEngine {
 	 * @return
 	 */
 	private static Map<String, Object> getOutParams(Context context, Map<String, Param> params) {
-		if (params.isEmpty()) {
+		if (params==null || params.isEmpty()) {
 			return null;
 		}
 

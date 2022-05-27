@@ -72,12 +72,7 @@ public class Model extends Entity {
 	}
 
 	public Execute getExecute(String name) {
-		Execute execute = executes.get(name);
-		if (execute == null) {
-			return null;
-		} else {
-			return (Execute) execute.cloneEntity();
-		}
+		return executes.get(name);
 	}
 
 	public Execute getExecute(){

@@ -36,14 +36,7 @@ public class Execute extends SqlEntity {
 		}
 	}
 
-	public Execute cloneEntity() {
-		Execute execute;
-		try {
-			execute = (Execute) this.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new DBFoundPackageException(
-					"Execute克隆异常:" + e.getMessage(), e);
-		}
+	public HashMap<String, Param> getCloneParams() {
 		HashMap<String, Param> params = new HashMap<String, Param>();
 		for (Iterator iterator = this.params.entrySet().iterator(); iterator
 				.hasNext();) {
@@ -51,16 +44,11 @@ public class Execute extends SqlEntity {
 			Param param = (Param) entry.getValue();
 			params.put(entry.getKey().toString(), (Param) param.cloneEntity());
 		}
-		execute.setParams(params);
-		return execute;
+		return params;
 	}
 
-	/**
-	 * 执行对应的sql集合
-	 * @param context
-	 * @param provideName
-	 */
-	public void execute(Context context, String provideName){
+
+	public void executeRun(Context context,Map<String, Param> params, String provideName){
 		if (sqls != null) {
 			for (int i = 0; i < sqls.sqlList.size(); i++) {
 				SqlEntity sql = sqls.sqlList.get(i);
@@ -70,13 +58,10 @@ public class Execute extends SqlEntity {
 	}
 
 	@Override
-	public void execute(Context context, Map<String, Param> params,
-			String provideName){
+	public void execute(Context context, Map<String, Param> params,String provideName){
 		String currentPath = context.getCurrentPath();
-		if (modelName == null) {
-			modelName = context.getCurrentModel();
-		}
-		ModelEngine.execute(context, modelName, name, currentPath);
+		String mName = modelName != null ? modelName : context.getCurrentModel();
+		ModelEngine.execute(context, mName, name, currentPath);
 	}
 
 	/**
