@@ -52,11 +52,7 @@ public class Model extends Entity {
 
 	public Query getQuery(String name) {
 		Query query = querys.get(name);
-		if (query == null) {
-			return null;
-		} else {
-			return (Query) query.cloneEntity();
-		}
+		return  query;
 	}
 
 	public Query getQuery(){
@@ -73,11 +69,7 @@ public class Model extends Entity {
 
 	public Execute getExecute(String name) {
 		Execute execute = executes.get(name);
-		if (execute == null) {
-			return null;
-		} else {
-			return (Execute) execute.cloneEntity();
-		}
+		return execute;
 	}
 
 	public Execute getExecute(){

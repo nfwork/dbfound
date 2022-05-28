@@ -32,6 +32,16 @@ public class Execute extends SqlEntity {
 		}
 	}
 
+	public Map<String, Param> getCloneParams() {
+		HashMap<String, Param> params = new HashMap<String, Param>();
+		for (Iterator iterator = this.params.entrySet().iterator(); iterator.hasNext();) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			Param param = (Param) entry.getValue();
+			params.put(entry.getKey().toString(), (Param) param.cloneEntity());
+		}
+		return params;
+	}
+
 	public Execute cloneEntity() {
 		Execute execute = (Execute) super.cloneEntity();
 		HashMap<String, Param> params = new HashMap<String, Param>();

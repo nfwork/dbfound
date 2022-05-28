@@ -62,6 +62,29 @@ public class Query extends SqlEntity {
 		}
 	}
 
+	public Map<String, Param> getCloneParams() {
+		HashMap<String, Param> params = new HashMap<String, Param>();
+		for (Iterator iterator = this.params.entrySet().iterator(); iterator.hasNext();) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			Param param = (Param) entry.getValue();
+			params.put(entry.getKey().toString(), (Param) param.cloneEntity());
+		}
+		return params;
+	}
+
+
+	public HashMap<String, Filter> getCloneFilters() {
+		HashMap<String, Filter> filters = new HashMap<String, Filter>();
+		for (Iterator iterator = this.filters.entrySet().iterator(); iterator.hasNext();) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			Filter filter = (Filter) entry.getValue();
+			if (entry.getKey() != null) {
+				filters.put(entry.getKey().toString(), (Filter) filter.cloneEntity());
+			}
+		}
+		return filters;
+	}
+
 	public Query cloneEntity() {
 		Query query = (Query) super.cloneEntity();
 
