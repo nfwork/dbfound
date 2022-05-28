@@ -47,9 +47,10 @@ public class FileDownloadUtil {
 		if (file.exists()) {
 			try {
 				filename = URLEncoder.encode(filename, "utf-8");
-				response.setContentType("application/x-download;");
-				response.setHeader("Content-Disposition",
-						"attachment;filename=" + filename);
+
+				response.setContentType("application/x-download");
+				response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+				response.setHeader("Content-Disposition","attachment;filename=" + filename);
 				ServletOutputStream sout = response.getOutputStream(); // 图片输出的输出流
 				InputStream in = new FileInputStream(file);
 				try {
