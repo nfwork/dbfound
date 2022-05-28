@@ -43,8 +43,6 @@ public class ExecuteSql extends SqlEntity {
 		SqlDialect dialect = context.getConnDialect(provideName);
 		String executeSql = staticParamParse(sql, params);
 		String esql = getExecuteSql(executeSql, params);
-		// 方言处理
-		esql = dialect.parseSql(esql);
 
 		try {
 			PreparedStatement statement = null;

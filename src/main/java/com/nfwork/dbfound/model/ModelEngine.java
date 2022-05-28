@@ -104,13 +104,13 @@ public class ModelEngine {
 			}
 
 			// 初始化查询参数param
-			HashMap<String, Param> params = query.getCloneParams();
+			Map<String, Param> params = query.getParams();
 			for (Param nfParam : params.values()) {
 				setParam(nfParam, context, currentPath);
 			}
 
 			// 初始化查询过滤参数filter
-			Map<String, Filter> filters = query.getCloneFilters();
+			Map<String, Filter> filters = query.getFilters();
 			for (Filter filter : filters.values()) {
 				setParam(filter, context, currentPath);
 				Object value = filter.getValue();
@@ -136,9 +136,12 @@ public class ModelEngine {
 				}
 			}
 
-			// 查询数据，返回结果
 			String provideName = model.getConnectionProvide(context);
-			List<T> datas = query.query(context, params, provideName, obect);
+			//获取querySql
+			String querySql = query.getQuerySql(context,params,provideName);
+
+			// 查询数据，返回结果
+			List<T> datas = query.query(context, querySql, params, provideName, obect);
 
 			QueryResponseObject<T> ro = new QueryResponseObject<T>();
 			ro.setDatas(datas);
@@ -146,11 +149,11 @@ public class ModelEngine {
 			int dataSize = datas.size();
 			int pSize = context.getPagerSize();
 			long start = context.getStartWith();
-			if (autoPaging == false || pSize == 0 || (pSize > dataSize && start == 0)) {
+			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
 				ro.setTotalCounts(datas.size());
 			} else {
 				Connection conn = context.getConn(provideName);
-				long totalCounts = query.countItems(conn,context,params);
+				long totalCounts = query.countItems(conn,context,querySql,params);
 				ro.setTotalCounts(totalCounts);
 			}
 			ro.setSuccess(true);
@@ -294,7 +297,7 @@ public class ModelEngine {
 		context.setCurrentPath(currentPath);
 		context.setCurrentModel(modelName);
 
-		Map<String, Param> params = execute.getCloneParams();
+		Map<String, Param> params = execute.getParams();
 
 		// 设想sql查询参数
 		for (Param nfParam : params.values()) {

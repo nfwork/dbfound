@@ -57,9 +57,6 @@ public class WhenSql extends SqlEntity {
 
 		String esql = getExecuteSql(whenSql, params);
 
-		// 方言处理
-		esql = dialect.parseSql(esql);
-
 		PreparedStatement statement = null;
 		ResultSet set = null;
 		int flag = 0;

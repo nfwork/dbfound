@@ -2,6 +2,8 @@ package com.nfwork.dbfound.model.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.base.Entity;
 
 public class Sqls extends Entity {
@@ -15,6 +17,17 @@ public class Sqls extends Entity {
 			Execute execute = (Execute) getParent();
 			execute.setSqls(this);
 		}
+	}
+
+	@Override
+	public Sqls cloneEntity() {
+		Sqls sqls = (Sqls) super.cloneEntity();
+		List<SqlEntity> cList = new ArrayList<SqlEntity>();
+		for (SqlEntity entity : sqlList) {
+			cList.add((SqlEntity) entity.cloneEntity());
+		}
+		sqls.setSqlList(cList);
+		return sqls;
 	}
 
 	public List<SqlEntity> getSqlList() {

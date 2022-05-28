@@ -62,17 +62,17 @@ public class Query extends SqlEntity {
 		}
 	}
 
-	public HashMap<String, Param> getCloneParams() {
+	public Query cloneEntity() {
+		Query query = (Query) super.cloneEntity();
+
 		HashMap<String, Param> params = new HashMap<String, Param>();
 		for (Iterator iterator = this.params.entrySet().iterator(); iterator.hasNext();) {
 			Map.Entry entry = (Map.Entry) iterator.next();
 			Param param = (Param) entry.getValue();
 			params.put(entry.getKey().toString(), (Param) param.cloneEntity());
 		}
-		return params;
-	}
+		query.setParams(params);
 
-	public HashMap<String, Filter> getCloneFilters() {
 		HashMap<String, Filter> filters = new HashMap<String, Filter>();
 		for (Iterator iterator = this.filters.entrySet().iterator(); iterator.hasNext();) {
 			Map.Entry entry = (Map.Entry) iterator.next();
@@ -81,9 +81,16 @@ public class Query extends SqlEntity {
 				filters.put(entry.getKey().toString(), (Filter) filter.cloneEntity());
 			}
 		}
-		return filters;
+		query.setFilters(filters);
+
+		return query;
 	}
 
+	public String getQuerySql(Context context,Map<String, Param> params, String provideName){
+		String querySql = initFilter(sql, params);
+		querySql = staticParamParse(querySql, params);
+		return querySql;
+	}
 	/**
 	 * 查询结构集 以list的map对象返回
 	 * 
@@ -92,15 +99,9 @@ public class Query extends SqlEntity {
 	 * @param object
 	 * @return
 	 */
-	public <T> List<T> query(Context context,Map<String, Param> params, String provideName, Class<T> object) {
+	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> object) {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
-
-		String querySql = initFilter(sql, params);
-		querySql = staticParamParse(querySql, params);
-
-		// fileter初始化，数据库方言初始化
-		querySql = dialect.parseSql(querySql);
 
 		List<Map> data = new ArrayList<Map>();
 		String eSql = getExecuteSql(querySql,params);
@@ -108,8 +109,6 @@ public class Query extends SqlEntity {
 		if (context.getPagerSize() > 0) {
 			eSql = dialect.getPagerSql(eSql, context.getPagerSize(), context.getStartWith());
 		}
-
-		context.setQuerySql(querySql);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
@@ -274,8 +273,8 @@ public class Query extends SqlEntity {
 	 * 
 	 * @return
 	 */
-	public long countItems(Connection conn, Context context, Map<String, Param> params) {
-		char[] sqlChars = context.getQuerySql().toLowerCase().toCharArray();
+	public long countItems(Connection conn, Context context,String querySql ,Map<String, Param> params) {
+		char[] sqlChars = querySql.toLowerCase().toCharArray();
 		int dyh = 0;
 		int kh = 0;
 		int from_hold = 0;
@@ -387,12 +386,12 @@ public class Query extends SqlEntity {
 		String cSql = "";
 		if (order_hold == 0) {
 			if (group_hold > 0) {
-				cSql = "select count(1) from (select 1 " + context.getQuerySql().substring(from_hold) + " ) v";
+				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold) + " ) v";
 			} else {
-				cSql = "select count(1) " + context.getQuerySql().substring(from_hold);
+				cSql = "select count(1) " + querySql.substring(from_hold);
 			}
 		} else {
-			cSql = "select count(1) " + context.getQuerySql().substring(from_hold, order_hold);
+			cSql = "select count(1) " + querySql.substring(from_hold, order_hold);
 		}
 		String ceSql = getExecuteSql(cSql,params);
 		PreparedStatement statement = null;

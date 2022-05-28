@@ -1,6 +1,8 @@
 package com.nfwork.dbfound.db.dialect;
 
 public class SqlServerDialect implements SqlDialect {
+
+	@Override
 	public String getPagerSql(String sql, int pagerSize, long startWith) {
 
 		int i = sql.toLowerCase().lastIndexOf("order by");
@@ -17,12 +19,10 @@ public class SqlServerDialect implements SqlDialect {
 		return pagersql;
 	}
 
+	@Override
 	public String getWhenSql(String when) {
 		String pagersql = "select " + when;
 		return pagersql;
 	}
 
-	public String parseSql(String sql) {
-		return sql;
-	}
 }

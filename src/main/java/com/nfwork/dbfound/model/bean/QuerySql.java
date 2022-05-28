@@ -47,8 +47,6 @@ public class QuerySql extends SqlEntity {
 		SqlDialect dialect = context.getConnDialect(provideName);
 		String querySql = staticParamParse(sql, params);
 		String esql = getExecuteSql(querySql, params);
-		// 方言处理
-		esql = dialect.parseSql(esql);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;

@@ -38,7 +38,6 @@ public class Context {
 
 	private int pagerSize = 0;
 	private long startWith = 0;
-	private String querySql;
 
 	private String currentPath;
 	private String currentModel;
@@ -53,12 +52,12 @@ public class Context {
 	private Map<String, Object> headerDatas;
 	private static boolean openSession = true;
 
-	private Transaction transaction = new Transaction();
-	private String createThreadName = Thread.currentThread().getName();
+	private final Transaction transaction = new Transaction();
+	private final String createThreadName = Thread.currentThread().getName();
 
 	public Transaction getTransaction() {
 		String runName = Thread.currentThread().getName();
-		if (createThreadName.equals(runName) == false) {
+		if (!createThreadName.equals(runName)) {
 			throw new DBFoundRuntimeException(String.format(
 					"Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
 					createThreadName, runName));
@@ -172,13 +171,13 @@ public class Context {
 	 */
 	@SuppressWarnings("unchecked")
 	public void cloneSessionData(HttpSession session) {
-		if (this.openSession == false) {
+		if (!openSession) {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
 		}
 		Enumeration<String> enumeration = session.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String paramName = enumeration.nextElement();
-			if (paramName.indexOf(".") > -1) {
+			if (paramName.contains(".")) {
 				continue; // 初始化复制session数据时，不克隆a.b多层次数据。
 			}
 			setSessionData(paramName, session.getAttribute(paramName));
@@ -216,7 +215,7 @@ public class Context {
 			String paramName = enumeration.nextElement();
 			if ("_currentContext".equals(paramName)) {
 				continue;
-			} else if (paramName.indexOf(".") > -1) {
+			} else if (paramName.contains(".")) {
 				continue; // 初始化复制request数据时，不克隆a.b多层次数据。
 			}
 			setRequestData(paramName, request.getAttribute(paramName));
@@ -324,7 +323,7 @@ public class Context {
 	 * @param object
 	 */
 	private void setRootData(String name, Object object) {
-		if (name.indexOf(".") > -1) {
+		if (name.contains(".")) {
 			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
 		if (request != null) {
@@ -340,7 +339,7 @@ public class Context {
 	 * @param value
 	 */
 	public void setParamData(String name, Object value) {
-		if (name.indexOf(".") > -1) {
+		if (name.contains(".")) {
 			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
 		if (paramDatas == null) {
@@ -365,7 +364,7 @@ public class Context {
 	 * @param object
 	 */
 	public void setOutParamData(String name, Object object) {
-		if (name.indexOf(".") > -1) {
+		if (name.contains(".")) {
 			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
 		if (outParamDatas == null) {
@@ -387,7 +386,7 @@ public class Context {
 	 * @param object
 	 */
 	public void setRequestData(String name, Object object) {
-		if (name.indexOf(".") > -1) {
+		if (name.contains(".")) {
 			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
 		if (requestDatas == null) {
@@ -412,10 +411,10 @@ public class Context {
 	 * @param object
 	 */
 	public void setSessionData(String name, Object object) {
-		if (this.openSession == false) {
+		if (!openSession) {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
 		}
-		if (name.indexOf(".") > -1) {
+		if (name.contains(".")) {
 			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
 		}
 		if (sessionDatas == null) {
@@ -464,7 +463,7 @@ public class Context {
 
 		// 校验是否夸线程
 		String runName = Thread.currentThread().getName();
-		if (createThreadName.equals(runName) == false) {
+		if (!createThreadName.equals(runName)) {
 			throw new DBFoundRuntimeException(String.format(
 					"Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
 					createThreadName, runName));
@@ -624,14 +623,6 @@ public class Context {
 
 	public void setReportQueryLimitSize(int reportQueryLimitSize) {
 		this.reportQueryLimitSize = reportQueryLimitSize;
-	}
-
-	public String getQuerySql() {
-		return querySql;
-	}
-
-	public void setQuerySql(String querySql) {
-		this.querySql = querySql;
 	}
 
 	static {

@@ -53,8 +53,6 @@ public class CollisionSql extends SqlEntity {
 		whereSql = dialect.getWhenSql(whereSql);
 		String esql = getExecuteSql(whereSql, params);
 
-		// 方言处理
-		esql = dialect.parseSql(esql);
 		PreparedStatement statement = null;
 		ResultSet set = null;
 		try {

@@ -32,7 +32,8 @@ public class Execute extends SqlEntity {
 		}
 	}
 
-	public HashMap<String, Param> getCloneParams() {
+	public Execute cloneEntity() {
+		Execute execute = (Execute) super.cloneEntity();
 		HashMap<String, Param> params = new HashMap<String, Param>();
 		for (Iterator iterator = this.params.entrySet().iterator(); iterator
 				.hasNext();) {
@@ -40,7 +41,10 @@ public class Execute extends SqlEntity {
 			Param param = (Param) entry.getValue();
 			params.put(entry.getKey().toString(), (Param) param.cloneEntity());
 		}
-		return params;
+		execute.setParams(params);
+		if (sqls != null)
+			execute.setSqls(sqls.cloneEntity());
+		return execute;
 	}
 
 	public void executeRun(Context context,Map<String, Param> params, String provideName){

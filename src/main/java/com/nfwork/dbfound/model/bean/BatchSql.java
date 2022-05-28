@@ -150,9 +150,6 @@ public class BatchSql extends SqlEntity {
 
 		String esql = getExecuteSql(cursorSql, params);
 
-		// 方言处理
-		esql = dialect.parseSql(esql);
-
 		PreparedStatement statement = conn.prepareStatement(esql);
 		ResultSet dataset = null;
 		try {

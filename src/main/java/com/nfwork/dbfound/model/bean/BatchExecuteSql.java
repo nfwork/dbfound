@@ -181,8 +181,6 @@ public class BatchExecuteSql extends SqlEntity {
 		sql = staticParamParse(sql, params);
 
 		String esql = getExecuteSql(sql, params);
-		// 方言处理
-		esql = dialect.parseSql(esql);
 
 		try {
 			PreparedStatement statement = null;

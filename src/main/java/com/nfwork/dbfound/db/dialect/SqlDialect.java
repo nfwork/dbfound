@@ -16,13 +16,5 @@ public interface SqlDialect {
 	 * @param when
 	 */
 	public String getWhenSql(String when) ;
-	
-	
-	/**
-	 * 根据方言格式化sql
-	 * @param sql
-	 * @return
-	 */
-	public String parseSql(String sql);
     
 }
