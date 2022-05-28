@@ -104,13 +104,13 @@ public class ModelEngine {
 			}
 
 			// 初始化查询参数param
-			Map<String, Param> params = query.getCloneParams();
+			Map<String, Param> params = query.cloneParams();
 			for (Param nfParam : params.values()) {
 				setParam(nfParam, context, currentPath);
 			}
 
 			// 初始化查询过滤参数filter
-			Map<String, Filter> filters = query.getCloneFilters();
+			Map<String, Filter> filters = query.cloneFilters();
 			for (Filter filter : filters.values()) {
 				setParam(filter, context, currentPath);
 				Object value = filter.getValue();
@@ -297,7 +297,7 @@ public class ModelEngine {
 		context.setCurrentPath(currentPath);
 		context.setCurrentModel(modelName);
 
-		Map<String, Param> params = execute.getCloneParams();
+		Map<String, Param> params = execute.cloneParams();
 
 		// 设想sql查询参数
 		for (Param nfParam : params.values()) {
@@ -330,7 +330,7 @@ public class ModelEngine {
 				if ("true".equals(p.getAutoCookie())) {
 					Cookie cookie = new Cookie(p.getName(), p.getStringValue());
 					String path = context.request.getContextPath();
-					if (path.endsWith("/") == false) {
+					if (!path.endsWith("/")) {
 						path = path + "/";
 					}
 					cookie.setPath(path);

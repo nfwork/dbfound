@@ -51,8 +51,7 @@ public class Model extends Entity {
 	}
 
 	public Query getQuery(String name) {
-		Query query = querys.get(name);
-		return  query;
+		return querys.get(name);
 	}
 
 	public Query getQuery(){
@@ -68,8 +67,7 @@ public class Model extends Entity {
 	}
 
 	public Execute getExecute(String name) {
-		Execute execute = executes.get(name);
-		return execute;
+		return executes.get(name);
 	}
 
 	public Execute getExecute(){

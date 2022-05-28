@@ -19,17 +19,6 @@ public class Sqls extends Entity {
 		}
 	}
 
-	@Override
-	public Sqls cloneEntity() {
-		Sqls sqls = (Sqls) super.cloneEntity();
-		List<SqlEntity> cList = new ArrayList<SqlEntity>();
-		for (SqlEntity entity : sqlList) {
-			cList.add((SqlEntity) entity.cloneEntity());
-		}
-		sqls.setSqlList(cList);
-		return sqls;
-	}
-
 	public List<SqlEntity> getSqlList() {
 		return sqlList;
 	}

@@ -1,7 +1,6 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
@@ -32,29 +31,12 @@ public class Execute extends SqlEntity {
 		}
 	}
 
-	public Map<String, Param> getCloneParams() {
+	public Map<String, Param> cloneParams() {
 		HashMap<String, Param> params = new HashMap<String, Param>();
-		for (Iterator iterator = this.params.entrySet().iterator(); iterator.hasNext();) {
-			Map.Entry entry = (Map.Entry) iterator.next();
-			Param param = (Param) entry.getValue();
-			params.put(entry.getKey().toString(), (Param) param.cloneEntity());
+		for(Map.Entry<String,Param> entry : this.params.entrySet()){
+			params.put(entry.getKey(), (Param) entry.getValue().cloneEntity());
 		}
 		return params;
-	}
-
-	public Execute cloneEntity() {
-		Execute execute = (Execute) super.cloneEntity();
-		HashMap<String, Param> params = new HashMap<String, Param>();
-		for (Iterator iterator = this.params.entrySet().iterator(); iterator
-				.hasNext();) {
-			Map.Entry entry = (Map.Entry) iterator.next();
-			Param param = (Param) entry.getValue();
-			params.put(entry.getKey().toString(), (Param) param.cloneEntity());
-		}
-		execute.setParams(params);
-		if (sqls != null)
-			execute.setSqls(sqls.cloneEntity());
-		return execute;
 	}
 
 	public void executeRun(Context context,Map<String, Param> params, String provideName){
