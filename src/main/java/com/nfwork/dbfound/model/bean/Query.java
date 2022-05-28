@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
 
@@ -463,6 +464,9 @@ public class Query extends SqlEntity {
 
 	@Override
 	public void execute(Context context, Map<String, Param> params, String provideName) {
+		if(DataUtil.isNull(rootPath)){
+			throw new DBFoundRuntimeException("rootPath can not be null");
+		}
 		String currentPath = context.getCurrentPath();
 		String mName = modelName != null?modelName : context.getCurrentModel();
 		List<Map> datas = ModelEngine.query(context, mName, name, currentPath, false).getDatas();

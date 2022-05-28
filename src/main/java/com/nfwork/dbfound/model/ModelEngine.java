@@ -316,10 +316,6 @@ public class ModelEngine {
 	 * @return
 	 */
 	private static Map<String, Object> getOutParams(Context context, Map<String, Param> params) {
-		if (params==null || params.isEmpty()) {
-			return null;
-		}
-
 		for (Param p : params.values()) {
 			if (context.isInWebContainer()) {
 				// 设定session参数
