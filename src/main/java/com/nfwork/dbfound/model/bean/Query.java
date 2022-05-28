@@ -468,9 +468,12 @@ public class Query extends SqlEntity {
 			throw new DBFoundRuntimeException("rootPath can not be null");
 		}
 		String currentPath = context.getCurrentPath();
-		String mName = modelName != null?modelName : context.getCurrentModel();
-		List<Map> datas = ModelEngine.query(context, mName, name, currentPath, false).getDatas();
-		context.setData(rootPath, datas);
+		String currentModel = context.getCurrentModel();
+		String mName = modelName != null?modelName : currentModel;
+		List data = ModelEngine.query(context, mName, name, currentPath, false).getDatas();
+		context.setData(rootPath, data);
+		context.setCurrentPath(currentPath);
+		context.setCurrentModel(currentModel);
 	}
 
 }

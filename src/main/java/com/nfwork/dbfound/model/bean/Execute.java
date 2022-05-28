@@ -51,8 +51,11 @@ public class Execute extends SqlEntity {
 	@Override
 	public void execute(Context context, Map<String, Param> params,String provideName){
 		String currentPath = context.getCurrentPath();
-		String mName = modelName != null ? modelName : context.getCurrentModel();
+		String currentModel = context.getCurrentModel();
+		String mName = modelName != null ? modelName : currentModel;
 		ModelEngine.execute(context, mName, name, currentPath);
+		context.setCurrentPath(currentPath);
+		context.setCurrentModel(currentModel);
 	}
 
 	public String getName() {
