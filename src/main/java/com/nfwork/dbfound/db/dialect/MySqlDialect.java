@@ -7,14 +7,14 @@ public class MySqlDialect implements SqlDialect {
 
 	@Override
 	public String getPagerSql(String sql, int pagerSize, long startWith) {
-		String pagersql = sql + " limit " + startWith + " , " + pagerSize;
-		return pagersql;
+		String pagerSql = sql + " limit " + startWith + " , " + pagerSize;
+		return pagerSql;
 	}
 
 	@Override
 	public String getWhenSql(String when) {
-		String pagersql = "select " + when;
-		return pagersql;
+		String whenSql = "select " + when;
+		return whenSql;
 	}
 
 }

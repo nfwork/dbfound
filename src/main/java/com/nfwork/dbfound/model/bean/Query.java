@@ -397,7 +397,7 @@ public class Query extends SqlEntity {
 			dataset.next();
 			count = dataset.getLong(1);
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("Query执行count查询异常:" + e.getMessage(), e);
+			throw new DBFoundPackageException("Query execute count exception:" + e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);

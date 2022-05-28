@@ -10,7 +10,6 @@ import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
-import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
@@ -57,8 +56,7 @@ public class BatchSql extends SqlEntity {
 			try {
 				executeCursor(context, params, provideName, cursorValues);
 			} catch (SQLException e) {
-				throw new DBFoundPackageException(
-						"游标sql执行异常:" + e.getMessage(), e);
+				throw new DBFoundPackageException("cursor sql execute exception:" + e.getMessage(), e);
 			}
 			exeSourcePath = "param.cursorlist";
 			context.setParamData("cursorlist",cursorValues);
@@ -144,7 +142,6 @@ public class BatchSql extends SqlEntity {
 			String provideName, List<Map> cursorValues) throws SQLException {
 
 		Connection conn = context.getConn(provideName);
-		SqlDialect dialect = context.getConnDialect(provideName);
 
 		String cursorSql = staticParamParse(cursor, params);
 

@@ -63,7 +63,7 @@ public class ExecuteSql extends SqlEntity {
 					if (rs.next()) {
 						Param param = params.get(generatedKeyParam);
 						if (param == null) {
-							throw new ParamNotFoundException("param: " + generatedKeyParam + " 没有定义");
+							throw new ParamNotFoundException("param: " + generatedKeyParam + " not defined");
 						}
 						param.setValue(rs.getLong(1));
 						param.setSourcePathHistory("set by generatedKey");
@@ -80,7 +80,7 @@ public class ExecuteSql extends SqlEntity {
 
 					Param param = params.get(affectedCountParam);
 					if (param == null) {
-						throw new ParamNotFoundException("param: " + affectedCountParam + " 没有定义");
+						throw new ParamNotFoundException("param: " + affectedCountParam + " not defined");
 					}
 					param.setValue(fetchSize);
 					param.setSourcePathHistory("set by affectedCount");
@@ -97,7 +97,7 @@ public class ExecuteSql extends SqlEntity {
 			}
 			
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("ExecuteSql执行异常:" + e.getMessage(), e);
+			throw new DBFoundPackageException("ExecuteSql execute exception:" + e.getMessage(), e);
 		}
 	}
 

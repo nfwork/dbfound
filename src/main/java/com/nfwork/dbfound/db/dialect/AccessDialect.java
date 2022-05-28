@@ -9,7 +9,7 @@ public class AccessDialect implements SqlDialect {
 
 	@Override
 	public String getWhenSql(String when) {
-		String pagersql = "select " + when;
-		return pagersql;
+		String whenSql = "select " + when;
+		return whenSql;
 	}
 }

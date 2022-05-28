@@ -32,7 +32,7 @@ public class Java extends SqlEntity {
 	@SuppressWarnings("unchecked")
 	public void execute(Context context, Map<String, Param> params,
 			String provideName) {
-		LogUtil.info("执行Java，类：" + className + ",方法：" + method);
+		LogUtil.info("execute Java plugin：" + className + ", method：" + method);
 		try {
 			Class executeClass = Class.forName(className);
 			Object object = executeClass.newInstance();
@@ -60,7 +60,7 @@ public class Java extends SqlEntity {
 			}
 			MethodUtils.invokeMethod(object, method, new Object[] {});
 		} catch (ClassNotFoundException e) {
-			throw new DBFoundRuntimeException("类" + className + "不存在");
+			throw new DBFoundRuntimeException("class:" + className + " not found");
 		} catch (Exception ee) {
 			Throwable throwable = ee.getCause();
 			if (throwable != null && throwable instanceof Exception) {

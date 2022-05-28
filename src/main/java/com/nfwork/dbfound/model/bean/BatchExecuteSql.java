@@ -1,7 +1,6 @@
 package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
@@ -176,7 +175,6 @@ public class BatchExecuteSql extends SqlEntity {
 	private int execute(Context context, Map<String, Param> params, String provideName,String sql, List<Param> listParam) {
 
 		Connection conn = context.getConn(provideName);
-		SqlDialect dialect = context.getConnDialect(provideName);
 
 		sql = staticParamParse(sql, params);
 
@@ -200,7 +198,7 @@ public class BatchExecuteSql extends SqlEntity {
 			}
 			
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("ExecuteSql执行异常:" + e.getMessage(), e);
+			throw new DBFoundPackageException("ExecuteSql execute exception:" + e.getMessage(), e);
 		}
 	}
 

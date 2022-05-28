@@ -59,7 +59,7 @@ public class Context {
 		String runName = Thread.currentThread().getName();
 		if (!createThreadName.equals(runName)) {
 			throw new DBFoundRuntimeException(String.format(
-					"Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
+					"Context transaction can not user by different thread，create thread:%s, run thread：%s",
 					createThreadName, runName));
 		}
 		return transaction;
@@ -324,7 +324,7 @@ public class Context {
 	 */
 	private void setRootData(String name, Object object) {
 		if (name.contains(".")) {
-			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
+			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
 		}
 		if (request != null) {
 			request.setAttribute(name, object);
@@ -340,7 +340,7 @@ public class Context {
 	 */
 	public void setParamData(String name, Object value) {
 		if (name.contains(".")) {
-			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
+			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
 		}
 		if (paramDatas == null) {
 			Object o = rootDatas.get("param");
@@ -365,7 +365,7 @@ public class Context {
 	 */
 	public void setOutParamData(String name, Object object) {
 		if (name.contains(".")) {
-			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
+			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
 		}
 		if (outParamDatas == null) {
 			Object o = rootDatas.get("outParam");
@@ -387,7 +387,7 @@ public class Context {
 	 */
 	public void setRequestData(String name, Object object) {
 		if (name.contains(".")) {
-			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
+			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
 		}
 		if (requestDatas == null) {
 			Object o = rootDatas.get("request");
@@ -415,7 +415,7 @@ public class Context {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
 		}
 		if (name.contains(".")) {
-			throw new DBFoundRuntimeException("param name can not be cotain '.' :" + name);
+			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
 		}
 		if (sessionDatas == null) {
 			Object o = rootDatas.get("session");

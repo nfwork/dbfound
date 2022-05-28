@@ -68,7 +68,7 @@ public class CollisionSql extends SqlEntity {
 			}
 		}catch (SQLException e) {
 			throw new DBFoundPackageException(
-					"CollisionSql执行异常:" + e.getMessage(), e);
+					"CollisionSql execute exception:" + e.getMessage(), e);
 		}
 		finally {
 			DBUtil.closeResultSet(set);

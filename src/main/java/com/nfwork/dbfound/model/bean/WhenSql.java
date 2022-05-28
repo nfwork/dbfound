@@ -69,7 +69,7 @@ public class WhenSql extends SqlEntity {
 				flag = set.getInt(1);
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("whenSql执行异常:" + e.getMessage(),
+			throw new DBFoundPackageException("whenSql execute exception:" + e.getMessage(),
 					e);
 		}
 
