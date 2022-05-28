@@ -3,7 +3,6 @@ package com.nfwork.dbfound.model.bean;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.nfwork.dbfound.web.jstl.ForEach;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.base.Entity;

@@ -2,8 +2,6 @@ package com.nfwork.dbfound.model.bean;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.base.Entity;
 
 public class Sqls extends Entity {
