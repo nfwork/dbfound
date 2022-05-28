@@ -49,7 +49,6 @@ public class CollisionSql extends SqlEntity {
 		SqlDialect dialect = context.getConnDialect(provideName);
 
 		String whereSql = staticParamParse(where, params);
-
 		whereSql = dialect.getWhenSql(whereSql);
 		String esql = getExecuteSql(whereSql, params);
 
@@ -67,10 +66,8 @@ public class CollisionSql extends SqlEntity {
 				}
 			}
 		}catch (SQLException e) {
-			throw new DBFoundPackageException(
-					"CollisionSql execute exception:" + e.getMessage(), e);
-		}
-		finally {
+			throw new DBFoundPackageException("CollisionSql execute exception:" + e.getMessage(), e);
+		}finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);
 			log(esql, params);

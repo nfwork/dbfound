@@ -92,7 +92,6 @@ public class Query extends SqlEntity {
 	 * @return
 	 */
 	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> object) {
-		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
 		List<Map> data = new ArrayList<Map>();
@@ -105,6 +104,7 @@ public class Query extends SqlEntity {
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
 		try {
+			Connection conn = context.getConn(provideName);
 			statement = conn.prepareStatement(eSql);
 			if (queryTimeout != null) {
 				statement.setQueryTimeout(queryTimeout);
@@ -265,7 +265,7 @@ public class Query extends SqlEntity {
 	 * 
 	 * @return
 	 */
-	public long countItems(Connection conn, Context context,String querySql ,Map<String, Param> params) {
+	public long countItems(Context context,String querySql ,Map<String, Param> params, String provideName) {
 		char[] sqlChars = querySql.toLowerCase().toCharArray();
 		int dyh = 0;
 		int kh = 0;
@@ -385,6 +385,8 @@ public class Query extends SqlEntity {
 		} else {
 			cSql = "select count(1) " + querySql.substring(from_hold, order_hold);
 		}
+
+		Connection conn = context.getConn(provideName);
 		String ceSql = getExecuteSql(cSql,params);
 		PreparedStatement statement = null;
 		ResultSet dataset = null;

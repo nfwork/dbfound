@@ -173,32 +173,26 @@ public class BatchExecuteSql extends SqlEntity {
 	}
 
 	private int execute(Context context, Map<String, Param> params, String provideName,String sql, List<Param> listParam) {
-
 		Connection conn = context.getConn(provideName);
 
 		sql = staticParamParse(sql, params);
-
 		String esql = getExecuteSql(sql, params);
 
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+
 		try {
-			PreparedStatement statement = null;
-			ResultSet rs = null;
 			statement = conn.prepareStatement(esql);
-
-			try {
-				// 参数设定
-				initParam(statement, sql, params);
-				statement.execute();
-
-				return statement.getUpdateCount();
-			} finally {
-				DBUtil.closeResultSet(rs);
-				DBUtil.closeStatement(statement);
-				log(esql, listParam);
-			}
-			
+			// 参数设定
+			initParam(statement, sql, params);
+			statement.execute();
+			return statement.getUpdateCount();
 		} catch (SQLException e) {
 			throw new DBFoundPackageException("ExecuteSql execute exception:" + e.getMessage(), e);
+		}finally {
+			DBUtil.closeResultSet(rs);
+			DBUtil.closeStatement(statement);
+			log(esql, listParam);
 		}
 	}
 

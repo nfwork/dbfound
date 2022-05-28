@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
@@ -40,64 +39,61 @@ public class ExecuteSql extends SqlEntity {
 			throw new DBFoundRuntimeException(initError);
 		}
 		Connection conn = context.getConn(provideName);
-		SqlDialect dialect = context.getConnDialect(provideName);
 		String executeSql = staticParamParse(sql, params);
 		String esql = getExecuteSql(executeSql, params);
 
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+
 		try {
-			PreparedStatement statement = null;
-			ResultSet rs = null;
 			if (DataUtil.isNotNull(generatedKeyParam)){
 				statement = conn.prepareStatement(esql, Statement.RETURN_GENERATED_KEYS);
 			}else {
 				statement = conn.prepareStatement(esql);
 			}
-			try {
-				// 参数设定
-				initParam(statement, executeSql, params);
-				statement.execute();
-				
-				// 2013年9月9日8:47:54 添加主键返回
-				if (DataUtil.isNotNull(generatedKeyParam)) {
-					rs = statement.getGeneratedKeys();
-					if (rs.next()) {
-						Param param = params.get(generatedKeyParam);
-						if (param == null) {
-							throw new ParamNotFoundException("param: " + generatedKeyParam + " not defined");
-						}
-						param.setValue(rs.getLong(1));
-						param.setSourcePathHistory("set by generatedKey");
 
-						if(!"in".equals(param.getIoType())){
-							context.setOutParamData(param.getName(),param.getValue());
-						}
-					}
-				}
-				
-				// 2014年8月14日11:38:34 添加affectedCountParam
-				if (DataUtil.isNotNull(affectedCountParam)) {
-					int fetchSize = statement.getUpdateCount();
+			// 参数设定
+			initParam(statement, executeSql, params);
+			statement.execute();
 
-					Param param = params.get(affectedCountParam);
+			// 2013年9月9日8:47:54 添加主键返回
+			if (DataUtil.isNotNull(generatedKeyParam)) {
+				rs = statement.getGeneratedKeys();
+				if (rs.next()) {
+					Param param = params.get(generatedKeyParam);
 					if (param == null) {
-						throw new ParamNotFoundException("param: " + affectedCountParam + " not defined");
+						throw new ParamNotFoundException("param: " + generatedKeyParam + " not defined");
 					}
-					param.setValue(fetchSize);
-					param.setSourcePathHistory("set by affectedCount");
+					param.setValue(rs.getLong(1));
+					param.setSourcePathHistory("set by generatedKey");
 
 					if(!"in".equals(param.getIoType())){
 						context.setOutParamData(param.getName(),param.getValue());
 					}
 				}
-				
-			} finally {
-				DBUtil.closeResultSet(rs);
-				DBUtil.closeStatement(statement);
-				log(esql, params);
 			}
-			
-		} catch (SQLException e) {
+
+			// 2014年8月14日11:38:34 添加affectedCountParam
+			if (DataUtil.isNotNull(affectedCountParam)) {
+				int fetchSize = statement.getUpdateCount();
+
+				Param param = params.get(affectedCountParam);
+				if (param == null) {
+					throw new ParamNotFoundException("param: " + affectedCountParam + " not defined");
+				}
+				param.setValue(fetchSize);
+				param.setSourcePathHistory("set by affectedCount");
+
+				if(!"in".equals(param.getIoType())){
+					context.setOutParamData(param.getName(),param.getValue());
+				}
+			}
+		}catch (SQLException e) {
 			throw new DBFoundPackageException("ExecuteSql execute exception:" + e.getMessage(), e);
+		} finally {
+			DBUtil.closeResultSet(rs);
+			DBUtil.closeStatement(statement);
+			log(esql, params);
 		}
 	}
 

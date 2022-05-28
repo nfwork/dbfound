@@ -14,7 +14,6 @@ import java.util.Calendar;
 import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
@@ -44,7 +43,6 @@ public class QuerySql extends SqlEntity {
 			throw new DBFoundRuntimeException(initError);
 		}
 		Connection conn = context.getConn(provideName);
-		SqlDialect dialect = context.getConnDialect(provideName);
 		String querySql = staticParamParse(sql, params);
 		String esql = getExecuteSql(querySql, params);
 
@@ -127,7 +125,6 @@ public class QuerySql extends SqlEntity {
 
 	private void blobExecute(String columnName, ResultSet dataset, Map<String, Param> params, Param param, int index) {
 		try {
-
 			if ("out".equals(param.getIoType())) {
 				if ("db".equals(param.getFileSaveType())) {
 					OutputStream out = null;

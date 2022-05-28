@@ -1,10 +1,7 @@
 package com.nfwork.dbfound.model;
 
-import java.sql.Connection;
 import java.util.*;
-
 import javax.servlet.http.Cookie;
-
 import com.nfwork.dbfound.util.DataUtil;
 import org.apache.commons.fileupload.FileItem;
 import com.nfwork.dbfound.core.Context;
@@ -138,7 +135,7 @@ public class ModelEngine {
 
 			String provideName = model.getConnectionProvide(context);
 			//获取querySql
-			String querySql = query.getQuerySql(context,params,provideName);
+			String querySql = query.getQuerySql(context, params, provideName);
 
 			// 查询数据，返回结果
 			List<T> datas = query.query(context, querySql, params, provideName, obect);
@@ -152,8 +149,7 @@ public class ModelEngine {
 			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
 				ro.setTotalCounts(datas.size());
 			} else {
-				Connection conn = context.getConn(provideName);
-				long totalCounts = query.countItems(conn,context,querySql,params);
+				long totalCounts = query.countItems(context, querySql, params, provideName);
 				ro.setTotalCounts(totalCounts);
 			}
 			ro.setSuccess(true);
