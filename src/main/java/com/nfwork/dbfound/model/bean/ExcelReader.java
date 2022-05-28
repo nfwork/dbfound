@@ -15,7 +15,6 @@ public class ExcelReader extends SqlEntity {
 	private String sourceParam;
 	private String rootPath;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(Context context, Map<String, Param> params,
 			String provideName){

@@ -83,28 +83,19 @@ public class Query extends SqlEntity {
 		querySql = staticParamParse(querySql, params);
 		return querySql;
 	}
-	/**
-	 * 查询结构集 以list的map对象返回
-	 * 
-	 * @param context
-	 * @param provideName
-	 * @param object
-	 * @return
-	 */
+
 	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> object) {
-		SqlDialect dialect = context.getConnDialect(provideName);
+		Connection conn = context.getConn(provideName);
 
 		List<Map> data = new ArrayList<Map>();
 		String eSql = getExecuteSql(querySql,params);
-
 		if (context.getPagerSize() > 0) {
+			SqlDialect dialect = context.getConnDialect(provideName);
 			eSql = dialect.getPagerSql(eSql, context.getPagerSize(), context.getStartWith());
 		}
-
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
 		try {
-			Connection conn = context.getConn(provideName);
 			statement = conn.prepareStatement(eSql);
 			if (queryTimeout != null) {
 				statement.setQueryTimeout(queryTimeout);

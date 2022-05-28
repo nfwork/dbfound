@@ -103,7 +103,7 @@ public class QuerySql extends SqlEntity {
 							}
 						}
 					} else if ("file".equals(paramType)) {
-						blobExecute(columnName, dataset, params, param, i);
+						blobExecute(dataset, param, i);
 					}else{
 						param.setValue(value);
 					}
@@ -123,7 +123,7 @@ public class QuerySql extends SqlEntity {
 		}
 	}
 
-	private void blobExecute(String columnName, ResultSet dataset, Map<String, Param> params, Param param, int index) {
+	private void blobExecute(ResultSet dataset, Param param, int index) {
 		try {
 			if ("out".equals(param.getIoType())) {
 				if ("db".equals(param.getFileSaveType())) {

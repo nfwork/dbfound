@@ -130,26 +130,17 @@ public class BatchSql extends SqlEntity {
 
 	}
 
-	/**
-	 * 执行cursor查询 将结果放到cursorValues
-	 * @param context
-	 * @param params
-	 * @param provideName
-	 * @param cursorValues
-	 * @throws SQLException
-	 */
-	public void executeCursor(Context context, Map<String, Param> params,
-			String provideName, List<Map> cursorValues) throws SQLException {
 
+	public void executeCursor(Context context, Map<String, Param> params,String provideName, List<Map> cursorValues) throws SQLException {
 		Connection conn = context.getConn(provideName);
 
 		String cursorSql = staticParamParse(cursor, params);
-
 		String esql = getExecuteSql(cursorSql, params);
 
-		PreparedStatement statement = conn.prepareStatement(esql);
+		PreparedStatement statement = null;
 		ResultSet dataset = null;
 		try {
+			statement = conn.prepareStatement(esql);
 			// 参数设定
 			initParam(statement, cursorSql, params);
 			dataset = statement.executeQuery();

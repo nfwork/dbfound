@@ -29,7 +29,6 @@ public class Java extends SqlEntity {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void execute(Context context, Map<String, Param> params,
 			String provideName) {
 		LogUtil.info("execute Java plugin：" + className + ", method：" + method);
@@ -63,7 +62,7 @@ public class Java extends SqlEntity {
 			throw new DBFoundRuntimeException("class:" + className + " not found");
 		} catch (Exception ee) {
 			Throwable throwable = ee.getCause();
-			if (throwable != null && throwable instanceof Exception) {
+			if (throwable instanceof Exception) {
 				if (throwable instanceof RuntimeException) {
 					throw (RuntimeException)throwable;
 				}

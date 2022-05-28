@@ -47,14 +47,11 @@ public class WhenSql extends SqlEntity {
 	// 判定条件是否成立
 	public boolean fitWhen(Context context, Map<String, Param> params,
 			String provideName) {
-
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
 		String whenSql = staticParamParse(when, params);
-
 		whenSql = dialect.getWhenSql(whenSql);
-
 		String esql = getExecuteSql(whenSql, params);
 
 		PreparedStatement statement = null;
@@ -69,11 +66,8 @@ public class WhenSql extends SqlEntity {
 				flag = set.getInt(1);
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("whenSql execute exception:" + e.getMessage(),
-					e);
-		}
-
-		finally {
+			throw new DBFoundPackageException("whenSql execute exception:" + e.getMessage(), e);
+		} finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);
 			log(esql, params);
