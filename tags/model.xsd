@@ -270,6 +270,7 @@
 		</xsd:choice>
 		<xsd:attribute name="cursor" />
 		<xsd:attribute name="sourcePath" />
+		<xsd:attribute name="cursorRootPath" />
 	</xsd:complexType>
 
 	<xsd:complexType name="executeSql_type" mixed="true">

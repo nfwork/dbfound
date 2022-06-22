@@ -28,6 +28,7 @@ public class BatchSql extends SqlEntity {
 	private static final long serialVersionUID = 5145846152572625196L;
 
 	private String cursor;
+	private String cursorRootPath = "param.cursorList";
 	private String sourcePath;
 
 	private String initError;
@@ -58,8 +59,11 @@ public class BatchSql extends SqlEntity {
 			} catch (SQLException e) {
 				throw new DBFoundPackageException("cursor sql execute exception:" + e.getMessage(), e);
 			}
-			exeSourcePath = "param.cursorlist";
-			context.setParamData("cursorlist",cursorValues);
+			if(DataUtil.isNull(cursorRootPath)){
+				throw new DBFoundRuntimeException("cursorRootPath can not be null");
+			}
+			exeSourcePath = cursorRootPath;
+			context.setData(cursorRootPath, cursorValues);
 		}
 
 		String inCurrentPath = context.getCurrentPath();
@@ -253,4 +257,11 @@ public class BatchSql extends SqlEntity {
 		this.sourcePath = sourcePath;
 	}
 
+	public String getCursorRootPath() {
+		return cursorRootPath;
+	}
+
+	public void setCursorRootPath(String cursorRootPath) {
+		this.cursorRootPath = cursorRootPath;
+	}
 }
