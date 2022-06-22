@@ -268,7 +268,7 @@ public class Query extends SqlEntity {
 		int group_hold = 0;
 
 		// 寻找from的位置
-		for (int i = 6; i < sqlChars.length - 4; i++) {
+		for (int i = 6; i < sqlChars.length - 6; i++) {
 			if (sqlChars[i] == '(') {
 				kh++;
 			} else if (sqlChars[i] == ')') {
@@ -276,7 +276,7 @@ public class Query extends SqlEntity {
 			} else if (sqlChars[i] == '\'') {
 				dyh++;
 			}
-			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i - 1] == ')' ) {
+			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
 				i++;
 				if (sqlChars[i] == 'f') {
 					i++;
@@ -286,7 +286,7 @@ public class Query extends SqlEntity {
 							i++;
 							if (sqlChars[i] == 'm') {
 								i++;
-								if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t') {
+								if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == '(') {
 									i++;
 									if (kh == 0 && (dyh % 2 == 0)) {
 										from_hold = i -5 ;
@@ -314,7 +314,7 @@ public class Query extends SqlEntity {
 			} else if (sqlChars[i] == '\'') {
 				dyh++;
 			}
-			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i - 1] == ')' ) {
+			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
 				i++;
 				if (sqlChars[i] == 'o') {
 					i++;
@@ -326,7 +326,7 @@ public class Query extends SqlEntity {
 								i++;
 								if (sqlChars[i] == 'r') {
 									i++;
-									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t') {
+									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == '(') {
 										i++;
 										if (kh == 0 && (dyh % 2 == 0)) {
 											order_hold = i -6;
@@ -347,7 +347,7 @@ public class Query extends SqlEntity {
 								i++;
 								if (sqlChars[i] == 'p') {
 									i++;
-									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t') {
+									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == '(') {
 										i++;
 										if (kh == 0 && (dyh % 2 == 0)) {
 											group_hold = i -6;
@@ -372,7 +372,7 @@ public class Query extends SqlEntity {
 				dyh++;
 			}
 
-			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i - 1] == ')' ) {
+			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
 				i++;
 				if (sqlChars[i] == 'd') {
 					i++;
@@ -419,7 +419,7 @@ public class Query extends SqlEntity {
 				dyh++;
 			}
 
-			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i - 1] == ')' ) {
+			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
 				i++;
 				if (sqlChars[i] == 'u') {
 					i++;
