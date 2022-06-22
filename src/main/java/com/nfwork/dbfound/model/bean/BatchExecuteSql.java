@@ -158,7 +158,11 @@ public class BatchExecuteSql extends SqlEntity {
 				if (param.isBatchAssign()){
 					String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
 					newParam.setSourcePathHistory(exeSourcePath +"[" + i +"]."+ sp);
-					newParam.setValue(context.getData(newParam.getSourcePathHistory()));
+					Object value = context.getData(newParam.getSourcePathHistory());
+					if("".equals(value)){
+						value = null;
+					}
+					newParam.setValue(value);
 				}
 				exeParams.put(newParam.getName(),newParam);
 				listParam.add(newParam);

@@ -122,7 +122,11 @@ public class BatchSql extends SqlEntity {
 			for (Param param : paramList){
 				String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
 				param.setSourcePathHistory(currentPath +"."+sp);
-				param.setValue(context.getData(param.getSourcePathHistory()));
+				Object value = context.getData(param.getSourcePathHistory());
+				if("".equals(value)){
+					value = null;
+				}
+				param.setValue(value);
 			}
 			for (SqlEntity sql : sqlList) {
 				sql.execute(context, params, provideName);
