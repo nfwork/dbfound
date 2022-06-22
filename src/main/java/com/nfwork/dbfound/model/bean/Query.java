@@ -38,6 +38,8 @@ public class Query extends SqlEntity {
 	private static final String WHERE_CLAUSE = "#WHERE_CLAUSE#";
 	private static final String AND_CLAUSE = "#AND_CLAUSE#";
 
+	private Integer pagerSize;
+
 	@Override
 	public void init(Element element) {
 		params = new HashMap<String, Param>();
@@ -89,9 +91,10 @@ public class Query extends SqlEntity {
 
 		List<Map> data = new ArrayList<Map>();
 		String eSql = getExecuteSql(querySql,params);
-		if (context.getPagerSize() > 0) {
+		if (context.getPagerSize() > 0 || pagerSize != null) {
+			int ps = context.getPagerSize()> 0 ? context.getPagerSize() : pagerSize;
 			SqlDialect dialect = context.getConnDialect(provideName);
-			eSql = dialect.getPagerSql(eSql, context.getPagerSize(), context.getStartWith());
+			eSql = dialect.getPagerSql(eSql, ps, context.getStartWith());
 		}
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
@@ -272,28 +275,29 @@ public class Query extends SqlEntity {
 				kh--;
 			} else if (sqlChars[i] == '\'') {
 				dyh++;
-			} else if (sqlChars[i] == 'f') {
-				if (sqlChars[i + 1] == 'r') {
-					if (sqlChars[i + 2] == 'o') {
-						if (sqlChars[i + 3] == 'm') {
-							if (sqlChars[i + 4] == ' ' || sqlChars[i + 4] == '\n' || sqlChars[i + 4] == '\t') {
-								if (kh == 0 && (dyh % 2 == 0)
-										&& (sqlChars[i - 1] == ' ' || sqlChars[i - 1] == ')' || sqlChars[i - 1] == '\n' || sqlChars[i - 1] == '\t')) {
-									from_hold = i;
-									break;
-								} else {
-									i = i + 4;
+			}
+			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i - 1] == ')' ) {
+				i++;
+				if (sqlChars[i] == 'f') {
+					i++;
+					if (sqlChars[i] == 'r') {
+						i++;
+						if (sqlChars[i] == 'o') {
+							i++;
+							if (sqlChars[i] == 'm') {
+								i++;
+								if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t') {
+									i++;
+									if (kh == 0 && (dyh % 2 == 0)) {
+										from_hold = i -5 ;
+										break;
+									}
 								}
-							} else {
-								i = i + 3;
 							}
-						} else {
-							i = i + 2;
 						}
-					} else {
-						i = i + 1;
 					}
 				}
+				i--;
 			}
 		}
 
@@ -302,79 +306,166 @@ public class Query extends SqlEntity {
 		}
 
 		// 寻找order by的位置,group by 位置
-		for (int i = from_hold + 4; i < sqlChars.length - 8; i++) {
+		for (int i = from_hold + 4; i < sqlChars.length - 10; i++) {
 			if (sqlChars[i] == '(') {
 				kh++;
 			} else if (sqlChars[i] == ')') {
 				kh--;
 			} else if (sqlChars[i] == '\'') {
 				dyh++;
-			} else if (sqlChars[i] == 'o') {
-				if (sqlChars[i + 1] == 'r') {
-					if (sqlChars[i + 2] == 'd') {
-						if (sqlChars[i + 3] == 'e') {
-							if (sqlChars[i + 4] == 'r') {
-								if (sqlChars[i + 5] == ' ' || sqlChars[i + 5] == '\n' || sqlChars[i + 5] == '\t') {
-									if (kh == 0
-											&& (dyh % 2 == 0)
-											&& (sqlChars[i - 1] == ' ' || sqlChars[i - 1] == ')' || sqlChars[i - 1] == '\n' || sqlChars[i - 1] == '\t')) {
-										order_hold = i;
-										break;
-									} else {
-										i = i + 5;
+			}
+			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i - 1] == ')' ) {
+				i++;
+				if (sqlChars[i] == 'o') {
+					i++;
+					if (sqlChars[i] == 'r') {
+						i++;
+						if (sqlChars[i] == 'd') {
+							i++;
+							if (sqlChars[i] == 'e') {
+								i++;
+								if (sqlChars[i] == 'r') {
+									i++;
+									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t') {
+										i++;
+										if (kh == 0 && (dyh % 2 == 0)) {
+											order_hold = i -6;
+											break;
+										}
 									}
-								} else {
-									i = i + 4;
 								}
-							} else {
-								i = i + 3;
 							}
-						} else {
-							i = i + 2;
 						}
-					} else {
-						i = i + 1;
+					}
+				} else if (sqlChars[i] == 'g') {
+					i++;
+					if (sqlChars[i] == 'r') {
+						i++;
+						if (sqlChars[i] == 'o') {
+							i++;
+							if (sqlChars[i] == 'u') {
+								i++;
+								if (sqlChars[i] == 'p') {
+									i++;
+									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t') {
+										i++;
+										if (kh == 0 && (dyh % 2 == 0)) {
+											group_hold = i -6;
+										}
+									}
+								}
+							}
+						}
 					}
 				}
-			} else if (sqlChars[i] == 'g') {
-				if (sqlChars[i + 1] == 'r') {
-					if (sqlChars[i + 2] == 'o') {
-						if (sqlChars[i + 3] == 'u') {
-							if (sqlChars[i + 4] == 'p') {
-								if (sqlChars[i + 5] == ' ' || sqlChars[i + 5] == '\n' || sqlChars[i + 5] == '\t') {
-									if (kh == 0
-											&& (dyh % 2 == 0)
-											&& (sqlChars[i - 1] == ' ' || sqlChars[i - 1] == ')' || sqlChars[i - 1] == '\n' || sqlChars[i - 1] == '\t')) {
-										group_hold = i;
-										break;
-									} else {
-										i = i + 5;
+				i--;
+			}
+		}
+
+		boolean distinct = false;
+		for (int i = 6; i < from_hold-10; i++) {
+			if (sqlChars[i] == '(') {
+				kh++;
+			} else if (sqlChars[i] == ')') {
+				kh--;
+			} else if (sqlChars[i] == '\'') {
+				dyh++;
+			}
+
+			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i - 1] == ')' ) {
+				i++;
+				if (sqlChars[i] == 'd') {
+					i++;
+					if (sqlChars[i] == 'i') {
+						i++;
+						if (sqlChars[i] == 's') {
+							i++;
+							if (sqlChars[i] == 't') {
+								i++;
+								if (sqlChars[i] == 'i') {
+									i++;
+									if (sqlChars[i] == 'n') {
+										i++;
+										if (sqlChars[i] == 'c') {
+											i++;
+											if (sqlChars[i] == 't') {
+												i++;
+												if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t') {
+													i++;
+													if (kh == 0 && (dyh % 2 == 0)) {
+														distinct = true;
+														break;
+													}
+												}
+											}
+										}
 									}
-								} else {
-									i = i + 4;
 								}
-							} else {
-								i = i + 3;
 							}
-						} else {
-							i = i + 2;
 						}
-					} else {
-						i = i + 1;
 					}
 				}
+				i--;
+			}
+		}
+
+		boolean union = false;
+		for (int i = from_hold + 4; i < sqlChars.length - 7; i++) {
+			if (sqlChars[i] == '(') {
+				kh++;
+			} else if (sqlChars[i] == ')') {
+				kh--;
+			} else if (sqlChars[i] == '\'') {
+				dyh++;
+			}
+
+			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i - 1] == ')' ) {
+				i++;
+				if (sqlChars[i] == 'u') {
+					i++;
+					if (sqlChars[i] == 'n') {
+						i++;
+						if (sqlChars[i] == 'i') {
+							i++;
+							if (sqlChars[i] == 'o') {
+								i++;
+								if (sqlChars[i] == 'n') {
+									i++;
+									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t') {
+										i++;
+										if (kh == 0 && (dyh % 2 == 0)) {
+											union = true;
+											break;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				i--;
 			}
 		}
 
 		String cSql = "";
-		if (order_hold == 0) {
+		if(distinct || union){
+			if(order_hold > 0){
+				cSql = "select count(1) from (" + querySql.substring(0, order_hold) + ") v";
+			}else{
+				cSql = "select count(1) from (" + querySql + ") v";
+			}
+		}else if (order_hold == 0) {
 			if (group_hold > 0) {
 				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold) + " ) v";
 			} else {
 				cSql = "select count(1) " + querySql.substring(from_hold);
 			}
-		} else {
-			cSql = "select count(1) " + querySql.substring(from_hold, order_hold);
+		} else if(order_hold > 0){
+			if (group_hold > 0) {
+				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold, order_hold) + " ) v";
+			} else {
+				cSql = "select count(1) " + querySql.substring(from_hold, order_hold);
+			}
 		}
 
 		Connection conn = context.getConn(provideName);
@@ -453,6 +544,14 @@ public class Query extends SqlEntity {
 
 	public void setQueryTimeout(Integer queryTimeout) {
 		this.queryTimeout = queryTimeout;
+	}
+
+	public Integer getPagerSize() {
+		return pagerSize;
+	}
+
+	public void setPagerSize(Integer pagerSize) {
+		this.pagerSize = pagerSize;
 	}
 
 	@Override
