@@ -390,7 +390,7 @@ public class Query extends SqlEntity {
 											i++;
 											if (sqlChars[i] == 't') {
 												i++;
-												if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t') {
+												if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t'|| sqlChars[i] == '(') {
 													i++;
 													if (kh == 0 && (dyh % 2 == 0)) {
 														distinct = true;
@@ -431,7 +431,7 @@ public class Query extends SqlEntity {
 								i++;
 								if (sqlChars[i] == 'n') {
 									i++;
-									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t') {
+									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == '(') {
 										i++;
 										if (kh == 0 && (dyh % 2 == 0)) {
 											union = true;
