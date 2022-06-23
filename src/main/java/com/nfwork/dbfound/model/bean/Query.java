@@ -281,9 +281,9 @@ public class Query extends SqlEntity {
 				kh++;
 			} else if (sqlChars[i] == ')' && dyh % 2 == 0 && syh % 2 ==0) {
 				kh--;
-			} else if (sqlChars[i] == '\'' && sqlChars[i-1] != '\\') {
+			} else if (sqlChars[i] == '\'' && sqlChars[i-1] != '\\' && syh % 2==0) {
 				dyh++;
-			} else if (sqlChars[i] == '\"' && sqlChars[i-1] != '\\') {
+			} else if (sqlChars[i] == '\"' && sqlChars[i-1] != '\\' && dyh % 2==0) {
 				syh++;
 			}
 			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
