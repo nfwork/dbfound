@@ -37,6 +37,11 @@ public class Query extends SqlEntity {
 	private Integer queryTimeout;
 	private static final String WHERE_CLAUSE = "#WHERE_CLAUSE#";
 	private static final String AND_CLAUSE = "#AND_CLAUSE#";
+	private static final char[] FROM = "from".toCharArray();
+	private static final char[] ORDER = "order".toCharArray();
+	private static final char[] DISTINCT = "distinct".toCharArray();
+	private static final char[] UNION = "union".toCharArray();
+	private static final char[] GROUP = "group".toCharArray();
 
 	private Integer pagerSize;
 
@@ -260,12 +265,14 @@ public class Query extends SqlEntity {
 	 * @return
 	 */
 	public long countItems(Context context,String querySql ,Map<String, Param> params, String provideName) {
-		char[] sqlChars = querySql.toLowerCase().toCharArray();
+		char[] sqlChars = querySql.toCharArray();
 		int dyh = 0;
 		int kh = 0;
 		int from_hold = 0;
 		int order_hold = 0;
 		int group_hold = 0;
+		int distinct_hold = 0;
+		int union_hold = 0;
 
 		// 寻找from的位置
 		for (int i = 6; i < sqlChars.length - 6; i++) {
@@ -277,27 +284,20 @@ public class Query extends SqlEntity {
 				dyh++;
 			}
 			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
-				i++;
-				if (sqlChars[i] == 'f') {
-					i++;
-					if (sqlChars[i] == 'r') {
-						i++;
-						if (sqlChars[i] == 'o') {
-							i++;
-							if (sqlChars[i] == 'm') {
-								i++;
-								if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == '(') {
-									i++;
-									if (kh == 0 && (dyh % 2 == 0)) {
-										from_hold = i -5 ;
-										break;
-									}
-								}
-							}
-						}
+				if (kh == 0 && dyh % 2 == 0) {
+					int index = i + 1;
+					if(from_hold == 0 && sqlMatch(sqlChars, index , FROM)){
+						from_hold = index;
+					}else if(distinct_hold == 0 && sqlMatch(sqlChars, index , DISTINCT)){
+						distinct_hold = index;
+					}else if(group_hold == 0 && sqlMatch(sqlChars, index , GROUP)){
+						group_hold = index;
+					}else if(union_hold == 0 && sqlMatch(sqlChars, index , UNION)){
+						union_hold = index;
+					}else if(order_hold == 0 && sqlMatch(sqlChars, index , ORDER)){
+						order_hold = index;
 					}
 				}
-				i--;
 			}
 		}
 
@@ -305,150 +305,8 @@ public class Query extends SqlEntity {
 			return 1; // 没有找到from return 1
 		}
 
-		// 寻找order by的位置,group by 位置
-		for (int i = from_hold + 4; i < sqlChars.length - 10; i++) {
-			if (sqlChars[i] == '(') {
-				kh++;
-			} else if (sqlChars[i] == ')') {
-				kh--;
-			} else if (sqlChars[i] == '\'') {
-				dyh++;
-			}
-			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
-				i++;
-				if (sqlChars[i] == 'o') {
-					i++;
-					if (sqlChars[i] == 'r') {
-						i++;
-						if (sqlChars[i] == 'd') {
-							i++;
-							if (sqlChars[i] == 'e') {
-								i++;
-								if (sqlChars[i] == 'r') {
-									i++;
-									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == '(') {
-										i++;
-										if (kh == 0 && (dyh % 2 == 0)) {
-											order_hold = i -6;
-											break;
-										}
-									}
-								}
-							}
-						}
-					}
-				} else if (sqlChars[i] == 'g') {
-					i++;
-					if (sqlChars[i] == 'r') {
-						i++;
-						if (sqlChars[i] == 'o') {
-							i++;
-							if (sqlChars[i] == 'u') {
-								i++;
-								if (sqlChars[i] == 'p') {
-									i++;
-									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == '(') {
-										i++;
-										if (kh == 0 && (dyh % 2 == 0)) {
-											group_hold = i -6;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				i--;
-			}
-		}
-
-		boolean distinct = false;
-		for (int i = 6; i < from_hold-10; i++) {
-			if (sqlChars[i] == '(') {
-				kh++;
-			} else if (sqlChars[i] == ')') {
-				kh--;
-			} else if (sqlChars[i] == '\'') {
-				dyh++;
-			}
-
-			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
-				i++;
-				if (sqlChars[i] == 'd') {
-					i++;
-					if (sqlChars[i] == 'i') {
-						i++;
-						if (sqlChars[i] == 's') {
-							i++;
-							if (sqlChars[i] == 't') {
-								i++;
-								if (sqlChars[i] == 'i') {
-									i++;
-									if (sqlChars[i] == 'n') {
-										i++;
-										if (sqlChars[i] == 'c') {
-											i++;
-											if (sqlChars[i] == 't') {
-												i++;
-												if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t'|| sqlChars[i] == '(') {
-													i++;
-													if (kh == 0 && (dyh % 2 == 0)) {
-														distinct = true;
-														break;
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				i--;
-			}
-		}
-
-		boolean union = false;
-		for (int i = from_hold + 4; i < sqlChars.length - 7; i++) {
-			if (sqlChars[i] == '(') {
-				kh++;
-			} else if (sqlChars[i] == ')') {
-				kh--;
-			} else if (sqlChars[i] == '\'') {
-				dyh++;
-			}
-
-			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
-				i++;
-				if (sqlChars[i] == 'u') {
-					i++;
-					if (sqlChars[i] == 'n') {
-						i++;
-						if (sqlChars[i] == 'i') {
-							i++;
-							if (sqlChars[i] == 'o') {
-								i++;
-								if (sqlChars[i] == 'n') {
-									i++;
-									if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == '(') {
-										i++;
-										if (kh == 0 && (dyh % 2 == 0)) {
-											union = true;
-											break;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				i--;
-			}
-		}
-
 		String cSql = "";
-		if(distinct || union){
+		if(distinct_hold > 0 || union_hold > 0){
 			if(order_hold > 0){
 				cSql = "select count(1) from (" + querySql.substring(0, order_hold) + ") v";
 			}else{
@@ -488,6 +346,22 @@ public class Query extends SqlEntity {
 			LogUtil.info("execute count sql：" + ceSql);
 		}
 		return count;
+	}
+
+	private boolean sqlMatch(char[] sqls, int index, char[]match){
+		if(index + match.length + 1 >= sqls.length  ){
+			return false;
+		}
+		for (int i =0; i< match.length; i++, index++){
+			if(sqls[index] != match[i] && sqls[index]+32 != match[i]){
+				return false;
+			}
+		}
+		if (sqls[index] == ' ' || sqls[index] == '\n' || sqls[index] == '\t' || sqls[index] == '(') {
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	public String getName() {
