@@ -267,6 +267,7 @@ public class Query extends SqlEntity {
 	public long countItems(Context context,String querySql ,Map<String, Param> params, String provideName) {
 		char[] sqlChars = querySql.toCharArray();
 		int dyh = 0;
+		int syh = 0;
 		int kh = 0;
 		int from_hold = 0;
 		int order_hold = 0;
@@ -276,15 +277,17 @@ public class Query extends SqlEntity {
 
 		// 寻找from的位置
 		for (int i = 6; i < sqlChars.length - 6; i++) {
-			if (sqlChars[i] == '(') {
+			if (sqlChars[i] == '(' && dyh % 2 == 0  && syh % 2 ==0) {
 				kh++;
-			} else if (sqlChars[i] == ')') {
+			} else if (sqlChars[i] == ')' && dyh % 2 == 0 && syh % 2 ==0) {
 				kh--;
-			} else if (sqlChars[i] == '\'') {
+			} else if (sqlChars[i] == '\'' && sqlChars[i-1] != '\\') {
 				dyh++;
+			} else if (sqlChars[i] == '\"' && sqlChars[i-1] != '\\') {
+				syh++;
 			}
 			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
-				if (kh == 0 && dyh % 2 == 0) {
+				if (kh == 0 && dyh % 2 == 0 && syh % 2 ==0) {
 					int index = i + 1;
 					if(from_hold == 0 && sqlMatch(sqlChars, index , FROM)){
 						from_hold = index;
