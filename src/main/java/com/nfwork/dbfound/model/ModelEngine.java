@@ -145,6 +145,9 @@ public class ModelEngine {
 
 			int dataSize = datas.size();
 			int pSize = context.getPagerSize();
+			if(pSize ==0 && query.getPagerSize() != null){
+				pSize = query.getPagerSize();
+			}
 			long start = context.getStartWith();
 			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
 				ro.setTotalCounts(datas.size());
