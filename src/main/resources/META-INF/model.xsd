@@ -65,6 +65,7 @@
 		<xsd:attribute name="pagerSize" />
 		<xsd:attribute name="name" />
 		<xsd:attribute name="queryTimeout" />
+		<xsd:attribute name="adapter" />
 	</xsd:complexType>
 
 	<xsd:complexType name="execute_type">
@@ -75,6 +76,7 @@
 				type="sqls_type" />
 		</xsd:sequence>
 		<xsd:attribute name="name" />
+		<xsd:attribute name="adapter" />
 	</xsd:complexType>
 
 	<xsd:complexType name="param_type">

@@ -137,6 +137,10 @@ public class ModelEngine {
 			//获取querySql
 			String querySql = query.getQuerySql(context, params, provideName);
 
+			if(query.getQueryAdapter() != null){
+				query.getQueryAdapter().beforeQuery(context, params);
+			}
+
 			// 查询数据，返回结果
 			List<T> datas = query.query(context, querySql, params, provideName, obect);
 
@@ -158,6 +162,11 @@ public class ModelEngine {
 			ro.setSuccess(true);
 			ro.setMessage("success");
 			ro.setOutParam(getOutParams(context, params));
+
+			if(query.getQueryAdapter() != null){
+				query.getQueryAdapter().afterQuery(context,params,ro);
+			}
+
 			return ro;
 		} finally {
 			context.closeConns();
@@ -302,7 +311,16 @@ public class ModelEngine {
 		for (Param nfParam : params.values()) {
 			setParam(nfParam, context, currentPath);
 		}
+
+		if(execute.getExecuteAdapter()!=null){
+			execute.getExecuteAdapter().beforeExecute(context,params);
+		}
+
 		execute.executeRun(context, params, model.getConnectionProvide(context)); // 执行
+
+		if(execute.getExecuteAdapter()!=null){
+			execute.getExecuteAdapter().afterExecute(context,params);
+		}
 
 		return params;
 	}

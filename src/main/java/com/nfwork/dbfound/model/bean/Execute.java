@@ -2,6 +2,11 @@ package com.nfwork.dbfound.model.bean;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
+import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.LogUtil;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.ModelEngine;
@@ -15,6 +20,9 @@ public class Execute extends SqlEntity {
 	private Sqls sqls; // execute对象对应的配置sql
 	private Map<String, Param> params; // query对象对应参数
 
+	private String adapter;
+	private ExecuteAdapter executeAdapter;
+
 	@Override
 	public void init(Element element) {
 		params = new HashMap<String, Param>();
@@ -23,6 +31,14 @@ public class Execute extends SqlEntity {
 
 	@Override
 	public void run() {
+		if(DataUtil.isNotNull(adapter)){
+			try {
+				executeAdapter = (ExecuteAdapter) Class.forName(adapter).newInstance();
+			}catch (Exception exception){
+				LogUtil.error("ExecuteAdapter init failed, executeAdapter must implement ExecuteAdapter",exception);
+				throw new DBFoundPackageException(exception);
+			}
+		}
 		if (getParent() instanceof Model) {
 			Model model = (Model) getParent();
 			model.putExecute(name, this);
@@ -88,5 +104,17 @@ public class Execute extends SqlEntity {
 
 	public void setModelName(String modelName) {
 		this.modelName = modelName;
+	}
+
+	public String getAdapter() {
+		return adapter;
+	}
+
+	public void setAdapter(String adapter) {
+		this.adapter = adapter;
+	}
+
+	public ExecuteAdapter getExecuteAdapter() {
+		return executeAdapter;
 	}
 }

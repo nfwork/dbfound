@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
 
@@ -44,6 +45,8 @@ public class Query extends SqlEntity {
 	private static final char[] GROUP = "group".toCharArray();
 
 	private Integer pagerSize;
+	private String adapter;
+	private QueryAdapter queryAdapter;
 
 	@Override
 	public void init(Element element) {
@@ -54,6 +57,14 @@ public class Query extends SqlEntity {
 
 	@Override
 	public void run() {
+		if(DataUtil.isNotNull(adapter)){
+			try {
+				queryAdapter = (QueryAdapter) Class.forName(adapter).newInstance();
+			}catch (Exception exception){
+				LogUtil.error("queryAdapter init failed, queryAdapter must implement QueryAdapter",exception);
+				throw new DBFoundPackageException(exception);
+			}
+		}
 		if (getParent() instanceof Model) {
 			Model model = (Model) getParent();
 			if (name == null || "".equals(name)) {
@@ -429,6 +440,18 @@ public class Query extends SqlEntity {
 
 	public void setPagerSize(Integer pagerSize) {
 		this.pagerSize = pagerSize;
+	}
+
+	public String getAdapter() {
+		return adapter;
+	}
+
+	public void setAdapter(String adapter) {
+		this.adapter = adapter;
+	}
+
+	public QueryAdapter getQueryAdapter() {
+		return queryAdapter;
 	}
 
 	@Override
