@@ -133,6 +133,9 @@ public class ExcelWriter {
 
 		for (Map item : result){
 			for(Map.Entry<String,Map<String,Object>> entry : mappers.entrySet()){
+				if(item.get(entry.getKey()) == null){
+					continue;
+				}
 				String val1 = item.get(entry.getKey()).toString();
 				Object val2 = entry.getValue().get(val1);
 
