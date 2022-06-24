@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
@@ -59,7 +60,7 @@ public class Query extends SqlEntity {
 	public void run() {
 		if(DataUtil.isNotNull(adapter)){
 			try {
-				queryAdapter = (QueryAdapter) Class.forName(adapter).newInstance();
+				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
 			}catch (Exception exception){
 				LogUtil.error("queryAdapter init failed, queryAdapter must implement QueryAdapter",exception);
 				throw new DBFoundPackageException(exception);

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
@@ -33,7 +34,7 @@ public class Execute extends SqlEntity {
 	public void run() {
 		if(DataUtil.isNotNull(adapter)){
 			try {
-				executeAdapter = (ExecuteAdapter) Class.forName(adapter).newInstance();
+				executeAdapter = AdapterFactory.getExecuteAdapter(Class.forName(adapter));
 			}catch (Exception exception){
 				LogUtil.error("ExecuteAdapter init failed, executeAdapter must implement ExecuteAdapter",exception);
 				throw new DBFoundPackageException(exception);
