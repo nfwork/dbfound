@@ -133,13 +133,13 @@ public class ModelEngine {
 				}
 			}
 
-			String provideName = model.getConnectionProvide(context);
-			//获取querySql
-			String querySql = query.getQuerySql(context, params, provideName);
-
 			if(query.getQueryAdapter() != null){
 				query.getQueryAdapter().beforeQuery(context, params);
 			}
+
+			String provideName = model.getConnectionProvide(context);
+			//获取querySql
+			String querySql = query.getQuerySql(context, params, provideName);
 
 			// 查询数据，返回结果
 			List<T> datas = query.query(context, querySql, params, provideName, obect);
