@@ -68,7 +68,7 @@ public class Transaction {
 				connObject.connection.commit();
 			} catch (SQLException e) {
 				LogUtil.error("transaction commit exception:" + e.getMessage(), e);
-				throw new DBFoundRuntimeException(e);
+				throw new DBFoundRuntimeException("transaction commit exception:" +e.getMessage(), e);
 			}
 		}
 	}
