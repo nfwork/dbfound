@@ -52,7 +52,7 @@ public class Context {
 	private Map<String, Object> headerDatas;
 	private static boolean openSession = true;
 
-	private Transaction transaction = new Transaction();
+	private Transaction transaction;
 	private final String createThreadName = Thread.currentThread().getName();
 
 	public Transaction getTransaction() {
@@ -61,6 +61,9 @@ public class Context {
 			throw new DBFoundRuntimeException(String.format(
 					"Context transaction can not user by different thread，create thread:%s, run thread：%s",
 					createThreadName, runName));
+		}
+		if(transaction == null){
+			transaction = new Transaction();
 		}
 		return transaction;
 	}
@@ -88,7 +91,7 @@ public class Context {
 			boolean openSession) {
 		Object context = request.getAttribute("_currentContext");
 		if (context == null) {
-			context = new Context(request, response, openSession);
+			context = new Context(request, response);
 			request.setAttribute("_currentContext", context);
 		}
 		return (Context) context;
@@ -110,7 +113,7 @@ public class Context {
 		rootDatas = datas;
 	}
 
-	private Context(HttpServletRequest request, HttpServletResponse response, boolean openSession) {
+	private Context(HttpServletRequest request, HttpServletResponse response) {
 		rootDatas = new HashMap<String, Object>();
 
 		cloneParamData(request);
@@ -469,7 +472,7 @@ public class Context {
 					createThreadName, runName));
 		}
 
-		if (transaction.isOpen()) {
+		if (transaction !=null && transaction.isOpen()) {
 			if (transaction.connMap == null) {
 				transaction.connMap = new HashMap<String, ConnObject>();
 			}
@@ -508,7 +511,7 @@ public class Context {
 	}
 
 	public SqlDialect getConnDialect(String provideName) {
-		if (transaction.isOpen()) {
+		if (transaction !=null && transaction.isOpen()) {
 			ConnectionProvide provide = transaction.connMap.get(provideName).provide;
 			return provide.getSqlDialect();
 		} else {
