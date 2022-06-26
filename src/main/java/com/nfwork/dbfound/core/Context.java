@@ -69,26 +69,13 @@ public class Context {
 	}
 
 	/**
-	 * 得到当前的context，开启session
+	 * 得到当前 context，是否需要开启session
 	 * 
 	 * @param request
 	 * @param response
 	 * @return
 	 */
 	public static Context getCurrentContext(HttpServletRequest request, HttpServletResponse response) {
-		return getCurrentContext(request, response, openSession);
-	}
-
-	/**
-	 * 得到当前 context，是否需要开启session
-	 * 
-	 * @param request
-	 * @param response
-	 * @param openSession
-	 * @return
-	 */
-	public static Context getCurrentContext(HttpServletRequest request, HttpServletResponse response,
-			boolean openSession) {
 		Object context = request.getAttribute("_currentContext");
 		if (context == null) {
 			context = new Context(request, response);
