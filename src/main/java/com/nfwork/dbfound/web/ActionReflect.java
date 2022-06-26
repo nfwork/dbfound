@@ -7,7 +7,6 @@ import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.web.WebWriter;
 import com.nfwork.dbfound.web.base.BaseControl;
 
 /**
@@ -27,7 +26,8 @@ public class ActionReflect {
 		if (result != null) {
 			if (result instanceof ResponseObject) {
 				// 提交关闭事务
-				transaction.commitAndEnd();
+				transaction.commit();
+				transaction.end();
 				
 				WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(result));
 			} else {

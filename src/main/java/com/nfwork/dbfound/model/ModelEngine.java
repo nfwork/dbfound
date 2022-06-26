@@ -122,12 +122,12 @@ public class ModelEngine {
 			// 设想分页参数
 			if (autoPaging) {
 				String startMessage = context.getString("param.start");
-				if (startMessage != null && startMessage != "") {
+				if (DataUtil.isNotNull(startMessage)) {
 					long start = Long.parseLong(startMessage);
 					context.setStartWith(start);
 				}
 				String sizeMessage = context.getString("param.limit");
-				if (sizeMessage != null && sizeMessage != "") {
+				if (DataUtil.isNotNull(sizeMessage)) {
 					int size = Integer.parseInt(sizeMessage);
 					context.setPagerSize(size);
 				}

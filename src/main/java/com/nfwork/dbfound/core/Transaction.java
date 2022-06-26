@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.nfwork.dbfound.core.Context.ConnObject;
 import com.nfwork.dbfound.db.ConnectionProvide;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.LogUtil;
 
 public class Transaction {
@@ -33,15 +34,13 @@ public class Transaction {
 	 * 事务结束
 	 */
 	public void end() {
-		if (open == false) {
+		if (!open) {
 			return;
 		} else {
 			open = false;
 		}
 
-		if (connMap == null || connMap.isEmpty()) {
-			return;
-		} else {
+		if (connMap != null && !connMap.isEmpty()) {
 			Collection<ConnObject> connObjects = connMap.values();
 			for (ConnObject connObject : connObjects) {
 				try {
@@ -60,48 +59,17 @@ public class Transaction {
 	 * 提交事务
 	 */
 	public void commit() {
-		if (open == false || connMap == null || connMap.isEmpty()) {
+		if (!open || connMap == null || connMap.isEmpty()) {
 			return;
 		}
 		Collection<ConnObject> connObjects = connMap.values();
 		for (ConnObject connObject : connObjects) {
 			try {
 				connObject.connection.commit();
-			} catch (Exception e) {
+			} catch (SQLException e) {
 				LogUtil.error("transaction commit exception:" + e.getMessage(), e);
+				throw new DBFoundRuntimeException(e);
 			}
-		}
-	}
-
-	/**
-	 * 提交并结束事务
-	 */
-	public void commitAndEnd() {
-		if (open == false) {
-			return;
-		} else {
-			open = false;
-		}
-
-		if (connMap == null || connMap.isEmpty()) {
-			return;
-		} else {
-			Collection<ConnObject> connObjects = connMap.values();
-			for (ConnObject connObject : connObjects) {
-				try {
-					connObject.connection.commit();
-				} catch (Exception e) {
-					LogUtil.error("transaction commit exception:" + e.getMessage(), e);
-				}
-				try {
-					ConnectionProvide provide = connObject.provide;
-					Connection connection = connObject.connection;
-					provide.closeConnection(connection);
-				} catch (Exception e) {
-					LogUtil.error("transaction close exception:" + e.getMessage(), e);
-				}
-			}
-			connMap.clear();
 		}
 	}
 
@@ -109,14 +77,14 @@ public class Transaction {
 	 * 回滚事务
 	 */
 	public void rollback() {
-		if (open == false || connMap == null || connMap.isEmpty()) {
+		if (!open || connMap == null || connMap.isEmpty()) {
 			return;
 		}
 		Collection<ConnObject> connObjects = connMap.values();
 		for (ConnObject connObject : connObjects) {
 			try {
 				connObject.connection.rollback();
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				LogUtil.error("transaction rollback exception:" + e.getMessage(), e);
 			}
 		}

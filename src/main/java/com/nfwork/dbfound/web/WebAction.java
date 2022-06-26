@@ -16,8 +16,6 @@ class WebAction {
 		WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(ro));
 	}
 
-
-	@SuppressWarnings("unchecked")
 	static void execute(Context context, String modelName, String executeName) {
 		Object gridData = context.getData(ModelEngine.defaultBatchPath);
 
@@ -25,8 +23,8 @@ class WebAction {
 		transaction.begin(); // execute 开启事务
 		
 		// 向客服端传送成功消息
-		ResponseObject ro = null;
-		if (gridData != null && gridData instanceof List) {
+		ResponseObject ro ;
+		if (gridData instanceof List) {
 			ro = ModelEngine.batchExecute(context, modelName, executeName,
 					ModelEngine.defaultBatchPath);
 		} else {
@@ -34,7 +32,8 @@ class WebAction {
 		}
 		
 		// 提交关闭事务
-		transaction.commitAndEnd();
+		transaction.commit();
+		transaction.end();
 		
 		if (context.isOutMessage()) {
 			WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(ro));
