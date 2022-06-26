@@ -1,7 +1,5 @@
 package com.nfwork.dbfound.el;
 
-import javax.servlet.jsp.PageContext;
-
 public class ELEngine {
 	public static final String sessionScope = "session.";
 	public static final String requestScope = "request.";
