@@ -52,7 +52,7 @@ public class Context {
 	private Map<String, Object> headerDatas;
 	private static boolean openSession = true;
 
-	private final Transaction transaction = new Transaction();
+	private Transaction transaction = new Transaction();
 	private final String createThreadName = Thread.currentThread().getName();
 
 	public Transaction getTransaction() {
@@ -619,6 +619,10 @@ public class Context {
 
 	public int getReportQueryLimitSize() {
 		return reportQueryLimitSize;
+	}
+
+	public void setTransaction(Transaction transaction) {
+		this.transaction = transaction;
 	}
 
 	public void setReportQueryLimitSize(int reportQueryLimitSize) {

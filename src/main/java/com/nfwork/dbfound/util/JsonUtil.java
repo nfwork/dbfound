@@ -218,6 +218,8 @@ public class JsonUtil {
 		StringBuilder json = new StringBuilder();
 		if (obj == null) {
 			json.append("\"\"");
+		} else if (obj instanceof Enum) {
+			json.append("\"").append(stringToJson(obj.toString())).append("\"");
 		} else if (obj instanceof Number) {
 			json.append(numberToJson((Number) obj));
 		} else if (obj instanceof Boolean) {
