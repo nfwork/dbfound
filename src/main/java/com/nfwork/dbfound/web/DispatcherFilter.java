@@ -23,16 +23,16 @@ import com.nfwork.dbfound.web.file.FileUploadUtil;
 
 public class DispatcherFilter implements Filter {
 
-	private char[] jsp = "jsp".toCharArray();
-	private char[] query = "query".toCharArray();
-	private char[] execute = "execute".toCharArray();
-	private char[] export = "export".toCharArray();
-	private char[] java = "do".toCharArray();
-	private int jspLength = jsp.length;
-	private int queryLength = query.length;
-	private int executeLength = execute.length;
-	private int exportLength = export.length;
-	private int javaLength = java.length;
+	private final char[] jsp = "jsp".toCharArray();
+	private final char[] query = "query".toCharArray();
+	private final char[] execute = "execute".toCharArray();
+	private final char[] export = "export".toCharArray();
+	private final char[] java = "do".toCharArray();
+	private final int jspLength = jsp.length;
+	private final int queryLength = query.length;
+	private final int executeLength = execute.length;
+	private final int exportLength = export.length;
+	private final int javaLength = java.length;
 	private static String configFilePath;
 
 	/**
@@ -281,8 +281,7 @@ public class DispatcherFilter implements Filter {
 
 	/**
 	 * 得到configfile路径
-	 * 
-	 * @return
+	 *
 	 */
 	public static String getConfigFilePath() {
 		return configFilePath;
