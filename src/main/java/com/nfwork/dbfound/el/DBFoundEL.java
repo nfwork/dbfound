@@ -1,9 +1,6 @@
 package com.nfwork.dbfound.el;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,12 +30,15 @@ public class DBFoundEL {
 				String currentExpree = d[i].trim();
 				int index = findIndex(currentExpree);
 				if (index != -1) {
-					currentExpree = currentExpree.substring(0, currentExpree
-							.indexOf("["));
+					currentExpree = currentExpree.substring(0, currentExpree.indexOf("["));
 				}
 				// 计算当前对象
 				Object object = null;
-				if (currentObject instanceof Map) {
+				if(isSampleObject(currentObject)){
+					if("value".equals(currentExpree)){
+						return currentObject;
+					}
+				}else if (currentObject instanceof Map) {
 					Map m = (Map) currentObject;
 					object = m.get(currentExpree);
 				} else {
@@ -95,6 +95,11 @@ public class DBFoundEL {
 			LogUtil.error(e.getMessage(), e);
 		}
 		return null;
+	}
+
+	private static  boolean isSampleObject(Object object){
+		return object instanceof Integer || object instanceof Long || object instanceof Double || object instanceof Date
+				|| object instanceof Float || object instanceof String || object instanceof Enum;
 	}
 
 	private static int findIndex(String value) {
