@@ -139,7 +139,7 @@ public class Query extends SqlEntity {
 			if(object == null && entityClass != null){
 				object = entityClass;
 			}
-			if (object != null) {
+			if (object != null && !object.isAssignableFrom(Map.class)) {
 				List<T> list = (List<T>) ReflectorUtil.parseResultList(object, dataset, context);
 				return list;
 			}

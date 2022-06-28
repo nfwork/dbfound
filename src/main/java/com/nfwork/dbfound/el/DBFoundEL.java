@@ -98,8 +98,8 @@ public class DBFoundEL {
 	}
 
 	private static  boolean isSampleObject(Object object){
-		return object instanceof Integer || object instanceof Long || object instanceof Double || object instanceof Date
-				|| object instanceof Float || object instanceof String || object instanceof Enum;
+		return object instanceof Integer || object instanceof Long || object instanceof Double || object instanceof Float
+				|| object instanceof Date || object instanceof String || object instanceof Enum || object instanceof Boolean;
 	}
 
 	private static int findIndex(String value) {
