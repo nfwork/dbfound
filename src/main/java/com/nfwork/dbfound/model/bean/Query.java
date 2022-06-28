@@ -48,6 +48,8 @@ public class Query extends SqlEntity {
 	private Integer pagerSize;
 	private String adapter;
 	private QueryAdapter queryAdapter;
+	private String entity;
+	private Class entityClass;
 
 	@Override
 	public void init(Element element) {
@@ -63,6 +65,14 @@ public class Query extends SqlEntity {
 				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
 			}catch (Exception exception){
 				LogUtil.error("queryAdapter init failed, queryAdapter must implement QueryAdapter",exception);
+				throw new DBFoundPackageException(exception);
+			}
+		}
+		if(DataUtil.isNotNull(entity)){
+			try {
+				entityClass = Class.forName(entity);
+			}catch (Exception exception){
+				LogUtil.error("entity init failed",exception);
 				throw new DBFoundPackageException(exception);
 			}
 		}
@@ -126,6 +136,9 @@ public class Query extends SqlEntity {
 			ResultSetMetaData metaset = dataset.getMetaData();
 
 			// 如果对象不为null，利用反射构建object对象
+			if(object == null && entityClass != null){
+				object = entityClass;
+			}
 			if (object != null) {
 				List<T> list = (List<T>) ReflectorUtil.parseResultList(object, dataset, context);
 				return list;
@@ -455,6 +468,14 @@ public class Query extends SqlEntity {
 		return queryAdapter;
 	}
 
+	public String getEntity() {
+		return entity;
+	}
+
+	public void setEntity(String entity) {
+		this.entity = entity;
+	}
+
 	@Override
 	public void execute(Context context, Map<String, Param> params, String provideName) {
 		if(DataUtil.isNull(rootPath)){
@@ -463,7 +484,7 @@ public class Query extends SqlEntity {
 		String currentPath = context.getCurrentPath();
 		String currentModel = context.getCurrentModel();
 		String mName = modelName != null?modelName : currentModel;
-		List data = ModelEngine.query(context, mName, name, currentPath, false).getDatas();
+		List data = ModelEngine.query(context, mName, name, currentPath, false, entityClass).getDatas();
 		context.setData(rootPath, data);
 		context.setCurrentPath(currentPath);
 		context.setCurrentModel(currentModel);

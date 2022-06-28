@@ -66,6 +66,7 @@
 		<xsd:attribute name="name" />
 		<xsd:attribute name="queryTimeout" />
 		<xsd:attribute name="adapter" />
+		<xsd:attribute name="entity" />
 	</xsd:complexType>
 
 	<xsd:complexType name="execute_type">
