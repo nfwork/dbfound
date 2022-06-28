@@ -184,6 +184,7 @@
 					<xsd:attribute name="modelName" />
 					<xsd:attribute name="name" />
 					<xsd:attribute name="rootPath" />
+					<xsd:attribute name="entity" />
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
@@ -222,6 +223,7 @@
 					<xsd:attribute name="modelName" />
 					<xsd:attribute name="name" />
 					<xsd:attribute name="rootPath" />
+					<xsd:attribute name="entity" />
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
@@ -261,6 +263,7 @@
 					<xsd:attribute name="modelName" />
 					<xsd:attribute name="name" />
 					<xsd:attribute name="rootPath" />
+					<xsd:attribute name="entity" />
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
