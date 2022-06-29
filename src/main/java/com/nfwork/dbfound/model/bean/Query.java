@@ -77,9 +77,11 @@ public class Query extends SqlEntity {
 			}
 		}
 
-		Class qClass = queryAdapter.getEntityClass();
-		if( qClass!= null){
-			entityClass = qClass;
+		if(queryAdapter !=null) {
+			Class qClass = queryAdapter.getEntityClass();
+			if (qClass != null) {
+				entityClass = qClass;
+			}
 		}
 
 		if (getParent() instanceof Model) {
