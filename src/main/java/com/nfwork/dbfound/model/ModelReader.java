@@ -69,8 +69,9 @@ public class ModelReader {
 							fileLocation = file.getAbsolutePath();
 							try {
 								doc = reader.read(file);
-							} catch (DocumentException e) {
+							} catch (Exception e) {
 								String message = "modelReader exception, file:" + fileLocation;
+								LogUtil.error(message,e);
 								throw new DBFoundPackageException(message, e);
 							}
 						} else {
@@ -80,6 +81,7 @@ public class ModelReader {
 								doc = reader.read(inputStream);
 							} catch (Exception e) {
 								String message = "modelReader exception, url:" + fileLocation;
+								LogUtil.error(message,e);
 								throw new DBFoundPackageException(message, e);
 							}
 						}
@@ -114,10 +116,6 @@ public class ModelReader {
 
 	/**
 	 * 初始化 他的儿子节点 信息
-	 * 
-	 * @param father
-	 * @param fatherEntity
-	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
 	static void readerChrild(Element parent, Entity parentEntity) {
@@ -132,7 +130,14 @@ public class ModelReader {
 				readerChrild(unit, entity);
 				entity.run();
 			} catch (Exception e) {
-				throw new DBFoundRuntimeException("ModelReader exception", e);
+				if(e instanceof DBFoundRuntimeException){
+					LogUtil.error(e.getMessage(), e);
+					throw (DBFoundRuntimeException)e;
+				}else{
+					String message = "ModelReader exception:" + e.getMessage();
+					LogUtil.error(message, e);
+					throw new DBFoundRuntimeException(message, e);
+				}
 			}
 		}
 	}

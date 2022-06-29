@@ -1,5 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -64,18 +66,24 @@ public class Query extends SqlEntity {
 			try {
 				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
 			}catch (Exception exception){
-				LogUtil.error("queryAdapter init failed, queryAdapter must implement QueryAdapter",exception);
-				throw new DBFoundPackageException(exception);
+				String message = "queryAdapter init failed, queryAdapter must implement QueryAdapter";
+				throw new DBFoundPackageException(message,exception);
 			}
 		}
 		if(DataUtil.isNotNull(entity)){
 			try {
 				entityClass = Class.forName(entity);
 			}catch (Exception exception){
-				LogUtil.error("entity init failed",exception);
+				String message = "entity init failed";
 				throw new DBFoundPackageException(exception);
 			}
 		}
+
+		Class qClass = queryAdapter.getEntityClass();
+		if( qClass!= null){
+			entityClass = qClass;
+		}
+
 		if (getParent() instanceof Model) {
 			Model model = (Model) getParent();
 			if (name == null || "".equals(name)) {
