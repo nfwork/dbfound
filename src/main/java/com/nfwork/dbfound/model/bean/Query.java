@@ -1,7 +1,5 @@
 package com.nfwork.dbfound.model.bean;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

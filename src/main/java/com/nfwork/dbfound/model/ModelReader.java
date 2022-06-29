@@ -71,7 +71,6 @@ public class ModelReader {
 								doc = reader.read(file);
 							} catch (Exception e) {
 								String message = "modelReader exception, file:" + fileLocation;
-								LogUtil.error(message,e);
 								throw new DBFoundPackageException(message, e);
 							}
 						} else {
@@ -81,7 +80,6 @@ public class ModelReader {
 								doc = reader.read(inputStream);
 							} catch (Exception e) {
 								String message = "modelReader exception, url:" + fileLocation;
-								LogUtil.error(message,e);
 								throw new DBFoundPackageException(message, e);
 							}
 						}
@@ -131,11 +129,9 @@ public class ModelReader {
 				entity.run();
 			} catch (Exception e) {
 				if(e instanceof DBFoundRuntimeException){
-					LogUtil.error(e.getMessage(), e);
 					throw (DBFoundRuntimeException)e;
 				}else{
 					String message = "ModelReader exception:" + e.getMessage();
-					LogUtil.error(message, e);
 					throw new DBFoundRuntimeException(message, e);
 				}
 			}

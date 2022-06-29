@@ -5,6 +5,7 @@ import java.net.SocketException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nfwork.dbfound.exception.CollisionException;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.dto.ResponseObject;
@@ -30,7 +31,7 @@ public class WebExceptionHandle {
 			exception = getException(exception);
 
 			String em = exception.getMessage();
-			if (exception instanceof DBFoundRuntimeException) {
+			if(exception instanceof CollisionException){
 				LogUtil.info(exception.getClass().getName() + ":" + em);
 			} else {
 				em = exception.getClass().getName() + ":" + em;
