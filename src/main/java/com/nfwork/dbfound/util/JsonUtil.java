@@ -213,8 +213,6 @@ public class JsonUtil {
 	}
 
 	private static String objectToJson(Object obj) {
-		SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
-		SimpleDateFormat dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
 		StringBuilder json = new StringBuilder();
 		if (obj == null) {
 			json.append("\"\"");
@@ -229,8 +227,10 @@ public class JsonUtil {
 		} else if (obj instanceof Object[]) {
 			json.append(arrayToJson((Object[]) obj));
 		} else if (obj instanceof java.sql.Date) {
+			SimpleDateFormat dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
 			json.append("\"").append(dateFormat.format(obj)).append("\"");
 		} else if (obj instanceof Date) {
+			SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
 			json.append("\"").append(format.format(obj)).append("\"");
 		} else if (obj instanceof List) {
 			json.append(listToJson((List<?>) obj));
