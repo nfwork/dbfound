@@ -177,12 +177,14 @@
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
 					<xsd:attribute name="name" />
+					<xsd:attribute name="currentPath" />
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="query">
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
 					<xsd:attribute name="name" />
+					<xsd:attribute name="currentPath" />
 					<xsd:attribute name="rootPath" />
 					<xsd:attribute name="entity" />
 				</xsd:complexType>
@@ -243,12 +245,14 @@
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
 					<xsd:attribute name="name" />
+					<xsd:attribute name="currentPath" />
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="query">
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
 					<xsd:attribute name="name" />
+					<xsd:attribute name="currentPath" />
 					<xsd:attribute name="rootPath" />
 					<xsd:attribute name="entity" />
 				</xsd:complexType>
@@ -310,12 +314,14 @@
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
 					<xsd:attribute name="name" />
+					<xsd:attribute name="currentPath" />
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="query">
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
 					<xsd:attribute name="name" />
+					<xsd:attribute name="currentPath" />
 					<xsd:attribute name="rootPath" />
 					<xsd:attribute name="entity" />
 				</xsd:complexType>

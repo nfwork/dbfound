@@ -7,7 +7,6 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
 import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.LogUtil;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.ModelEngine;
@@ -23,6 +22,7 @@ public class Execute extends SqlEntity {
 
 	private String adapter;
 	private ExecuteAdapter executeAdapter;
+	private String currentPath;
 
 	@Override
 	public void init(Element element) {
@@ -70,6 +70,9 @@ public class Execute extends SqlEntity {
 		String currentPath = context.getCurrentPath();
 		String currentModel = context.getCurrentModel();
 		String mName = modelName != null ? modelName : currentModel;
+		if(DataUtil.isNotNull(this.currentPath)){
+			currentPath = this.currentPath;
+		}
 		ModelEngine.execute(context, mName, name, currentPath);
 		context.setCurrentPath(currentPath);
 		context.setCurrentModel(currentModel);
@@ -117,5 +120,13 @@ public class Execute extends SqlEntity {
 
 	public ExecuteAdapter getExecuteAdapter() {
 		return executeAdapter;
+	}
+
+	public String getCurrentPath() {
+		return currentPath;
+	}
+
+	public void setCurrentPath(String currentPath) {
+		this.currentPath = currentPath;
 	}
 }

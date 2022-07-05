@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
@@ -50,6 +48,7 @@ public class Query extends SqlEntity {
 	private QueryAdapter queryAdapter;
 	private String entity;
 	private Class entityClass;
+	private String currentPath;
 
 	@Override
 	public void init(Element element) {
@@ -420,6 +419,14 @@ public class Query extends SqlEntity {
 		this.entity = entity;
 	}
 
+	public String getCurrentPath() {
+		return currentPath;
+	}
+
+	public void setCurrentPath(String currentPath) {
+		this.currentPath = currentPath;
+	}
+
 	@Override
 	public void execute(Context context, Map<String, Param> params, String provideName) {
 		if(DataUtil.isNull(rootPath)){
@@ -427,6 +434,9 @@ public class Query extends SqlEntity {
 		}
 		String currentPath = context.getCurrentPath();
 		String currentModel = context.getCurrentModel();
+		if(DataUtil.isNotNull(this.currentPath)){
+			currentPath = this.currentPath;
+		}
 		String mName = modelName != null?modelName : currentModel;
 		List data = ModelEngine.query(context, mName, name, currentPath, false, entityClass).getDatas();
 		context.setData(rootPath, data);
