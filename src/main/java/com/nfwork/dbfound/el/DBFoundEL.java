@@ -34,14 +34,14 @@ public class DBFoundEL {
 				}
 				// 计算当前对象
 				Object object = null;
-				if(isSampleObject(currentObject)){
+				if (currentObject instanceof Map) {
+					Map m = (Map) currentObject;
+					object = m.get(currentExpree);
+				} else if(isSampleObject(currentObject)){
 					if("value".equals(currentExpree)){
 						return currentObject;
 					}
-				}else if (currentObject instanceof Map) {
-					Map m = (Map) currentObject;
-					object = m.get(currentExpree);
-				} else {
+				}else {
 					String methodEndName = currentExpree.substring(0, 1)
 							.toUpperCase()
 							+ currentExpree.substring(1);
