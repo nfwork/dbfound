@@ -54,6 +54,7 @@ public class QuerySql extends SqlEntity {
 			initParam(statement, querySql, params);
 			dataset = statement.executeQuery();
 			ResultSetMetaData metaset = dataset.getMetaData();
+			Calendar defaultCalendar = Calendar.getInstance();
 
 			if (dataset.next()) {
 				for (int i = 1; i <= metaset.getColumnCount(); i++) {
@@ -76,36 +77,18 @@ public class QuerySql extends SqlEntity {
 					}
 
 					if (param == null) {
-						throw new ParamNotFoundException("param: " + columnName + " not defined");
+						param = new Param();
+						param.setName(columnName);
+						param.setDataType("unknown");
+						params.put(columnName,param);
 					}
-					String paramType = param.getDataType();
-					if ("varchar".equals(paramType)) {
-						param.setValue(value);
-					} else if ("number".equals(paramType)) {
-						if (value == null || value.endsWith(".0") || !value.contains(".")) {
-							param.setValue(dataset.getLong(i));
-						} else {
-							param.setValue(dataset.getDouble(i));
-						}
-					} else if ("date".equals(paramType)) {
-						Timestamp timestamp = dataset.getTimestamp(i, Calendar.getInstance());
-						if (timestamp == null) {
-							param.setValue(timestamp);
-						} else {
-							Calendar calendar = Calendar.getInstance();
-							calendar.setTime(timestamp);
 
-							if (timestamp != null && calendar.get(Calendar.HOUR_OF_DAY) == 0 && calendar.get(Calendar.MINUTE) == 0
-									&& calendar.get(Calendar.SECOND) == 0) {
-								param.setValue(dataset.getDate(i, Calendar.getInstance()));
-							} else {
-								param.setValue(timestamp);
-							}
-						}
-					} else if ("file".equals(paramType)) {
+					String paramType = param.getDataType();
+					if ("file".equals(paramType)) {
 						blobExecute(dataset, param, i);
 					}else{
-						param.setValue(value);
+						int columnType = metaset.getColumnType(i);
+						param.setValue(getData(value,columnType,dataset,i,defaultCalendar));
 					}
 					param.setSourcePathHistory("querySql");
 

@@ -3,30 +3,23 @@ package com.nfwork.dbfound.model.bean;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.JsonUtil;
+import com.nfwork.dbfound.util.*;
 import org.apache.commons.fileupload.FileItem;
 import org.dom4j.Element;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.model.base.Entity;
-import com.nfwork.dbfound.util.LogUtil;
-import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 
 public abstract class SqlEntity extends Sqls {
@@ -130,7 +123,7 @@ public abstract class SqlEntity extends Sqls {
 				throw new ParamNotFoundException("param: " + pn + " not defined");
 			}
 
-			initStaticParam(nfParam);
+			initParamType(nfParam);
 
 			if ("true".equals(nfParam.getUUID())) {
 				paramValue = UUIDUtil.getUUID();
@@ -259,7 +252,7 @@ public abstract class SqlEntity extends Sqls {
 			}
 			paramValue = nfParam.getStringValue();
 
-			initStaticParam(nfParam);
+			initParamType(nfParam);
 
 			// UUID取值
 			if ("true".equals(nfParam.getUUID())) {
@@ -275,7 +268,7 @@ public abstract class SqlEntity extends Sqls {
 		return buf.toString();
 	}
 
-	private void initStaticParam(Param nfParam){
+	private void initParamType(Param nfParam){
 		if ("unknown".equals(nfParam.getDataType())){
 			Object value = nfParam.getValue();
 			if (value != null){
@@ -289,6 +282,82 @@ public abstract class SqlEntity extends Sqls {
 				}
 			}
 		}
+	}
+
+	public String[] getColNames(ResultSetMetaData metaset) throws SQLException {
+		int size = metaset.getColumnCount();
+		String colNames[] = new String[size];
+		for (int i = 1; i <= colNames.length; i++) {
+			String colName = metaset.getColumnName(i);
+
+			// 判断是否有as 逻辑，如果没有as，强制转化为小写
+			String labName =  metaset.getColumnLabel(i);
+			if (labName.equalsIgnoreCase(colName)){
+				colName = colName.toLowerCase();
+			}else{
+				colName = labName;
+			}
+
+			if (DBFoundConfig.isUnderscoreToCamelCase()){
+				colName = StringUtil.underscoreToCamelCase(colName);
+			}
+			colNames[i-1] = colName;
+		}
+		return  colNames;
+	}
+
+	public Object getData(String value, int columnType, ResultSet dataset, int index, Calendar defaultCalendar) throws SQLException {
+		Object result ;
+		switch (columnType) {
+			case Types.INTEGER:
+			case Types.TINYINT:
+			case Types.SMALLINT:
+			case Types.BIT:
+				result = dataset.getInt(index);
+				break;
+			case Types.BIGINT:
+				result = dataset.getLong(index);
+				break;
+			case Types.FLOAT:
+			case Types.REAL:
+				if (value.endsWith(".0") || !value.contains(".")) {
+					result = dataset.getInt(index);
+				} else {
+					result = dataset.getFloat(index);
+				}
+				break;
+			case Types.DOUBLE:
+			case Types.DECIMAL:
+			case Types.NUMERIC:
+				if (value.endsWith(".0") || !value.contains(".")) {
+					result = dataset.getLong(index);
+				} else {
+					result = dataset.getDouble(index);
+				}
+				break;
+			case Types.VARBINARY:
+				if (value.matches("[0123456789]*\\.[0123456789]+")) {
+					result = dataset.getDouble(index);
+				} else if (value.matches("[0123456789]*")) {
+					result = dataset.getLong(index);
+				} else {
+					result = value;
+				}
+				break;
+			case Types.DATE:
+				result = dataset.getDate(index, defaultCalendar);
+				break;
+			case Types.TIME:
+			case Types.TIMESTAMP:
+				result = dataset.getTimestamp(index, defaultCalendar);
+				break;
+			case Types.BOOLEAN:
+				result = dataset.getBoolean(index);
+				break;
+			default:
+				result = value;
+		}
+		return result;
 	}
 
 	public void log(String sql, Map<String, Param> params) {

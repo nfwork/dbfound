@@ -158,86 +158,22 @@ public class BatchSql extends SqlEntity {
 			ResultSetMetaData metaset = dataset.getMetaData();
 
 			// 得到元数据
-			int size = metaset.getColumnCount();
-			String colNames[] = new String[size + 1];
-			for (int i = 1; i < colNames.length; i++) {
-				String colName = metaset.getColumnName(i);
-
-				// 判断是否有as 逻辑，如果没有as，强制转化为小写
-				String labName =  metaset.getColumnLabel(i);
-				if (labName.equalsIgnoreCase(colName)){
-					colName = colName.toLowerCase();
-				}else{
-					colName = labName;
-				}
-
-				if (DBFoundConfig.isUnderscoreToCamelCase()){
-					colName = StringUtil.underscoreToCamelCase(colName);
-				}
-				colNames[i] = colName;
-			}
+			String colNames[] = getColNames(metaset);
 
 			Calendar defaultCalendar = Calendar.getInstance();
 
 			while (dataset.next()) {
 				Map<String, Object> mapdata = new HashMap<String, Object>();
-				for (int i = 1; i <= size; i++) {
+				for (int i = 1; i <= colNames.length; i++) {
 					String value = dataset.getString(i);
-					String columnName = colNames[i];
-					int columnType = metaset.getColumnType(i);
+					String columnName = colNames[i-1];
+
 					if (value == null) {
 						mapdata.put(columnName, null);
 						continue;
 					}
-					switch (columnType) {
-						case Types.INTEGER:
-						case Types.TINYINT:
-						case Types.SMALLINT:
-						case Types.BIT:
-							mapdata.put(columnName, dataset.getInt(i));
-							break;
-						case Types.BIGINT:
-							mapdata.put(columnName, dataset.getLong(i));
-							break;
-						case Types.FLOAT:
-						case Types.REAL:
-							if (value.endsWith(".0") || !value.contains(".")) {
-								mapdata.put(columnName, dataset.getInt(i));
-							} else {
-								mapdata.put(columnName, dataset.getFloat(i));
-							}
-							break;
-						case Types.DOUBLE:
-						case Types.DECIMAL:
-						case Types.NUMERIC:
-							if (value.endsWith(".0") || !value.contains(".")) {
-								mapdata.put(columnName, dataset.getLong(i));
-							} else {
-								mapdata.put(columnName, dataset.getDouble(i));
-							}
-							break;
-						case Types.VARBINARY:
-							if (value.matches("[0123456789]*\\.[0123456789]+")) {
-								mapdata.put(columnName, dataset.getDouble(i));
-							} else if (value.matches("[0123456789]*")) {
-								mapdata.put(columnName, dataset.getLong(i));
-							} else {
-								mapdata.put(columnName, value);
-							}
-							break;
-						case Types.DATE:
-							mapdata.put(columnName, dataset.getDate(i, defaultCalendar));
-							break;
-						case Types.TIME:
-						case Types.TIMESTAMP:
-							mapdata.put(columnName, dataset.getTimestamp(i, defaultCalendar));
-							break;
-						case Types.BOOLEAN:
-							mapdata.put(columnName, dataset.getBoolean(i));
-							break;
-						default:
-							mapdata.put(columnName, value);
-					}
+					int columnType = metaset.getColumnType(i);
+					mapdata.put(columnName,getData(value,columnType,dataset,i,defaultCalendar));
 				}
 				cursorValues.add(mapdata);
 			}

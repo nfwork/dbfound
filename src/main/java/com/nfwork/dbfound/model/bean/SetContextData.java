@@ -49,7 +49,7 @@ public class SetContextData extends SqlEntity{
             Object object = context.getData(setPath);
             if (object instanceof Map) {
                 Map cMap = (Map) object;
-                cMap.put(name, value);
+                cMap.put(name, valueObj);
             } else if (object != null) {
                 try {
                     BeanUtils.setProperty(object, name, valueObj);
