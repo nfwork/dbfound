@@ -40,6 +40,9 @@ public class BatchSql extends SqlEntity {
 			initError = "BatchSql attribute sourcePath and cursor, can not be null on the same time";
 			return;
 		}
+		if(DataUtil.isNotNull(cursor)) {
+			autoCreateParam(cursor, this);
+		}
 	}
 
 	@Override
