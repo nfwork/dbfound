@@ -63,21 +63,26 @@ public class DBFoundEL {
 				if (index != -1) {
 					if (object instanceof List) {
 						List l = (List) object;
-						object = l.get(index);
+						if(index<l.size()) {
+							object = l.get(index);
+						}
 					} else if (object instanceof Set) {
 						Set s = (Set) object;
-
-						Iterator iterator = s.iterator();
-						while (iterator.hasNext()) {
-							if (index == 0) {
-								object = iterator.next();
-								break;
+						if(index < s.size()) {
+							Iterator iterator = s.iterator();
+							while (iterator.hasNext()) {
+								if (index == 0) {
+									object = iterator.next();
+									break;
+								}
+								index--;
 							}
-							index--;
 						}
 					} else if (object instanceof Object[]) {
 						Object[] objects = (Object[]) object;
-						object = objects[index];
+						if(index < objects.length) {
+							object = objects[index];
+						}
 					}
 				}
 
