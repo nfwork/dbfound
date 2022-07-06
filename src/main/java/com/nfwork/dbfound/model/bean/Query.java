@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
@@ -432,14 +433,25 @@ public class Query extends SqlEntity {
 		if(DataUtil.isNull(rootPath)){
 			throw new DBFoundRuntimeException("rootPath can not be null");
 		}
-		String currentPath = context.getCurrentPath();
-		String currentModel = context.getCurrentModel();
-		if(DataUtil.isNotNull(this.currentPath)){
-			currentPath = this.currentPath;
+		final String currentPath = context.getCurrentPath();
+		final String currentModel = context.getCurrentModel();
+
+		String exePath = this.currentPath;
+		if(DataUtil.isNotNull(exePath)){
+			if(!ELEngine.isAbsolutePath(exePath)) {
+				exePath = currentPath +"." + exePath;
+			}
+		}else{
+			exePath = currentPath;
 		}
 		String mName = modelName != null?modelName : currentModel;
-		List data = ModelEngine.query(context, mName, name, currentPath, false, entityClass).getDatas();
-		context.setData(rootPath, data);
+		List data = ModelEngine.query(context, mName, name, exePath, false, entityClass).getDatas();
+
+		String setPath = rootPath;
+		if(!ELEngine.isAbsolutePath(setPath)){
+			setPath = currentPath + "." + setPath;
+		}
+		context.setData(setPath, data);
 		context.setCurrentPath(currentPath);
 		context.setCurrentModel(currentModel);
 	}

@@ -385,7 +385,7 @@ public class ModelEngine {
 		// 如果是文件类型 就直接从request里面取值
 		if ("file".equals(nfParam.getDataType())) {
 			Object requestValue = context.getData("param." + nfParam.getName());
-			if (requestValue != null && requestValue instanceof FileItem) {
+			if (requestValue instanceof FileItem) {
 				FileItem item = (FileItem) requestValue;
 				nfParam.setValue(item);
 				return;
@@ -414,9 +414,7 @@ public class ModelEngine {
 			realPath = currentPath + "." + sourcePath;
 		} else {
 			// 判断sourcePath 是绝对路径，还是相当路径
-			if (sourcePath.startsWith(ELEngine.sessionScope) || sourcePath.startsWith(ELEngine.requestScope)
-					|| sourcePath.startsWith(ELEngine.outParamScope) || sourcePath.startsWith(ELEngine.paramScope)
-					|| sourcePath.startsWith(ELEngine.cookieScope) || sourcePath.startsWith(ELEngine.headerScope)) {
+			if (ELEngine.isAbsolutePath(sourcePath)) {
 				realPath = sourcePath;
 			} else {
 				realPath = currentPath + "." + sourcePath;

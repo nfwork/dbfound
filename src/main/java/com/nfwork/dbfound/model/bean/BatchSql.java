@@ -49,6 +49,8 @@ public class BatchSql extends SqlEntity {
 			throw new DBFoundRuntimeException(initError);
 		}
 
+		final String inCurrentPath = context.getCurrentPath();
+
 		String exeSourcePath = sourcePath;
 
 		// 执行游标得到相应的值
@@ -63,15 +65,15 @@ public class BatchSql extends SqlEntity {
 				throw new DBFoundRuntimeException("cursorRootPath can not be null");
 			}
 			exeSourcePath = cursorRootPath;
-			context.setData(cursorRootPath, cursorValues);
-		}
-
-		String inCurrentPath = context.getCurrentPath();
-		//判断是否相对路径,如果是相对路径则进行转化
-		if(!ELEngine.isAbsolutePath(exeSourcePath)) {
-			if(DataUtil.isNotNull(inCurrentPath)){
+			if(!ELEngine.isAbsolutePath(exeSourcePath)) {
 				exeSourcePath = inCurrentPath +"." +exeSourcePath;
 			}
+			context.setData(exeSourcePath, cursorValues);
+		}
+
+		//判断是否相对路径,如果是相对路径则进行转化
+		if(!ELEngine.isAbsolutePath(exeSourcePath)) {
+			exeSourcePath = inCurrentPath +"." +exeSourcePath;
 		}
 
 		int dataSize = context.getDataLength(exeSourcePath);
@@ -89,7 +91,7 @@ public class BatchSql extends SqlEntity {
 				param.setBatchAssign(false);
 				continue;
 			}
-			if (DataUtil.isNotNull(param.getSourcePath()) && ELEngine.isAbsolutePath(param.getSourcePath())) {
+			if (ELEngine.isAbsolutePath(param.getSourcePath())) {
 				param.setBatchAssign(false);
 				continue;
 			}

@@ -304,8 +304,8 @@ public class Context {
 		return null;
 	}
 
-	public void setData(String name, Object object) {
-		DBFoundEL.setData(name,rootDatas,object);
+	public void setData(String express, Object object) {
+		DBFoundEL.setData(express,rootDatas,object);
 	}
 
 	/**

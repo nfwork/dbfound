@@ -78,9 +78,7 @@ public class BatchExecuteSql extends SqlEntity {
 
 		//判断是否相对路径,如果是相对路径则进行转化
 		if(!ELEngine.isAbsolutePath(exeSourcePath)){
-			if(DataUtil.isNotNull(context.getCurrentPath())){
-				exeSourcePath = context.getCurrentPath() +"." +exeSourcePath;
-			}
+			exeSourcePath = context.getCurrentPath() +"." +exeSourcePath;
 		}
 
 		int dataSize = context.getDataLength(exeSourcePath);
@@ -92,7 +90,7 @@ public class BatchExecuteSql extends SqlEntity {
 		for (Param param : params.values()){
 			if (DataUtil.isNotNull(param.getScope())){
 				param.setBatchAssign(false);
-			}else if ( DataUtil.isNotNull(param.getSourcePath()) && ELEngine.isAbsolutePath(param.getSourcePath())) {
+			}else if (ELEngine.isAbsolutePath(param.getSourcePath())) {
 				param.setBatchAssign(false);
 			}
 		}

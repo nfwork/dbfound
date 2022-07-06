@@ -3,6 +3,7 @@ package com.nfwork.dbfound.model.bean;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
@@ -67,13 +68,20 @@ public class Execute extends SqlEntity {
 
 	@Override
 	public void execute(Context context, Map<String, Param> params,String provideName){
-		String currentPath = context.getCurrentPath();
-		String currentModel = context.getCurrentModel();
+		final String currentPath = context.getCurrentPath();
+		final String currentModel = context.getCurrentModel();
+
 		String mName = modelName != null ? modelName : currentModel;
-		if(DataUtil.isNotNull(this.currentPath)){
-			currentPath = this.currentPath;
+
+		String exePath = this.currentPath;
+		if(DataUtil.isNotNull(exePath)){
+			if(!ELEngine.isAbsolutePath(exePath)) {
+				exePath = currentPath +"." + exePath;
+			}
+		}else{
+			exePath = currentPath;
 		}
-		ModelEngine.execute(context, mName, name, currentPath);
+		ModelEngine.execute(context, mName, name, exePath);
 		context.setCurrentPath(currentPath);
 		context.setCurrentModel(currentModel);
 	}

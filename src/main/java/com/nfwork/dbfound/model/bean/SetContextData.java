@@ -5,7 +5,6 @@ import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DataUtil;
-import org.apache.commons.beanutils.BeanUtils;
 
 import java.util.Map;
 
@@ -59,21 +58,7 @@ public class SetContextData extends SqlEntity{
             valueObj = valueTemplate.replace("#{@"+name+"}",""+valueObj);
         }
 
-        if(!setPath.contains(".")){
-            context.setData(setPath+"."+name,valueObj);
-        }else {
-            Object object = context.getData(setPath);
-            if (object instanceof Map) {
-                Map cMap = (Map) object;
-                cMap.put(name, valueObj);
-            } else if (object != null) {
-                try {
-                    BeanUtils.setProperty(object, name, valueObj);
-                } catch (Exception e) {
-                    throw new DBFoundRuntimeException("set context data failed", e);
-                }
-            }
-        }
+        context.setData(setPath+"."+name,valueObj);
     }
 
     public String getValue() {
