@@ -201,6 +201,7 @@
 					<xsd:attribute name="name" />
 					<xsd:attribute name="value" />
 					<xsd:attribute name="param" />
+					<xsd:attribute name="sourcePath" />
 					<xsd:attribute name="scope" >
 						<xsd:simpleType>
 							<xsd:restriction base="xsd:NMTOKEN">
@@ -269,6 +270,7 @@
 					<xsd:attribute name="name" />
 					<xsd:attribute name="value" />
 					<xsd:attribute name="param" />
+					<xsd:attribute name="sourcePath" />
 					<xsd:attribute name="scope" >
 						<xsd:simpleType>
 							<xsd:restriction base="xsd:NMTOKEN">
@@ -338,6 +340,7 @@
 					<xsd:attribute name="name" />
 					<xsd:attribute name="value" />
 					<xsd:attribute name="param" />
+					<xsd:attribute name="sourcePath" />
 					<xsd:attribute name="scope" >
 						<xsd:simpleType>
 							<xsd:restriction base="xsd:NMTOKEN">

@@ -20,6 +20,8 @@ public class SetContextData extends SqlEntity{
 
     private String param;
 
+    private String sourcePath;
+
     @Override
     public void execute(Context context, Map<String, Param> params, String provideName) {
         if(DataUtil.isNull(name)){
@@ -41,6 +43,9 @@ public class SetContextData extends SqlEntity{
                 throw new ParamNotFoundException("param: " + param + " not defined");
             }
             valueObj = paramObj.getValue();
+        }
+        if(DataUtil.isNotNull(sourcePath)){
+            valueObj = context.getData(sourcePath);
         }
 
         if(!setPath.contains(".")){
@@ -98,5 +103,13 @@ public class SetContextData extends SqlEntity{
 
     public void setInCurrentPath(boolean inCurrentPath) {
         this.inCurrentPath = inCurrentPath;
+    }
+
+    public String getSourcePath() {
+        return sourcePath;
+    }
+
+    public void setSourcePath(String sourcePath) {
+        this.sourcePath = sourcePath;
     }
 }
