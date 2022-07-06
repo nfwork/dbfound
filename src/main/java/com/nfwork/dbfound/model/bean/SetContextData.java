@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DataUtil;
@@ -21,6 +22,8 @@ public class SetContextData extends SqlEntity{
     private String param;
 
     private String sourcePath;
+
+    private String valueTemplate;
 
     @Override
     public void execute(Context context, Map<String, Param> params, String provideName) {
@@ -45,7 +48,15 @@ public class SetContextData extends SqlEntity{
             valueObj = paramObj.getValue();
         }
         if(DataUtil.isNotNull(sourcePath)){
-            valueObj = context.getData(sourcePath);
+            String exePath = sourcePath;
+            if(!ELEngine.isAbsolutePath(exePath)){
+                exePath = context.getCurrentPath() + "." +exePath;
+            }
+            valueObj = context.getData(exePath);
+        }
+
+        if(DataUtil.isNotNull(valueTemplate)){
+            valueObj = valueTemplate.replace("#{@"+name+"}",""+valueObj);
         }
 
         if(!setPath.contains(".")){
@@ -111,5 +122,13 @@ public class SetContextData extends SqlEntity{
 
     public void setSourcePath(String sourcePath) {
         this.sourcePath = sourcePath;
+    }
+
+    public String getValueTemplate() {
+        return valueTemplate;
+    }
+
+    public void setValueTemplate(String valueTemplate) {
+        this.valueTemplate = valueTemplate;
     }
 }
