@@ -55,7 +55,7 @@ public class SetContextData extends SqlEntity{
         }
 
         if(DataUtil.isNotNull(valueTemplate)){
-            valueObj = valueTemplate.replace("#{@"+name+"}",""+valueObj);
+            valueObj = valueTemplate.replace("#{@"+name+"}",valueObj==null?"":valueObj.toString());
         }
 
         context.setData(setPath+"."+name,valueObj);
