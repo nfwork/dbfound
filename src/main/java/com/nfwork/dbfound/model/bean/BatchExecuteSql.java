@@ -77,28 +77,13 @@ public class BatchExecuteSql extends SqlEntity {
 		String exeSourcePath = sourcePath;
 
 		//判断是否相对路径,如果是相对路径则进行转化
-		if(!exeSourcePath.startsWith(ELEngine.sessionScope) && !exeSourcePath.startsWith(ELEngine.requestScope)
-				&& !exeSourcePath.startsWith(ELEngine.outParamScope) && !exeSourcePath.startsWith(ELEngine.paramScope)
-				&& !exeSourcePath.startsWith(ELEngine.cookieScope) && !exeSourcePath.startsWith(ELEngine.headerScope)) {
+		if(!ELEngine.isAbsolutePath(exeSourcePath)){
 			if(DataUtil.isNotNull(context.getCurrentPath())){
 				exeSourcePath = context.getCurrentPath() +"." +exeSourcePath;
 			}
 		}
 
-		int dataSize =0;
-		Object data = context.getData(exeSourcePath);
-		if(data != null) {
-			if (data instanceof List) {
-				List dataList = (List) data;
-				dataSize = dataList.size();
-			} else if (data instanceof Set) {
-				Set set = (Set) data;
-				dataSize = set.size();
-			} else if (data instanceof Object[]) {
-				Object[] objects = (Object[]) data;
-				dataSize = objects.length;
-			}
-		}
+		int dataSize = context.getDataLength(exeSourcePath);
 
 		if(dataSize ==0 ){
 			return;
@@ -107,10 +92,7 @@ public class BatchExecuteSql extends SqlEntity {
 		for (Param param : params.values()){
 			if (DataUtil.isNotNull(param.getScope())){
 				param.setBatchAssign(false);
-			}else if ( DataUtil.isNotNull(param.getSourcePath())
-					&& (param.getSourcePath().startsWith(ELEngine.sessionScope) || param.getSourcePath().startsWith(ELEngine.requestScope)
-					|| param.getSourcePath().startsWith(ELEngine.outParamScope) || param.getSourcePath().startsWith(ELEngine.paramScope)
-					|| param.getSourcePath().startsWith(ELEngine.cookieScope) || param.getSourcePath().startsWith(ELEngine.headerScope))) {
+			}else if ( DataUtil.isNotNull(param.getSourcePath()) && ELEngine.isAbsolutePath(param.getSourcePath())) {
 				param.setBatchAssign(false);
 			}
 		}

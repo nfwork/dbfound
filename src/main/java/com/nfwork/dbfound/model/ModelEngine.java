@@ -202,20 +202,7 @@ public class ModelEngine {
 				batchExecutePath = sourcePath;
 			}
 
-			Object object = context.getData(batchExecutePath);
-			int size = 0;
-			if (object != null) {
-				if (object instanceof Object[]) {
-					Object[] objects = (Object[]) object;
-					size = objects.length;
-				} else if (object instanceof List) {
-					List list = (List) object;
-					size = list.size();
-				} else if (object instanceof Set) {
-					Set set = (Set) object;
-					size = set.size();
-				}
-			}
+			int size = context.getDataLength(batchExecutePath);
 
 			// 向客服端传送成功消息
 			ResponseObject ro = new ResponseObject();

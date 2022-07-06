@@ -5,17 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.StringUtil;
 
 /**
  * 批量从数据库查询数据，作为结果集 然后执行
@@ -71,28 +68,13 @@ public class BatchSql extends SqlEntity {
 
 		String inCurrentPath = context.getCurrentPath();
 		//判断是否相对路径,如果是相对路径则进行转化
-		if(!exeSourcePath.startsWith(ELEngine.sessionScope) && !exeSourcePath.startsWith(ELEngine.requestScope)
-			&& !exeSourcePath.startsWith(ELEngine.outParamScope) && !exeSourcePath.startsWith(ELEngine.paramScope)
-			&& !exeSourcePath.startsWith(ELEngine.cookieScope) && !exeSourcePath.startsWith(ELEngine.headerScope)) {
+		if(!ELEngine.isAbsolutePath(exeSourcePath)) {
 			if(DataUtil.isNotNull(inCurrentPath)){
 				exeSourcePath = inCurrentPath +"." +exeSourcePath;
 			}
 		}
 
-		int dataSize = 0;
-		Object data = context.getData(exeSourcePath);
-		if(data != null) {
-			if (data instanceof List) {
-				List dataList = (List) data;
-				dataSize = dataList.size();
-			} else if (data instanceof Set) {
-				Set set = (Set) data;
-				dataSize = set.size();
-			} else if (data instanceof Object[]) {
-				Object[] objects = (Object[]) data;
-				dataSize = objects.length;
-			}
-		}
+		int dataSize = context.getDataLength(exeSourcePath);
 
 		if(dataSize ==0 ){
 			return;
@@ -107,10 +89,7 @@ public class BatchSql extends SqlEntity {
 				param.setBatchAssign(false);
 				continue;
 			}
-			if (DataUtil.isNotNull(param.getSourcePath())
-					   && (param.getSourcePath().startsWith(ELEngine.sessionScope) || param.getSourcePath().startsWith(ELEngine.requestScope)
-					        || param.getSourcePath().startsWith(ELEngine.outParamScope) || param.getSourcePath().startsWith(ELEngine.paramScope)
-					        || param.getSourcePath().startsWith(ELEngine.cookieScope) || param.getSourcePath().startsWith(ELEngine.headerScope))) {
+			if (DataUtil.isNotNull(param.getSourcePath()) && ELEngine.isAbsolutePath(param.getSourcePath())) {
 				param.setBatchAssign(false);
 				continue;
 			}

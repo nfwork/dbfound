@@ -242,6 +242,24 @@ public class Context {
 		return DBFoundEL.getData(express, rootDatas);
 	}
 
+	public int getDataLength(String express){
+		int dataSize =0;
+		Object data = this.getData(express);
+		if(data != null) {
+			if (data instanceof List) {
+				List dataList = (List) data;
+				dataSize = dataList.size();
+			} else if (data instanceof Set) {
+				Set set = (Set) data;
+				dataSize = set.size();
+			} else if (data instanceof Object[]) {
+				Object[] objects = (Object[]) data;
+				dataSize = objects.length;
+			}
+		}
+		return dataSize;
+	}
+
 	/**
 	 * 根据表达式得到context内容
 	 * 
