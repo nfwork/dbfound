@@ -17,7 +17,7 @@ public class LogUtil {
 
 	public static boolean openLog = true;
 
-	private static Log log = LogFactory.getLog("dbfound");
+	private static final Log log = LogFactory.getLog("dbfound");
 
 	public static void log(String sql, Collection<Param> params) {
 		if (openLog) {

@@ -34,8 +34,8 @@ import com.nfwork.dbfound.web.i18n.MultiLangUtil;
 public class DBFoundConfig {
 
 	private static String listenerClass;
-	private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-	private static List<DataSourceConnectionProvide> dsp = new ArrayList<DataSourceConnectionProvide>();
+	private final static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+	private final static List<DataSourceConnectionProvide> dsp = new ArrayList<>();
 
 	public static final String CLASSPATH = "${@classpath}";
 	public static final String PROJECT_ROOT = "${@projectRoot}";
@@ -50,7 +50,7 @@ public class DBFoundConfig {
 	private static int reportQueryLimitSize = 50000;
 	private static boolean modelModifyCheck = true;
 	private static boolean jsonStringAutoCover = true;
-	private static Set<String> jsonStringForceCoverSet = new HashSet<String>();
+	private final static Set<String> jsonStringForceCoverSet = new HashSet<>();
 	static {
 		jsonStringForceCoverSet.add("GridData");
 		jsonStringForceCoverSet.add("parameters");
@@ -175,7 +175,6 @@ public class DBFoundConfig {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void initDB(Element database)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
 
@@ -235,7 +234,7 @@ public class DBFoundConfig {
 
 	private static void initWeb(Element web) {
 		StringBuffer info = new StringBuffer();
-		info.append(simpleDateFormat.format(new Date()) + " set web Param:");
+		info.append(simpleDateFormat.format(new Date())).append(" set web Param:");
 
 		// i18n 初始化
 		Element provide = web.element("i18nProvide");
@@ -243,7 +242,7 @@ public class DBFoundConfig {
 			String className = provide.getTextTrim();
 			if (!"".equals(className)) {
 				MultiLangUtil.init(className);
-				info.append("(i18nProvide = " + className + ")");
+				info.append("(i18nProvide = ").append(className).append(")");
 			}
 		}
 
@@ -253,7 +252,7 @@ public class DBFoundConfig {
 			String encoding = enco.getTextTrim();
 			if (!"".equals(encoding)) {
 				WebWriter.setEncoding(encoding);
-				info.append("(encoding = " + encoding + ")");
+				info.append("(encoding = ").append(encoding).append(")");
 			}
 		}
 
@@ -266,7 +265,7 @@ public class DBFoundConfig {
 			}else{
 				jsonStringAutoCover = false;
 			}
-			info.append("(jsonStringAutoCover = " + jsonStringAutoCover + ")");
+			info.append("(jsonStringAutoCover = ").append(jsonStringAutoCover).append(")");
 		}
 
 		// 文件上传路径
@@ -276,7 +275,7 @@ public class DBFoundConfig {
 			if (!"".equals(path)) {
 				path = getRealPath(path);
 				FileUtil.init(path);
-				info.append("(uploadFolder = " + path + ")");
+				info.append("(uploadFolder = ").append(path).append(")");
 			}
 		}
 
@@ -286,7 +285,7 @@ public class DBFoundConfig {
 			String maxUploadSize = size.getTextTrim();
 			if (DataUtil.isNotNull(maxUploadSize)) {
 				FileUploadUtil.maxUploadSize = DataUtil.intValue(maxUploadSize);
-				info.append("(maxUploadSize = " + FileUploadUtil.maxUploadSize + ")");
+				info.append("(maxUploadSize = ").append(FileUploadUtil.maxUploadSize).append(")");
 			}
 		}
 
@@ -296,7 +295,7 @@ public class DBFoundConfig {
 			String basePath = basePathEl.getTextTrim();
 			if (!"".equals(basePath)) {
 				URLUtil.setBasePath(basePath);
-				info.append("(basePath = " + basePath + ")");
+				info.append("(basePath = ").append(basePath).append(")");
 			}
 		}
 
@@ -306,7 +305,7 @@ public class DBFoundConfig {
 			String className = filter.getTextTrim();
 			if (!"".equals(className)) {
 				InterceptorEngine.init(className);
-				info.append("(interceptor = " + className + ")");
+				info.append("(interceptor = ").append(className).append(")");
 			}
 		}
 
@@ -342,7 +341,7 @@ public class DBFoundConfig {
 
 	private static void initSystem(Element system) {
 		StringBuffer info = new StringBuffer();
-		info.append(simpleDateFormat.format(new Date()) + " set system Param:");
+		info.append(simpleDateFormat.format(new Date())).append(" set system Param:");
 
 		// 设置日志开关
 		Element log = system.element("openLog");
@@ -376,7 +375,7 @@ public class DBFoundConfig {
 			String modeRootPath = modeRoot.getTextTrim();
 			if (!"".equals(modeRootPath)) {
 				ModelReader.setModelLoadRoot(modeRootPath);
-				info.append("(modeRootPath = " + modeRootPath + ")");
+				info.append("(modeRootPath = ").append(modeRootPath).append(")");
 			}
 		}
 
@@ -388,7 +387,7 @@ public class DBFoundConfig {
 				if (queryLimitvalue.equals("false")) {
 					queryLimit = false;
 				}
-				info.append("(queryLimit = " + queryLimit + ")");
+				info.append("(queryLimit = ").append(queryLimit).append(")");
 			}
 		}
 
@@ -398,7 +397,7 @@ public class DBFoundConfig {
 			String queryLimitSizeElementValue = queryLimitSizeElement.getTextTrim();
 			if (DataUtil.isNotNull(queryLimitSizeElementValue)) {
 				queryLimitSize = DataUtil.intValue(queryLimitSizeElementValue);
-				info.append("(queryLimitSize = " + queryLimitSize + ")");
+				info.append("(queryLimitSize = ").append(queryLimitSize).append(")");
 			}
 		}
 
@@ -408,7 +407,7 @@ public class DBFoundConfig {
 			String reportQueryLimitSizeElementValue = reportQueryLimitSizeElement.getTextTrim();
 			if (DataUtil.isNotNull(reportQueryLimitSizeElementValue)) {
 				reportQueryLimitSize = DataUtil.intValue(reportQueryLimitSizeElementValue);
-				info.append("(reportQueryLimitSize = " + reportQueryLimitSize + ")");
+				info.append("(reportQueryLimitSize = ").append(reportQueryLimitSize).append(")");
 			}
 		}
 
@@ -418,7 +417,7 @@ public class DBFoundConfig {
 			String className = listener.getTextTrim();
 			if (!"".equals(className)) {
 				listenerClass = className;
-				info.append("(listenerClass = " + listenerClass + ")");
+				info.append("(listenerClass = ").append(listenerClass).append(")");
 			}
 		}
 
@@ -431,7 +430,7 @@ public class DBFoundConfig {
 				}else{
 					modelModifyCheck = false;
 				}
-				info.append("(modelModifyCheck = " + modelModifyCheckConfig + ")");
+				info.append("(modelModifyCheck = ").append(modelModifyCheckConfig).append(")");
 			}
 		}
 
@@ -440,7 +439,7 @@ public class DBFoundConfig {
 			String dateFormatConfig = dateFormatElement.getTextTrim();
 			if (!"".equals(dateFormatConfig)) {
 				dateFormat = dateFormatConfig;
-				info.append("(dateFormat = " + dateFormatConfig + ")");
+				info.append("(dateFormat = ").append(dateFormatConfig).append(")");
 			}
 		}
 
@@ -449,7 +448,7 @@ public class DBFoundConfig {
 			String dateTimeFormatConfig = dateTimeFormatElement.getTextTrim();
 			if (!"".equals(dateTimeFormatConfig)) {
 				dateTimeFormat = dateTimeFormatConfig;
-				info.append("(dateTimeFormat = " + dateTimeFormatConfig + ")");
+				info.append("(dateTimeFormat = ").append(dateTimeFormatConfig).append(")");
 			}
 		}
 
@@ -548,10 +547,6 @@ public class DBFoundConfig {
 		return dsp;
 	}
 
-	public static void setDsp(List<DataSourceConnectionProvide> dsp) {
-		DBFoundConfig.dsp = dsp;
-	}
-
 	public static void setQueryLimit(boolean queryLimit) {
 		DBFoundConfig.queryLimit = queryLimit;
 	}
@@ -596,14 +591,6 @@ public class DBFoundConfig {
 		DBFoundConfig.dateFormat = dateFormat;
 	}
 
-	public static SimpleDateFormat getSimpleDateFormat() {
-		return simpleDateFormat;
-	}
-
-	public static void setSimpleDateFormat(SimpleDateFormat simpleDateFormat) {
-		DBFoundConfig.simpleDateFormat = simpleDateFormat;
-	}
-
 	public static String getDateFormat() {
 		return dateFormat;
 	}
@@ -620,7 +607,4 @@ public class DBFoundConfig {
 		return jsonStringForceCoverSet;
 	}
 
-	public static void setJsonStringForceCoverSet(Set<String> jsonStringForceCoverSet) {
-		DBFoundConfig.jsonStringForceCoverSet = jsonStringForceCoverSet;
-	}
 }
