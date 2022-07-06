@@ -4,7 +4,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.beanutils.MethodUtils;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import org.apache.commons.beanutils.BeanUtils;
 
 import com.nfwork.dbfound.util.LogUtil;
 
@@ -20,7 +21,6 @@ public class DBFoundEL {
 		return object;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static Object getData(String d[], Object currentObject) {
 		try {
 			for (int i = 0; i < d.length; i++) {
@@ -33,73 +33,122 @@ public class DBFoundEL {
 					currentExpree = currentExpree.substring(0, currentExpree.indexOf("["));
 				}
 				// 计算当前对象
-				Object object = null;
-				if (currentObject instanceof Map) {
-					Map m = (Map) currentObject;
-					object = m.get(currentExpree);
-				} else if(isSampleObject(currentObject)){
-					if("value".equals(currentExpree)){
-						return currentObject;
-					}
-				}else {
-					String methodEndName = currentExpree.substring(0, 1)
-							.toUpperCase()
-							+ currentExpree.substring(1);
-					try {
-						String methodName = "get" + methodEndName;
-						object = MethodUtils.invokeMethod(currentObject,
-								methodName, null);
-					} catch (NoSuchMethodException e) {
-						try {
-							String methodName = "is" + methodEndName;
-							object = MethodUtils.invokeMethod(currentObject,
-									methodName, null);
-						} catch (NoSuchMethodException e2) {
-							return null;
-						}
-					}
-				}
+				Object nextObject = getNextObject(currentObject, currentExpree);
 
-				if (index != -1) {
-					if (object instanceof List) {
-						List l = (List) object;
-						if(index<l.size()) {
-							object = l.get(index);
-						}
-					} else if (object instanceof Set) {
-						Set s = (Set) object;
-						if(index < s.size()) {
-							Iterator iterator = s.iterator();
-							while (iterator.hasNext()) {
-								if (index == 0) {
-									object = iterator.next();
-									break;
-								}
-								index--;
-							}
-						}
-					} else if (object instanceof Object[]) {
-						Object[] objects = (Object[]) object;
-						if(index < objects.length) {
-							object = objects[index];
-						}
-					}
+				if (index != -1 && nextObject != null) {
+					nextObject = getByIndex(index, nextObject);
 				}
 
 				// 判断是否终止
 				if (i == d.length - 1) {
-					if (object == null) {
-						return null;
-					}
-					return object;
+					return nextObject;
 				} else {
-					currentObject = object;
+					currentObject = nextObject;
 				}
 			}
 		} catch (Exception e) {
 			LogUtil.error(e.getMessage(), e);
 		}
 		return null;
+	}
+
+	public static void setData(String express, Map<String, Object> root, Object value){
+		if (express == null) {
+			return ;
+		}
+		if(!ELEngine.isAbsolutePath(express)){
+			throw new DBFoundRuntimeException("dbfound el set data failed, express must start with param,request,outParam,session,header,cookie");
+		}
+
+		String[] expArray = express.split("\\.");
+		Object currentObj = root;
+		Object nextObj = null;
+		for (int i =0;i<expArray.length;i++){
+			String exp = expArray[i].trim();
+
+			if( i== expArray.length -1){
+				setNextObject(currentObj,exp,value);
+				return;
+			}
+
+			int index = findIndex(exp);
+			if (index != -1) {
+				exp = exp.substring(0, exp.indexOf("["));
+			}
+
+			nextObj = getNextObject(currentObj,exp);
+
+			if (index != -1 && nextObj != null) {
+				nextObj = getByIndex(index, nextObj);
+			}
+
+			if(nextObj == null){
+				nextObj = new HashMap<String, Object>();
+				setNextObject(currentObj,exp,nextObj);
+			}
+
+			currentObj = nextObj;
+		}
+	}
+
+	private static Object getByIndex(int index,Object object){
+		if (object instanceof List) {
+			List l = (List) object;
+			if (index < l.size()) {
+				object = l.get(index);
+			}
+		} else if (object instanceof Set) {
+			Set s = (Set) object;
+			if (index < s.size()) {
+				Iterator iterator = s.iterator();
+				while (iterator.hasNext()) {
+					if (index == 0) {
+						object = iterator.next();
+						break;
+					}
+					index--;
+				}
+			}
+		} else if (object instanceof Object[]) {
+			Object[] objects = (Object[]) object;
+			if (index < objects.length) {
+				object = objects[index];
+			}
+		}
+
+		return object;
+	}
+
+	private static Object getNextObject(Object currentObj,String name){
+		if(currentObj instanceof Map){
+			Map currentMap = (Map) currentObj;
+			return currentMap.get(name);
+		} else if(isSampleObject(currentObj)){
+			if("value".equals(name)){
+				return currentObj;
+			}else{
+				return null;
+			}
+		}else{
+			try {
+				return BeanUtils.getProperty(currentObj, name);
+			} catch (Exception e) {
+				throw new DBFoundRuntimeException("dbfound el get data failed, " + e.getMessage(), e);
+			}
+		}
+	}
+
+	private static void setNextObject(Object currentObj,String name,Object nextObj){
+		if(currentObj instanceof Map){
+			Map currentMap = (Map) currentObj;
+			currentMap.put(name, nextObj);
+		}else{
+			try {
+				BeanUtils.setProperty(currentObj, name, nextObj);
+			} catch (Exception e) {
+				throw new DBFoundRuntimeException("set context data failed, " + e.getMessage(), e);
+			}
+		}
 	}
 
 	private static  boolean isSampleObject(Object object){

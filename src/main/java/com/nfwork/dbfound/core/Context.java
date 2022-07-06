@@ -305,39 +305,7 @@ public class Context {
 	}
 
 	public void setData(String name, Object object) {
-		if (name.startsWith("request.")) {
-			name = name.substring(8);
-			setRequestData(name, object);
-		} else if (name.startsWith("session.")) {
-			name = name.substring(8);
-			setSessionData(name, object);
-		} else if (name.startsWith("param.")) {
-			name = name.substring(6);
-			setParamData(name, object);
-		} else if (name.startsWith("outParam.")) {
-			name = name.substring(9);
-			setOutParamData(name, object);
-		} else if (name.equals("param") || name.equals("outParam") || name.equals("request") || name.equals("session")) {
-			throw new DBFoundRuntimeException("context inner object (param,request,session,outParam) can not set");
-		} else {
-			setRootData(name, object);
-		}
-	}
-
-	/**
-	 * 放参数到root集
-	 * 
-	 * @param name
-	 * @param object
-	 */
-	private void setRootData(String name, Object object) {
-		if (name.contains(".")) {
-			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
-		}
-		if (request != null) {
-			request.setAttribute(name, object);
-		}
-		rootDatas.put(name, object);
+		DBFoundEL.setData(name,rootDatas,object);
 	}
 
 	/**
@@ -352,7 +320,7 @@ public class Context {
 		}
 		if (paramDatas == null) {
 			Object o = rootDatas.get("param");
-			if (o != null && o instanceof Map) {
+			if (o instanceof Map) {
 				paramDatas = (Map) o;
 			} else {
 				paramDatas = new HashMap<String, Object>();
@@ -377,7 +345,7 @@ public class Context {
 		}
 		if (outParamDatas == null) {
 			Object o = rootDatas.get("outParam");
-			if (o != null && o instanceof Map) {
+			if (o instanceof Map) {
 				outParamDatas = (Map) o;
 			} else {
 				outParamDatas = new HashMap<String, Object>();
@@ -399,7 +367,7 @@ public class Context {
 		}
 		if (requestDatas == null) {
 			Object o = rootDatas.get("request");
-			if (o != null && o instanceof Map) {
+			if (o instanceof Map) {
 				requestDatas = (Map) o;
 			} else {
 				requestDatas = new HashMap<String, Object>();
@@ -427,7 +395,7 @@ public class Context {
 		}
 		if (sessionDatas == null) {
 			Object o = rootDatas.get("session");
-			if (o != null && o instanceof Map) {
+			if (o instanceof Map) {
 				sessionDatas = (Map) o;
 			} else {
 				sessionDatas = new HashMap<String, Object>();
