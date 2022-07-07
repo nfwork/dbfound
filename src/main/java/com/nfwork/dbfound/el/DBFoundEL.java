@@ -7,48 +7,40 @@ import java.util.regex.Pattern;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.nfwork.dbfound.util.LogUtil;
-
 public class DBFoundEL {
 
 	public static Object getData(String express, Map<String, Object> root) {
+
+		Object currentObject = root;
 		if (express == null) {
 			return null;
 		}
-		String d[] = express.split("\\.");
-		Object currentObject = root;
-		Object object = getData(d, currentObject);
-		return object;
-	}
+		String[] d = express.split("\\.");
 
-	private static Object getData(String d[], Object currentObject) {
-		try {
-			for (int i = 0; i < d.length; i++) {
-				if (currentObject == null) {
-					return null;
-				}
-				String currentExpree = d[i].trim();
-				int index = findIndex(currentExpree);
-				if (index != -1) {
-					currentExpree = currentExpree.substring(0, currentExpree.indexOf("["));
-				}
-				// 计算当前对象
-				Object nextObject = getNextObject(currentObject, currentExpree);
-
-				if (index != -1 && nextObject != null) {
-					nextObject = getByIndex(index, nextObject);
-				}
-
-				// 判断是否终止
-				if (i == d.length - 1) {
-					return nextObject;
-				} else {
-					currentObject = nextObject;
-				}
+		for (int i = 0; i < d.length; i++) {
+			if (currentObject == null) {
+				return null;
 			}
-		} catch (Exception e) {
-			LogUtil.error(e.getMessage(), e);
+			String currentExpree = d[i].trim();
+			int index = findIndex(currentExpree);
+			if (index != -1) {
+				currentExpree = currentExpree.substring(0, currentExpree.indexOf("["));
+			}
+			// 计算当前对象
+			Object nextObject = getNextObject(currentObject, currentExpree);
+
+			if (index != -1 && nextObject != null) {
+				nextObject = getByIndex(index, nextObject);
+			}
+
+			// 判断是否终止
+			if (i == d.length - 1) {
+				return nextObject;
+			} else {
+				currentObject = nextObject;
+			}
 		}
+
 		return null;
 	}
 
