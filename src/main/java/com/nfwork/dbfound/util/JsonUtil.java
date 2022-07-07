@@ -215,7 +215,7 @@ public class JsonUtil {
 	private static String objectToJson(Object obj) {
 		StringBuilder json = new StringBuilder();
 		if (obj == null) {
-			json.append("\"\"");
+			json.append("null");
 		} else if (obj instanceof Enum) {
 			json.append("\"").append(stringToJson(obj.toString())).append("\"");
 		} else if (obj instanceof Number) {
