@@ -3,6 +3,7 @@ package com.nfwork.dbfound.util;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -216,8 +217,6 @@ public class JsonUtil {
 		StringBuilder json = new StringBuilder();
 		if (obj == null) {
 			json.append("null");
-		} else if (obj instanceof Enum) {
-			json.append("\"").append(stringToJson(obj.toString())).append("\"");
 		} else if (obj instanceof Number) {
 			json.append(numberToJson((Number) obj));
 		} else if (obj instanceof Boolean) {
@@ -238,6 +237,10 @@ public class JsonUtil {
 			json.append(mapToJson((Map<?, ?>) obj));
 		} else if (obj instanceof Set) {
 			json.append(setToJson((Set<?>) obj));
+		} else if (obj instanceof Enum) {
+			json.append("\"").append(stringToJson(obj.toString())).append("\"");
+		} else if (obj instanceof InputStream) {
+			json.append("\"InputStream\"");
 		} else {
 			json.append(beanToJson(obj));
 		}

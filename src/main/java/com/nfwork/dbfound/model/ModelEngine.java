@@ -3,7 +3,6 @@ package com.nfwork.dbfound.model;
 import java.util.*;
 import javax.servlet.http.Cookie;
 import com.nfwork.dbfound.util.DataUtil;
-import org.apache.commons.fileupload.FileItem;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.dto.QueryResponseObject;
@@ -380,16 +379,6 @@ public class ModelEngine {
 
 		if ("out".equals(nfParam.getIoType())) {
 			return; // out参数直接返回
-		}
-
-		// 如果是文件类型 就直接从request里面取值
-		if ("file".equals(nfParam.getDataType())) {
-			Object requestValue = context.getData("param." + nfParam.getName());
-			if (requestValue instanceof FileItem) {
-				FileItem item = (FileItem) requestValue;
-				nfParam.setValue(item);
-				return;
-			}
 		}
 
 		// dbfound1.3新功能，根据sourcePath到pagerContext容器中取数据

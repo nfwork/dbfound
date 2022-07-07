@@ -1,7 +1,5 @@
 package com.nfwork.dbfound.model.bean;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.*;
 import java.sql.Date;
@@ -14,7 +12,6 @@ import java.util.regex.Pattern;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.*;
-import org.apache.commons.fileupload.FileItem;
 import org.dom4j.Element;
 
 import com.nfwork.dbfound.core.Context;
@@ -200,27 +197,10 @@ public abstract class SqlEntity extends Sqls {
 				try {
 					String saveType = nfParam.getFileSaveType();
 					Object o = nfParam.getValue();
-					if (o != null) {
-						if(o instanceof FileItem){
-							FileItem item = (FileItem) o;
-							if ("db".equals(saveType)) {
-								statement.setBinaryStream(cursor, item.getInputStream(), (int) item.getSize());
-							} else {
-								String filename = UUIDUtil.getUUID() + ".uf";
-								String fileFoldName = FileUtil.getUploadFolderName();
-								item.write(new File(FileUtil.getUploadFolder(fileFoldName), filename));
-								statement.setString(cursor, fileFoldName + "/" + filename);
-							}
-						}else if(o instanceof File){
-							File file = (File) o;
-							if ("db".equals(saveType)) {
-								statement.setBinaryStream(cursor, new FileInputStream(file), file.length());
-							} 
-						}else if(o instanceof InputStream){
-							InputStream inputStream = (InputStream) o;
-							if ("db".equals(saveType)) {
-								statement.setBinaryStream(cursor, inputStream);
-							} 
+					if(o instanceof InputStream){
+						InputStream inputStream = (InputStream) o;
+						if ("db".equals(saveType)) {
+							statement.setBinaryStream(cursor, inputStream);
 						}
 					}
 				} catch (Exception e) {

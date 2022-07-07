@@ -1,9 +1,10 @@
 package com.nfwork.dbfound.model.bean;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.fileupload.FileItem;
+import com.nfwork.dbfound.exception.DBFoundPackageException;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
@@ -23,11 +24,14 @@ public class ExcelReader extends SqlEntity {
 			throw new ParamNotFoundException("param: " + sourceParam + " 没有定义");
 		}
 		Object ofile = param.getValue();
-		if (ofile != null) {
-			FileItem item = (FileItem) ofile;
-			List<List<Map>> datas = com.nfwork.dbfound.excel.ExcelReader
-					.readExcel(item);
-			context.setData(rootPath, datas);
+		if(ofile instanceof InputStream){
+			try {
+				InputStream inputStream = (InputStream) ofile;
+				List<List<Map>> dataList = com.nfwork.dbfound.excel.ExcelReader.readExcel(inputStream);
+				context.setData(rootPath, dataList);
+			}catch (Exception exception){
+				throw new DBFoundPackageException("excel reader failed, "+ exception.getMessage(),exception);
+			}
 		}
 	}
 
