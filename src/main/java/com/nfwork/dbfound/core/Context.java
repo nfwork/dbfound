@@ -17,6 +17,7 @@ import com.nfwork.dbfound.db.ConnectionProvide;
 import com.nfwork.dbfound.db.ConnectionProvideManager;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.el.DBFoundEL;
+import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelCache;
 import com.nfwork.dbfound.model.bean.Model;
@@ -125,13 +126,9 @@ public class Context {
 	public void cloneCookieData(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
-			if (cookieDatas == null) {
-				cookieDatas = new HashMap<String, Object>();
-				rootDatas.put("cookie", cookieDatas);
-			}
 			for (Cookie cookie : cookies) {
 				if (cookie.getName() != null) {
-					cookieDatas.put(cookie.getName(), cookie);
+					getCookieDatas().put(cookie.getName(), cookie);
 				}
 			}
 		}
@@ -144,14 +141,10 @@ public class Context {
 	 */
 	public void cloneHeaderData(HttpServletRequest request) {
 		Enumeration<String> enumeration = request.getHeaderNames();
-		if (headerDatas == null) {
-			headerDatas = new HashMap<String, Object>();
-			rootDatas.put("header", headerDatas);
-		}
 		while (enumeration.hasMoreElements()) {
 			String key = enumeration.nextElement();
 			if (key != null) {
-				headerDatas.put(key, request.getHeader(key));
+				getHeaderDatas().put(key, request.getHeader(key));
 			}
 		}
 	}
@@ -170,7 +163,7 @@ public class Context {
 			if (paramName.contains(".")) {
 				continue; // 初始化复制session数据时，不克隆a.b多层次数据。
 			}
-			setSessionData(paramName, session.getAttribute(paramName));
+			getSessionDatas().put(paramName, session.getAttribute(paramName));
 		}
 	}
 
@@ -201,6 +194,7 @@ public class Context {
 	@SuppressWarnings({ "unchecked" })
 	public void cloneRequestData(HttpServletRequest request) {
 		Enumeration<String> enumeration = request.getAttributeNames();
+
 		while (enumeration.hasMoreElements()) {
 			String paramName = enumeration.nextElement();
 			if ("_currentContext".equals(paramName)) {
@@ -208,7 +202,7 @@ public class Context {
 			} else if (paramName.contains(".")) {
 				continue; // 初始化复制request数据时，不克隆a.b多层次数据。
 			}
-			setRequestData(paramName, request.getAttribute(paramName));
+			getRequestDatas().put(paramName, request.getAttribute(paramName));
 		}
 	}
 
@@ -304,8 +298,25 @@ public class Context {
 		return null;
 	}
 
-	public void setData(String express, Object object) {
-		DBFoundEL.setData(express,rootDatas,object);
+	public void setData(String name, Object object) {
+		if(DataUtil.isNull(name)){
+			throw new DBFoundRuntimeException("name can not be null");
+		}
+		if (name.startsWith(ELEngine.paramScope)) {
+			name = name.substring(6);
+			setParamData(name, object);
+		} else if (name.startsWith(ELEngine.outParamScope)) {
+			name = name.substring(9);
+			setOutParamData(name, object);
+		} else if (name.startsWith(ELEngine.requestScope)) {
+			name = name.substring(8);
+			setRequestData(name, object);
+		} else if (name.startsWith(ELEngine.sessionScope)) {
+			name = name.substring(8);
+			setSessionData(name, object);
+		} else  {
+			throw new DBFoundRuntimeException("context only in (param,request,session,outParam) can set data");
+		}
 	}
 
 	/**
@@ -316,21 +327,10 @@ public class Context {
 	 */
 	public void setParamData(String name, Object value) {
 		if (name.contains(".")) {
-			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
+			DBFoundEL.setData(name,getParamDatas(),value);
+		}else{
+			getParamDatas().put(name, value);
 		}
-		if (paramDatas == null) {
-			Object o = rootDatas.get("param");
-			if (o instanceof Map) {
-				paramDatas = (Map) o;
-			} else {
-				paramDatas = new HashMap<String, Object>();
-				rootDatas.put("param", paramDatas);
-			}
-		}
-		if (request != null) {
-			request.setAttribute(name, value);
-		}
-		paramDatas.put(name, value);
 	}
 
 	/**
@@ -341,18 +341,10 @@ public class Context {
 	 */
 	public void setOutParamData(String name, Object object) {
 		if (name.contains(".")) {
-			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
+			DBFoundEL.setData(name,getOutParamDatas(),object);
+		}else{
+			getOutParamDatas().put(name, object);
 		}
-		if (outParamDatas == null) {
-			Object o = rootDatas.get("outParam");
-			if (o instanceof Map) {
-				outParamDatas = (Map) o;
-			} else {
-				outParamDatas = new HashMap<String, Object>();
-				rootDatas.put("outParam", outParamDatas);
-			}
-		}
-		outParamDatas.put(name, object);
 	}
 
 	/**
@@ -365,19 +357,10 @@ public class Context {
 		if (name.contains(".")) {
 			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
 		}
-		if (requestDatas == null) {
-			Object o = rootDatas.get("request");
-			if (o instanceof Map) {
-				requestDatas = (Map) o;
-			} else {
-				requestDatas = new HashMap<String, Object>();
-				rootDatas.put("request", requestDatas);
-			}
-		}
 		if (request != null) {
 			request.setAttribute(name, object);
 		}
-		requestDatas.put(name, object);
+		getRequestDatas().put(name, object);
 	}
 
 	/**
@@ -393,19 +376,10 @@ public class Context {
 		if (name.contains(".")) {
 			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
 		}
-		if (sessionDatas == null) {
-			Object o = rootDatas.get("session");
-			if (o instanceof Map) {
-				sessionDatas = (Map) o;
-			} else {
-				sessionDatas = new HashMap<String, Object>();
-				rootDatas.put("session", sessionDatas);
-			}
-		}
 		if (request != null) {
 			request.getSession().setAttribute(name, object);
 		}
-		sessionDatas.put(name, object);
+		getSessionDatas().put(name, object);
 	}
 
 	/**
@@ -530,7 +504,81 @@ public class Context {
 	}
 
 	public Map<String, Object> getOutParamDatas() {
+		if (outParamDatas == null) {
+			Object o = rootDatas.get("outParam");
+			if (o instanceof Map) {
+				outParamDatas = (Map) o;
+			}else{
+				outParamDatas = new HashMap<>();
+				rootDatas.put("outParam",outParamDatas);
+			}
+		}
 		return outParamDatas;
+	}
+
+	public Map<String, Object> getParamDatas() {
+		if (paramDatas == null) {
+			Object o = rootDatas.get("param");
+			if (o instanceof Map) {
+				paramDatas = (Map) o;
+			} else {
+				paramDatas = new HashMap<String, Object>();
+				rootDatas.put("param", paramDatas);
+			}
+		}
+		return paramDatas;
+	}
+
+	public Map<String, Object> getRequestDatas() {
+		if (requestDatas == null) {
+			Object o = rootDatas.get("request");
+			if (o instanceof Map) {
+				requestDatas = (Map) o;
+			} else {
+				requestDatas = new HashMap<String, Object>();
+				rootDatas.put("request", requestDatas);
+			}
+		}
+		return requestDatas;
+	}
+
+	public Map<String, Object> getSessionDatas() {
+		if (sessionDatas == null) {
+			Object o = rootDatas.get("session");
+			if (o instanceof Map) {
+				sessionDatas = (Map) o;
+			} else {
+				sessionDatas = new HashMap<String, Object>();
+				rootDatas.put("session", sessionDatas);
+			}
+		}
+		return sessionDatas;
+	}
+
+	public Map<String, Object> getCookieDatas() {
+		if (cookieDatas == null) {
+			Object o = rootDatas.get("cookie");
+			if (o instanceof Map) {
+				cookieDatas = (Map) o;
+			} else {
+				cookieDatas = new HashMap<String, Object>();
+				rootDatas.put("cookie", cookieDatas);
+			}
+		}
+		return cookieDatas;
+	}
+
+	public Map<String, Object> getHeaderDatas() {
+		if (headerDatas == null) {
+			Object o = rootDatas.get("header");
+			if (o instanceof Map) {
+				headerDatas = (Map) o;
+			} else {
+				headerDatas = new HashMap<String, Object>();
+				rootDatas.put("header", headerDatas);
+			}
+		}
+		return headerDatas;
 	}
 
 	public boolean isInWebContainer() {

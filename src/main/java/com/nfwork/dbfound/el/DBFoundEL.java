@@ -56,24 +56,21 @@ public class DBFoundEL {
 		if (express == null) {
 			return ;
 		}
-		if(!ELEngine.isAbsolutePath(express)){
-			throw new DBFoundRuntimeException("dbfound el set data failed, express must start with param,request,outParam,session,header,cookie");
-		}
-
 		String[] expArray = express.split("\\.");
+
 		Object currentObj = root;
 		Object nextObj = null;
 		for (int i =0;i<expArray.length;i++){
 			String exp = expArray[i].trim();
 
-			if( i== expArray.length -1){
-				setNextObject(currentObj,exp,value);
-				return;
-			}
-
 			int index = findIndex(exp);
 			if (index != -1) {
 				exp = exp.substring(0, exp.indexOf("["));
+			}
+
+			if( i== expArray.length -1){
+				setNextObject(currentObj,exp,value);
+				return;
 			}
 
 			nextObj = getNextObject(currentObj,exp);
