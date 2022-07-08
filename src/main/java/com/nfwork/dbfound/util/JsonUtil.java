@@ -18,6 +18,8 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.json.JSONArray;
 import com.nfwork.dbfound.json.JSONNull;
 import com.nfwork.dbfound.json.JSONObject;
+import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
+import com.nfwork.dbfound.model.enums.EnumTypeHandler;
 
 /**
  * Json数据处理
@@ -238,7 +240,9 @@ public class JsonUtil {
 		} else if (obj instanceof Set) {
 			json.append(setToJson((Set<?>) obj));
 		} else if (obj instanceof Enum) {
-			json.append("\"").append(stringToJson(obj.toString())).append("\"");
+			EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(obj.getClass());
+			Object value = handler.getEnumValue(obj);
+			json.append(objectToJson(value));
 		} else if (obj instanceof InputStream) {
 			json.append("\"InputStream\"");
 		} else {

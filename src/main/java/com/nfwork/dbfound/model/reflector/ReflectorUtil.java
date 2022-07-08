@@ -8,6 +8,8 @@ import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
+import com.nfwork.dbfound.model.enums.EnumTypeHandler;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
 
@@ -81,6 +83,12 @@ public class ReflectorUtil {
 								columnvalue = rs.getTimestamp(i, defaultCalendar);
 							} else if (fieldtype.equals(String.class)) {
 								columnvalue = rs.getString(i);
+							}else if (Enum.class.isAssignableFrom(fieldtype)){
+								EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(fieldtype);
+								String svalue = rs.getString(i);
+								if(svalue!=null) {
+									columnvalue = handler.locateEnum(svalue);
+								}
 							}
 
 							try {
