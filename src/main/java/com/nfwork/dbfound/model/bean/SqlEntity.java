@@ -212,14 +212,6 @@ public abstract class SqlEntity extends Sqls {
 			} else if(paramDataType.equals("boolean")){
 				if(nfParam.getValue() instanceof Boolean){
 					statement.setBoolean(cursor,(Boolean) nfParam.getValue());
-				}else{
-					if("false".equals(paramValue) || "0".equals(paramValue)){
-						statement.setBoolean(cursor,false);
-						nfParam.setValue(false);
-					}else{
-						statement.setBoolean(cursor,true);
-						nfParam.setValue(true);
-					}
 				}
 			} else if (paramDataType.equals("file")) {
 				try {
@@ -295,6 +287,17 @@ public abstract class SqlEntity extends Sqls {
 			Object value = handler.getEnumValue(object);
 			nfParam.setValue(value);
 		}
+
+		if("boolean".equals(nfParam.getDataType())){
+			if(DataUtil.isNotNull(nfParam.getValue()) && !(nfParam.getValue() instanceof Boolean)) {
+				if ("false".equals(nfParam.getValue()) || "0".equals(nfParam.getValue())) {
+					nfParam.setValue(false);
+				} else {
+					nfParam.setValue(true);
+				}
+			}
+		}
+
 	}
 
 	private void initParamType(Param nfParam){
