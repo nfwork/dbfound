@@ -155,6 +155,12 @@ public abstract class SqlEntity extends Sqls {
 					statement.setDouble(cursor,(Double) nfParam.getValue());
 				}else if(nfParam.getValue() instanceof Float){
 					statement.setFloat(cursor,(Float) nfParam.getValue());
+				}else if(nfParam.getValue() instanceof Boolean){
+					if ((Boolean) nfParam.getValue()){
+						statement.setInt(cursor,1);
+					} else{
+						statement.setInt(cursor,0);
+					}
 				}else if (!paramValue.contains(".")) {
 					statement.setLong(cursor, Long.parseLong(paramValue));
 				} else if (paramValue.endsWith(".0")) {
