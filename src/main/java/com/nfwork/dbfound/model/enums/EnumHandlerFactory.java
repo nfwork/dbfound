@@ -15,7 +15,7 @@ public class EnumHandlerFactory {
                     result = cache.get(class1);
                     if (result == null) {
                         result = new DefaultEnumTypeHandler();
-                        result.setType(class1);
+                        result.initType(class1);
                         cache.put(class1, result);
                     }
                 }

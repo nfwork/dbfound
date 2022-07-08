@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
-import com.nfwork.dbfound.model.enums.EnumTypeHandler;
 import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
 
@@ -121,7 +119,7 @@ public abstract class SqlEntity extends Sqls {
 			if (nfParam == null) {
 				throw new ParamNotFoundException("param: " + pn + " not defined");
 			}
-			initParamValue(nfParam);
+
 			initParamType(nfParam);
 
 			if ("true".equals(nfParam.getUUID())) {
@@ -157,6 +155,12 @@ public abstract class SqlEntity extends Sqls {
 					statement.setDouble(cursor,(Double) nfParam.getValue());
 				}else if(nfParam.getValue() instanceof Float){
 					statement.setFloat(cursor,(Float) nfParam.getValue());
+				}else if(nfParam.getValue() instanceof Boolean){
+					if ((Boolean) nfParam.getValue()){
+						statement.setInt(cursor,1);
+					} else{
+						statement.setInt(cursor,0);
+					}
 				}else if (!paramValue.contains(".")) {
 					statement.setLong(cursor, Long.parseLong(paramValue));
 				} else if (paramValue.endsWith(".0")) {
@@ -238,11 +242,9 @@ public abstract class SqlEntity extends Sqls {
 			if (nfParam == null) {
 				throw new ParamNotFoundException("param: " + pn + " not defined");
 			}
-
-			initParamValue(nfParam);
-			initParamType(nfParam);
-
 			paramValue = nfParam.getStringValue();
+
+			initParamType(nfParam);
 
 			// UUID取值
 			if ("true".equals(nfParam.getUUID())) {
@@ -256,25 +258,6 @@ public abstract class SqlEntity extends Sqls {
 		}
 		m.appendTail(buf);
 		return buf.toString();
-	}
-
-	/**
-	 * 枚举类型 boolean类型支持 2022年07月08日17:26:06
-	 * @param nfParam
-	 */
-	private void initParamValue(Param nfParam){
-		Object object = nfParam.getValue();
-		if(object instanceof Enum){
-			EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(object.getClass());
-			Object value = handler.getEnumValue(object);
-			nfParam.setValue(value);
-		}else if(object instanceof Boolean && "number".equals( nfParam.getDataType())){
-			if ((Boolean) nfParam.getValue()){
-				nfParam.setValue(1);
-			} else{
-				nfParam.setValue(0);
-			}
-		}
 	}
 
 	private void initParamType(Param nfParam){

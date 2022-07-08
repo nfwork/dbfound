@@ -11,22 +11,7 @@ public class DefaultEnumTypeHandler<E extends Enum<E> >  implements EnumTypeHand
 
     @Override
     public Enum locateEnum(String value) {
-        Enum result = cache.get(value);
-        if(result!=null){
-            return result;
-        }
-        E[] enums =  type.getEnumConstants();
-        if (enums == null) {
-            throw new IllegalArgumentException(type.getSimpleName() + " does not represent an enum type.");
-        }
-        for (E e : enums) {
-            Object evalue = getEnumValue(e);
-            if (evalue!= null && evalue.toString().equals(value)) {
-                cache.put(value,e);
-                return e;
-            }
-        }
-        return null;
+        return cache.get(value);
     }
 
     @Override
@@ -47,7 +32,15 @@ public class DefaultEnumTypeHandler<E extends Enum<E> >  implements EnumTypeHand
         return param.toString();
     }
 
-    public void setType(Class type) {
+    public void initType(Class type) {
         this.type = type;
+        E[] enums =  this.type.getEnumConstants();
+        if (enums == null) {
+            throw new IllegalArgumentException(type.getSimpleName() + " does not represent an enum type.");
+        }
+        for (E e : enums) {
+            Object value = getEnumValue(e);
+            cache.put(value.toString(),e);
+        }
     }
 }

@@ -6,5 +6,5 @@ public interface EnumTypeHandler<E> {
 
      Object getEnumValue(E param);
 
-     public void setType(Class<E> type) ;
+     public void initType(Class<E> type) ;
 }
