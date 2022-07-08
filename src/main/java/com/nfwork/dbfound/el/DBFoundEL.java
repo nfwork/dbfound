@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.BeanUtilsBean;
 
 public class DBFoundEL {
 
@@ -120,7 +121,7 @@ public class DBFoundEL {
 			}
 		}else{
 			try {
-				return BeanUtils.getProperty(currentObj, name);
+				return BeanUtilsBean.getInstance().getPropertyUtils().getProperty(currentObj, name);
 			} catch (Exception e) {
 				throw new DBFoundRuntimeException("dbfound el get data failed, " + e.getMessage(), e);
 			}
