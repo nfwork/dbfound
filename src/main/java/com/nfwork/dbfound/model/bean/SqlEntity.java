@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.sql.Date;
 import java.text.ParseException;
@@ -150,15 +151,21 @@ public abstract class SqlEntity extends Sqls {
 			} else if (paramDataType.equals("number")) {
 				if ("".equals(paramValue.trim())) {
 					statement.setString(cursor, null);
-				}else if(nfParam.getValue() instanceof Integer){
+				} else if(nfParam.getValue() instanceof Integer){
 					statement.setInt(cursor,(Integer) nfParam.getValue());
-				}else if(nfParam.getValue() instanceof Long){
+				} else if(nfParam.getValue() instanceof Long){
 					statement.setLong(cursor,(Long) nfParam.getValue());
-				}else if(nfParam.getValue() instanceof Double){
+				} else if(nfParam.getValue() instanceof Double){
 					statement.setDouble(cursor,(Double) nfParam.getValue());
-				}else if(nfParam.getValue() instanceof Float){
+				} else if(nfParam.getValue() instanceof Float){
 					statement.setFloat(cursor,(Float) nfParam.getValue());
-				}else if (!paramValue.contains(".")) {
+				} else if(nfParam.getValue() instanceof Short){
+					statement.setShort(cursor,(Short) nfParam.getValue());
+				} else if(nfParam.getValue() instanceof BigDecimal){
+					statement.setBigDecimal(cursor,(BigDecimal) nfParam.getValue());
+				} else if(nfParam.getValue() instanceof Byte){
+					statement.setByte(cursor,(Byte) nfParam.getValue());
+				} else if (!paramValue.contains(".")) {
 					statement.setLong(cursor, Long.parseLong(paramValue));
 				} else if (paramValue.endsWith(".0")) {
 					paramValue = paramValue.substring(0, paramValue.length() - 2);
@@ -282,8 +289,7 @@ public abstract class SqlEntity extends Sqls {
 		if ("unknown".equals(nfParam.getDataType())){
 			Object value = nfParam.getValue();
 			if (value != null){
-				if (value instanceof Integer || value instanceof Long
-						|| value instanceof Double || value instanceof  Float){
+				if (value instanceof Number){
 					nfParam.setDataType("number");
 				}else if(value instanceof Date){
 					nfParam.setDataType("date");

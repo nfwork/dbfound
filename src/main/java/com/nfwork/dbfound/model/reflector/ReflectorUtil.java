@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.model.reflector;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -61,11 +62,9 @@ public class ReflectorUtil {
 
 							Class<?> fieldtype = reflector.getSetterType(propertyname);
 
-							if (fieldtype.equals(Short.class) || fieldtype.equals(short.class)) {
-								columnvalue = rs.getShort(i);
-							} else if (fieldtype.equals(Byte.class) || fieldtype.equals(byte.class)) {
-								columnvalue = rs.getByte(i);
-							} else if (fieldtype.equals(Integer.class) || fieldtype.equals(int.class)) {
+							if (fieldtype.equals(String.class)) {
+								columnvalue = rs.getString(i);
+							}else if (fieldtype.equals(Integer.class) || fieldtype.equals(int.class)) {
 								columnvalue = rs.getInt(i);
 							} else if (fieldtype.equals(Long.class) || fieldtype.equals(long.class)) {
 								columnvalue = rs.getLong(i);
@@ -75,20 +74,22 @@ public class ReflectorUtil {
 								columnvalue = rs.getDouble(i);
 							} else if (fieldtype.equals(Boolean.class) || fieldtype.equals(boolean.class)) {
 								columnvalue = rs.getBoolean(i);
-							} else if (fieldtype.equals(Timestamp.class)) {
-								columnvalue = rs.getTimestamp(i, defaultCalendar);
 							} else if (fieldtype.equals(java.sql.Date.class)) {
 								columnvalue = rs.getDate(i, defaultCalendar);
 							} else if (fieldtype.equals(Date.class)) {
 								columnvalue = rs.getTimestamp(i, defaultCalendar);
-							} else if (fieldtype.equals(String.class)) {
-								columnvalue = rs.getString(i);
-							}else if (Enum.class.isAssignableFrom(fieldtype)){
+							} else if (Enum.class.isAssignableFrom(fieldtype)){
 								EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(fieldtype);
 								String svalue = rs.getString(i);
 								if(svalue!=null) {
 									columnvalue = handler.locateEnum(svalue);
 								}
+							} else if (fieldtype.equals(BigDecimal.class)){
+								columnvalue = rs.getBigDecimal(i);
+							} else if (fieldtype.equals(Short.class) || fieldtype.equals(short.class)) {
+								 columnvalue = rs.getShort(i);
+							} else if (fieldtype.equals(Byte.class) || fieldtype.equals(byte.class)) {
+								 columnvalue = rs.getByte(i);
 							}
 
 							try {
