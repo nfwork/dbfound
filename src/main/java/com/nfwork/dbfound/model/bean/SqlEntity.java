@@ -165,6 +165,12 @@ public abstract class SqlEntity extends Sqls {
 					statement.setBigDecimal(cursor,(BigDecimal) nfParam.getValue());
 				} else if(nfParam.getValue() instanceof Byte){
 					statement.setByte(cursor,(Byte) nfParam.getValue());
+				} else if(nfParam.getValue() instanceof Boolean){
+					if ((Boolean) nfParam.getValue()){
+						nfParam.setValue(1);
+					} else{
+						nfParam.setValue(0);
+					}
 				} else if (!paramValue.contains(".")) {
 					statement.setLong(cursor, Long.parseLong(paramValue));
 				} else if (paramValue.endsWith(".0")) {
@@ -202,6 +208,18 @@ public abstract class SqlEntity extends Sqls {
 					}
 				}else {
 					statement.setString(cursor, paramValue);
+				}
+			} else if(paramDataType.equals("boolean")){
+				if(nfParam.getValue() instanceof Boolean){
+					statement.setBoolean(cursor,(Boolean) nfParam.getValue());
+				}else{
+					if("false".equals(paramValue) || "0".equals(paramValue)){
+						statement.setBoolean(cursor,false);
+						nfParam.setValue(false);
+					}else{
+						statement.setBoolean(cursor,true);
+						nfParam.setValue(true);
+					}
 				}
 			} else if (paramDataType.equals("file")) {
 				try {
@@ -276,12 +294,6 @@ public abstract class SqlEntity extends Sqls {
 			EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(object.getClass());
 			Object value = handler.getEnumValue(object);
 			nfParam.setValue(value);
-		}else if(object instanceof Boolean && "number".equals( nfParam.getDataType())){
-			if ((Boolean) nfParam.getValue()){
-				nfParam.setValue(1);
-			} else{
-				nfParam.setValue(0);
-			}
 		}
 	}
 
@@ -291,9 +303,11 @@ public abstract class SqlEntity extends Sqls {
 			if (value != null){
 				if (value instanceof Number){
 					nfParam.setDataType("number");
-				}else if(value instanceof Date){
+				} else if (value instanceof Date){
 					nfParam.setDataType("date");
-				}else{
+				} else if (value instanceof Boolean){
+					nfParam.setDataType("boolean");
+				} else {
 					nfParam.setDataType("varchar");
 				}
 			}

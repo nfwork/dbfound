@@ -88,6 +88,7 @@
 					<xsd:enumeration value="varchar" />
 					<xsd:enumeration value="number" />
 					<xsd:enumeration value="date" />
+					<xsd:enumeration value="boolean" />
 					<xsd:enumeration value="file" />
 				</xsd:restriction>
 			</xsd:simpleType>
