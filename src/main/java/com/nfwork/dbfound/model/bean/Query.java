@@ -147,7 +147,7 @@ public class Query extends SqlEntity {
 			if(object == null && entityClass != null){
 				object = entityClass;
 			}
-			if (object != null && !object.isAssignableFrom(Map.class)) {
+			if (object != null && ! Map.class.isAssignableFrom(object)) {
 				List<T> list = (List<T>) ReflectorUtil.parseResultList(object, dataset, context);
 				return list;
 			}
