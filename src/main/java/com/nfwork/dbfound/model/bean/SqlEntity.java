@@ -168,13 +168,6 @@ public abstract class SqlEntity extends Sqls {
 					statement.setBigDecimal(cursor,(BigDecimal) nfParam.getValue());
 				} else if(nfParam.getValue() instanceof Byte){
 					statement.setByte(cursor,(Byte) nfParam.getValue());
-				} else if(nfParam.getValue() instanceof Boolean){
-					if ((Boolean) nfParam.getValue()){
-						nfParam.setValue(1);
-					} else{
-						nfParam.setValue(0);
-					}
-					statement.setInt(cursor,(Integer) nfParam.getValue());
 				} else if (!paramValue.contains(".")) {
 					nfParam.setValue(Long.parseLong(paramValue));
 					statement.setLong(cursor,(Long) nfParam.getValue());
@@ -216,18 +209,13 @@ public abstract class SqlEntity extends Sqls {
 					statement.setString(cursor, paramValue);
 				}
 			} else if(paramDataType.equals("boolean")){
-				if(nfParam.getValue() instanceof Boolean){
-					statement.setBoolean(cursor,(Boolean) nfParam.getValue());
-				}
+				statement.setBoolean(cursor,(Boolean) nfParam.getValue());
 			} else if (paramDataType.equals("file")) {
 				try {
 					String saveType = nfParam.getFileSaveType();
-					Object o = nfParam.getValue();
-					if(o instanceof InputStream){
-						InputStream inputStream = (InputStream) o;
-						if ("db".equals(saveType)) {
-							statement.setBinaryStream(cursor, inputStream);
-						}
+					InputStream inputStream = (InputStream) nfParam.getValue();
+					if ("db".equals(saveType)) {
+						statement.setBinaryStream(cursor, inputStream);
 					}
 				} catch (Exception e) {
 					LogUtil.error(e.getMessage(), e);
@@ -287,10 +275,9 @@ public abstract class SqlEntity extends Sqls {
 	 * @param nfParam
 	 */
 	private void initParamValue(Param nfParam){
-		Object object = nfParam.getValue();
-		if(object instanceof Enum){
-			EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(object.getClass());
-			Object value = handler.getEnumValue(object);
+		if(nfParam.getValue() instanceof Enum){
+			EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(nfParam.getValue().getClass());
+			Object value = handler.getEnumValue(nfParam.getValue());
 			nfParam.setValue(value);
 		}
 
@@ -300,6 +287,14 @@ public abstract class SqlEntity extends Sqls {
 					nfParam.setValue(false);
 				} else {
 					nfParam.setValue(true);
+				}
+			}
+		} else if("number".equals(nfParam.getDataType()) ){
+			if( nfParam.getValue() instanceof Boolean) {
+				if ((Boolean) nfParam.getValue()) {
+					nfParam.setValue(1);
+				} else {
+					nfParam.setValue(0);
 				}
 			}
 		}
