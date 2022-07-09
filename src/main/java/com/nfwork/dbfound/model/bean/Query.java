@@ -304,8 +304,7 @@ public class Query extends SqlEntity {
 
 	/**
 	 * 统计sql查询总共的条数
-	 * 
-	 * @return
+	 *
 	 */
 	public void countItems(Context context,Count count ,Map<String, Param> params, String provideName) {
 
