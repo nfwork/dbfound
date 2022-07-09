@@ -2,6 +2,7 @@ package com.nfwork.dbfound.model.adapter;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.QueryResponseObject;
+import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.bean.Param;
 
 import java.lang.reflect.ParameterizedType;
@@ -10,9 +11,17 @@ import java.util.Map;
 
 public interface QueryAdapter<T> {
 
-    public void beforeQuery(Context context, Map<String, Param> params);
+    default void beforeQuery(Context context, Map<String, Param> params){
 
-    public void afterQuery(Context context, Map<String, Param> params, QueryResponseObject<T> responseObject);
+    }
+
+    default void beforeCount(Context context, Map<String, Param> params, Count count){
+
+    }
+
+    default void afterQuery(Context context, Map<String, Param> params, QueryResponseObject<T> responseObject){
+
+    }
 
     default Class<T> getEntityClass() {
         Class<?> class1 = getClass();

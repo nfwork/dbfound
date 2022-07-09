@@ -17,6 +17,7 @@ import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
+import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
 
@@ -228,12 +229,10 @@ public class Query extends SqlEntity {
 		return buf.toString();
 	}
 
-	/**
-	 * 统计sql查询总共的条数
-	 * 
-	 * @return
-	 */
-	public long countItems(Context context,String querySql ,Map<String, Param> params, String provideName) {
+	public Count getCount(String querySql){
+
+		Count count = new Count();
+
 		char[] sqlChars = querySql.toCharArray();
 		int dyh = 0;
 		int syh = 0;
@@ -274,7 +273,8 @@ public class Query extends SqlEntity {
 		}
 
 		if (from_hold == 0) {
-			return 1; // 没有找到from return 1
+			count.setExecuteCount(false);
+			return count; // 没有找到from return 1
 		}
 
 		String cSql = "";
@@ -298,18 +298,32 @@ public class Query extends SqlEntity {
 			}
 		}
 
+		count.setCountSql(cSql);
+		return count;
+	}
+
+	/**
+	 * 统计sql查询总共的条数
+	 * 
+	 * @return
+	 */
+	public void countItems(Context context,Count count ,Map<String, Param> params, String provideName) {
+
+		String cSql = count.getCountSql();
 		Connection conn = context.getConn(provideName);
 		String ceSql = getExecuteSql(cSql,params);
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
-		long count = 0;
 		try {
 			statement = conn.prepareStatement(ceSql);
+			if (queryTimeout != null) {
+				statement.setQueryTimeout(queryTimeout);
+			}
 			// 参数设定
 			initParam(statement, cSql, params);
 			dataset = statement.executeQuery();
 			dataset.next();
-			count = dataset.getLong(1);
+			count.setTotalCounts( dataset.getLong(1));
 		} catch (SQLException e) {
 			throw new DBFoundPackageException("Query execute count exception:" + e.getMessage(), e);
 		} finally {
@@ -317,7 +331,6 @@ public class Query extends SqlEntity {
 			DBUtil.closeStatement(statement);
 			LogUtil.info("execute count sql：" + ceSql);
 		}
-		return count;
 	}
 
 	private boolean sqlMatch(char[] sqls, int index, char[]match){

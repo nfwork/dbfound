@@ -7,7 +7,11 @@ import java.util.Map;
 
 public interface ExecuteAdapter {
 
-    public void beforeExecute(Context context, Map<String, Param> params);
+    default void beforeExecute(Context context, Map<String, Param> params){
 
-    public void afterExecute(Context context, Map<String, Param> params);
+    }
+
+    default void afterExecute(Context context, Map<String, Param> params){
+
+    }
 }

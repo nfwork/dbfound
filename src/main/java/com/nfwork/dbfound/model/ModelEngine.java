@@ -2,6 +2,8 @@ package com.nfwork.dbfound.model;
 
 import java.util.*;
 import javax.servlet.http.Cookie;
+
+import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
@@ -155,8 +157,18 @@ public class ModelEngine {
 			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
 				ro.setTotalCounts(datas.size());
 			} else {
-				long totalCounts = query.countItems(context, querySql, params, provideName);
-				ro.setTotalCounts(totalCounts);
+				Count count = query.getCount(querySql);
+				count.setDataSize(dataSize);
+				count.setTotalCounts(dataSize);
+
+				if(query.getQueryAdapter() != null){
+					query.getQueryAdapter().beforeCount(context,params,count);
+				}
+
+				if(count.isExecuteCount()) {
+					query.countItems(context, count, params, provideName);
+				}
+				ro.setTotalCounts(count.getTotalCounts());
 			}
 			ro.setSuccess(true);
 			ro.setMessage("success");
