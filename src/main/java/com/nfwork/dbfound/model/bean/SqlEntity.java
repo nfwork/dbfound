@@ -295,7 +295,7 @@ public abstract class SqlEntity extends Sqls {
 		}
 
 		if("boolean".equals(nfParam.getDataType())){
-			if(DataUtil.isNotNull(nfParam.getValue()) && !(nfParam.getValue() instanceof Boolean)) {
+			if( !(nfParam.getValue() instanceof Boolean) && DataUtil.isNotNull(nfParam.getValue()) ) {
 				if ("false".equals(nfParam.getValue()) || "0".equals(nfParam.getValue())) {
 					nfParam.setValue(false);
 				} else {
