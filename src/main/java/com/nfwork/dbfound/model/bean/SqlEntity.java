@@ -171,14 +171,17 @@ public abstract class SqlEntity extends Sqls {
 					} else{
 						nfParam.setValue(0);
 					}
+					statement.setInt(cursor,(Integer) nfParam.getValue());
 				} else if (!paramValue.contains(".")) {
-					statement.setLong(cursor, Long.parseLong(paramValue));
+					nfParam.setValue(Long.parseLong(paramValue));
+					statement.setLong(cursor,(Long) nfParam.getValue());
 				} else if (paramValue.endsWith(".0")) {
 					paramValue = paramValue.substring(0, paramValue.length() - 2);
-					nfParam.setValue(paramValue);
-					statement.setLong(cursor, Long.parseLong(paramValue));
+					nfParam.setValue(Long.parseLong(paramValue));
+					statement.setLong(cursor, (Long) nfParam.getValue());
 				} else {
-					statement.setDouble(cursor, Double.parseDouble(paramValue));
+					nfParam.setValue(Double.parseDouble(paramValue));
+					statement.setDouble(cursor,(Double)nfParam.getValue());
 				}
 			} else if (paramDataType.equals("date")) {
 				paramValue = paramValue.trim();
