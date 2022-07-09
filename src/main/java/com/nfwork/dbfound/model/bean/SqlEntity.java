@@ -138,16 +138,19 @@ public abstract class SqlEntity extends Sqls {
 				statement.setString(cursor, null);
 			} else if (paramDataType.equals("varchar")) {
 				if (nfParam.getValue() instanceof Map ){
-					statement.setString(cursor, JsonUtil.mapToJson((Map)nfParam.getValue()));
+					paramValue = JsonUtil.mapToJson((Map)nfParam.getValue());
+					nfParam.setValue(paramValue);
 				}else if( nfParam.getValue() instanceof Set ){
-					statement.setString(cursor,JsonUtil.setToJson((Set)nfParam.getValue()));
+					paramValue = JsonUtil.setToJson((Set)nfParam.getValue());
+					nfParam.setValue(paramValue);
 				}else if( nfParam.getValue() instanceof List ){
-					statement.setString(cursor,JsonUtil.listToJson((List)nfParam.getValue()));
+					paramValue = JsonUtil.listToJson((List)nfParam.getValue());
+					nfParam.setValue(paramValue);
 				}else if( nfParam.getValue() instanceof Object[]){
-					statement.setString(cursor,JsonUtil.arrayToJson((Object[])nfParam.getValue()));
-				}else {
-					statement.setString(cursor, paramValue);
+					paramValue = JsonUtil.arrayToJson((Object[])nfParam.getValue());
+					nfParam.setValue(paramValue);
 				}
+				statement.setString(cursor, paramValue);
 			} else if (paramDataType.equals("number")) {
 				if ("".equals(paramValue.trim())) {
 					statement.setString(cursor, null);
