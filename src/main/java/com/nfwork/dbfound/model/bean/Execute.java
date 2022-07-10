@@ -13,7 +13,7 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
 import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.LogUtil;
+import com.nfwork.dbfound.util.StreamUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
@@ -129,11 +129,7 @@ public class Execute extends SqlEntity {
 	private void closeFileParam(List<InputStream> list){
 		if(list != null) {
 			for (InputStream inputStream : list) {
-				try {
-					inputStream.close();
-				} catch (Exception exception) {
-					LogUtil.error(exception.getMessage(), exception);
-				}
+				StreamUtils.closeInputStream(inputStream);
 			}
 		}
 	}

@@ -15,7 +15,6 @@ public  class StreamUtils {
             StringBuilder out = new StringBuilder();
             InputStreamReader reader = new InputStreamReader(in, charset);
             char[] buffer = new char[4096];
-            boolean var5 = true;
 
             int bytesRead;
             while((bytesRead = reader.read(buffer)) != -1) {
@@ -23,6 +22,16 @@ public  class StreamUtils {
             }
 
             return out.toString();
+        }
+    }
+
+    public static void closeInputStream(InputStream in){
+        if(in != null){
+            try {
+                in.close();
+            }catch (Exception e){
+                LogUtil.error(e.getMessage(),e);
+            }
         }
     }
 }
