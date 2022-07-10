@@ -21,7 +21,7 @@ public class Param extends Entity {
 	private String scope;
 	private String fileSaveType = "db"; // disk ,db
 	private String fileNameParam;
-	private String UUID = "false";
+	private boolean UUID = false;
 	private boolean batchAssign = true;
 
 	@Override
@@ -127,12 +127,12 @@ public class Param extends Entity {
 		this.fileSaveType = fileSaveType;
 	}
 
-	public String getUUID() {
+	public boolean isUUID() {
 		return UUID;
 	}
 
-	public void setUUID(String uUID) {
-		UUID = uUID;
+	public void setUUID(boolean UUID) {
+		this.UUID = UUID;
 	}
 
 	public String getFileNameParam() {

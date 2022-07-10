@@ -382,7 +382,7 @@ public class ModelEngine {
 	private static void setParam(Param nfParam, Context context, String cp) {
 
 		// 增加UUID取值 在sql执行的时候动态的获取UUID 2012年8月8日8:47:08
-		if ("true".equals(nfParam.getUUID())) {
+		if (nfParam.isUUID()) {
 			nfParam.setSourcePathHistory("UUID");
 			nfParam.setDataType("varchar");
 			return;

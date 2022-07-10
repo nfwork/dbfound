@@ -20,7 +20,6 @@ import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.model.base.Entity;
-import com.nfwork.dbfound.web.file.FileUtil;
 
 public abstract class SqlEntity extends Sqls {
 
@@ -107,7 +106,6 @@ public abstract class SqlEntity extends Sqls {
 	public void initParam(PreparedStatement statement, String sql, Map<String, Param> params)
 			throws NumberFormatException, SQLException {
 
-		String paramValue;
 		String paramDataType;
 
 		// 设定参数
@@ -126,18 +124,18 @@ public abstract class SqlEntity extends Sqls {
 			initParamValue(nfParam);
 			initParamType(nfParam);
 
-			if ("true".equals(nfParam.getUUID())) {
-				paramValue = UUIDUtil.getUUID();
-				nfParam.setValue(paramValue);
-			} else {
-				paramValue = nfParam.getStringValue();
+			if (nfParam.isUUID()) {
+				nfParam.setValue(UUIDUtil.getUUID());
 			}
 			paramDataType = nfParam.getDataType();
 
-			if (paramValue == null) {
+			if (nfParam.getValue() == null) {
 				statement.setString(cursor, null);
 			} else if (paramDataType.equals("varchar")) {
-				if (nfParam.getValue() instanceof Map ){
+				String paramValue;
+				if(nfParam.getValue() instanceof String) {
+					paramValue = nfParam.getValue().toString();
+				}else if (nfParam.getValue() instanceof Map ){
 					paramValue = JsonUtil.mapToJson((Map)nfParam.getValue());
 					nfParam.setValue(paramValue);
 				}else if( nfParam.getValue() instanceof Set ){
@@ -149,12 +147,13 @@ public abstract class SqlEntity extends Sqls {
 				}else if( nfParam.getValue() instanceof Object[]){
 					paramValue = JsonUtil.arrayToJson((Object[])nfParam.getValue());
 					nfParam.setValue(paramValue);
+				}else{
+					paramValue = nfParam.getStringValue();
+					nfParam.setValue(paramValue);
 				}
 				statement.setString(cursor, paramValue);
 			} else if (paramDataType.equals("number")) {
-				if ("".equals(paramValue.trim())) {
-					statement.setString(cursor, null);
-				} else if(nfParam.getValue() instanceof Integer){
+				if(nfParam.getValue() instanceof Integer){
 					statement.setInt(cursor,(Integer) nfParam.getValue());
 				} else if(nfParam.getValue() instanceof Long){
 					statement.setLong(cursor,(Long) nfParam.getValue());
@@ -168,19 +167,23 @@ public abstract class SqlEntity extends Sqls {
 					statement.setBigDecimal(cursor,(BigDecimal) nfParam.getValue());
 				} else if(nfParam.getValue() instanceof Byte){
 					statement.setByte(cursor,(Byte) nfParam.getValue());
-				} else if (!paramValue.contains(".")) {
-					nfParam.setValue(Long.parseLong(paramValue));
-					statement.setLong(cursor,(Long) nfParam.getValue());
-				} else if (paramValue.endsWith(".0")) {
-					paramValue = paramValue.substring(0, paramValue.length() - 2);
-					nfParam.setValue(Long.parseLong(paramValue));
-					statement.setLong(cursor, (Long) nfParam.getValue());
 				} else {
-					nfParam.setValue(Double.parseDouble(paramValue));
-					statement.setDouble(cursor,(Double)nfParam.getValue());
+					String paramValue = nfParam.getStringValue();
+					if ("".equals(paramValue.trim())) {
+						statement.setString(cursor, null);
+					} else if (!paramValue.contains(".")) {
+						nfParam.setValue(Long.parseLong(paramValue));
+						statement.setLong(cursor, (Long) nfParam.getValue());
+					} else if (paramValue.endsWith(".0")) {
+						paramValue = paramValue.substring(0, paramValue.length() - 2);
+						nfParam.setValue(Long.parseLong(paramValue));
+						statement.setLong(cursor, (Long) nfParam.getValue());
+					} else {
+						nfParam.setValue(Double.parseDouble(paramValue));
+						statement.setDouble(cursor, (Double) nfParam.getValue());
+					}
 				}
 			} else if (paramDataType.equals("date")) {
-				paramValue = paramValue.trim();
 				if (nfParam.getValue() instanceof java.sql.Date) {
 					java.sql.Date date = (java.sql.Date) nfParam.getValue();
 					statement.setDate(cursor, date);
@@ -189,24 +192,27 @@ public abstract class SqlEntity extends Sqls {
 					statement.setTimestamp(cursor, new Timestamp(date.getTime()));
 				} else if(nfParam.getValue() instanceof Long){
 					statement.setTimestamp(cursor, new Timestamp((Long) nfParam.getValue()));
-				} else if(paramValue.matches("[0123456789]*")){
-					statement.setTimestamp(cursor, new Timestamp(Long.parseLong(paramValue)));
-				} else if(paramValue.length() == DBFoundConfig.getDateFormat().length()){
-					try {
-						SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
-						statement.setDate(cursor, new java.sql.Date(format.parse(paramValue).getTime()));
-					}catch (ParseException exception){
-						throw new DBFoundRuntimeException("parse date exception, value :" + paramValue ,exception);
+				} else {
+					String paramValue = nfParam.getStringValue().trim();
+				    if (paramValue.matches("[0123456789]*")) {
+						statement.setTimestamp(cursor, new Timestamp(Long.parseLong(paramValue)));
+					} else if (paramValue.length() == DBFoundConfig.getDateFormat().length()) {
+						try {
+							SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+							statement.setDate(cursor, new java.sql.Date(format.parse(paramValue).getTime()));
+						} catch (ParseException exception) {
+							throw new DBFoundRuntimeException("parse date exception, value :" + paramValue, exception);
+						}
+					} else if (paramValue.length() == DBFoundConfig.getDateTimeFormat().length()) {
+						try {
+							SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+							statement.setTimestamp(cursor, new Timestamp(format.parse(paramValue).getTime()));
+						} catch (ParseException exception) {
+							throw new DBFoundRuntimeException("parse datetime exception, value :" + paramValue, exception);
+						}
+					} else {
+						statement.setString(cursor, paramValue);
 					}
-				} else if(paramValue.length() == DBFoundConfig.getDateTimeFormat().length()){
-					try {
-						SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
-						statement.setTimestamp(cursor, new Timestamp(format.parse(paramValue).getTime()));
-					}catch (ParseException exception){
-						throw new DBFoundRuntimeException("parse datetime exception, value :" + paramValue ,exception);
-					}
-				}else {
-					statement.setString(cursor, paramValue);
 				}
 			} else if(paramDataType.equals("boolean")){
 				statement.setBoolean(cursor,(Boolean) nfParam.getValue());
@@ -221,6 +227,7 @@ public abstract class SqlEntity extends Sqls {
 					LogUtil.error(e.getMessage(), e);
 				}
 			} else {
+				String paramValue = nfParam.getStringValue();
 				statement.setString(cursor, paramValue);
 			}
 			cursor++;
@@ -257,7 +264,7 @@ public abstract class SqlEntity extends Sqls {
 			paramValue = nfParam.getStringValue();
 
 			// UUID取值
-			if ("true".equals(nfParam.getUUID())) {
+			if (nfParam.isUUID()) {
 				paramValue = UUIDUtil.getUUID();
 			}else if (paramValue == null) {
 				paramValue = "";
