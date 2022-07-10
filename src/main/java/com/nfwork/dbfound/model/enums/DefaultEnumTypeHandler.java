@@ -1,41 +1,36 @@
 package com.nfwork.dbfound.model.enums;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultEnumTypeHandler<E extends Enum<E> >  implements EnumTypeHandler<Enum>{
+public class DefaultEnumTypeHandler<E extends Enum<E> >  implements EnumTypeHandler<E>{
 
-    private Class<E> type;
-    private Map<String,E>  cache = new ConcurrentHashMap<>();
+    private final Map<String,E>  cache = new ConcurrentHashMap<>();
 
     @Override
-    public Enum locateEnum(String value) {
+    public E locateEnum(String value) {
         return cache.get(value);
     }
 
     @Override
-    public Object getEnumValue(Enum param) {
+    public Object getEnumValue(E param) {
         if(param == null){
             return null;
         }
         if(param instanceof BaseEnum) {
-            BaseEnum baseEnum = (BaseEnum) param;
-            return baseEnum.getValue();
+            return ((BaseEnum)param).getValue();
         }else{
             try {
-                Object object = BeanUtilsBean.getInstance().getPropertyUtils().getProperty(param,"value");
-                return object;
+                return BeanUtilsBean.getInstance().getPropertyUtils().getProperty(param,"value");
             }catch (Exception exception){
+                return param.toString();
             }
         }
-        return param.toString();
     }
 
-    public void initType(Class type) {
-        this.type = type;
-        E[] enums =  this.type.getEnumConstants();
+    public void initType(Class<E> type) {
+        E[] enums =  type.getEnumConstants();
         if (enums == null) {
             throw new IllegalArgumentException(type.getSimpleName() + " does not represent an enum type.");
         }
