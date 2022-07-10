@@ -66,16 +66,20 @@ public class Execute extends SqlEntity {
 	}
 
 	public void executeRun(Context context,Map<String, Param> params, String provideName){
-		List<InputStream> list = initFileParam(params);
+		List<InputStream> list = null;
 		try {
 			if (sqls != null) {
+				list = initFileParam(params);
+
 				for (int i = 0; i < sqls.sqlList.size(); i++) {
 					SqlEntity sql = sqls.sqlList.get(i);
 					sql.execute(context, params, provideName);
 				}
 			}
 		}finally {
-			closeFileParam(list);
+			if(list != null) {
+				closeFileParam(list);
+			}
 		}
 	}
 
@@ -126,14 +130,12 @@ public class Execute extends SqlEntity {
 		return list;
 	}
 
-	public void closeFileParam(List<InputStream> list){
-		if(list != null){
-			for (InputStream inputStream : list){
-				try {
-					inputStream.close();
-				}catch (Exception exception){
-					LogUtil.error(exception.getMessage(),exception);
-				}
+	private void closeFileParam(List<InputStream> list){
+		for (InputStream inputStream : list){
+			try {
+				inputStream.close();
+			}catch (Exception exception){
+				LogUtil.error(exception.getMessage(),exception);
 			}
 		}
 	}
