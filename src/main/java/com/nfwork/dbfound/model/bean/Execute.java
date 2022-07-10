@@ -2,7 +2,6 @@ package com.nfwork.dbfound.model.bean;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,20 +65,16 @@ public class Execute extends SqlEntity {
 	}
 
 	public void executeRun(Context context,Map<String, Param> params, String provideName){
-		List<InputStream> list = null;
+		List<InputStream> list = initFileParam(params);
 		try {
 			if (sqls != null) {
-				list = initFileParam(params);
-
 				for (int i = 0; i < sqls.sqlList.size(); i++) {
 					SqlEntity sql = sqls.sqlList.get(i);
 					sql.execute(context, params, provideName);
 				}
 			}
 		}finally {
-			if(list != null) {
-				closeFileParam(list);
-			}
+			closeFileParam(list);
 		}
 	}
 
@@ -122,7 +117,8 @@ public class Execute extends SqlEntity {
 					} else if (param.getValue() instanceof InputStream) {
 						list.add((InputStream) param.getValue());
 					}
-				} catch (IOException e) {
+				} catch (Exception e) {
+					closeFileParam(list);
 					throw new DBFoundPackageException(e);
 				}
 			}
@@ -131,11 +127,13 @@ public class Execute extends SqlEntity {
 	}
 
 	private void closeFileParam(List<InputStream> list){
-		for (InputStream inputStream : list){
-			try {
-				inputStream.close();
-			}catch (Exception exception){
-				LogUtil.error(exception.getMessage(),exception);
+		if(list != null) {
+			for (InputStream inputStream : list) {
+				try {
+					inputStream.close();
+				} catch (Exception exception) {
+					LogUtil.error(exception.getMessage(), exception);
+				}
 			}
 		}
 	}
