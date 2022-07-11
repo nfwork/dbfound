@@ -217,14 +217,12 @@ public abstract class SqlEntity extends Sqls {
 			} else if(paramDataType.equals("boolean")){
 				statement.setBoolean(cursor,(Boolean) nfParam.getValue());
 			} else if (paramDataType.equals("file")) {
-				try {
-					String saveType = nfParam.getFileSaveType();
+				String saveType = nfParam.getFileSaveType();
+				if ("db".equals(saveType)) {
 					InputStream inputStream = (InputStream) nfParam.getValue();
-					if ("db".equals(saveType)) {
-						statement.setBinaryStream(cursor, inputStream);
-					}
-				} catch (Exception e) {
-					LogUtil.error(e.getMessage(), e);
+					statement.setBinaryStream(cursor, inputStream);
+				}else{
+					statement.setString(cursor,nfParam.getStringValue());
 				}
 			} else {
 				String paramValue = nfParam.getStringValue();
