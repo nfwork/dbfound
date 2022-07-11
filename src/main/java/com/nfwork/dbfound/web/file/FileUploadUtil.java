@@ -1,7 +1,4 @@
 package com.nfwork.dbfound.web.file;
-
-import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
@@ -12,7 +9,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.UploadSizeException;
-import com.nfwork.dbfound.util.LogUtil;
 
 public class FileUploadUtil {
 
@@ -33,16 +29,14 @@ public class FileUploadUtil {
 				upload.setHeaderEncoding(encoding);
 
 				// 设置允许用户上传文件大小,单位:字节
-				upload.setSizeMax(1024 * 1024 * maxUploadSize);
+				upload.setSizeMax(1024L * 1024 * maxUploadSize);
 
-				List<FileItem> items = null;
+				List<FileItem> items ;
 
 				items = upload.parseRequest(context.request);
 
 				// 下面对每个字段进行处理，分普通字段和文件字段
-				Iterator it = items.iterator();
-				while (it.hasNext()) {
-					FileItem fileItem = (FileItem) it.next();
+				for (FileItem fileItem : items) {
 					String filedName = fileItem.getFieldName();
 					if (fileItem.isFormField()) {
 						context.setParamData(filedName, fileItem.getString(encoding));
@@ -59,24 +53,6 @@ public class FileUploadUtil {
 			throw new UploadSizeException("上传附件大小超过最大限制" + maxUploadSize + "M");
 		} catch (Exception e) {
 			throw new DBFoundPackageException("文件上传处理异常:" + e.getMessage(), e);
-		}
-	}
-
-	public void deleteDistFile(String fileName) throws Exception {
-		File file = new File(FileUtil.getDownLoadFolder(fileName));
-		file.delete();
-	}
-
-	public void saveToDisk(FileItem fileItem) {
-		// //保存文件，其实就是把缓存里的数据写到目标路径下
-		if (fileItem.getName() != null && fileItem.getSize() != 0) {
-			File fullFile = new File(fileItem.getName());
-			File newFile = new File("c:/temp/" + fullFile.getName());
-			try {
-				fileItem.write(newFile);
-			} catch (Exception e) {
-				LogUtil.error(e.getMessage(), e);
-			}
 		}
 	}
 }

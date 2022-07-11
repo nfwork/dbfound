@@ -4,25 +4,24 @@ public class FileSizeCalculator {
 	static String[] sizeLabel = { "B", "KB", "MB", "GB" };
 
 	public static String getFileSize(double size) {
-		String fileSize = calFileSize(size);
-		return fileSize;
+		return calFileSize(size);
 	}
 
 	private static String calFileSize(double size) {
-		for (int index = 0; index < sizeLabel.length; index++) {
+		for (String s : sizeLabel) {
 			if (size < 1024) {
-				String value = "" + round(size, 2);
+				String value = "" + round(size);
 				if (value.endsWith(".0")) {
 					value = value.substring(0, value.length() - 2);
 				}
-				return value + sizeLabel[index];
+				return value + s;
 			}
 			size = size / 1024;
 		}
 		return "大于1024G";
 	}
 
-	private static double round(double number, int count) {
-		return Math.round(number * Math.pow(10, count)) / Math.pow(10, count);
+	private static double round(double number) {
+		return Math.round(number * Math.pow(10, 2)) / Math.pow(10, 2);
 	}
 }

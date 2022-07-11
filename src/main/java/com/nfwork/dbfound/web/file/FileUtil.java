@@ -1,53 +1,27 @@
 package com.nfwork.dbfound.web.file;
 
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletConfig;
+public class FileUtil{
 
-import com.nfwork.dbfound.core.DBFoundConfig;
-import com.nfwork.dbfound.exception.ParamNotFoundException;
-import com.nfwork.dbfound.model.base.ParamsAware;
-import com.nfwork.dbfound.model.bean.Param;
+	private static String baseFolder;
 
-public class FileUtil implements ParamsAware {
-
-	private static String baseFolder = null;
-
-	Map<String, Param> params;
-
-	private static SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+	private static final Object lockObj = new Object();
 
 	public static String getDownLoadFolder(String value) {
+		if (baseFolder == null) {
+			synchronized (lockObj) {
+				baseFolder = System.getProperty("java.io.tmpdir");
+			}
+		}
 		if (value == null) {
 			return null;
-		} else if (!value.startsWith("/") && value.indexOf(":") == -1) {
+		} else if (!value.startsWith("/") && !value.contains(":")) {
 			return baseFolder + "/" + value;
 		} else {
 			return value;
-		}
-	}
-
-	public static void init(FilterConfig cf) {
-		baseFolder = cf.getInitParameter("uploadFolder");
-		if (baseFolder == null) {
-			return;
-		}
-		if (!baseFolder.startsWith("/") && baseFolder.indexOf(":") == -1) {
-			baseFolder = cf.getServletContext().getRealPath("/" + baseFolder);
-		}
-	}
-
-	public static void init(ServletConfig cf) {
-		baseFolder = cf.getInitParameter("uploadFolder");
-		if (baseFolder == null) {
-			return;
-		}
-		if (!baseFolder.startsWith("/") && baseFolder.indexOf(":") == -1) {
-			baseFolder = cf.getServletContext().getRealPath("/" + baseFolder);
 		}
 	}
 	
@@ -55,9 +29,11 @@ public class FileUtil implements ParamsAware {
 		baseFolder = fold;
 	}
 
-	public static synchronized File getUploadFolder(String foldName) {
+	public static File getUploadFolder(String foldName) {
 		if (baseFolder == null) {
-			baseFolder = System.getProperty("java.io.tmpdir");
+			synchronized (lockObj) {
+				baseFolder = System.getProperty("java.io.tmpdir");
+			}
 		}
 		if (foldName == null) {
 			foldName = baseFolder;
@@ -66,29 +42,16 @@ public class FileUtil implements ParamsAware {
 		}
 		File fold = new File(foldName);
 		if (!fold.exists()) {
-			fold.mkdirs();
+			synchronized (lockObj) {
+				if (!fold.exists()) {
+					boolean success = fold.mkdirs();
+					if(!success){
+						throw new DBFoundRuntimeException("create fold failed , fold: "+ foldName);
+					}
+				}
+			}
 		}
 		return fold;
 	}
 
-	public static String getUploadFolderName() {
-		return format.format(new Date());
-	}
-
-	public void delete() {
-		Param param = params.get("file_disk_name");
-		if (param == null) {
-			throw new ParamNotFoundException(
-					"param:file_disk_name没有定义,使用该方法必须定义file_disk_name来获取文件的硬盘存储名称！");
-		}
-		String fileDiskName = param.getStringValue();
-		File file = new File(baseFolder + "/" + fileDiskName);
-		if (file.exists()) {
-			file.delete();
-		}
-	}
-
-	public void setParams(Map<String, Param> params) {
-		this.params = params;
-	}
 }
