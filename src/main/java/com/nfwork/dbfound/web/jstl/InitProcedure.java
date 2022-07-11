@@ -5,37 +5,51 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.tagext.TryCatchFinally;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
 
-public class InitProcedure extends TagSupport {
+public class InitProcedure extends TagSupport implements TryCatchFinally {
 
 	private static final long serialVersionUID = -5941376965348919531L;
 
 	public int doStartTag() throws JspTagException {
-
 		// 开启事务
-		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-		HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
-		Context context = Context.getCurrentContext(request, response);
-		Transaction transaction = context.getTransaction();
+		Transaction transaction = getContext().getTransaction();
 		transaction.begin();
 
 		return EVAL_BODY_INCLUDE;
 	}
 
 	public int doEndTag() throws JspException {
-
-		// 提交关闭事务
-		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-		HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
-		Context context = Context.getCurrentContext(request, response);
-		Transaction transaction = context.getTransaction();
+		Transaction transaction = getContext().getTransaction();
 		transaction.commit();
 		transaction.end();
-
 		return EVAL_PAGE;
 	}
 
+	Context getContext(){
+		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+		HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
+		return Context.getCurrentContext(request, response);
+	}
+
+	private void rollbackAndEnd(){
+		Transaction transaction = getContext().getTransaction();
+		if(transaction.isOpen()) {
+			transaction.rollback();
+			transaction.end();
+		}
+	}
+
+	@Override
+	public void doCatch(Throwable throwable) throws Throwable {
+		rollbackAndEnd();
+	}
+
+	@Override
+	public void doFinally() {
+		rollbackAndEnd();
+	}
 }

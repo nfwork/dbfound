@@ -20,25 +20,11 @@ public class ControlBody extends InitProcedure {
 
 	private boolean outMessage = true;
 
-	public int doStartTag() throws JspTagException {
-
-		// 开启事务
-		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-		HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
-		Context context = Context.getCurrentContext(request, response);
-		Transaction transaction = context.getTransaction();
-		transaction.begin();
-
-		return EVAL_BODY_INCLUDE;
-	}
-
 	@SuppressWarnings("unchecked")
 	public int doEndTag() throws JspException {
 
 		// 提交关闭事务
-		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-		HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
-		Context context = Context.getCurrentContext(request, response);
+		Context context = getContext();
 		Transaction transaction = context.getTransaction();
 		transaction.commit();
 		transaction.end();
