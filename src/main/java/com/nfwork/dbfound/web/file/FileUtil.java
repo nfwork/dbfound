@@ -1,21 +1,17 @@
 package com.nfwork.dbfound.web.file;
 
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.util.DataUtil;
 
 import java.io.File;
 
 public class FileUtil{
 
-	private static String baseFolder;
+	private static String baseFolder = System.getProperty("java.io.tmpdir");
 
 	private static final Object lockObj = new Object();
 
 	public static String getDownLoadFolder(String value) {
-		if (baseFolder == null) {
-			synchronized (lockObj) {
-				baseFolder = System.getProperty("java.io.tmpdir");
-			}
-		}
 		if (value == null) {
 			return null;
 		} else if (!value.startsWith("/") && !value.contains(":")) {
@@ -26,15 +22,12 @@ public class FileUtil{
 	}
 	
 	public static void init(String fold) {
-		baseFolder = fold;
+		if(DataUtil.isNotNull(fold)) {
+			baseFolder = fold;
+		}
 	}
 
 	public static File getUploadFolder(String foldName) {
-		if (baseFolder == null) {
-			synchronized (lockObj) {
-				baseFolder = System.getProperty("java.io.tmpdir");
-			}
-		}
 		if (foldName == null) {
 			foldName = baseFolder;
 		}else {
