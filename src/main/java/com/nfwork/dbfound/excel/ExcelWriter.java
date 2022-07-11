@@ -23,7 +23,6 @@ import jxl.write.Number;
 
 public class ExcelWriter {
 
-	@SuppressWarnings("unchecked")
 	public static File writeExcel(File file, List<Map> datas,
 			ExcelCellMeta[] columns) throws Exception {
 
@@ -176,7 +175,7 @@ public class ExcelWriter {
 			sout = context.response.getOutputStream(); // 图片输出的输出流
 			in = new FileInputStream(file);
 
-			byte b[] = new byte[2048];
+			byte b[] = new byte[4096];
 			int i = in.read(b);
 			while (i != -1) {
 				sout.write(b, 0, i);
@@ -190,7 +189,7 @@ public class ExcelWriter {
 				sout.flush(); // 输入完毕，清除缓冲
 				sout.close();
 			}
-			if (file != null) {
+			if (file.exists()) {
 				file.delete();
 			}
 		}
