@@ -2,10 +2,8 @@ package com.nfwork.dbfound.web.jstl;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
 
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
@@ -38,7 +36,7 @@ public class ControlBody extends InitProcedure {
 				}
 				// 向客服端传送成功消息
 				ro.setSuccess(true);
-				ro.setMessage("操作成功!");
+				ro.setMessage("success");
 
 				WebWriter.jsonWriter((HttpServletResponse) pageContext.getResponse(), JsonUtil.beanToJson(ro));
 			}
