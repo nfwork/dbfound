@@ -4,10 +4,13 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
+import com.nfwork.dbfound.util.DataUtil;
 
 public class ExcelReader extends SqlEntity {
 
@@ -21,14 +24,21 @@ public class ExcelReader extends SqlEntity {
 			String provideName){
 		Param param = params.get(sourceParam);
 		if (param == null) {
-			throw new ParamNotFoundException("param: " + sourceParam + " 没有定义");
+			throw new ParamNotFoundException("param: " + sourceParam + " not defined");
+		}
+		if(DataUtil.isNull(rootPath)){
+			throw new DBFoundRuntimeException("rootPath can not be null");
 		}
 		Object ofile = param.getValue();
 		if(ofile instanceof InputStream){
 			try {
 				InputStream inputStream = (InputStream) ofile;
 				List<List<Map>> dataList = com.nfwork.dbfound.excel.ExcelReader.readExcel(inputStream);
-				context.setData(rootPath, dataList);
+				String setPath = rootPath;
+				if(!ELEngine.isAbsolutePath(setPath)){
+					setPath = context.getCurrentPath() + "." + setPath;
+				}
+				context.setData(setPath, dataList);
 			}catch (Exception exception){
 				throw new DBFoundPackageException("excel reader failed, "+ exception.getMessage(),exception);
 			}
