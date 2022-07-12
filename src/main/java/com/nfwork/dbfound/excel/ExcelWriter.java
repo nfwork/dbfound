@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
-
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.DataUtil;
@@ -153,38 +151,26 @@ public class ExcelWriter {
 		}
 
 		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + ".xls");
-		ServletOutputStream sout = null;
-		InputStream in = null;
+		writeExcel(file, result, columns);
 
-		try {
-			file.createNewFile();
-			writeExcel(file, result, columns);
+		try (InputStream in = new FileInputStream(file);
+			 OutputStream out = context.response.getOutputStream()){
 
 			// 向外输出excel
 			context.response.setContentType("application/x-download");
 			context.response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 			context.response.setHeader("Content-Disposition","attachment;filename=export.xls");
-			sout = context.response.getOutputStream(); // 图片输出的输出流
-			in = new FileInputStream(file);
 
-			byte b[] = new byte[4096];
+			byte[] b = new byte[4096];
 			int i = in.read(b);
 			while (i != -1) {
-				sout.write(b, 0, i);
+				out.write(b, 0, i);
 				i = in.read(b);
 			}
-
-			sout.flush();
-
+			out.flush();
 		} finally {
-			if (in != null) {
-				in.close();
-			}
 			if (file.exists()) {
 				file.delete();
-			}
-			if (sout != null) {
-				sout.close();
 			}
 		}
 	}
