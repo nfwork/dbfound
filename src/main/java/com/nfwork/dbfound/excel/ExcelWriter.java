@@ -23,8 +23,7 @@ import jxl.write.Number;
 
 public class ExcelWriter {
 
-	public static File writeExcel(File file, List<Map> datas,
-			ExcelCellMeta[] columns) throws Exception {
+	public static File writeExcel(File file, List<Map> datas, ExcelCellMeta[] columns) throws Exception {
 
 		jxl.write.WritableWorkbook wwb = Workbook.createWorkbook(file);
 		jxl.write.WritableSheet ws = wwb.createSheet("sheet1", 0);
@@ -33,15 +32,13 @@ public class ExcelWriter {
 				WritableFont.ARIAL, 11, WritableFont.BOLD, false,
 				UnderlineStyle.NO_UNDERLINE, jxl.format.Colour.GREEN);
 
-		jxl.write.WritableCellFormat wcfFC = new jxl.write.WritableCellFormat(
-				wfc);
+		jxl.write.WritableCellFormat wcfFC = new jxl.write.WritableCellFormat(wfc);
 		wcfFC.setBackground(Colour.GRAY_25);
 		wcfFC.setAlignment(Alignment.CENTRE);
 
 		try {
 			for (int i = 0; i < columns.length; i++) {
-				jxl.write.Label label = new jxl.write.Label(i, 0, columns[i]
-						.getContent(), wcfFC);
+				jxl.write.Label label = new jxl.write.Label(i, 0, columns[i].getContent(), wcfFC);
 				ws.addCell(label);
 				ws.setColumnView(i, columns[i].getWidth());
 			}
@@ -86,7 +83,6 @@ public class ExcelWriter {
 		return file;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void excelExport(Context context, String modelName,
 			String queryName) throws Exception {
 		context.setExport(true);
@@ -96,8 +92,7 @@ public class ExcelWriter {
 		param.putAll(parameters);
 		param.remove("parameters");
 
-		List<Map> result = ModelEngine.query(context, modelName, queryName, null,
-				false).getDatas();
+		List<Map> result = ModelEngine.query(context, modelName, queryName, null,false, Map.class).getDatas();
 		excelExport(context, result);
 	}
 
@@ -109,9 +104,8 @@ public class ExcelWriter {
 		ExcelCellMeta[] columns = new ExcelCellMeta[cls.size()];
 		int index = 0;
 		for (Map map : cls) {
-			ExcelCellMeta cellMeta = new ExcelCellMeta(map.get("name")
-					.toString(), map.get("content").toString(), Integer
-					.parseInt(map.get("width").toString()));
+			ExcelCellMeta cellMeta = new ExcelCellMeta(map.get("name").toString(), map.get("content").toString(),
+					Integer.parseInt(map.get("width").toString()));
 			columns[index++] = cellMeta;
 		}
 
@@ -158,8 +152,7 @@ public class ExcelWriter {
 			}
 		}
 
-		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID()
-				+ ".xls");
+		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + ".xls");
 		ServletOutputStream sout = null;
 		InputStream in = null;
 
@@ -170,8 +163,7 @@ public class ExcelWriter {
 			// 向外输出excel
 			context.response.setContentType("application/x-download");
 			context.response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-			context.response.setHeader("Content-Disposition",
-					"attachment;filename=export.xls");
+			context.response.setHeader("Content-Disposition","attachment;filename=export.xls");
 			sout = context.response.getOutputStream(); // 图片输出的输出流
 			in = new FileInputStream(file);
 
@@ -181,16 +173,18 @@ public class ExcelWriter {
 				sout.write(b, 0, i);
 				i = in.read(b);
 			}
+
+			sout.flush();
+
 		} finally {
 			if (in != null) {
 				in.close();
 			}
-			if (sout != null) {
-				sout.flush(); // 输入完毕，清除缓冲
-				sout.close();
-			}
 			if (file.exists()) {
 				file.delete();
+			}
+			if (sout != null) {
+				sout.close();
 			}
 		}
 	}

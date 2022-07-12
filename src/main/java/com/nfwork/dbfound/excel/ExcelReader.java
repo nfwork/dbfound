@@ -16,47 +16,23 @@ import jxl.read.biff.BiffException;
 
 public class ExcelReader {
 
-	@SuppressWarnings("unchecked")
 	public static List<List<Map>> readExcel(FileItem item) {
-		InputStream stream = null;
-		try {
-			stream = item.getInputStream();
+		try (InputStream stream = item.getInputStream()) {
 			return readExcel(stream);
 		} catch (Exception e) {
-			throw new DBFoundPackageException("excel数据读取异常:" + e.getMessage(),
-					e);
-		} finally {
-			try {
-				if (stream != null) {
-					stream.close();
-				}
-			} catch (IOException e) {
-			}
+			throw new DBFoundPackageException("excel reader exception:" + e.getMessage(),e);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<List<Map>> readExcel(File file) {
-		InputStream stream = null;
-		try {
-			stream = new FileInputStream(file);
+		try (InputStream stream = new FileInputStream(file)) {
 			return readExcel(stream);
 		} catch (Exception e) {
-			throw new DBFoundPackageException("excel数据读取异常:" + e.getMessage(),
-					e);
-		} finally {
-			if (stream != null) {
-				try {
-					stream.close();
-				} catch (IOException e) {
-				}
-			}
+			throw new DBFoundPackageException("excel reader exception:" + e.getMessage(),e);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static List<List<Map>> readExcel(InputStream input)
-			throws BiffException, IOException {
+	public static List<List<Map>> readExcel(InputStream input) throws BiffException, IOException {
 		List<List<Map>> excelData = new ArrayList<List<Map>>();
 
 		Workbook wb = Workbook.getWorkbook(input);
@@ -67,7 +43,7 @@ public class ExcelReader {
 			List<Map> datas = new ArrayList<Map>();
 			if (rowSize > 0) {
 				// 取第一行数据 为元数据
-				Cell metaCells[] = s.getRow(0);
+				Cell[] metaCells = s.getRow(0);
 				colSize = metaCells.length;
 				String[] metaData = new String[colSize];
 				for (int j = 0; j < colSize; j++) {
@@ -76,15 +52,14 @@ public class ExcelReader {
 
 				for (int i = 1; i < rowSize; i++) {
 					Map<String, Object> data = new HashMap<String, Object>();
-					Cell dataCell[] = s.getRow(i);
+					Cell[] dataCell = s.getRow(i);
 					int rowColSize = dataCell.length;
 					for (int j = 0; j < colSize; j++) {
 						if (j >= rowColSize) {
 							data.put(metaData[j], null);
 						} else if (dataCell[j].getType() == CellType.DATE) {
 							DateCell dateCell = (DateCell) dataCell[j];
-							data.put(metaData[j], new SimpleDateFormat(
-									DBFoundConfig.getDateFormat()).format(dateCell.getDate()));
+							data.put(metaData[j], new SimpleDateFormat(DBFoundConfig.getDateFormat()).format(dateCell.getDate()));
 						} else if (dataCell[j].getType() == CellType.NUMBER) {
 							NumberCell numberCell = (NumberCell) dataCell[j];
 							data.put(metaData[j], numberCell.getValue());
