@@ -44,7 +44,7 @@ public class Context {
 	private String currentModel;
 	private Map<String, ConnObject> connMap;
 	private boolean inWebContainer;
-	private Map<String, Object> rootDatas;
+	private final Map<String, Object> rootDatas;
 	private Map<String, Object> paramDatas;
 	private Map<String, Object> outParamDatas;
 	private Map<String, Object> requestDatas;
@@ -72,9 +72,9 @@ public class Context {
 	/**
 	 * 得到当前 context，是否需要开启session
 	 * 
-	 * @param request
-	 * @param response
-	 * @return
+	 * @param request request
+	 * @param response response
+	 * @return Context
 	 */
 	public static Context getCurrentContext(HttpServletRequest request, HttpServletResponse response) {
 		Object context = request.getAttribute("_currentContext");
@@ -86,23 +86,23 @@ public class Context {
 	}
 
 	public Context() {
-		rootDatas = new HashMap<String, Object>();
+		rootDatas = new HashMap<>();
 	}
 
 	/**
 	 * 根据map生成一个thread对象
 	 * 
-	 * @param datas
+	 * @param datas  map data
 	 */
 	public Context(Map<String, Object> datas) {
 		if (datas == null) {
-			datas = new HashMap<String, Object>();
+			datas = new HashMap<>();
 		}
 		rootDatas = datas;
 	}
 
 	private Context(HttpServletRequest request, HttpServletResponse response) {
-		rootDatas = new HashMap<String, Object>();
+		rootDatas = new HashMap<>();
 
 		cloneParamData(request);
 		cloneRequestData(request);
@@ -121,7 +121,7 @@ public class Context {
 	/**
 	 * cloneCookieData
 	 * 
-	 * @param request
+	 * @param request http request
 	 */
 	public void cloneCookieData(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
@@ -137,7 +137,7 @@ public class Context {
 	/**
 	 * clone header data
 	 * 
-	 * @param request
+	 * @param request http request
 	 */
 	public void cloneHeaderData(HttpServletRequest request) {
 		Enumeration<String> enumeration = request.getHeaderNames();
@@ -152,7 +152,6 @@ public class Context {
 	/**
 	 * 复制session数据
 	 */
-	@SuppressWarnings("unchecked")
 	public void cloneSessionData(HttpSession session) {
 		if (!openSession) {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
@@ -170,7 +169,6 @@ public class Context {
 	/**
 	 * 复制param数据
 	 */
-	@SuppressWarnings("unchecked")
 	public void cloneParamData(HttpServletRequest request) {
 		Enumeration<String> enumeration = request.getParameterNames();
 		while (enumeration.hasMoreElements()) {
@@ -191,7 +189,6 @@ public class Context {
 	/**
 	 * 复制request数据
 	 */
-	@SuppressWarnings({ "unchecked" })
 	public void cloneRequestData(HttpServletRequest request) {
 		Enumeration<String> enumeration = request.getAttributeNames();
 
@@ -209,7 +206,6 @@ public class Context {
 	/**
 	 * 复制requestBody数据
 	 */
-	@SuppressWarnings({ "unchecked" })
 	public void cloneRequestBodyData(HttpServletRequest request) {
 		try {
 			String contentType = request.getHeader("Content-Type");
@@ -261,9 +257,9 @@ public class Context {
 	/**
 	 * 根据表达式得到context内容
 	 * 
-	 * @param express
-	 * @param class1
-	 * @return
+	 * @param express express
+	 * @param class1 class
+	 * @return T
 	 */
 	public <T> T getData(String express, Class<T> class1) {
 		Object object = getData(express);
@@ -326,8 +322,8 @@ public class Context {
 	/**
 	 * 放参数到param集
 	 * 
-	 * @param name
-	 * @param value
+	 * @param name name
+	 * @param value value
 	 */
 	public void setParamData(String name, Object value) {
 		if (name.contains(".")) {
@@ -340,40 +336,40 @@ public class Context {
 	/**
 	 * 放参数到outParam集
 	 * 
-	 * @param name
-	 * @param object
+	 * @param name name
+	 * @param value value
 	 */
-	public void setOutParamData(String name, Object object) {
+	public void setOutParamData(String name, Object value) {
 		if (name.contains(".")) {
-			DBFoundEL.setData(name,getOutParamDatas(),object);
+			DBFoundEL.setData(name,getOutParamDatas(),value);
 		}else{
-			getOutParamDatas().put(name, object);
+			getOutParamDatas().put(name, value);
 		}
 	}
 
 	/**
 	 * 放参数到request集
 	 * 
-	 * @param name
-	 * @param object
+	 * @param name name
+	 * @param value value
 	 */
-	public void setRequestData(String name, Object object) {
+	public void setRequestData(String name, Object value) {
 		if (name.contains(".")) {
 			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
 		}
 		if (request != null) {
-			request.setAttribute(name, object);
+			request.setAttribute(name, value);
 		}
-		getRequestDatas().put(name, object);
+		getRequestDatas().put(name, value);
 	}
 
 	/**
 	 * 放参数到session集
 	 * 
-	 * @param name
-	 * @param object
+	 * @param name name
+	 * @param value value
 	 */
-	public void setSessionData(String name, Object object) {
+	public void setSessionData(String name, Object value) {
 		if (!openSession) {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
 		}
@@ -381,16 +377,16 @@ public class Context {
 			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
 		}
 		if (request != null) {
-			request.getSession().setAttribute(name, object);
+			request.getSession().setAttribute(name, value);
 		}
-		getSessionDatas().put(name, object);
+		getSessionDatas().put(name, value);
 	}
 
 	/**
 	 * 获取model
 	 * 
-	 * @param modelName
-	 * @return
+	 * @param modelName model name
+	 * @return model
 	 */
 	public Model getModel(String modelName) {
 		Model model = ModelCache.get(modelName);
@@ -410,8 +406,8 @@ public class Context {
 	/**
 	 * 得到数据库连接
 	 * 
-	 * @param provideName
-	 * @return
+	 * @param provideName provide name
+	 * @return Connection
 	 */
 	public Connection getConn(String provideName) {
 
@@ -454,8 +450,8 @@ public class Context {
 	/**
 	 * 得到默认数据库连接
 	 * 
-	 * @return
-	 * @throws SQLException
+	 * @return Connection
+	 * @throws SQLException sql exception
 	 */
 	public Connection getConn() throws SQLException {
 		return getConn("_default");
@@ -661,7 +657,7 @@ public class Context {
 		DBFoundConfig.init();
 	}
 
-	class ConnObject {
+	static class ConnObject {
 		Connection connection;
 		ConnectionProvide provide;
 
