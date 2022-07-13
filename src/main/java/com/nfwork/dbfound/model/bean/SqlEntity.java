@@ -231,6 +231,10 @@ public abstract class SqlEntity extends Sqls {
 					buffer.append("data[").append(i).append("].").append(nfParam.getInnerPath());
 
 					Object value = DBFoundEL.getData(buffer.toString(),root);
+					if(value == null){
+						continue;
+					}
+
 					if(value instanceof Enum) {
 						value = getEnumValue((Enum) value);
 					}if(value instanceof  java.sql.Date){
