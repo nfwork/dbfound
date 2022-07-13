@@ -315,6 +315,8 @@ public abstract class SqlEntity extends Sqls {
 					} else {
 						nfParam.setValue(Double.parseDouble(paramValue));
 					}
+				} else {
+					throw new DBFoundRuntimeException(String.format("can not cost %s to number", nfParam.getValue().getClass()));
 				}
 			}
 		}else if ("varchar".equals(nfParam.getDataType())) {
