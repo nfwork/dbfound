@@ -125,8 +125,10 @@ public class Query extends SqlEntity {
 	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> object) {
 		Connection conn = context.getConn(provideName);
 
-		List<Map> data = new ArrayList<Map>();
-		String eSql = getExecuteSql(querySql,params);
+		List<Map> data = new ArrayList<>();
+		List<Object> exeParam = new ArrayList<>();
+		String eSql = getExecuteSql(querySql,params, exeParam);
+
 		if (context.getPagerSize() > 0 || pagerSize != null) {
 			int ps = context.getPagerSize()> 0 ? context.getPagerSize() : pagerSize;
 			SqlDialect dialect = context.getConnDialect(provideName);
@@ -140,7 +142,7 @@ public class Query extends SqlEntity {
 				statement.setQueryTimeout(queryTimeout);
 			}
 			// 参数设定
-			initParam(statement, querySql, params);
+			initParam(statement, exeParam);
 			dataset = statement.executeQuery();
 			ResultSetMetaData metaset = dataset.getMetaData();
 
@@ -153,7 +155,7 @@ public class Query extends SqlEntity {
 				return list;
 			}
 
-			String colNames[] = getColNames(metaset);
+			String[] colNames = getColNames(metaset);
 
 			int totalCounts = 0;
 			Calendar defaultCalendar = Calendar.getInstance();
@@ -310,7 +312,10 @@ public class Query extends SqlEntity {
 
 		String cSql = count.getCountSql();
 		Connection conn = context.getConn(provideName);
-		String ceSql = getExecuteSql(cSql,params);
+
+		List<Object> exeParam = new ArrayList<>();
+		String ceSql = getExecuteSql(cSql,params, exeParam);
+
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
 		try {
@@ -319,7 +324,7 @@ public class Query extends SqlEntity {
 				statement.setQueryTimeout(queryTimeout);
 			}
 			// 参数设定
-			initParam(statement, cSql, params);
+			initParam(statement, exeParam);
 			dataset = statement.executeQuery();
 			dataset.next();
 			count.setTotalCounts( dataset.getLong(1));

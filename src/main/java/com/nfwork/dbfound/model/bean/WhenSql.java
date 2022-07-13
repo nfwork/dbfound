@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
@@ -52,7 +54,9 @@ public class WhenSql extends SqlEntity {
 
 		String whenSql = staticParamParse(when, params);
 		whenSql = dialect.getWhenSql(whenSql);
-		String esql = getExecuteSql(whenSql, params);
+
+		List<Object> exeParam = new ArrayList<>();
+		String esql = getExecuteSql(whenSql, params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet set = null;
@@ -60,7 +64,7 @@ public class WhenSql extends SqlEntity {
 		try {
 			statement = conn.prepareStatement(esql);
 			// 参数设定
-			initParam(statement, whenSql, params);
+			initParam(statement, exeParam);
 			set = statement.executeQuery();
 			if (set.next()) {
 				flag = set.getInt(1);
@@ -72,10 +76,7 @@ public class WhenSql extends SqlEntity {
 			DBUtil.closeStatement(statement);
 			log(esql, params);
 		}
-		if (flag != 0) {
-			return true;
-		}
-		return false;
+		return flag != 0;
 	}
 
 	public String getWhen() {

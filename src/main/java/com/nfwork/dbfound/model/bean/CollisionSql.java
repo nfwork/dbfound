@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
@@ -50,14 +52,16 @@ public class CollisionSql extends SqlEntity {
 
 		String whereSql = staticParamParse(where, params);
 		whereSql = dialect.getWhenSql(whereSql);
-		String esql = getExecuteSql(whereSql, params);
+
+		List<Object> exeParam = new ArrayList<>();
+		String esql = getExecuteSql(whereSql, params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet set = null;
 		try {
 			statement = conn.prepareStatement(esql);
 			// 参数设定
-			initParam(statement, whereSql, params);
+			initParam(statement, exeParam);
 			set = statement.executeQuery();
 			if (set.next()) {
 				int flag = set.getInt(1);

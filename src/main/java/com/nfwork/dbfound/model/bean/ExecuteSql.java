@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
@@ -40,7 +42,9 @@ public class ExecuteSql extends SqlEntity {
 		}
 		Connection conn = context.getConn(provideName);
 		String executeSql = staticParamParse(sql, params);
-		String esql = getExecuteSql(executeSql, params);
+
+		List<Object> exeParam = new ArrayList<>();
+		String esql = getExecuteSql(executeSql, params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet rs = null;
@@ -53,7 +57,7 @@ public class ExecuteSql extends SqlEntity {
 			}
 
 			// 参数设定
-			initParam(statement, executeSql, params);
+			initParam(statement, exeParam);
 			statement.execute();
 
 			// 2013年9月9日8:47:54 添加主键返回

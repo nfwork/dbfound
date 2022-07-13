@@ -58,7 +58,7 @@ public abstract class SqlEntity extends Sqls {
 	 * 
 	 * @return
 	 */
-	public String getExecuteSql(String sql, Map<String, Param> params) {
+	public String getExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam) {
 		Pattern p = Pattern.compile(dynamicReplace);
 		Matcher m = p.matcher(sql);
 		StringBuffer buf = new StringBuffer();
@@ -70,15 +70,42 @@ public abstract class SqlEntity extends Sqls {
 			if (nfParam == null) {
 				throw new ParamNotFoundException("param: " + pn + " not defined");
 			}
-
-			StringBuilder value = new StringBuilder("?");
-			if("collection".equals(nfParam.getDataType())){
-				int length = DataUtil.getDataLength(nfParam.getValue());
-				for(int i=1; i<length; i++){
-					value.append(", ?");
-				}
+			if (nfParam.isUUID()) {
+				nfParam.setValue(UUIDUtil.getUUID());
 			}
-			m.appendReplacement(buf, value.toString());
+
+			initParamValue(nfParam);
+			initParamType(nfParam);
+
+			if("collection".equals(nfParam.getDataType())){
+				StringBuilder value = new StringBuilder("");
+				int length = DataUtil.getDataLength(nfParam.getValue());
+				if(length < 1){
+					throw new DBFoundRuntimeException("collection param, data size must >= 1");
+				}
+
+				Map<String, Object> root = new HashMap<>();
+				for(int i=0; i<length; i++){
+					if(i==0){
+						value.append("?");
+					}else{
+						value.append(", ?");
+					}
+					StringBuilder buffer = new StringBuilder();
+					root.put("data", nfParam.getValue());
+					buffer.append("data[").append(i).append("].").append(nfParam.getInnerPath());
+
+					Object pValue = DBFoundEL.getData(buffer.toString(), root);
+					if (pValue instanceof Enum) {
+						pValue = getEnumValue((Enum) pValue);
+					}
+					exeParam.add(pValue);
+				}
+				m.appendReplacement(buf, value.toString());
+			}else{
+				exeParam.add(nfParam.getValue());
+				m.appendReplacement(buf, "?");
+			}
 		}
 		m.appendTail(buf);
 		return buf.toString();
@@ -124,183 +151,39 @@ public abstract class SqlEntity extends Sqls {
 	 * @throws SQLException
 	 * @throws NumberFormatException
 	 */
-	public void initParam(PreparedStatement statement, String sql, Map<String, Param> params)
-			throws NumberFormatException, SQLException {
-
-		String paramDataType;
-
-		// 设定参数
-		Pattern p = Pattern.compile(dynamicReplace);
-		Matcher m = p.matcher(sql);
-		int cursor = 1; // 游标记录参数的位置
-		while (m.find()) {
-			String param = m.group();
-			String pn = param.substring(3, param.length() - 1);
-			Param nfParam = params.get(pn.trim());
-
-			if (nfParam == null) {
-				throw new ParamNotFoundException("param: " + pn + " not defined");
-			}
-
-			initParamValue(nfParam);
-			initParamType(nfParam);
-
-			//添加isIsCollection支持 2022年07月13日11:14:39
-			if("collection".equals(nfParam.getDataType())){
-				Object object = nfParam.getValue();
-				int length = DataUtil.getDataLength(object);
-				if(length < 1){
-					throw new DBFoundRuntimeException("collection param, data size must > 1");
-				}
-
-				Map<String, Object> root = new HashMap<>();
-				for (int i = 0; i < length; i++) {
-					StringBuilder buffer = new StringBuilder();
-					root.put("data", object);
-					buffer.append("data[").append(i).append("].").append(nfParam.getInnerPath());
-
-					Object value = DBFoundEL.getData(buffer.toString(), root);
-					if (value instanceof Enum) {
-						value = getEnumValue((Enum) value);
-					}
-
-					if(value == null){
-						statement.setString(cursor,null);
-					}else if(value instanceof String){
-						statement.setString(cursor,(String)value);
-					} else if(value instanceof Integer){
-						statement.setInt(cursor,(Integer)value);
-					} else if(nfParam.getValue() instanceof Long){
-						statement.setLong(cursor,(Long) value);
-					} else if(nfParam.getValue() instanceof Double){
-						statement.setDouble(cursor,(Double) value);
-					} else if(nfParam.getValue() instanceof Float){
-						statement.setFloat(cursor,(Float) value);
-					} else if(nfParam.getValue() instanceof Short){
-						statement.setShort(cursor,(Short) value);
-					} else if(nfParam.getValue() instanceof BigDecimal){
-						statement.setBigDecimal(cursor,(BigDecimal) value);
-					} else if(nfParam.getValue() instanceof Byte){
-						statement.setByte(cursor,(Byte) value);
-					} else if(nfParam.getValue() instanceof Boolean){
-						statement.setBoolean(cursor,(Boolean) value);
-					} else if (nfParam.getValue() instanceof java.sql.Date) {
-						java.sql.Date date = (java.sql.Date) value;
-						statement.setDate(cursor, date);
-					} else if (nfParam.getValue() instanceof Date) {
-						Date date = (Date) value;
-						statement.setTimestamp(cursor, new Timestamp(date.getTime()));
-					} else{
-						statement.setString(cursor,value.toString());
-					}
-					cursor++;
-				}
-				continue;
-			}
-
-			if (nfParam.isUUID()) {
-				nfParam.setValue(UUIDUtil.getUUID());
-			}
-			paramDataType = nfParam.getDataType();
-
-			if (nfParam.getValue() == null) {
-				statement.setString(cursor, null);
-			} else if (paramDataType.equals("varchar")) {
-				String paramValue;
-				if(nfParam.getValue() instanceof String) {
-					paramValue = nfParam.getValue().toString();
-				}else if (nfParam.getValue() instanceof Map ){
-					paramValue = JsonUtil.mapToJson((Map)nfParam.getValue());
-					nfParam.setValue(paramValue);
-				}else if( nfParam.getValue() instanceof Set ){
-					paramValue = JsonUtil.setToJson((Set)nfParam.getValue());
-					nfParam.setValue(paramValue);
-				}else if( nfParam.getValue() instanceof List ){
-					paramValue = JsonUtil.listToJson((List)nfParam.getValue());
-					nfParam.setValue(paramValue);
-				}else if( nfParam.getValue() instanceof Object[]){
-					paramValue = JsonUtil.arrayToJson((Object[])nfParam.getValue());
-					nfParam.setValue(paramValue);
-				}else{
-					paramValue = nfParam.getStringValue();
-					nfParam.setValue(paramValue);
-				}
-				statement.setString(cursor, paramValue);
-			} else if (paramDataType.equals("number")) {
-				if(nfParam.getValue() instanceof Integer){
-					statement.setInt(cursor,(Integer) nfParam.getValue());
-				} else if(nfParam.getValue() instanceof Long){
-					statement.setLong(cursor,(Long) nfParam.getValue());
-				} else if(nfParam.getValue() instanceof Double){
-					statement.setDouble(cursor,(Double) nfParam.getValue());
-				} else if(nfParam.getValue() instanceof Float){
-					statement.setFloat(cursor,(Float) nfParam.getValue());
-				} else if(nfParam.getValue() instanceof Short){
-					statement.setShort(cursor,(Short) nfParam.getValue());
-				} else if(nfParam.getValue() instanceof BigDecimal){
-					statement.setBigDecimal(cursor,(BigDecimal) nfParam.getValue());
-				} else if(nfParam.getValue() instanceof Byte){
-					statement.setByte(cursor,(Byte) nfParam.getValue());
-				} else {
-					String paramValue = nfParam.getStringValue();
-					if ("".equals(paramValue.trim())) {
-						statement.setString(cursor, null);
-					} else if (!paramValue.contains(".")) {
-						nfParam.setValue(Long.parseLong(paramValue));
-						statement.setLong(cursor, (Long) nfParam.getValue());
-					} else if (paramValue.endsWith(".0")) {
-						paramValue = paramValue.substring(0, paramValue.length() - 2);
-						nfParam.setValue(Long.parseLong(paramValue));
-						statement.setLong(cursor, (Long) nfParam.getValue());
-					} else {
-						nfParam.setValue(Double.parseDouble(paramValue));
-						statement.setDouble(cursor, (Double) nfParam.getValue());
-					}
-				}
-			} else if (paramDataType.equals("date")) {
-				if (nfParam.getValue() instanceof java.sql.Date) {
-					java.sql.Date date = (java.sql.Date) nfParam.getValue();
-					statement.setDate(cursor, date);
-				} else if (nfParam.getValue() instanceof Date) {
-					Date date = (Date) nfParam.getValue();
-					statement.setTimestamp(cursor, new Timestamp(date.getTime()));
-				} else if(nfParam.getValue() instanceof Long){
-					statement.setTimestamp(cursor, new Timestamp((Long) nfParam.getValue()));
-				} else {
-					String paramValue = nfParam.getStringValue().trim();
-				    if (paramValue.matches("[0123456789]*")) {
-						statement.setTimestamp(cursor, new Timestamp(Long.parseLong(paramValue)));
-					} else if (paramValue.length() == DBFoundConfig.getDateFormat().length()) {
-						try {
-							SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
-							statement.setDate(cursor, new java.sql.Date(format.parse(paramValue).getTime()));
-						} catch (ParseException exception) {
-							throw new DBFoundRuntimeException("parse date exception, value :" + paramValue, exception);
-						}
-					} else if (paramValue.length() == DBFoundConfig.getDateTimeFormat().length()) {
-						try {
-							SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
-							statement.setTimestamp(cursor, new Timestamp(format.parse(paramValue).getTime()));
-						} catch (ParseException exception) {
-							throw new DBFoundRuntimeException("parse datetime exception, value :" + paramValue, exception);
-						}
-					} else {
-						statement.setString(cursor, paramValue);
-					}
-				}
-			} else if(paramDataType.equals("boolean")){
-				statement.setBoolean(cursor,(Boolean) nfParam.getValue());
-			} else if (paramDataType.equals("file")) {
-				String saveType = nfParam.getFileSaveType();
-				if ("db".equals(saveType)) {
-					InputStream inputStream = (InputStream) nfParam.getValue();
-					statement.setBinaryStream(cursor, inputStream);
-				}else{
-					statement.setString(cursor,nfParam.getStringValue());
-				}
-			} else {
-				String paramValue = nfParam.getStringValue();
-				statement.setString(cursor, paramValue);
+	public void initParam(PreparedStatement statement, List<Object> exeParam)throws SQLException {
+		int cursor = 1;
+		for (Object value : exeParam){
+			if(value == null){
+				statement.setString(cursor,null);
+			}else if(value instanceof String){
+				statement.setString(cursor,(String)value);
+			} else if(value instanceof Integer){
+				statement.setInt(cursor,(Integer)value);
+			} else if(value instanceof Long){
+				statement.setLong(cursor,(Long) value);
+			} else if(value instanceof Double){
+				statement.setDouble(cursor,(Double) value);
+			} else if(value instanceof Float){
+				statement.setFloat(cursor,(Float) value);
+			} else if(value instanceof Short){
+				statement.setShort(cursor,(Short) value);
+			} else if(value instanceof BigDecimal){
+				statement.setBigDecimal(cursor,(BigDecimal) value);
+			} else if(value instanceof Byte){
+				statement.setByte(cursor,(Byte) value);
+			} else if(value instanceof Boolean){
+				statement.setBoolean(cursor,(Boolean) value);
+			} else if (value instanceof java.sql.Date) {
+				java.sql.Date date = (java.sql.Date) value;
+				statement.setDate(cursor, date);
+			} else if (value instanceof Date) {
+				Date date = (Date) value;
+				statement.setTimestamp(cursor, new Timestamp(date.getTime()));
+			} else if (value instanceof InputStream) {
+				statement.setBinaryStream(cursor, (InputStream) value);
+			} else{
+				statement.setString(cursor,value.toString());
 			}
 			cursor++;
 		}
@@ -316,12 +199,13 @@ public abstract class SqlEntity extends Sqls {
 		if (sql == null || "".equals(sql)) {
 			return "";
 		}
-		String paramValue = "";
 
 		Pattern p = Pattern.compile(staticReplace);
 		Matcher m = p.matcher(sql);
 		StringBuffer buf = new StringBuffer();
 		while (m.find()) {
+			String paramValue = "";
+
 			String param = m.group();
 			String pn = param.substring(3, param.length() - 1);
 			Param nfParam = params.get(pn.trim());
@@ -385,7 +269,7 @@ public abstract class SqlEntity extends Sqls {
 
 	/**
 	 * 枚举类型 boolean类型支持 2022年07月08日17:26:06
-	 * @param nfParam
+	 * @param nfParam param
 	 */
 	private void initParamValue(Param nfParam){
 		if(nfParam.getValue() instanceof Enum){
@@ -408,6 +292,57 @@ public abstract class SqlEntity extends Sqls {
 				} else {
 					nfParam.setValue(0);
 				}
+			}else if(nfParam.getValue() instanceof String) {
+				String paramValue = nfParam.getStringValue();
+				if ("".equals(paramValue.trim())) {
+					nfParam.setValue(null);
+				} else if (!paramValue.contains(".")) {
+					nfParam.setValue(Long.parseLong(paramValue));
+				} else if (paramValue.endsWith(".0")) {
+					paramValue = paramValue.substring(0, paramValue.length() - 2);
+					nfParam.setValue(Long.parseLong(paramValue));
+				} else {
+					nfParam.setValue(Double.parseDouble(paramValue));
+				}
+			}
+		}else if ("varchar".equals(nfParam.getDataType())) {
+			if (nfParam.getValue() instanceof Map ){
+				String paramValue = JsonUtil.mapToJson((Map)nfParam.getValue());
+				nfParam.setValue(paramValue);
+			}else if( nfParam.getValue() instanceof Set ){
+				String paramValue = JsonUtil.setToJson((Set)nfParam.getValue());
+				nfParam.setValue(paramValue);
+			}else if( nfParam.getValue() instanceof List ){
+				String paramValue = JsonUtil.listToJson((List)nfParam.getValue());
+				nfParam.setValue(paramValue);
+			}else if( nfParam.getValue() instanceof Object[]){
+				String paramValue = JsonUtil.arrayToJson((Object[])nfParam.getValue());
+				nfParam.setValue(paramValue);
+			}
+		} else if ("date".equals(nfParam.getDataType())) {
+			if (!(nfParam.getValue() instanceof Date)) {
+				if(nfParam.getValue() instanceof Long){
+					nfParam.setValue(new Timestamp((Long) nfParam.getValue()));
+				} else {
+					String paramValue = nfParam.getStringValue().trim();
+					if (paramValue.matches("[0123456789]*")) {
+						nfParam.setValue(new Timestamp(Long.parseLong(paramValue)));
+					} else if (paramValue.length() == DBFoundConfig.getDateFormat().length()) {
+						try {
+							SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+							nfParam.setValue(new java.sql.Date(format.parse(paramValue).getTime()));
+						} catch (ParseException exception) {
+							throw new DBFoundRuntimeException("parse date exception, value :" + paramValue, exception);
+						}
+					} else if (paramValue.length() == DBFoundConfig.getDateTimeFormat().length()) {
+						try {
+							SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+							nfParam.setValue(new Timestamp(format.parse(paramValue).getTime()));
+						} catch (ParseException exception) {
+							throw new DBFoundRuntimeException("parse datetime exception, value :" + paramValue, exception);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -416,7 +351,6 @@ public abstract class SqlEntity extends Sqls {
 		if ("unknown".equals(nfParam.getDataType())){
 			Object value = nfParam.getValue();
 			if (value != null){
-
 				if (value instanceof String){
 					nfParam.setDataType("varchar");
 				} else if (value instanceof Number){
@@ -444,7 +378,7 @@ public abstract class SqlEntity extends Sqls {
 
 	public String[] getColNames(ResultSetMetaData metaset) throws SQLException {
 		int size = metaset.getColumnCount();
-		String colNames[] = new String[size];
+		String[] colNames = new String[size];
 		for (int i = 1; i <= colNames.length; i++) {
 			String colName = metaset.getColumnName(i);
 

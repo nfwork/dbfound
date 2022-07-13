@@ -9,14 +9,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
@@ -44,14 +44,16 @@ public class QuerySql extends SqlEntity {
 		}
 		Connection conn = context.getConn(provideName);
 		String querySql = staticParamParse(sql, params);
-		String esql = getExecuteSql(querySql, params);
+
+		List<Object> exeParam = new ArrayList<>();
+		String esql = getExecuteSql(querySql, params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
 		try {
 			statement = conn.prepareStatement(esql);
 			// 参数设定
-			initParam(statement, querySql, params);
+			initParam(statement, exeParam);
 			dataset = statement.executeQuery();
 			ResultSetMetaData metaset = dataset.getMetaData();
 			Calendar defaultCalendar = Calendar.getInstance();
@@ -110,28 +112,21 @@ public class QuerySql extends SqlEntity {
 		try {
 			if ("out".equals(param.getIoType())) {
 				if ("db".equals(param.getFileSaveType())) {
-					OutputStream out = null;
-					InputStream in = dataset.getBinaryStream(index);
-					try {
+
+					String fileName = UUIDUtil.getUUID() + ".dbf";
+					File file = new File(FileUtil.getUploadFolder(null), fileName);
+
+					try (InputStream in = dataset.getBinaryStream(index);
+						 OutputStream out = new FileOutputStream(file)) {
 						if (in != null) {
-							String fileName = UUIDUtil.getUUID() + ".dbf";
-							File file = new File(FileUtil.getUploadFolder(null), fileName);
-							out = new FileOutputStream(file);
-							byte b[] = new byte[2048];
+							byte[] b = new byte[2048];
 							int i = in.read(b);
 							while (i != -1) {
 								out.write(b, 0, i);
 								i = in.read(b);
 							}
 							param.setValue(file);
-						}
-					} finally {
-						if (in != null) {
-							in.close();
-						}
-						if (out != null) {
-							out.flush(); // 输入完毕，清除缓冲
-							out.close();
+							out.flush();
 						}
 					}
 				} else {

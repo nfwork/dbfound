@@ -127,14 +127,15 @@ public class BatchSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 
 		String cursorSql = staticParamParse(cursor, params);
-		String esql = getExecuteSql(cursorSql, params);
+		List<Object> exeParam = new ArrayList<>();
+		String esql = getExecuteSql(cursorSql, params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
 		try {
 			statement = conn.prepareStatement(esql);
 			// 参数设定
-			initParam(statement, cursorSql, params);
+			initParam(statement, exeParam);
 			dataset = statement.executeQuery();
 			ResultSetMetaData metaset = dataset.getMetaData();
 

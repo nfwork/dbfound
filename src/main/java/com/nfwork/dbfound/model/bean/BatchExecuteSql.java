@@ -160,7 +160,8 @@ public class BatchExecuteSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 
 		sql = staticParamParse(sql, params);
-		String esql = getExecuteSql(sql, params);
+		List<Object> exeParam = new ArrayList<>();
+		String esql = getExecuteSql(sql, params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet rs = null;
@@ -168,7 +169,7 @@ public class BatchExecuteSql extends SqlEntity {
 		try {
 			statement = conn.prepareStatement(esql);
 			// 参数设定
-			initParam(statement, sql, params);
+			initParam(statement, exeParam);
 			statement.execute();
 			return statement.getUpdateCount();
 		} catch (SQLException e) {
