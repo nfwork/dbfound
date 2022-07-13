@@ -283,9 +283,10 @@ public abstract class SqlEntity extends Sqls {
 
 		if("boolean".equals(nfParam.getDataType())){
 			if( !(nfParam.getValue() instanceof Boolean)) {
-				if(DataUtil.isNull(nfParam.getValue())){
+				String paramValue = nfParam.getStringValue().trim();
+				if ("".equals(paramValue)) {
 					nfParam.setValue(null);
-				}else if ("false".equals(nfParam.getValue()) || "0".equals(nfParam.getStringValue())) {
+				}else if ("false".equals(paramValue) || "0".equals(paramValue)) {
 					nfParam.setValue(false);
 				} else {
 					nfParam.setValue(true);
@@ -300,8 +301,8 @@ public abstract class SqlEntity extends Sqls {
 						nfParam.setValue(0);
 					}
 				} else if (nfParam.getValue() instanceof String) {
-					String paramValue = nfParam.getStringValue();
-					if ("".equals(paramValue.trim())) {
+					String paramValue = nfParam.getStringValue().trim();
+					if ("".equals(paramValue)) {
 						nfParam.setValue(null);
 					} else if (!paramValue.contains(".")) {
 						nfParam.setValue(Long.parseLong(paramValue));
@@ -327,6 +328,8 @@ public abstract class SqlEntity extends Sqls {
 				} else if (nfParam.getValue() instanceof Object[]) {
 					String paramValue = JsonUtil.arrayToJson((Object[]) nfParam.getValue());
 					nfParam.setValue(paramValue);
+				} else{
+					nfParam.setValue(nfParam.getStringValue());
 				}
 			}
 		} else if ("date".equals(nfParam.getDataType())) {
