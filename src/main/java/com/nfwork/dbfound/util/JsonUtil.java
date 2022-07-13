@@ -414,8 +414,8 @@ public class JsonUtil {
 	private static List jsonToList(Object[] objs) {
 		List maps = new ArrayList();
 		for (Object obj : objs) {
-			if (obj == null) {
-				maps.add(obj);
+			if (obj == null || obj instanceof JSONNull) {
+				maps.add(null);
 			} else if (obj instanceof JSONArray) {
 				Object os[] = ((JSONArray) obj).toArray();
 				maps.add(jsonToList(os));
