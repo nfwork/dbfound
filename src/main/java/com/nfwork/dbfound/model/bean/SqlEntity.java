@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.mysql.cj.x.protobuf.MysqlxExpr;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
@@ -376,7 +375,8 @@ public abstract class SqlEntity extends Sqls {
 					nfParam.setDataType("date");
 				} else if (value instanceof Boolean){
 					nfParam.setDataType("boolean");
-				} else if (value instanceof List || value instanceof Set || value instanceof MysqlxExpr.Object[]) {
+				} else if (value instanceof List || value instanceof Set || value instanceof Object[]
+						|| value instanceof int[] || value instanceof long[] ||value instanceof double[] ||value instanceof float[] ) {
 					nfParam.setDataType("collection");
 				} else if (value instanceof InputStream){
 					nfParam.setDataType("file");
