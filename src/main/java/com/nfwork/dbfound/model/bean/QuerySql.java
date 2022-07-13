@@ -119,7 +119,7 @@ public class QuerySql extends SqlEntity {
 					try (InputStream in = dataset.getBinaryStream(index);
 						 OutputStream out = new FileOutputStream(file)) {
 						if (in != null) {
-							byte[] b = new byte[2048];
+							byte[] b = new byte[4096];
 							int i = in.read(b);
 							while (i != -1) {
 								out.write(b, 0, i);

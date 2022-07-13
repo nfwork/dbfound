@@ -222,7 +222,7 @@ public abstract class SqlEntity extends Sqls {
 				Object object = nfParam.getValue();
 				int length  = DataUtil.getDataLength(object);
 				if(length < 1){
-					throw new DBFoundRuntimeException("collection param, data size must > 1");
+					throw new DBFoundRuntimeException("collection param, data size must >= 1");
 				}
 				Map<String,Object> root = new HashMap<>();
 				for(int i=0; i < length ; i++){
@@ -246,7 +246,7 @@ public abstract class SqlEntity extends Sqls {
 					if(i==0){
 						paramValue = paramValue + value;
 					}else{
-						paramValue = paramValue + "," + value;
+						paramValue = paramValue + ", " + value;
 					}
 				}
 			}else{
@@ -277,47 +277,57 @@ public abstract class SqlEntity extends Sqls {
 			nfParam.setValue(value);
 		}
 
+		if(nfParam.getValue() == null){
+			return;
+		}
+
 		if("boolean".equals(nfParam.getDataType())){
-			if( !(nfParam.getValue() instanceof Boolean) && DataUtil.isNotNull(nfParam.getValue()) ) {
-				if ("false".equals(nfParam.getValue()) || "0".equals(nfParam.getStringValue())) {
+			if( !(nfParam.getValue() instanceof Boolean)) {
+				if(DataUtil.isNull(nfParam.getValue())){
+					nfParam.setValue(null);
+				}else if ("false".equals(nfParam.getValue()) || "0".equals(nfParam.getStringValue())) {
 					nfParam.setValue(false);
 				} else {
 					nfParam.setValue(true);
 				}
 			}
 		} else if("number".equals(nfParam.getDataType()) ){
-			if( nfParam.getValue() instanceof Boolean) {
-				if ((Boolean) nfParam.getValue()) {
-					nfParam.setValue(1);
-				} else {
-					nfParam.setValue(0);
-				}
-			}else if(nfParam.getValue() instanceof String) {
-				String paramValue = nfParam.getStringValue();
-				if ("".equals(paramValue.trim())) {
-					nfParam.setValue(null);
-				} else if (!paramValue.contains(".")) {
-					nfParam.setValue(Long.parseLong(paramValue));
-				} else if (paramValue.endsWith(".0")) {
-					paramValue = paramValue.substring(0, paramValue.length() - 2);
-					nfParam.setValue(Long.parseLong(paramValue));
-				} else {
-					nfParam.setValue(Double.parseDouble(paramValue));
+			if( !(nfParam.getValue() instanceof Number)) {
+				if (nfParam.getValue() instanceof Boolean) {
+					if ((Boolean) nfParam.getValue()) {
+						nfParam.setValue(1);
+					} else {
+						nfParam.setValue(0);
+					}
+				} else if (nfParam.getValue() instanceof String) {
+					String paramValue = nfParam.getStringValue();
+					if ("".equals(paramValue.trim())) {
+						nfParam.setValue(null);
+					} else if (!paramValue.contains(".")) {
+						nfParam.setValue(Long.parseLong(paramValue));
+					} else if (paramValue.endsWith(".0")) {
+						paramValue = paramValue.substring(0, paramValue.length() - 2);
+						nfParam.setValue(Long.parseLong(paramValue));
+					} else {
+						nfParam.setValue(Double.parseDouble(paramValue));
+					}
 				}
 			}
 		}else if ("varchar".equals(nfParam.getDataType())) {
-			if (nfParam.getValue() instanceof Map ){
-				String paramValue = JsonUtil.mapToJson((Map)nfParam.getValue());
-				nfParam.setValue(paramValue);
-			}else if( nfParam.getValue() instanceof Set ){
-				String paramValue = JsonUtil.setToJson((Set)nfParam.getValue());
-				nfParam.setValue(paramValue);
-			}else if( nfParam.getValue() instanceof List ){
-				String paramValue = JsonUtil.listToJson((List)nfParam.getValue());
-				nfParam.setValue(paramValue);
-			}else if( nfParam.getValue() instanceof Object[]){
-				String paramValue = JsonUtil.arrayToJson((Object[])nfParam.getValue());
-				nfParam.setValue(paramValue);
+			if(!(nfParam.getValue() instanceof String)) {
+				if (nfParam.getValue() instanceof Map) {
+					String paramValue = JsonUtil.mapToJson((Map) nfParam.getValue());
+					nfParam.setValue(paramValue);
+				} else if (nfParam.getValue() instanceof Set) {
+					String paramValue = JsonUtil.setToJson((Set) nfParam.getValue());
+					nfParam.setValue(paramValue);
+				} else if (nfParam.getValue() instanceof List) {
+					String paramValue = JsonUtil.listToJson((List) nfParam.getValue());
+					nfParam.setValue(paramValue);
+				} else if (nfParam.getValue() instanceof Object[]) {
+					String paramValue = JsonUtil.arrayToJson((Object[]) nfParam.getValue());
+					nfParam.setValue(paramValue);
+				}
 			}
 		} else if ("date".equals(nfParam.getDataType())) {
 			if (!(nfParam.getValue() instanceof Date)) {
