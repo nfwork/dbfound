@@ -42,6 +42,7 @@
 								<xsd:enumeration value="number" />
 								<xsd:enumeration value="date" />
 								<xsd:enumeration value="boolean" />
+								<xsd:enumeration value="collection" />
 								<xsd:enumeration value="file" />
 							</xsd:restriction>
 						</xsd:simpleType>
@@ -60,6 +61,7 @@
 					</xsd:attribute>
 					<xsd:attribute name="sourcePath" />
 					<xsd:attribute name="value" />
+					<xsd:attribute name="innerPath" />
 				</xsd:complexType>
 			</xsd:element>
 		</xsd:choice>
@@ -90,6 +92,7 @@
 					<xsd:enumeration value="number" />
 					<xsd:enumeration value="date" />
 					<xsd:enumeration value="boolean" />
+					<xsd:enumeration value="collection" />
 					<xsd:enumeration value="file" />
 				</xsd:restriction>
 			</xsd:simpleType>
@@ -158,6 +161,7 @@
 			</xsd:simpleType>
 		</xsd:attribute>
 		<xsd:attribute name="fileNameParam" />
+		<xsd:attribute name="innerPath" />
 	</xsd:complexType>
 
 	<xsd:complexType name="sqls_type">

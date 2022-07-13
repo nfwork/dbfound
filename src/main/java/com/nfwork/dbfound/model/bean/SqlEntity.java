@@ -10,7 +10,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.mysql.cj.x.protobuf.MysqlxExpr;
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
@@ -57,10 +59,29 @@ public abstract class SqlEntity extends Sqls {
 	 * @return
 	 */
 	public String getExecuteSql(String sql, Map<String, Param> params) {
-		String executeSqlString = sql;
-		// 转化执行的sql
-		executeSqlString = executeSqlString.replaceAll(dynamicReplace, "?");
-		return executeSqlString;
+		Pattern p = Pattern.compile(dynamicReplace);
+		Matcher m = p.matcher(sql);
+		StringBuffer buf = new StringBuffer();
+		while (m.find()) {
+			String param = m.group();
+			String pn = param.substring(3, param.length() - 1);
+			Param nfParam = params.get(pn.trim());
+
+			if (nfParam == null) {
+				throw new ParamNotFoundException("param: " + pn + " not defined");
+			}
+
+			StringBuilder value = new StringBuilder("?");
+			if("collection".equals(nfParam.getDataType())){
+				int length = DataUtil.getDataLength(nfParam.getValue());
+				for(int i=1; i<length; i++){
+					value.append(", ?");
+				}
+			}
+			m.appendReplacement(buf, value.toString());
+		}
+		m.appendTail(buf);
+		return buf.toString();
 	}
 
 	/**
@@ -123,6 +144,59 @@ public abstract class SqlEntity extends Sqls {
 
 			initParamValue(nfParam);
 			initParamType(nfParam);
+
+			//添加isIsCollection支持 2022年07月13日11:14:39
+			if("collection".equals(nfParam.getDataType())){
+				Object object = nfParam.getValue();
+				int length = DataUtil.getDataLength(object);
+				if(length < 1){
+					throw new DBFoundRuntimeException("collection param, data size must > 1");
+				}
+
+				Map<String, Object> root = new HashMap<>();
+				for (int i = 0; i < length; i++) {
+					StringBuilder buffer = new StringBuilder();
+					root.put("data", object);
+					buffer.append("data[").append(i).append("].").append(nfParam.getInnerPath());
+
+					Object value = DBFoundEL.getData(buffer.toString(), root);
+					if (value instanceof Enum) {
+						value = getEnumValue((Enum) value);
+					}
+
+					if(value == null){
+						statement.setString(cursor,null);
+					}else if(value instanceof String){
+						statement.setString(cursor,(String)value);
+					} else if(value instanceof Integer){
+						statement.setInt(cursor,(Integer)value);
+					} else if(nfParam.getValue() instanceof Long){
+						statement.setLong(cursor,(Long) value);
+					} else if(nfParam.getValue() instanceof Double){
+						statement.setDouble(cursor,(Double) value);
+					} else if(nfParam.getValue() instanceof Float){
+						statement.setFloat(cursor,(Float) value);
+					} else if(nfParam.getValue() instanceof Short){
+						statement.setShort(cursor,(Short) value);
+					} else if(nfParam.getValue() instanceof BigDecimal){
+						statement.setBigDecimal(cursor,(BigDecimal) value);
+					} else if(nfParam.getValue() instanceof Byte){
+						statement.setByte(cursor,(Byte) value);
+					} else if(nfParam.getValue() instanceof Boolean){
+						statement.setBoolean(cursor,(Boolean) value);
+					} else if (nfParam.getValue() instanceof java.sql.Date) {
+						java.sql.Date date = (java.sql.Date) value;
+						statement.setDate(cursor, date);
+					} else if (nfParam.getValue() instanceof Date) {
+						Date date = (Date) value;
+						statement.setTimestamp(cursor, new Timestamp(date.getTime()));
+					} else{
+						statement.setString(cursor,value.toString());
+					}
+					cursor++;
+				}
+				continue;
+			}
 
 			if (nfParam.isUUID()) {
 				nfParam.setValue(UUIDUtil.getUUID());
@@ -242,7 +316,7 @@ public abstract class SqlEntity extends Sqls {
 		if (sql == null || "".equals(sql)) {
 			return "";
 		}
-		String paramValue;
+		String paramValue = "";
 
 		Pattern p = Pattern.compile(staticReplace);
 		Matcher m = p.matcher(sql);
@@ -259,7 +333,41 @@ public abstract class SqlEntity extends Sqls {
 			initParamValue(nfParam);
 			initParamType(nfParam);
 
-			paramValue = nfParam.getStringValue();
+			// isIsCollection 逻辑支持 2022年07月13日11:21:39
+			if("collection".equals(nfParam.getDataType())){
+				Object object = nfParam.getValue();
+				int length  = DataUtil.getDataLength(object);
+				if(length < 1){
+					throw new DBFoundRuntimeException("collection param, data size must > 1");
+				}
+				Map<String,Object> root = new HashMap<>();
+				for(int i=0; i < length ; i++){
+					StringBuilder buffer = new StringBuilder();
+					root.put("data",object);
+					buffer.append("data[").append(i).append("].").append(nfParam.getInnerPath());
+
+					Object value = DBFoundEL.getData(buffer.toString(),root);
+					if(value instanceof Enum) {
+						value = getEnumValue((Enum) value);
+					}if(value instanceof  java.sql.Date){
+						SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+						value = format.format(value);
+					}else if (value instanceof java.util.Date) {
+						SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+						value = format.format(value);
+					} else {
+						value = value.toString();
+					}
+
+					if(i==0){
+						paramValue = paramValue + value;
+					}else{
+						paramValue = paramValue + "," + value;
+					}
+				}
+			}else{
+				paramValue = nfParam.getStringValue();
+			}
 
 			// UUID取值
 			if (nfParam.isUUID()) {
@@ -281,8 +389,7 @@ public abstract class SqlEntity extends Sqls {
 	 */
 	private void initParamValue(Param nfParam){
 		if(nfParam.getValue() instanceof Enum){
-			EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(nfParam.getValue().getClass());
-			Object value = handler.getEnumValue(nfParam.getValue());
+			Object value = getEnumValue((Enum) nfParam.getValue());
 			nfParam.setValue(value);
 		}
 
@@ -303,24 +410,36 @@ public abstract class SqlEntity extends Sqls {
 				}
 			}
 		}
-
 	}
 
 	private void initParamType(Param nfParam){
 		if ("unknown".equals(nfParam.getDataType())){
 			Object value = nfParam.getValue();
 			if (value != null){
-				if (value instanceof Number){
+
+				if (value instanceof String){
+					nfParam.setDataType("varchar");
+				} else if (value instanceof Number){
 					nfParam.setDataType("number");
 				} else if (value instanceof Date){
 					nfParam.setDataType("date");
 				} else if (value instanceof Boolean){
 					nfParam.setDataType("boolean");
+				} else if (value instanceof List || value instanceof Set || value instanceof MysqlxExpr.Object[]) {
+					nfParam.setDataType("collection");
+				} else if (value instanceof InputStream){
+					nfParam.setDataType("file");
 				} else {
 					nfParam.setDataType("varchar");
 				}
 			}
 		}
+	}
+
+	private Object getEnumValue(Enum object){
+		EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(object.getClass());
+		Object value = handler.getEnumValue(object);
+		return value;
 	}
 
 	public String[] getColNames(ResultSetMetaData metaset) throws SQLException {

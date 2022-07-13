@@ -20,6 +20,7 @@ public class Param extends Entity {
 	private String sourcePathHistory;
 	private String scope;
 	private String fileSaveType = "db"; // disk ,db
+	private String innerPath = "value";
 	private String fileNameParam;
 	private boolean UUID = false;
 	private boolean batchAssign = true;
@@ -78,7 +79,10 @@ public class Param extends Entity {
 		if (value == null) {
 			return null;
 		} else {
-			if (value instanceof Date) {
+			if(value instanceof  java.sql.Date){
+				SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+				return format.format(value);
+			}else if (value instanceof Date) {
 				SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
 				return format.format(value);
 			} else {
@@ -157,5 +161,13 @@ public class Param extends Entity {
 
 	public void setBatchAssign(boolean batchAssign) {
 		this.batchAssign = batchAssign;
+	}
+
+	public String getInnerPath() {
+		return innerPath;
+	}
+
+	public void setInnerPath(String innerPath) {
+		this.innerPath = innerPath;
 	}
 }

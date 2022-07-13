@@ -425,6 +425,13 @@ public class ModelEngine {
 		// 取值
 		Object paramValue = context.getData(realPath);
 
+		if("collection".equals(nfParam.getDataType())){
+			int length = DataUtil.getDataLength(paramValue);
+			if (length == 0){
+				paramValue = null;
+			}
+		}
+
 		if (paramValue != null && !"".equals(paramValue)) {
 			nfParam.setValue(paramValue);
 		}

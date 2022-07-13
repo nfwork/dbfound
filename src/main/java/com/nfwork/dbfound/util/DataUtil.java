@@ -3,6 +3,7 @@ package com.nfwork.dbfound.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -165,6 +166,21 @@ public class DataUtil {
 			return (String) o;
 		} else {
 			return o.toString();
+		}
+	}
+
+	public static int getDataLength(Object data){
+		if (data instanceof List) {
+			List dataList = (List) data;
+			return dataList.size();
+		} else if (data instanceof Set) {
+			Set set = (Set) data;
+			return set.size();
+		} else if (data instanceof Object[]) {
+			Object[] objects = (Object[]) data;
+			return objects.length;
+		} else {
+			return 0;
 		}
 	}
 }
