@@ -179,6 +179,18 @@ public class DataUtil {
 		} else if (data instanceof Object[]) {
 			Object[] objects = (Object[]) data;
 			return objects.length;
+		} else if (data instanceof int[]) {
+			int[] objects = (int[]) data;
+			return objects.length;
+		} else if (data instanceof long[]) {
+			long[] objects = (long[]) data;
+			return objects.length;
+		} else if (data instanceof double[]) {
+			double[] objects = (double[]) data;
+			return objects.length;
+		} else if (data instanceof float[]) {
+			float[] objects = (float[]) data;
+			return objects.length;
 		} else {
 			return 0;
 		}

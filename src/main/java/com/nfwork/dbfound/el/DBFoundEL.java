@@ -104,6 +104,26 @@ public class DBFoundEL {
 			if (index < objects.length) {
 				object = objects[index];
 			}
+		}  else if (object instanceof int[]) {
+			int[] objects = (int[]) object;
+			if (index < objects.length) {
+				object = objects[index];
+			}
+		} else if (object instanceof long[]) {
+			long[] objects = (long[]) object;
+			if (index < objects.length) {
+				object = objects[index];
+			}
+		} else if (object instanceof double[]) {
+			double[] objects = (double[]) object;
+			if (index < objects.length) {
+				object = objects[index];
+			}
+		} else if (object instanceof float[]) {
+			float[] objects = (float[]) object;
+			if (index < objects.length) {
+				object = objects[index];
+			}
 		}
 
 		return object;
