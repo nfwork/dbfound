@@ -23,8 +23,11 @@ public class LogUtil {
 		if (openLog) {
 			log.info("execute sql: " + sql);
 			for (Param param : params) {
-				log.info(String.format("sql param:%s, value:%s, dataType:%s, sourcePath:%s", param.getName(), param
-						.getValue(), param.getDataType(), param.getSourcePathHistory()));
+				if(param.isRequireLog()) {
+					param.setRequireLog(false);
+					log.info(String.format("sql param:%s, value:%s, dataType:%s, sourcePath:%s", param.getName(), param
+							.getValue(), param.getDataType(), param.getSourcePathHistory()));
+				}
 			}
 		}
 	}

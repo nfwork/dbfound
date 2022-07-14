@@ -24,6 +24,7 @@ public class Param extends Entity {
 	private String fileNameParam;
 	private boolean UUID = false;
 	private boolean batchAssign = true;
+	private boolean requireLog = false;
 
 	@Override
 	public void run() {
@@ -169,5 +170,13 @@ public class Param extends Entity {
 
 	public void setInnerPath(String innerPath) {
 		this.innerPath = innerPath;
+	}
+
+	public boolean isRequireLog() {
+		return requireLog;
+	}
+
+	public void setRequireLog(boolean requireLog) {
+		this.requireLog = requireLog;
 	}
 }

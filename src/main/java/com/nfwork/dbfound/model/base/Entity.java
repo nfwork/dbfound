@@ -1,9 +1,9 @@
 package com.nfwork.dbfound.model.base;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import com.nfwork.dbfound.util.LogUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
@@ -22,12 +22,9 @@ public abstract class Entity implements Serializable, Cloneable {
 		List<Attribute> list = element.attributes();
 		for (Attribute attribute : list) {
 			try {
-				BeanUtils.setProperty(this, attribute.getName(), attribute
-						.getValue());
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+				BeanUtils.setProperty(this, attribute.getName(), attribute.getValue());
+			} catch (Exception e) {
+				LogUtil.error(e.getMessage(),e);
 			}
 		}
 	}

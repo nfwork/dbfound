@@ -73,10 +73,13 @@ public abstract class SqlEntity extends Sqls {
 				nfParam.setValue(UUIDUtil.getUUID());
 			}
 
+			nfParam.setRequireLog(true);
 			initParamValue(nfParam);
 			initParamType(nfParam);
 
 			if("collection".equals(nfParam.getDataType())){
+
+				List<Object> exeValue = new ArrayList<>();
 				StringBuilder value = new StringBuilder("");
 				int length = DataUtil.getDataLength(nfParam.getValue());
 				if(length < 1){
@@ -98,9 +101,11 @@ public abstract class SqlEntity extends Sqls {
 					if (pValue instanceof Enum) {
 						pValue = getEnumValue((Enum) pValue);
 					}
+					exeValue.add(pValue);
 					exeParam.add(pValue);
 				}
 				m.appendReplacement(buf, value.toString());
+				nfParam.setValue(exeValue);
 			}else{
 				exeParam.add(nfParam.getValue());
 				m.appendReplacement(buf, "?");
@@ -213,11 +218,13 @@ public abstract class SqlEntity extends Sqls {
 				throw new ParamNotFoundException("param: " + pn + " not defined");
 			}
 
+			nfParam.setRequireLog(true);
 			initParamValue(nfParam);
 			initParamType(nfParam);
 
 			// isIsCollection 逻辑支持 2022年07月13日11:21:39
 			if("collection".equals(nfParam.getDataType())){
+				List<Object> exeValue = new ArrayList<>();
 				Object object = nfParam.getValue();
 				int length  = DataUtil.getDataLength(object);
 				if(length < 1){
@@ -230,13 +237,18 @@ public abstract class SqlEntity extends Sqls {
 					buffer.append("data[").append(i).append("].").append(nfParam.getInnerPath());
 
 					Object value = DBFoundEL.getData(buffer.toString(),root);
+
+					if(value instanceof Enum) {
+						value = getEnumValue((Enum) value);
+					}
+
+					exeValue.add(value);
+
 					if(value == null){
 						continue;
 					}
 
-					if(value instanceof Enum) {
-						value = getEnumValue((Enum) value);
-					}if(value instanceof  java.sql.Date){
+					if(value instanceof  java.sql.Date){
 						SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
 						value = format.format(value);
 					}else if (value instanceof java.util.Date) {
@@ -252,6 +264,7 @@ public abstract class SqlEntity extends Sqls {
 						paramValue = paramValue + ", " + value;
 					}
 				}
+				nfParam.setValue(exeValue);
 			}else{
 				paramValue = nfParam.getStringValue();
 			}
