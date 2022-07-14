@@ -28,12 +28,13 @@ public abstract class SqlEntity extends Sqls {
 
 	String sql;
 
-	protected final static String paramReplace = "\\{\\@[ a-zA-Z_0-9\u4E00-\u9FA5]*\\}";
+	private final static String paramReplace = "\\{@[ a-zA-Z_0-9\u4E00-\u9FA5]*}";
 
-	protected final static String dynamicReplace = "\\$" + paramReplace;
+	protected final static Pattern dynamicPattern = Pattern.compile("\\$" + paramReplace);
 
-	protected final static String staticReplace = "\\#" + paramReplace;
+	protected final static Pattern staticPattern = Pattern.compile("#" + paramReplace);
 
+	protected final static Pattern paramPattern = Pattern.compile(paramReplace);
 
 	@Override
 	public void run() {
@@ -55,11 +56,11 @@ public abstract class SqlEntity extends Sqls {
 	/**
 	 * 得到最后执行的sql语句
 	 * 
-	 * @return
+	 * @return string
 	 */
 	public String getExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam) {
-		Pattern p = Pattern.compile(dynamicReplace);
-		Matcher m = p.matcher(sql);
+
+		Matcher m = dynamicPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
 		while (m.find()) {
 			String param = m.group();
@@ -80,7 +81,7 @@ public abstract class SqlEntity extends Sqls {
 			if("collection".equals(nfParam.getDataType())){
 
 				List<Object> exeValue = new ArrayList<>();
-				StringBuilder value = new StringBuilder("");
+				StringBuilder value = new StringBuilder();
 				int length = DataUtil.getDataLength(nfParam.getValue());
 				if(length < 1){
 					throw new DBFoundRuntimeException("collection param, data size must >= 1");
@@ -120,9 +121,7 @@ public abstract class SqlEntity extends Sqls {
 	 * since 2.5.0
 	 */
 	public void autoCreateParam(String sql, Map<String, Param> params) {
-		// 设定参数
-		Pattern p = Pattern.compile(paramReplace);
-		Matcher m = p.matcher(sql);
+		Matcher m = paramPattern.matcher(sql);
 		while (m.find()) {
 			String paramName = m.group();
 			String name = paramName.substring(2, paramName.length() - 1).trim();
@@ -152,8 +151,8 @@ public abstract class SqlEntity extends Sqls {
 	/**
 	 * 参数设定 sql为原生sql语句，用来寻找参数的位置
 	 * 
-	 * @throws SQLException
-	 * @throws NumberFormatException
+	 * @throws SQLException sql exception
+	 * @throws NumberFormatException Number Format Exception
 	 */
 	public void initParam(PreparedStatement statement, List<Object> exeParam)throws SQLException {
 		int cursor = 1;
@@ -195,17 +194,15 @@ public abstract class SqlEntity extends Sqls {
 
 	/**
 	 * 静态参数 初始化
-	 * @param sql
-	 * @param params
-	 * @return
+	 * @param sql sql
+	 * @param params params
+	 * @return string
 	 */
 	public String staticParamParse(String sql, Map<String, Param> params) {
 		if (sql == null || "".equals(sql)) {
 			return "";
 		}
-
-		Pattern p = Pattern.compile(staticReplace);
-		Matcher m = p.matcher(sql);
+		Matcher m = staticPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
 		while (m.find()) {
 			String paramValue = "";

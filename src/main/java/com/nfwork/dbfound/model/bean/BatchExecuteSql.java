@@ -182,8 +182,7 @@ public class BatchExecuteSql extends SqlEntity {
 	}
 
 	private String analysisTmpSql(String sql, List<String> batchParamNameList ) {
-		Pattern p = Pattern.compile(paramReplace);
-		Matcher m = p.matcher(sql);
+		Matcher m = paramPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
 		while (m.find()) {
 			String param = m.group();

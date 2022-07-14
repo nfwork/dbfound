@@ -5,8 +5,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.model.reflector.Reflector;
+import com.nfwork.dbfound.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.BeanUtilsBean;
 
 public class DBFoundEL {
 
@@ -52,7 +53,7 @@ public class DBFoundEL {
 		String[] expArray = express.split("\\.");
 
 		Object currentObj = root;
-		Object nextObj = null;
+		Object nextObj ;
 		for (int i =0;i<expArray.length;i++){
 			String exp = expArray[i].trim();
 
@@ -90,10 +91,9 @@ public class DBFoundEL {
 		} else if (object instanceof Set) {
 			Set s = (Set) object;
 			if (index < s.size()) {
-				Iterator iterator = s.iterator();
-				while (iterator.hasNext()) {
+				for (Object o : s) {
 					if (index == 0) {
-						object = iterator.next();
+						object = o;
 						break;
 					}
 					index--;
@@ -125,7 +125,6 @@ public class DBFoundEL {
 				object = objects[index];
 			}
 		}
-
 		return object;
 	}
 
@@ -141,9 +140,19 @@ public class DBFoundEL {
 			}
 		}else{
 			try {
-				return BeanUtilsBean.getInstance().getPropertyUtils().getProperty(currentObj, name);
+				Reflector reflector = Reflector.forClass(currentObj.getClass());
+				if(reflector.hasGetter(name)) {
+					return reflector.getGetInvoker(name).invoke(currentObj, new Object[] {  });
+				}
+				if(name.contains("_")){
+					name = StringUtil.underscoreToCamelCase(name);
+					if(reflector.hasGetter(name)) {
+						return reflector.getGetInvoker(name).invoke(currentObj, new Object[] {  });
+					}
+				}
+				return null;
 			} catch (Exception e) {
-				throw new DBFoundRuntimeException("dbfound el get data failed, " + e.getMessage(), e);
+				return null;
 			}
 		}
 	}
@@ -154,7 +163,17 @@ public class DBFoundEL {
 			currentMap.put(name, nextObj);
 		}else{
 			try {
-				BeanUtils.setProperty(currentObj, name, nextObj);
+				Reflector reflector = Reflector.forClass(currentObj.getClass());
+				if(reflector.hasSetter(name)) {
+					BeanUtils.setProperty(currentObj, name, nextObj);
+					return;
+				}
+				if(name.contains("_")){
+					name = StringUtil.underscoreToCamelCase(name);
+					if(reflector.hasGetter(name)) {
+						BeanUtils.setProperty(currentObj, name, nextObj);
+					}
+				}
 			} catch (Exception e) {
 				throw new DBFoundRuntimeException("set context data failed, " + e.getMessage(), e);
 			}
@@ -166,15 +185,16 @@ public class DBFoundEL {
 				|| object instanceof Enum || object instanceof Boolean;
 	}
 
+	private final static Pattern p = Pattern.compile("\\[[0123456789 ]+]");
+
 	private static int findIndex(String value) {
-		Pattern p = Pattern.compile("\\[[0123456789 ]+\\]");
 		Matcher m = p.matcher(value);
-		while (m.find()) {
+		if (m.find()) {
 			String text = m.group();
 			text = text.substring(1, text.length() - 1);
-			int result = Integer.parseInt(text.trim());
-			return result;
+			return Integer.parseInt(text.trim());
 		}
 		return -1;
 	}
 }
+
