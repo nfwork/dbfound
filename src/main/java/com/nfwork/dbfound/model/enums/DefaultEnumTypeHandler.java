@@ -1,6 +1,6 @@
 package com.nfwork.dbfound.model.enums;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
+import com.nfwork.dbfound.model.reflector.Reflector;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,7 +22,12 @@ public class DefaultEnumTypeHandler<E extends Enum<E> >  implements EnumTypeHand
             return ((BaseEnum)param).getValue();
         }else{
             try {
-                return BeanUtilsBean.getInstance().getPropertyUtils().getProperty(param,"value");
+                Reflector reflector = Reflector.forClass(param.getClass());
+                if(reflector.hasGetter("value")) {
+                    return reflector.getGetInvoker("value").invoke(param, null);
+                }else{
+                    return param.toString();
+                }
             }catch (Exception exception){
                 return param.toString();
             }

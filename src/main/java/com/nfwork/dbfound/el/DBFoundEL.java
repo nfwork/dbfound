@@ -142,12 +142,12 @@ public class DBFoundEL {
 			try {
 				Reflector reflector = Reflector.forClass(currentObj.getClass());
 				if(reflector.hasGetter(name)) {
-					return reflector.getGetInvoker(name).invoke(currentObj, new Object[] {  });
+					return reflector.getGetInvoker(name).invoke(currentObj, null);
 				}
 				if(name.contains("_")){
 					name = StringUtil.underscoreToCamelCase(name);
 					if(reflector.hasGetter(name)) {
-						return reflector.getGetInvoker(name).invoke(currentObj, new Object[] {  });
+						return reflector.getGetInvoker(name).invoke(currentObj, null);
 					}
 				}
 				return null;
