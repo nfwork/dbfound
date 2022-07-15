@@ -102,15 +102,16 @@ public class ModelEngine {
 			}
 
 			// 初始化查询参数param
+			Map<String, Object> elCache = new HashMap<>();
 			Map<String, Param> params = query.cloneParams();
 			for (Param nfParam : params.values()) {
-				setParam(nfParam, context, currentPath);
+				setParam(nfParam, context, currentPath, elCache);
 			}
 
 			// 初始化查询过滤参数filter
 			Map<String, Filter> filters = query.cloneFilters();
 			for (Filter filter : filters.values()) {
-				setParam(filter, context, currentPath);
+				setParam(filter, context, currentPath, elCache);
 				Object value = filter.getValue();
 				if(DataUtil.isNotNull(value)){
 					filter.setActive(true);
@@ -306,8 +307,9 @@ public class ModelEngine {
 		Map<String, Param> params = execute.cloneParams();
 
 		// 设想sql查询参数
+		Map<String, Object> elCache = new HashMap<>();
 		for (Param nfParam : params.values()) {
-			setParam(nfParam, context, currentPath);
+			setParam(nfParam, context, currentPath, elCache);
 		}
 
 		if(execute.getExecuteAdapter()!=null){
@@ -379,7 +381,7 @@ public class ModelEngine {
 	 * @param context
 	 * @param cp
 	 */
-	private static void setParam(Param nfParam, Context context, String cp) {
+	private static void setParam(Param nfParam, Context context, String cp, Map<String, Object> elCache) {
 
 		// 增加UUID取值 在sql执行的时候动态的获取UUID 2012年8月8日8:47:08
 		if (nfParam.isUUID()) {
@@ -423,7 +425,7 @@ public class ModelEngine {
 		}
 
 		// 取值
-		Object paramValue = context.getData(realPath);
+		Object paramValue = context.getData(realPath, elCache);
 
 		if("collection".equals(nfParam.getDataType())){
 			int length = DataUtil.getDataLength(paramValue);

@@ -4,30 +4,42 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.reflector.Column;
 import com.nfwork.dbfound.util.JsonUtil;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class T {
     public static void main(String[] args) {
         Context context = new Context();
+
         User user = new User();
         context.setParamData("user",user);
+
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        context.setParamData("users",users);
 
         context.setData("param.user.user_id", "10");
         context.setData("param.user.flag", true);
         context.setData("param.user.user_name", "john");
         context.setData("param.user.role", "1");
 
+        Map<String, Object> elCache = new HashMap<>();
+
         long a1 = System.currentTimeMillis();
         for (int i=0; i< 10000;i++) {
-            context.getData("param.user.user_id");
-            context.getData("param.user.user_name");
-            context.getData("param.user.flag");
-            context.getData("param.user.role");
+            context.getData("param.users[0].user_id", elCache);
+            context.getData("param.user[0].user_name", elCache);
+            context.getData("param.user[0].flag", elCache);
+            context.getData("param.user[0].role", elCache);
         }
         System.out.println(System.currentTimeMillis() - a1);
 
-        System.out.println(context.getData("param.user.user_id"));
-        System.out.println(context.getData("param.user.user_name"));
-        System.out.println(context.getData("param.user.flag"));
-        System.out.println(context.getData("param.user.role"));
+        System.out.println(context.getData("param.user[0].user_id", elCache));
+        System.out.println(context.getData("param.user[0].user_name", elCache));
+        System.out.println(context.getData("param.user[0].flag", elCache));
+        System.out.println(context.getData("param.user[0].role", elCache));
         System.out.println(JsonUtil.mapToJson(context.getDatas()));
 
     }

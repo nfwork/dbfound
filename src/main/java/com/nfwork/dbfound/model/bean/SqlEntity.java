@@ -88,6 +88,7 @@ public abstract class SqlEntity extends Sqls {
 				}
 
 				Map<String, Object> root = new HashMap<>();
+				Map<String, Object> elCache = new HashMap<>();
 				for(int i=0; i<length; i++){
 					if(i==0){
 						value.append("?");
@@ -96,9 +97,11 @@ public abstract class SqlEntity extends Sqls {
 					}
 					StringBuilder buffer = new StringBuilder();
 					root.put("data", nfParam.getValue());
-					buffer.append("data[").append(i).append("].").append(nfParam.getInnerPath());
-
-					Object pValue = DBFoundEL.getData(buffer.toString(), root);
+					buffer.append("data[").append(i).append("]");
+					if(DataUtil.isNotNull(nfParam.getInnerPath())){
+						buffer.append(".").append(nfParam.getInnerPath());
+					}
+					Object pValue = DBFoundEL.getData(buffer.toString(), root, elCache);
 					if (pValue instanceof Enum) {
 						pValue = getEnumValue((Enum) pValue);
 					}
@@ -228,17 +231,21 @@ public abstract class SqlEntity extends Sqls {
 					throw new DBFoundRuntimeException("collection param, data size must >= 1");
 				}
 				Map<String,Object> root = new HashMap<>();
+				Map<String, Object> elCache = new HashMap<>();
+
 				for(int i=0; i < length ; i++){
 					StringBuilder buffer = new StringBuilder();
 					root.put("data",object);
-					buffer.append("data[").append(i).append("].").append(nfParam.getInnerPath());
 
-					Object value = DBFoundEL.getData(buffer.toString(),root);
+					buffer.append("data[").append(i).append("]");
+					if(DataUtil.isNotNull(nfParam.getInnerPath())){
+						buffer.append(".").append(nfParam.getInnerPath());
+					}
+					Object value = DBFoundEL.getData(buffer.toString(), root, elCache);
 
 					if(value instanceof Enum) {
 						value = getEnumValue((Enum) value);
 					}
-
 					exeValue.add(value);
 
 					if(value == null){

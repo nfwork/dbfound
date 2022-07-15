@@ -127,6 +127,8 @@ public class BatchExecuteSql extends SqlEntity {
 
 		String eSql = beforeTmpSql;
 
+		Map<String, Object> elCache = new HashMap<>();
+
 		for (int i =begin; i< end; i++){
 			for (String paramName : paramNameList){
 				Param param = params.get(paramName);
@@ -138,7 +140,7 @@ public class BatchExecuteSql extends SqlEntity {
 				if (param.isBatchAssign()){
 					String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
 					newParam.setSourcePathHistory(exeSourcePath +"[" + i +"]."+ sp);
-					Object value = context.getData(newParam.getSourcePathHistory());
+					Object value = context.getData(newParam.getSourcePathHistory(), elCache);
 					if("".equals(value)){
 						value = null;
 					}

@@ -12,6 +12,39 @@ import org.apache.commons.beanutils.BeanUtils;
 
 public class DBFoundEL {
 
+	public static Object getData(String express, Map<String, Object> root, Map<String, Object> elCache) {
+
+		String childExpress;
+		String name ;
+		Object currentObject;
+
+		int last = express.lastIndexOf(".");
+
+		if(last > -1){
+			childExpress = express.substring(0,last);
+			name = express.substring(last+1);
+
+			currentObject = elCache.get(childExpress);
+			if(currentObject == null){
+				currentObject = getData(childExpress, root);
+				elCache.put(childExpress, currentObject);
+			}
+		}else{
+			currentObject = root;
+			name = express;
+		}
+
+		int index = findIndex(name);
+		if (index > -1) {
+			name = name.substring(0, name.indexOf("["));
+		}
+		Object value = getNextObject(currentObject,name);
+		if( index > -1){
+			value = getByIndex(index,value);
+		}
+		return value;
+	}
+
 	public static Object getData(String express, Map<String, Object> root) {
 
 		Object currentObject = root;

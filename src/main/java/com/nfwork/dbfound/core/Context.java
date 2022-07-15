@@ -232,6 +232,10 @@ public class Context {
 		return DBFoundEL.getData(express, rootDatas);
 	}
 
+	public Object getData(String express, Map<String, Object> elCache) {
+		return DBFoundEL.getData(express, rootDatas, elCache);
+	}
+
 	public int getDataLength(String express){
 		int dataSize =0;
 		Object data = this.getData(express);

@@ -20,7 +20,7 @@ public class Param extends Entity {
 	private String sourcePathHistory;
 	private String scope;
 	private String fileSaveType = "db"; // disk ,db
-	private String innerPath = "value";
+	private String innerPath;
 	private String fileNameParam;
 	private boolean UUID = false;
 	private boolean batchAssign = true;
