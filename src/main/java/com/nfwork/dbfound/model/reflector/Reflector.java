@@ -32,9 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-
 import com.nfwork.dbfound.exception.DBFoundPackageException;
-import com.nfwork.dbfound.util.LogUtil;
 
 /*
  * This class represents a cached set of class definition information that
@@ -487,9 +485,7 @@ public class Reflector {
 		if (future == null) {
 			Callable<Reflector> callable = new Callable<Reflector>() {
 				public Reflector call() throws Exception {
-					Reflector cached = new Reflector(clazz);
-					LogUtil.info(String.format("load class %s Constructor success", clazz));
-					return cached;
+					return new Reflector(clazz);
 				}
 			};
 			FutureTask<Reflector> task = new FutureTask<Reflector>(callable);
