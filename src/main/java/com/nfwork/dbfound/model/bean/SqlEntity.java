@@ -3,10 +3,10 @@ package com.nfwork.dbfound.model.bean;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
