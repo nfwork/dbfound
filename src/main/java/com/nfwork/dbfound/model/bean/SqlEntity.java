@@ -96,13 +96,11 @@ public abstract class SqlEntity extends Sqls {
 					}else{
 						value.append(", ?");
 					}
-					StringBuilder buffer = new StringBuilder();
+
 					root.put("data", nfParam.getValue());
-					buffer.append("data[").append(i).append("]");
-					if(DataUtil.isNotNull(nfParam.getInnerPath())){
-						buffer.append(".").append(nfParam.getInnerPath());
-					}
-					Object pValue = DBFoundEL.getData(buffer.toString(), root, elCache);
+					String express = getCollectionItemExpress(i,nfParam.getInnerPath());
+					Object pValue = DBFoundEL.getData(express, root, elCache);
+
 					if (pValue instanceof Enum) {
 						pValue = getEnumValue((Enum) pValue);
 					}
@@ -225,6 +223,9 @@ public abstract class SqlEntity extends Sqls {
 
 			// isIsCollection 逻辑支持 2022年07月13日11:21:39
 			if(nfParam.getDataType() == DataType.COLLECTION){
+
+				StringBuilder paramBuilder = new StringBuilder();
+
 				List<Object> exeValue = new ArrayList<>();
 				Object object = nfParam.getValue();
 				int length  = DataUtil.getDataLength(object);
@@ -235,14 +236,9 @@ public abstract class SqlEntity extends Sqls {
 				Map<String, Object> elCache = new HashMap<>();
 
 				for(int i=0; i < length ; i++){
-					StringBuilder buffer = new StringBuilder();
 					root.put("data",object);
-
-					buffer.append("data[").append(i).append("]");
-					if(DataUtil.isNotNull(nfParam.getInnerPath())){
-						buffer.append(".").append(nfParam.getInnerPath());
-					}
-					Object value = DBFoundEL.getData(buffer.toString(), root, elCache);
+					String express = getCollectionItemExpress(i,nfParam.getInnerPath());
+					Object value = DBFoundEL.getData(express, root, elCache);
 
 					if(value instanceof Enum) {
 						value = getEnumValue((Enum) value);
@@ -263,13 +259,13 @@ public abstract class SqlEntity extends Sqls {
 						value = value.toString();
 					}
 
-					if(i==0){
-						paramValue = paramValue + value;
-					}else{
-						paramValue = paramValue + ", " + value;
+					if(i > 0){
+						paramBuilder.append(", " );
 					}
+					paramBuilder.append(value);
 				}
 				nfParam.setValue(exeValue);
+				paramValue = paramBuilder.toString();
 			}else{
 				paramValue = nfParam.getStringValue();
 			}
@@ -286,6 +282,15 @@ public abstract class SqlEntity extends Sqls {
 		}
 		m.appendTail(buf);
 		return buf.toString();
+	}
+
+	private String getCollectionItemExpress(int index, String innerPath){
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("data[").append(index).append("]");
+		if(DataUtil.isNotNull(innerPath)){
+			buffer.append(".").append(innerPath);
+		}
+		return buffer.toString();
 	}
 
 	/**
