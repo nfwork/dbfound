@@ -34,6 +34,7 @@ public class DBFoundEL {
 			name = express;
 		}
 
+		name = name.trim();
 		int index = findIndex(name);
 		if (index > -1) {
 			name = name.substring(0, name.indexOf("["));
