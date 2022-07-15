@@ -21,8 +21,8 @@ public class DBFoundEL {
 		int last = express.lastIndexOf(".");
 
 		if(last > -1){
-			childExpress = express.substring(0,last);
-			name = express.substring(last+1);
+			childExpress = express.substring(0,last).trim();
+			name = express.substring(last+1).trim();
 
 			currentObject = elCache.get(childExpress);
 			if(currentObject == null){
@@ -31,10 +31,9 @@ public class DBFoundEL {
 			}
 		}else{
 			currentObject = root;
-			name = express;
+			name = express.trim();
 		}
 
-		name = name.trim();
 		int index = findIndex(name);
 		if (index > -1) {
 			name = name.substring(0, name.indexOf("["));
