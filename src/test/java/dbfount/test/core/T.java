@@ -28,7 +28,7 @@ public class T {
         Map<String, Object> elCache = new HashMap<>();
 
         long a1 = System.currentTimeMillis();
-        for (int i=0; i< 10000;i++) {
+        for (int i=0; i< 1;i++) {
             context.getData("param.users[0].user_id", elCache);
             context.getData("param.user[0].user_name", elCache);
             context.getData("param.user[0].flag", elCache);
@@ -36,10 +36,11 @@ public class T {
         }
         System.out.println(System.currentTimeMillis() - a1);
 
-        System.out.println(context.getData("param.user[0].user_id", elCache));
-        System.out.println(context.getData("param.user[0].user_name", elCache));
-        System.out.println(context.getData("param.user[0].flag", elCache));
-        System.out.println(context.getData("param.user[0].role", elCache));
+        System.out.println(context.getData("param.users[0].user_id.value", elCache));
+        System.out.println(context.getData("param.users[0].userName", elCache));
+        System.out.println(context.getData("param.users[0].flag", elCache));
+        System.out.println(context.getData("param.users[0].role", elCache));
+        System.out.println(context.getData("param"));
         System.out.println(JsonUtil.mapToJson(context.getDatas()));
 
     }

@@ -378,7 +378,7 @@ public abstract class SqlEntity extends Sqls {
 					} else if (paramValue.length() == DBFoundConfig.getDateTimeFormat().length()) {
 						try {
 							SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
-							nfParam.setValue(new Timestamp(format.parse(paramValue).getTime()));
+							nfParam.setValue(format.parse(paramValue));
 						} catch (ParseException exception) {
 							throw new DBFoundRuntimeException("parse datetime exception, value :" + paramValue, exception);
 						}
