@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
@@ -141,6 +142,7 @@ public class DBFoundEL {
 		}else{
 			try {
 				Reflector reflector = Reflector.forClass(currentObj.getClass());
+				name = reflector.getFieldName(name);
 				if(reflector.hasGetter(name)) {
 					return reflector.getGetInvoker(name).invoke(currentObj, null);
 				}
@@ -164,15 +166,18 @@ public class DBFoundEL {
 		}else{
 			try {
 				Reflector reflector = Reflector.forClass(currentObj.getClass());
-				if(reflector.hasSetter(name)) {
-					BeanUtils.setProperty(currentObj, name, nextObj);
-					return;
-				}
-				if(name.contains("_")){
-					name = StringUtil.underscoreToCamelCase(name);
-					if(reflector.hasGetter(name)) {
-						BeanUtils.setProperty(currentObj, name, nextObj);
+				name = reflector.getFieldName(name);
+				if(!reflector.hasSetter(name)) {
+					if(name.contains("_")){
+						name = StringUtil.underscoreToCamelCase(name);
 					}
+				}
+				if(reflector.hasGetter(name)) {
+					Class<?> fieldType = reflector.getSetterType(name);
+					if (Enum.class.isAssignableFrom(fieldType) && nextObj instanceof String) {
+						nextObj = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(nextObj.toString());
+					}
+					BeanUtils.setProperty(currentObj, name, nextObj);
 				}
 			} catch (Exception e) {
 				throw new DBFoundRuntimeException("set context data failed, " + e.getMessage(), e);

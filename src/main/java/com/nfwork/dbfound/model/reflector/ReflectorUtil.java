@@ -4,20 +4,16 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
-import com.nfwork.dbfound.model.enums.EnumTypeHandler;
-import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
 
 public class ReflectorUtil {
 
 	public static <T> List<T> parseResultList(Class<T> clazz, ResultSet rs, Context context) throws SQLException {
-		List<T> array = new ArrayList<T>();
+		List<T> array = new ArrayList<>();
 
 		if (rs != null) {
 			
@@ -27,7 +23,7 @@ public class ReflectorUtil {
 			int columnCount = md.getColumnCount();
 			Reflector reflector = Reflector.forClass(clazz);
 
-			Map<String,String> colNameMap = new HashMap<String, String>();
+			Map<String,String> colNameMap = new HashMap<>();
 
 			int totalCounts = 0;
 			while (rs.next()) {
@@ -37,63 +33,60 @@ public class ReflectorUtil {
 				ObjectFactory objectFactory = new DefaultObjectFactory();
 				T obj = objectFactory.create(clazz);
 				for (int i = 1; i <= columnCount; i++) {
-					String colName = md.getColumnName(i);
-
-					// 判断是否有as 逻辑，如果没有as，强制转化为小写
 					String labName =  md.getColumnLabel(i);
-					if (labName.equalsIgnoreCase(colName)){
-						colName = colName.toLowerCase();
-					}else{
-						colName = labName;
-					}
+					String propertyName = colNameMap.get(labName);
 
-					String propertyname =colNameMap.get(colName);
-					if (propertyname == null){
-						propertyname = reflector.getFieldName(colName);
-						if (!reflector.hasSetter(propertyname)) {
-							propertyname = StringUtil.underscoreToCamelCase(propertyname);
+					if (propertyName == null){
+						String colName = md.getColumnName(i);
+						if (labName.equalsIgnoreCase(colName)){
+							colName = colName.toLowerCase();
+						}else{
+							colName = labName;
 						}
-						colNameMap.put(colName,propertyname);
+						propertyName = reflector.getFieldName(colName);
+						if (!reflector.hasSetter(propertyName)) {
+							propertyName = StringUtil.underscoreToCamelCase(propertyName);
+						}
+						colNameMap.put(labName,propertyName);
 					}
 
-					if (reflector.hasSetter(propertyname)) {
-						Object columnvalue = rs.getObject(i);
-						if (columnvalue != null) {
+					if (reflector.hasSetter(propertyName)) {
+						Object columnValue = rs.getObject(i);
+						if (columnValue != null) {
 
-							Class<?> fieldtype = reflector.getSetterType(propertyname);
+							Class<?> fieldType = reflector.getSetterType(propertyName);
 
-							if (fieldtype.equals(String.class)) {
-								columnvalue = rs.getString(i);
-							}else if (fieldtype.equals(Integer.class) || fieldtype.equals(int.class)) {
-								columnvalue = rs.getInt(i);
-							} else if (fieldtype.equals(Long.class) || fieldtype.equals(long.class)) {
-								columnvalue = rs.getLong(i);
-							} else if (fieldtype.equals(Float.class) || fieldtype.equals(float.class)) {
-								columnvalue = rs.getFloat(i);
-							} else if (fieldtype.equals(Double.class) || fieldtype.equals(double.class)) {
-								columnvalue = rs.getDouble(i);
-							} else if (fieldtype.equals(Boolean.class) || fieldtype.equals(boolean.class)) {
-								columnvalue = rs.getBoolean(i);
-							} else if (fieldtype.equals(java.sql.Date.class)) {
-								columnvalue = rs.getDate(i, defaultCalendar);
-							} else if (fieldtype.equals(Date.class)) {
-								columnvalue = rs.getTimestamp(i, defaultCalendar);
-							} else if (Enum.class.isAssignableFrom(fieldtype)){
-								EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(fieldtype);
-								String svalue = rs.getString(i);
-								if(svalue!=null) {
-									columnvalue = handler.locateEnum(svalue);
+							if (fieldType.equals(String.class)) {
+								columnValue = rs.getString(i);
+							}else if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
+								columnValue = rs.getInt(i);
+							} else if (fieldType.equals(Long.class) || fieldType.equals(long.class)) {
+								columnValue = rs.getLong(i);
+							} else if (fieldType.equals(Float.class) || fieldType.equals(float.class)) {
+								columnValue = rs.getFloat(i);
+							} else if (fieldType.equals(Double.class) || fieldType.equals(double.class)) {
+								columnValue = rs.getDouble(i);
+							} else if (fieldType.equals(Boolean.class) || fieldType.equals(boolean.class)) {
+								columnValue = rs.getBoolean(i);
+							} else if (fieldType.equals(java.sql.Date.class)) {
+								columnValue = rs.getDate(i, defaultCalendar);
+							} else if (fieldType.equals(Date.class)) {
+								columnValue = rs.getTimestamp(i, defaultCalendar);
+							} else if (Enum.class.isAssignableFrom(fieldType)){
+								String stringValue = rs.getString(i);
+								if(stringValue!=null) {
+									columnValue = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(stringValue);
 								}
-							} else if (fieldtype.equals(BigDecimal.class)){
-								columnvalue = rs.getBigDecimal(i);
-							} else if (fieldtype.equals(Short.class) || fieldtype.equals(short.class)) {
-								 columnvalue = rs.getShort(i);
-							} else if (fieldtype.equals(Byte.class) || fieldtype.equals(byte.class)) {
-								 columnvalue = rs.getByte(i);
+							} else if (fieldType.equals(BigDecimal.class)){
+								columnValue = rs.getBigDecimal(i);
+							} else if (fieldType.equals(Short.class) || fieldType.equals(short.class)) {
+								columnValue = rs.getShort(i);
+							} else if (fieldType.equals(Byte.class) || fieldType.equals(byte.class)) {
+								columnValue = rs.getByte(i);
 							}
 
 							try {
-								reflector.getSetInvoker(propertyname).invoke(obj, new Object[] { columnvalue });
+								reflector.getSetInvoker(propertyName).invoke(obj, new Object[] { columnValue });
 							} catch (Exception e) {
 								throw new RuntimeException(e);
 							}

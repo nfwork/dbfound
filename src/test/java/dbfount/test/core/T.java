@@ -1,47 +1,73 @@
 package dbfount.test.core;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.model.reflector.Column;
 import com.nfwork.dbfound.util.JsonUtil;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class T {
     public static void main(String[] args) {
-        System.out.println();
-
         Context context = new Context();
         User user = new User();
         context.setParamData("user",user);
-        context.setData("param.user.user_id" , "10");
-        context.setData("param.user.flag" , false);
-        context.setData("param.user.user_id",'1');
+
+        context.setData("param.user.user_id", "10");
+        context.setData("param.user.flag", true);
+        context.setData("param.user.user_name", "john");
+        context.setData("param.user.role", "1");
+
+        long a1 = System.currentTimeMillis();
+        for (int i=0; i< 10000;i++) {
+            context.getData("param.user.user_id");
+            context.getData("param.user.user_name");
+            context.getData("param.user.flag");
+            context.getData("param.user.role");
+        }
+        System.out.println(System.currentTimeMillis() - a1);
+
         System.out.println(context.getData("param.user.user_id"));
+        System.out.println(context.getData("param.user.user_name"));
+        System.out.println(context.getData("param.user.flag"));
+        System.out.println(context.getData("param.user.role"));
         System.out.println(JsonUtil.mapToJson(context.getDatas()));
 
-        System.out.println(Map.class.isAssignableFrom(HashMap.class));
     }
 
+    public enum Role{
+        ADMIN(1),
+        STUDENT(2);
+
+        final Integer value;
+
+        Role(Integer value){
+            this.value = value;
+        }
+
+        public Integer getValue(){
+            return value;
+        }
+    }
 
     public static class User{
-        Integer user_id;
-        String user_name;
-        Boolean flag = true;
+        @Column(name = "user_id")
+        Integer userId;
+        String userName;
+        Boolean flag;
+        Role role;
 
-        public Integer getUser_id() {
-            return user_id;
+        public Integer getUserId() {
+            return userId;
         }
 
-        public void setUser_id(Integer user_id) {
-            this.user_id = user_id;
+        public void setUserId(Integer userId) {
+            this.userId = userId;
         }
 
-        public String getUser_name() {
-            return user_name;
+        public String getUserName() {
+            return userName;
         }
 
-        public void setUser_name(String user_name) {
-            this.user_name = user_name;
+        public void setUserName(String userName) {
+            this.userName = userName;
         }
 
         public Boolean getFlag() {
@@ -52,5 +78,12 @@ public class T {
             this.flag = flag;
         }
 
+        public Role getRole() {
+            return role;
+        }
+
+        public void setRole(Role role) {
+            this.role = role;
+        }
     }
 }
