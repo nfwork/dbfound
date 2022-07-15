@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.Entity;
 
 public class Param extends Entity {
@@ -11,7 +12,7 @@ public class Param extends Entity {
 	private static final long serialVersionUID = 5538229252299018282L;
 
 	private String name;
-	private String dataType = "varchar";
+	private DataType dataType = DataType.VARCHAR;
 	private String ioType = "in";
 	private String autoSession;
 	private String autoCookie;
@@ -48,11 +49,11 @@ public class Param extends Entity {
 		this.name = name;
 	}
 
-	public String getDataType() {
+	public DataType getDataType() {
 		return dataType;
 	}
 
-	public void setDataType(String dataType) {
+	public void setDataType(DataType dataType) {
 		this.dataType = dataType;
 	}
 

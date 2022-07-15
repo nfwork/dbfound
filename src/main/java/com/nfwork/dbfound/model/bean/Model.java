@@ -3,6 +3,7 @@ package com.nfwork.dbfound.model.bean;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.nfwork.dbfound.model.base.DataType;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.base.Entity;
@@ -32,13 +33,13 @@ public class Model extends Entity {
 		for (Param param : params.values()){
 			for (Execute execute : executes.values()){
 				Param exeParam = execute.getParams().get(param.getName());
-				if (exeParam == null ||  "unknown".equals(exeParam.getDataType())){
+				if (exeParam == null ||  exeParam.getDataType() == DataType.UNKNOWN){
 					execute.getParams().put(param.getName(),param);
 				}
 			}
 			for (Query query : querys.values()){
 				Param queryParam = query.getParams().get(param.getName());
-				if (queryParam == null ||  "unknown".equals(queryParam.getDataType())){
+				if (queryParam == null ||  param.getDataType() == DataType.UNKNOWN){
 					query.getParams().put(param.getName(),param);
 				}
 			}

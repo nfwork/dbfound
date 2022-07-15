@@ -26,7 +26,7 @@ public class LogUtil {
 				if(param.isRequireLog()) {
 					param.setRequireLog(false);
 					log.info(String.format("sql param:%s, value:%s, dataType:%s, sourcePath:%s", param.getName(),
-							param.getStringValue(), param.getDataType(), param.getSourcePathHistory()));
+							param.getStringValue(), param.getDataType().getValue(), param.getSourcePathHistory()));
 				}
 			}
 		}

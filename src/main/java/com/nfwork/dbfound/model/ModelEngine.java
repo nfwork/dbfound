@@ -4,6 +4,7 @@ import java.util.*;
 import javax.servlet.http.Cookie;
 
 import com.nfwork.dbfound.model.base.Count;
+import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
@@ -352,7 +353,7 @@ public class ModelEngine {
 				}
 				// 将out参数输出
 				if (!"in".equals(p.getIoType())) {
-					if ("file".equals(p.getDataType())) {
+					if (p.getDataType() == DataType.FILE) {
 						Transaction transaction = context.getTransaction();
 						if (transaction.isOpen()) {
 							transaction.commit();
@@ -386,7 +387,7 @@ public class ModelEngine {
 		// 增加UUID取值 在sql执行的时候动态的获取UUID 2012年8月8日8:47:08
 		if (nfParam.isUUID()) {
 			nfParam.setSourcePathHistory("UUID");
-			nfParam.setDataType("varchar");
+			nfParam.setDataType(DataType.VARCHAR);
 			return;
 		}
 		// end 修改
@@ -427,7 +428,7 @@ public class ModelEngine {
 		// 取值
 		Object paramValue = context.getData(realPath, elCache);
 
-		if("collection".equals(nfParam.getDataType())){
+		if(nfParam.getDataType() == DataType.COLLECTION){
 			int length = DataUtil.getDataLength(paramValue);
 			if (length == 0){
 				paramValue = null;

@@ -12,6 +12,7 @@ import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
+import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StreamUtils;
 import org.apache.commons.fileupload.FileItem;
@@ -101,7 +102,7 @@ public class Execute extends SqlEntity {
 	private List<InputStream> initFileParam(Map<String, Param> params){
 		List<InputStream> list = null;
 		for (Param param : params.values()) {
-			if ("file".equals(param.getDataType())) {
+			if (param.getDataType() == DataType.FILE) {
 				if (list == null) {
 					list = new ArrayList<>();
 				}

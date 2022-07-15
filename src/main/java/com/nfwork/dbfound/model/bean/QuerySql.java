@@ -17,6 +17,7 @@ import java.util.Map;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
@@ -81,12 +82,12 @@ public class QuerySql extends SqlEntity {
 					if (param == null) {
 						param = new Param();
 						param.setName(columnName);
-						param.setDataType("unknown");
+						param.setDataType(DataType.UNKNOWN);
 						params.put(columnName,param);
 					}
 
-					String paramType = param.getDataType();
-					if ("file".equals(paramType)) {
+					DataType paramType = param.getDataType();
+					if (paramType == DataType.FILE) {
 						blobExecute(dataset, param, i);
 					}else{
 						int columnType = metaset.getColumnType(i);

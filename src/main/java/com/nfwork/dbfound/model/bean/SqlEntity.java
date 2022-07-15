@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
 import com.nfwork.dbfound.util.*;
@@ -78,7 +79,7 @@ public abstract class SqlEntity extends Sqls {
 			initParamValue(nfParam);
 			initParamType(nfParam);
 
-			if("collection".equals(nfParam.getDataType())){
+			if(nfParam.getDataType() == DataType.COLLECTION){
 
 				List<Object> exeValue = new ArrayList<>();
 				StringBuilder value = new StringBuilder();
@@ -131,7 +132,7 @@ public abstract class SqlEntity extends Sqls {
 			if(params.get(name)==null) {
 				Param nfParam = new Param();
 				nfParam.setName(name);
-				nfParam.setDataType("unknown");
+				nfParam.setDataType(DataType.UNKNOWN);
 				params.put(name, nfParam);
 			}
 		}
@@ -223,7 +224,7 @@ public abstract class SqlEntity extends Sqls {
 			initParamType(nfParam);
 
 			// isIsCollection 逻辑支持 2022年07月13日11:21:39
-			if("collection".equals(nfParam.getDataType())){
+			if(nfParam.getDataType() == DataType.COLLECTION){
 				List<Object> exeValue = new ArrayList<>();
 				Object object = nfParam.getValue();
 				int length  = DataUtil.getDataLength(object);
@@ -301,7 +302,7 @@ public abstract class SqlEntity extends Sqls {
 			return;
 		}
 
-		if("boolean".equals(nfParam.getDataType())){
+		if(nfParam.getDataType() == DataType.BOOLEAN){
 			if( !(nfParam.getValue() instanceof Boolean)) {
 				String paramValue = nfParam.getStringValue().trim();
 				if ("".equals(paramValue)) {
@@ -312,7 +313,7 @@ public abstract class SqlEntity extends Sqls {
 					nfParam.setValue(true);
 				}
 			}
-		} else if("number".equals(nfParam.getDataType()) ){
+		} else if(nfParam.getDataType() == DataType.NUMBER ){
 			if( !(nfParam.getValue() instanceof Number)) {
 				if (nfParam.getValue() instanceof Boolean) {
 					if ((Boolean) nfParam.getValue()) {
@@ -336,7 +337,7 @@ public abstract class SqlEntity extends Sqls {
 					throw new DBFoundRuntimeException(String.format("can not cost %s to number", nfParam.getValue().getClass()));
 				}
 			}
-		}else if ("varchar".equals(nfParam.getDataType())) {
+		}else if (nfParam.getDataType() == DataType.VARCHAR) {
 			if(!(nfParam.getValue() instanceof String)) {
 				if (nfParam.getValue() instanceof Map) {
 					String paramValue = JsonUtil.mapToJson((Map) nfParam.getValue());
@@ -354,7 +355,7 @@ public abstract class SqlEntity extends Sqls {
 					nfParam.setValue(nfParam.getStringValue());
 				}
 			}
-		} else if ("date".equals(nfParam.getDataType())) {
+		} else if (nfParam.getDataType() == DataType.DATE) {
 			if (!(nfParam.getValue() instanceof Date)) {
 				if(nfParam.getValue() instanceof Long){
 					nfParam.setValue(new Timestamp((Long) nfParam.getValue()));
@@ -383,24 +384,24 @@ public abstract class SqlEntity extends Sqls {
 	}
 
 	private void initParamType(Param nfParam){
-		if ("unknown".equals(nfParam.getDataType())){
+		if (nfParam.getDataType() == DataType.UNKNOWN){
 			Object value = nfParam.getValue();
 			if (value != null){
 				if (value instanceof String){
-					nfParam.setDataType("varchar");
+					nfParam.setDataType(DataType.VARCHAR);
 				} else if (value instanceof Number){
-					nfParam.setDataType("number");
+					nfParam.setDataType(DataType.NUMBER);
 				} else if (value instanceof Date){
-					nfParam.setDataType("date");
+					nfParam.setDataType(DataType.DATE);
 				} else if (value instanceof Boolean){
-					nfParam.setDataType("boolean");
+					nfParam.setDataType(DataType.BOOLEAN);
 				} else if (value instanceof List || value instanceof Set || value instanceof Object[]
 						|| value instanceof int[] || value instanceof long[] ||value instanceof double[] ||value instanceof float[] ) {
-					nfParam.setDataType("collection");
+					nfParam.setDataType(DataType.COLLECTION);
 				} else if (value instanceof InputStream){
-					nfParam.setDataType("file");
+					nfParam.setDataType(DataType.FILE);
 				} else {
-					nfParam.setDataType("varchar");
+					nfParam.setDataType(DataType.VARCHAR);
 				}
 			}
 		}
