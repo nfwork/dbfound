@@ -309,7 +309,7 @@ public abstract class SqlEntity extends Sqls {
 
 		if(nfParam.getDataType() == DataType.BOOLEAN){
 			if( !(nfParam.getValue() instanceof Boolean)) {
-				String paramValue = nfParam.getStringValue(context).trim();
+				String paramValue = nfParam.getValue().toString().trim();
 				if ("".equals(paramValue)) {
 					nfParam.setValue(null);
 				}else if ("false".equals(paramValue) || "0".equals(paramValue)) {
@@ -327,7 +327,7 @@ public abstract class SqlEntity extends Sqls {
 						nfParam.setValue(0);
 					}
 				} else if (nfParam.getValue() instanceof String) {
-					String paramValue = nfParam.getStringValue(context).trim();
+					String paramValue = nfParam.getValue().toString().trim();
 					if ("".equals(paramValue)) {
 						nfParam.setValue(null);
 					} else if (!paramValue.contains(".")) {
@@ -364,8 +364,8 @@ public abstract class SqlEntity extends Sqls {
 			if (!(nfParam.getValue() instanceof Date)) {
 				if(nfParam.getValue() instanceof Long){
 					nfParam.setValue(new Timestamp((Long) nfParam.getValue()));
-				} else {
-					String paramValue = nfParam.getStringValue(context).trim();
+				} else if(nfParam.getValue() instanceof String){
+					String paramValue = nfParam.getValue().toString().trim();
 					if (paramValue.matches("[0123456789]*")) {
 						nfParam.setValue(new Timestamp(Long.parseLong(paramValue)));
 					} else if (paramValue.length() == DBFoundConfig.getDateFormat().length()) {
@@ -383,6 +383,8 @@ public abstract class SqlEntity extends Sqls {
 							throw new DBFoundRuntimeException("parse datetime exception, value :" + paramValue, exception);
 						}
 					}
+				} else {
+					throw new DBFoundRuntimeException(String.format("can not cost %s to date", nfParam.getValue().getClass()));
 				}
 			}
 		}
