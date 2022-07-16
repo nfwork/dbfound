@@ -207,7 +207,7 @@ public class DBFoundEL {
 				}
 				if(reflector.hasGetter(name)) {
 					Class<?> fieldType = reflector.getSetterType(name);
-					if (Enum.class.isAssignableFrom(fieldType) && nextObj instanceof String) {
+					if (nextObj!=null && Enum.class.isAssignableFrom(fieldType) && !(nextObj instanceof Enum)) {
 						nextObj = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(nextObj.toString());
 					}
 					BeanUtils.setProperty(currentObj, name, nextObj);
