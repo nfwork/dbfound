@@ -118,7 +118,7 @@ public class Query extends SqlEntity {
 
 	public String getQuerySql(Context context,Map<String, Param> params, String provideName){
 		String querySql = initFilter(sql, params);
-		querySql = staticParamParse(querySql, params);
+		querySql = staticParamParse(querySql, params, context);
 		return querySql;
 	}
 
@@ -127,7 +127,7 @@ public class Query extends SqlEntity {
 
 		List<Map> data = new ArrayList<>();
 		List<Object> exeParam = new ArrayList<>();
-		String eSql = getExecuteSql(querySql,params, exeParam);
+		String eSql = getExecuteSql(querySql,params, exeParam, context);
 
 		if (context.getPagerSize() > 0 || pagerSize != null) {
 			int ps = context.getPagerSize()> 0 ? context.getPagerSize() : pagerSize;
@@ -184,7 +184,7 @@ public class Query extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.log(eSql, params.values());
+			LogUtil.log(eSql, params.values(),context);
 		}
 		return (List<T>) data;
 	}
@@ -314,7 +314,7 @@ public class Query extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 
 		List<Object> exeParam = new ArrayList<>();
-		String ceSql = getExecuteSql(cSql,params, exeParam);
+		String ceSql = getExecuteSql(cSql,params, exeParam, context);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;

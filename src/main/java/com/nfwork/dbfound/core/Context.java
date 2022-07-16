@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.http.Cookie;
@@ -34,6 +35,8 @@ public class Context {
 	private boolean queryLimit = DBFoundConfig.getQueryLimit();
 	private int queryLimitSize = DBFoundConfig.getQueryLimitSize();
 	private int reportQueryLimitSize = DBFoundConfig.getReportQueryLimitSize();
+	private SimpleDateFormat dateFormat;
+	private SimpleDateFormat dateTimeFormat;
 	public HttpServletRequest request;
 	public HttpServletResponse response;
 
@@ -57,12 +60,7 @@ public class Context {
 	private final String createThreadName = Thread.currentThread().getName();
 
 	public Transaction getTransaction() {
-		String runName = Thread.currentThread().getName();
-		if (!createThreadName.equals(runName)) {
-			throw new DBFoundRuntimeException(String.format(
-					"Context transaction can not user by different thread，create thread:%s, run thread：%s",
-					createThreadName, runName));
-		}
+		checkContext();
 		if(transaction == null){
 			transaction = new Transaction();
 		}
@@ -402,13 +400,7 @@ public class Context {
 	 */
 	public Connection getConn(String provideName) {
 
-		// 校验是否夸线程
-		String runName = Thread.currentThread().getName();
-		if (!createThreadName.equals(runName)) {
-			throw new DBFoundRuntimeException(String.format(
-					"Context transaction can not user by diffrent thread，create thread:%s, run thread：%s",
-					createThreadName, runName));
-		}
+		checkContext();
 
 		if (transaction !=null && transaction.isOpen()) {
 			if (transaction.connMap == null) {
@@ -449,19 +441,21 @@ public class Context {
 	}
 
 	public SqlDialect getConnDialect(String provideName) {
+		checkContext();
+		ConnectionProvide provide;
 		if (transaction !=null && transaction.isOpen()) {
-			ConnectionProvide provide = transaction.connMap.get(provideName).provide;
-			return provide.getSqlDialect();
+			provide = transaction.connMap.get(provideName).provide;
 		} else {
-			ConnectionProvide provide = connMap.get(provideName).provide;
-			return provide.getSqlDialect();
+			provide = connMap.get(provideName).provide;
 		}
+		return provide.getSqlDialect();
 	}
 
 	/**
 	 * 关闭连接
 	 */
 	public void closeConns() {
+		checkContext();
 		if (connMap == null || connMap.isEmpty()) {
 			return;
 		}
@@ -643,6 +637,32 @@ public class Context {
 	public void setReportQueryLimitSize(int reportQueryLimitSize) {
 		this.reportQueryLimitSize = reportQueryLimitSize;
 	}
+
+	public SimpleDateFormat getDateFormat() {
+		checkContext();
+		if(dateFormat == null){
+			dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+		}
+		return dateFormat;
+	}
+
+	public SimpleDateFormat getDateTimeFormat() {
+		checkContext();
+		if(dateTimeFormat == null){
+			dateTimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+		}
+		return dateTimeFormat;
+	}
+
+	private void checkContext(){
+		String runName = Thread.currentThread().getName();
+		if (!createThreadName.equals(runName)) {
+			throw new DBFoundRuntimeException(String.format(
+					"Context transaction can not user by different thread，create thread:%s, run thread：%s",
+					createThreadName, runName));
+		}
+	}
+
 
 	static {
 		DBFoundConfig.init();

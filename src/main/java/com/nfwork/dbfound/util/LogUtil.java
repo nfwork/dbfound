@@ -2,6 +2,7 @@ package com.nfwork.dbfound.util;
 
 import java.util.Collection;
 
+import com.nfwork.dbfound.core.Context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,14 +20,14 @@ public class LogUtil {
 
 	private static final Log log = LogFactory.getLog("dbfound");
 
-	public static void log(String sql, Collection<Param> params) {
+	public static void log(String sql, Collection<Param> params, Context context) {
 		if (openLog) {
 			log.info("execute sql: " + sql);
 			for (Param param : params) {
 				if(param.isRequireLog()) {
 					param.setRequireLog(false);
 					log.info(String.format("sql param:%s, value:%s, dataType:%s, sourcePath:%s", param.getName(),
-							param.getStringValue(), param.getDataType().getValue(), param.getSourcePathHistory()));
+							param.getStringValue(context), param.getDataType().getValue(), param.getSourcePathHistory()));
 				}
 			}
 		}

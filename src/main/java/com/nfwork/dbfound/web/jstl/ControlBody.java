@@ -38,7 +38,7 @@ public class ControlBody extends InitProcedure {
 				ro.setSuccess(true);
 				ro.setMessage("success");
 
-				WebWriter.jsonWriter((HttpServletResponse) pageContext.getResponse(), JsonUtil.beanToJson(ro));
+				WebWriter.jsonWriter((HttpServletResponse) pageContext.getResponse(), JsonUtil.beanToJson(ro, context));
 			}
 		} catch (Exception e) {
 			LogUtil.error(e.getMessage(), e);

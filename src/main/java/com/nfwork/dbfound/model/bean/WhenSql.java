@@ -52,11 +52,11 @@ public class WhenSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		String whenSql = staticParamParse(when, params);
+		String whenSql = staticParamParse(when, params, context);
 		whenSql = dialect.getWhenSql(whenSql);
 
 		List<Object> exeParam = new ArrayList<>();
-		String esql = getExecuteSql(whenSql, params, exeParam);
+		String esql = getExecuteSql(whenSql, params, exeParam, context);
 
 		PreparedStatement statement = null;
 		ResultSet set = null;
@@ -74,7 +74,7 @@ public class WhenSql extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);
-			log(esql, params);
+			log(esql, params, context);
 		}
 		return flag != 0;
 	}

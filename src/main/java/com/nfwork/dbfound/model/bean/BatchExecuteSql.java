@@ -161,9 +161,9 @@ public class BatchExecuteSql extends SqlEntity {
 	private int execute(Context context, Map<String, Param> params, String provideName,String sql, List<Param> listParam) {
 		Connection conn = context.getConn(provideName);
 
-		sql = staticParamParse(sql, params);
+		sql = staticParamParse(sql, params, context);
 		List<Object> exeParam = new ArrayList<>();
-		String esql = getExecuteSql(sql, params, exeParam);
+		String esql = getExecuteSql(sql, params, exeParam, context);
 
 		PreparedStatement statement = null;
 		ResultSet rs = null;
@@ -179,7 +179,7 @@ public class BatchExecuteSql extends SqlEntity {
 		}finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
-			log(esql, listParam);
+			log(esql, listParam, context);
 		}
 	}
 

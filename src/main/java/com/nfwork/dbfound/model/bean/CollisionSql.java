@@ -50,11 +50,11 @@ public class CollisionSql extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 		SqlDialect dialect = context.getConnDialect(provideName);
 
-		String whereSql = staticParamParse(where, params);
+		String whereSql = staticParamParse(where, params, context);
 		whereSql = dialect.getWhenSql(whereSql);
 
 		List<Object> exeParam = new ArrayList<>();
-		String esql = getExecuteSql(whereSql, params, exeParam);
+		String esql = getExecuteSql(whereSql, params, exeParam, context);
 
 		PreparedStatement statement = null;
 		ResultSet set = null;
@@ -66,7 +66,7 @@ public class CollisionSql extends SqlEntity {
 			if (set.next()) {
 				int flag = set.getInt(1);
 				if (flag != 0) {
-					throw new CollisionException(staticParamParse(message, params));
+					throw new CollisionException(staticParamParse(message, params, context));
 				}
 			}
 		}catch (SQLException e) {
@@ -74,7 +74,7 @@ public class CollisionSql extends SqlEntity {
 		}finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);
-			log(esql, params);
+			log(esql, params, context);
 		}
 	}
 

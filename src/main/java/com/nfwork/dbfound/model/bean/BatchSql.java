@@ -129,9 +129,9 @@ public class BatchSql extends SqlEntity {
 	public void executeCursor(Context context, Map<String, Param> params,String provideName, List<Map> cursorValues) throws SQLException {
 		Connection conn = context.getConn(provideName);
 
-		String cursorSql = staticParamParse(cursor, params);
+		String cursorSql = staticParamParse(cursor, params, context);
 		List<Object> exeParam = new ArrayList<>();
-		String esql = getExecuteSql(cursorSql, params, exeParam);
+		String esql = getExecuteSql(cursorSql, params, exeParam, context);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
@@ -165,7 +165,7 @@ public class BatchSql extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			log(esql, params);
+			log(esql, params, context);
 		}
 	}
 

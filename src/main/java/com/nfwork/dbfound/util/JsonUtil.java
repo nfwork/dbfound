@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.json.JSONArray;
 import com.nfwork.dbfound.json.JSONNull;
@@ -29,6 +30,9 @@ import com.nfwork.dbfound.model.enums.EnumTypeHandler;
  */
 public class JsonUtil {
 
+	public static String beanToJson(Object bean) {
+		return beanToJson(bean,null);
+	}
 	/**
 	 * 将一个实体类对象转换成Json数据格式
 	 * 
@@ -36,7 +40,7 @@ public class JsonUtil {
 	 *            需要转换的实体类对象
 	 * @return 转换后的Json格式字符串
 	 */
-	public static String beanToJson(Object bean) {
+	public static String beanToJson(Object bean, Context context) {
 		StringBuilder json = new StringBuilder();
 		json.append("{");
 		PropertyDescriptor[] props = null;
@@ -48,9 +52,8 @@ public class JsonUtil {
 		if (props != null) {
 			for (int i = 0; i < props.length; i++) {
 				try {
-					String name = objectToJson(props[i].getName());
-					String value = objectToJson(props[i].getReadMethod()
-							.invoke(bean));
+					String name = objectToJson(props[i].getName(),context);
+					String value = objectToJson(props[i].getReadMethod().invoke(bean),context);
 					json.append(name);
 					json.append(":");
 					json.append(value);
@@ -65,6 +68,9 @@ public class JsonUtil {
 		return json.toString();
 	}
 
+	public static String listToJson(List<?> list) {
+		return listToJson(list, null);
+	}
 	/**
 	 * 将一个List对象转换成Json数据格式返回
 	 * 
@@ -72,12 +78,12 @@ public class JsonUtil {
 	 *            需要进行转换的List对象
 	 * @return 转换后的Json数据格式字符串
 	 */
-	public static String listToJson(List<?> list) {
+	public static String listToJson(List<?> list, Context context) {
 		StringBuilder json = new StringBuilder();
 		json.append("[");
 		if (list != null && list.size() > 0) {
 			for (Object obj : list) {
-				json.append(objectToJson(obj));
+				json.append(objectToJson(obj, context));
 				json.append(",");
 			}
 			json.setCharAt(json.length() - 1, ']');
@@ -85,6 +91,10 @@ public class JsonUtil {
 			json.append("]");
 		}
 		return json.toString();
+	}
+
+	public static String arrayToJson(Object[] array) {
+		return arrayToJson(array, null);
 	}
 
 	/**
@@ -94,12 +104,12 @@ public class JsonUtil {
 	 *            需要进行转换的数组对象
 	 * @return 转换后的Json数据格式字符串
 	 */
-	public static String arrayToJson(Object[] array) {
+	public static String arrayToJson(Object[] array, Context context) {
 		StringBuilder json = new StringBuilder();
 		json.append("[");
 		if (array != null && array.length > 0) {
 			for (Object obj : array) {
-				json.append(objectToJson(obj));
+				json.append(objectToJson(obj, context));
 				json.append(",");
 			}
 			json.setCharAt(json.length() - 1, ']');
@@ -109,6 +119,9 @@ public class JsonUtil {
 		return json.toString();
 	}
 
+	public static String mapToJson(Map<?, ?> map) {
+		return mapToJson(map,null);
+	}
 	/**
 	 * 将一个Map对象转换成Json数据格式返回
 	 * 
@@ -116,14 +129,14 @@ public class JsonUtil {
 	 *            需要进行转换的Map对象
 	 * @return 转换后的Json数据格式字符串
 	 */
-	public static String mapToJson(Map<?, ?> map) {
+	public static String mapToJson(Map<?, ?> map, Context context) {
 		StringBuilder json = new StringBuilder();
 		json.append("{");
 		if (map != null && map.size() > 0) {
 			for (Object key : map.keySet()) {
-				json.append(objectToJson(key));
+				json.append(objectToJson(key, context));
 				json.append(":");
-				json.append(objectToJson(map.get(key)));
+				json.append(objectToJson(map.get(key), context));
 				json.append(",");
 			}
 			json.setCharAt(json.length() - 1, '}');
@@ -133,6 +146,10 @@ public class JsonUtil {
 		return json.toString();
 	}
 
+	public static String setToJson(Set<?> set) {
+		return setToJson(set,null);
+	}
+
 	/**
 	 * 将一个Set对象转换成Json数据格式返回
 	 * 
@@ -140,12 +157,12 @@ public class JsonUtil {
 	 *            需要进行转换的Set对象
 	 * @return 转换后的Json数据格式字符串
 	 */
-	public static String setToJson(Set<?> set) {
+	public static String setToJson(Set<?> set, Context context) {
 		StringBuilder json = new StringBuilder();
 		json.append("[");
 		if (set != null && set.size() > 0) {
 			for (Object obj : set) {
-				json.append(objectToJson(obj));
+				json.append(objectToJson(obj, context));
 				json.append(",");
 			}
 			json.setCharAt(json.length() - 1, ']');
@@ -215,7 +232,7 @@ public class JsonUtil {
 		return sb.toString();
 	}
 
-	private static String objectToJson(Object obj) {
+	private static String objectToJson(Object obj, Context context) {
 		StringBuilder json = new StringBuilder();
 		if (obj == null) {
 			json.append("null");
@@ -226,27 +243,37 @@ public class JsonUtil {
 		} else if (obj instanceof String) {
 			json.append("\"").append(stringToJson(obj.toString())).append("\"");
 		} else if (obj instanceof Object[]) {
-			json.append(arrayToJson((Object[]) obj));
+			json.append(arrayToJson((Object[]) obj, context));
 		} else if (obj instanceof java.sql.Date) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+			SimpleDateFormat dateFormat;
+			if(context != null){
+				dateFormat = context.getDateFormat();
+			}else{
+				dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+			}
 			json.append("\"").append(dateFormat.format(obj)).append("\"");
 		} else if (obj instanceof Date) {
-			SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
-			json.append("\"").append(format.format(obj)).append("\"");
+			SimpleDateFormat datetimeFormat;
+			if(context != null){
+				datetimeFormat = context.getDateTimeFormat();
+			}else {
+				datetimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+			}
+			json.append("\"").append(datetimeFormat.format(obj)).append("\"");
 		} else if (obj instanceof List) {
-			json.append(listToJson((List<?>) obj));
+			json.append(listToJson((List<?>) obj, context));
 		} else if (obj instanceof Map) {
-			json.append(mapToJson((Map<?, ?>) obj));
+			json.append(mapToJson((Map<?, ?>) obj, context));
 		} else if (obj instanceof Set) {
-			json.append(setToJson((Set<?>) obj));
+			json.append(setToJson((Set<?>) obj, context));
 		} else if (obj instanceof Enum) {
 			EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(obj.getClass());
 			Object value = handler.getEnumValue(obj);
-			json.append(objectToJson(value));
+			json.append(objectToJson(value,context));
 		} else if (obj instanceof InputStream) {
 			json.append("\"InputStream\"");
 		} else {
-			json.append(beanToJson(obj));
+			json.append(beanToJson(obj, context));
 		}
 		return json.toString();
 	}

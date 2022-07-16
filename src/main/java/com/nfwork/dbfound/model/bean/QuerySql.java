@@ -44,10 +44,10 @@ public class QuerySql extends SqlEntity {
 			throw new DBFoundRuntimeException(initError);
 		}
 		Connection conn = context.getConn(provideName);
-		String querySql = staticParamParse(sql, params);
+		String querySql = staticParamParse(sql, params, context);
 
 		List<Object> exeParam = new ArrayList<>();
-		String esql = getExecuteSql(querySql, params, exeParam);
+		String esql = getExecuteSql(querySql, params, exeParam, context);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
@@ -105,7 +105,7 @@ public class QuerySql extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			log(esql, params);
+			log(esql, params, context);
 		}
 	}
 

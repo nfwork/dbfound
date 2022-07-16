@@ -59,7 +59,7 @@ public abstract class SqlEntity extends Sqls {
 	 * 
 	 * @return string
 	 */
-	public String getExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam) {
+	public String getExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam, Context context) {
 
 		Matcher m = dynamicPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
@@ -76,7 +76,7 @@ public abstract class SqlEntity extends Sqls {
 			}
 
 			nfParam.setRequireLog(true);
-			initParamValue(nfParam);
+			initParamValue(nfParam, context);
 			initParamType(nfParam);
 
 			if(nfParam.getDataType() == DataType.COLLECTION){
@@ -200,7 +200,7 @@ public abstract class SqlEntity extends Sqls {
 	 * @param params params
 	 * @return string
 	 */
-	public String staticParamParse(String sql, Map<String, Param> params) {
+	public String staticParamParse(String sql, Map<String, Param> params, Context context) {
 		if (sql == null || "".equals(sql)) {
 			return "";
 		}
@@ -218,7 +218,7 @@ public abstract class SqlEntity extends Sqls {
 			}
 
 			nfParam.setRequireLog(true);
-			initParamValue(nfParam);
+			initParamValue(nfParam, context);
 			initParamType(nfParam);
 
 			// isIsCollection 逻辑支持 2022年07月13日11:21:39
@@ -250,10 +250,10 @@ public abstract class SqlEntity extends Sqls {
 					}
 
 					if(value instanceof  java.sql.Date){
-						SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+						SimpleDateFormat format = context.getDateFormat();
 						value = format.format(value);
 					}else if (value instanceof java.util.Date) {
-						SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+						SimpleDateFormat format = context.getDateTimeFormat();
 						value = format.format(value);
 					} else {
 						value = value.toString();
@@ -267,7 +267,7 @@ public abstract class SqlEntity extends Sqls {
 				nfParam.setValue(exeValue);
 				paramValue = paramBuilder.toString();
 			}else{
-				paramValue = nfParam.getStringValue();
+				paramValue = nfParam.getStringValue(context);
 			}
 
 			// UUID取值
@@ -297,7 +297,7 @@ public abstract class SqlEntity extends Sqls {
 	 * 枚举类型 boolean类型支持 2022年07月08日17:26:06
 	 * @param nfParam param
 	 */
-	private void initParamValue(Param nfParam){
+	private void initParamValue(Param nfParam, Context context){
 		if(nfParam.getValue() instanceof Enum){
 			Object value = getEnumValue((Enum) nfParam.getValue());
 			nfParam.setValue(value);
@@ -309,7 +309,7 @@ public abstract class SqlEntity extends Sqls {
 
 		if(nfParam.getDataType() == DataType.BOOLEAN){
 			if( !(nfParam.getValue() instanceof Boolean)) {
-				String paramValue = nfParam.getStringValue().trim();
+				String paramValue = nfParam.getStringValue(context).trim();
 				if ("".equals(paramValue)) {
 					nfParam.setValue(null);
 				}else if ("false".equals(paramValue) || "0".equals(paramValue)) {
@@ -327,7 +327,7 @@ public abstract class SqlEntity extends Sqls {
 						nfParam.setValue(0);
 					}
 				} else if (nfParam.getValue() instanceof String) {
-					String paramValue = nfParam.getStringValue().trim();
+					String paramValue = nfParam.getStringValue(context).trim();
 					if ("".equals(paramValue)) {
 						nfParam.setValue(null);
 					} else if (!paramValue.contains(".")) {
@@ -345,19 +345,19 @@ public abstract class SqlEntity extends Sqls {
 		}else if (nfParam.getDataType() == DataType.VARCHAR) {
 			if(!(nfParam.getValue() instanceof String)) {
 				if (nfParam.getValue() instanceof Map) {
-					String paramValue = JsonUtil.mapToJson((Map) nfParam.getValue());
+					String paramValue = JsonUtil.mapToJson((Map) nfParam.getValue(), context);
 					nfParam.setValue(paramValue);
 				} else if (nfParam.getValue() instanceof Set) {
-					String paramValue = JsonUtil.setToJson((Set) nfParam.getValue());
+					String paramValue = JsonUtil.setToJson((Set) nfParam.getValue(), context);
 					nfParam.setValue(paramValue);
 				} else if (nfParam.getValue() instanceof List) {
-					String paramValue = JsonUtil.listToJson((List) nfParam.getValue());
+					String paramValue = JsonUtil.listToJson((List) nfParam.getValue(), context);
 					nfParam.setValue(paramValue);
 				} else if (nfParam.getValue() instanceof Object[]) {
-					String paramValue = JsonUtil.arrayToJson((Object[]) nfParam.getValue());
+					String paramValue = JsonUtil.arrayToJson((Object[]) nfParam.getValue(), context);
 					nfParam.setValue(paramValue);
 				} else{
-					nfParam.setValue(nfParam.getStringValue());
+					nfParam.setValue(nfParam.getStringValue(context));
 				}
 			}
 		} else if (nfParam.getDataType() == DataType.DATE) {
@@ -365,20 +365,20 @@ public abstract class SqlEntity extends Sqls {
 				if(nfParam.getValue() instanceof Long){
 					nfParam.setValue(new Timestamp((Long) nfParam.getValue()));
 				} else {
-					String paramValue = nfParam.getStringValue().trim();
+					String paramValue = nfParam.getStringValue(context).trim();
 					if (paramValue.matches("[0123456789]*")) {
 						nfParam.setValue(new Timestamp(Long.parseLong(paramValue)));
 					} else if (paramValue.length() == DBFoundConfig.getDateFormat().length()) {
 						try {
-							SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
-							nfParam.setValue(new java.sql.Date(format.parse(paramValue).getTime()));
+							SimpleDateFormat dateFormat = context.getDateFormat();
+							nfParam.setValue(new java.sql.Date(dateFormat.parse(paramValue).getTime()));
 						} catch (ParseException exception) {
 							throw new DBFoundRuntimeException("parse date exception, value :" + paramValue, exception);
 						}
 					} else if (paramValue.length() == DBFoundConfig.getDateTimeFormat().length()) {
 						try {
-							SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
-							nfParam.setValue(format.parse(paramValue));
+							SimpleDateFormat dateTimeFormat = context.getDateTimeFormat();
+							nfParam.setValue(dateTimeFormat.parse(paramValue));
 						} catch (ParseException exception) {
 							throw new DBFoundRuntimeException("parse datetime exception, value :" + paramValue, exception);
 						}
@@ -494,12 +494,12 @@ public abstract class SqlEntity extends Sqls {
 		return result;
 	}
 
-	public void log(String sql, Map<String, Param> params) {
-		LogUtil.log(sql, params.values());
+	public void log(String sql, Map<String, Param> params, Context context) {
+		LogUtil.log(sql, params.values(), context);
 	}
 
-	public void log(String sql, List<Param> listParam) {
-		LogUtil.log(sql, listParam);
+	public void log(String sql, List<Param> listParam, Context context) {
+		LogUtil.log(sql, listParam, context);
 	}
 
 	public void setSql(String sql) {

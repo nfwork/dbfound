@@ -29,7 +29,7 @@ public class ActionReflect {
 				transaction.commit();
 				transaction.end();
 				
-				WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(result));
+				WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(result, context));
 			} else {
 				throw new DBFoundRuntimeException("return object must extends ResponseObject");
 			}

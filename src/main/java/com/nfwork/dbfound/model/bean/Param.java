@@ -3,6 +3,7 @@ package com.nfwork.dbfound.model.bean;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.Entity;
@@ -78,15 +79,29 @@ public class Param extends Entity {
 	}
 
 	public String getStringValue() {
+		return getStringValue(null);
+	}
+
+	public String getStringValue(Context context) {
 		if (value == null) {
 			return null;
 		} else {
 			if(value instanceof  java.sql.Date){
-				SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
-				return format.format(value);
+				SimpleDateFormat dateFormat;
+				if(context != null){
+					dateFormat = context.getDateFormat();
+				}else{
+					dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+				}
+				return dateFormat.format(value);
 			}else if (value instanceof Date) {
-				SimpleDateFormat format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
-				return format.format(value);
+				SimpleDateFormat datetimeFormat;
+				if(context != null){
+					datetimeFormat = context.getDateTimeFormat();
+				}else {
+					datetimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+				}
+				return datetimeFormat.format(value);
 			} else {
 				return value.toString();
 			}
