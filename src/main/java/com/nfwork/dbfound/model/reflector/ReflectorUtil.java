@@ -24,13 +24,13 @@ public class ReflectorUtil {
 			Reflector reflector = Reflector.forClass(clazz);
 
 			Map<String,String> colNameMap = new HashMap<>();
+			ObjectFactory objectFactory = new DefaultObjectFactory();
 
 			int totalCounts = 0;
 			while (rs.next()) {
 				if (context.isQueryLimit() && ++totalCounts > context.getQueryLimitSize()) {
 					break;
 				}
-				ObjectFactory objectFactory = new DefaultObjectFactory();
 				T obj = objectFactory.create(clazz);
 				for (int i = 1; i <= columnCount; i++) {
 					String labName =  md.getColumnLabel(i);
