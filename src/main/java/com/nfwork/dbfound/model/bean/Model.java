@@ -39,7 +39,7 @@ public class Model extends Entity {
 			}
 			for (Query query : querys.values()){
 				Param queryParam = query.getParams().get(param.getName());
-				if (queryParam == null ||  param.getDataType() == DataType.UNKNOWN){
+				if (queryParam == null ||  queryParam.getDataType() == DataType.UNKNOWN){
 					query.getParams().put(param.getName(),param);
 				}
 			}
