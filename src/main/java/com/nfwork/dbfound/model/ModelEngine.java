@@ -145,7 +145,7 @@ public class ModelEngine {
 			String querySql = query.getQuerySql(context, params, provideName);
 
 			// 查询数据，返回结果
-			List<T> datas = query.query(context, querySql, params, provideName, obect);
+			List<T> datas = query.query(context, querySql, params, provideName, obect, autoPaging);
 
 			QueryResponseObject<T> ro = new QueryResponseObject<T>();
 			ro.setDatas(datas);

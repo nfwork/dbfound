@@ -122,17 +122,19 @@ public class Query extends SqlEntity {
 		return querySql;
 	}
 
-	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> object) {
+	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> object, boolean autoPaging) {
 		Connection conn = context.getConn(provideName);
 
 		List<Map> data = new ArrayList<>();
 		List<Object> exeParam = new ArrayList<>();
 		String eSql = getExecuteSql(querySql,params, exeParam, context);
 
-		if (context.getPagerSize() > 0 || pagerSize != null) {
-			int ps = context.getPagerSize()> 0 ? context.getPagerSize() : pagerSize;
-			SqlDialect dialect = context.getConnDialect(provideName);
-			eSql = dialect.getPagerSql(eSql, ps, context.getStartWith());
+		if(autoPaging) {
+			if (context.getPagerSize() > 0 || pagerSize != null) {
+				int ps = context.getPagerSize() > 0 ? context.getPagerSize() : pagerSize;
+				SqlDialect dialect = context.getConnDialect(provideName);
+				eSql = dialect.getPagerSql(eSql, ps, context.getStartWith());
+			}
 		}
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
