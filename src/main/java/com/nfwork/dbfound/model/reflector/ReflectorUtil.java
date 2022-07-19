@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.util.StringUtil;
 
@@ -83,12 +84,14 @@ public class ReflectorUtil {
 								columnValue = rs.getShort(i);
 							} else if (fieldType.equals(Byte.class) || fieldType.equals(byte.class)) {
 								columnValue = rs.getByte(i);
+							} else if (fieldType.equals(byte[].class)) {
+								columnValue = rs.getBytes(i);
 							}
 
 							try {
 								reflector.getSetInvoker(propertyName).invoke(obj, new Object[] { columnValue });
 							} catch (Exception e) {
-								throw new RuntimeException(e);
+								throw new DBFoundRuntimeException("reflector set properties failed",e);
 							}
 						}
 					}
