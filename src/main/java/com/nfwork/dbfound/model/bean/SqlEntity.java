@@ -187,6 +187,8 @@ public abstract class SqlEntity extends Sqls {
 				statement.setTimestamp(cursor, new Timestamp(date.getTime()));
 			} else if (value instanceof InputStream) {
 				statement.setBinaryStream(cursor, (InputStream) value);
+			} else if (value instanceof byte[]) {
+				statement.setBytes(cursor, (byte[]) value);
 			} else{
 				statement.setString(cursor,value.toString());
 			}
