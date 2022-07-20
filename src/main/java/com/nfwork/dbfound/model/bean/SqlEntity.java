@@ -407,7 +407,7 @@ public abstract class SqlEntity extends Sqls {
 				} else if (value instanceof List || value instanceof Set || value instanceof Object[]
 						|| value instanceof int[] || value instanceof long[] ||value instanceof double[] ||value instanceof float[] ) {
 					nfParam.setDataType(DataType.COLLECTION);
-				} else if (value instanceof InputStream){
+				} else if (value instanceof InputStream || value instanceof byte[]){
 					nfParam.setDataType(DataType.FILE);
 				} else {
 					nfParam.setDataType(DataType.VARCHAR);
