@@ -300,6 +300,11 @@ public abstract class SqlEntity extends Sqls {
 	 * @param nfParam param
 	 */
 	private void initParamValue(Param nfParam, Context context){
+
+		if(nfParam.getDataType() == null){
+			throw new DBFoundRuntimeException("dataType can not be null, it only can be one of varchar, number, boolean, date, file or collection");
+		}
+
 		if(nfParam.getValue() instanceof Enum){
 			Object value = getEnumValue((Enum) nfParam.getValue());
 			nfParam.setValue(value);
