@@ -57,7 +57,7 @@ public class Context {
 	private static boolean openSession = true;
 
 	private Transaction transaction;
-	private final String createThreadName = Thread.currentThread().getName();
+	private final long createThread = Thread.currentThread().getId();
 
 	public Transaction getTransaction() {
 		checkContext();
@@ -569,10 +569,6 @@ public class Context {
 	public boolean isInWebContainer() {
 		return inWebContainer;
 	}
-
-	public String getCreateThreadName() {
-		return createThreadName;
-	}
 	
 	public static void setOpenSession(boolean openSession) {
 		Context.openSession = openSession;
@@ -655,11 +651,11 @@ public class Context {
 	}
 
 	private void checkContext(){
-		String runName = Thread.currentThread().getName();
-		if (!createThreadName.equals(runName)) {
+		long runThread = Thread.currentThread().getId();
+		if (runThread != createThread) {
 			throw new DBFoundRuntimeException(String.format(
-					"Context transaction can not user by different thread，create thread:%s, run thread：%s",
-					createThreadName, runName));
+					"Context can not be user by different thread，create thread id:%s, run thread id:%s",
+					createThread, runThread));
 		}
 	}
 
