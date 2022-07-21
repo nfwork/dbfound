@@ -223,21 +223,22 @@ public abstract class SqlEntity extends Sqls {
 						continue;
 					}
 
+					String value;
 					if(item instanceof  java.sql.Date){
 						SimpleDateFormat format = context.getDateFormat();
-						item = format.format(item);
+						value = format.format(item);
 					}else if (item instanceof Date) {
 						SimpleDateFormat format = context.getDateTimeFormat();
-						item = format.format(item);
+						value = format.format(item);
 					} else {
-						item = item.toString();
+						value = item.toString();
 					}
 
 					if(isFirst){
-						paramBuilder.append(item);
+						paramBuilder.append(value);
 						isFirst = false;
 					}else{
-						paramBuilder.append(", " ).append(item);
+						paramBuilder.append(", " ).append(value);
 					}
 				}
 				paramValue = paramBuilder.toString();
