@@ -14,6 +14,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.DataType;
+import com.nfwork.dbfound.model.base.SimpleItemList;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
 import com.nfwork.dbfound.util.*;
@@ -80,35 +81,21 @@ public abstract class SqlEntity extends Sqls {
 			initParamType(nfParam);
 
 			if(nfParam.getDataType() == DataType.COLLECTION){
+				initCollection(nfParam);
+				SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 
-				List<Object> exeValue = new ArrayList<>();
 				StringBuilder value = new StringBuilder();
-				int length = DataUtil.getDataLength(nfParam.getValue());
-				if(length < 1){
-					throw new DBFoundRuntimeException("collection param, data size must >= 1");
-				}
-
-				Map<String, Object> root = new HashMap<>();
-				Map<String, Object> elCache = new HashMap<>();
-				for(int i=0; i<length; i++){
-					if(i==0){
+				boolean isFirst = true;
+				for(Object item : itemList){
+					if(isFirst){
 						value.append("?");
+						isFirst = false;
 					}else{
 						value.append(", ?");
 					}
-
-					root.put("data", nfParam.getValue());
-					String express = getCollectionItemExpress(i,nfParam.getInnerPath());
-					Object pValue = DBFoundEL.getData(express, root, elCache);
-
-					if (pValue instanceof Enum) {
-						pValue = getEnumValue((Enum) pValue);
-					}
-					exeValue.add(pValue);
-					exeParam.add(pValue);
+					exeParam.add(item);
 				}
 				m.appendReplacement(buf, value.toString());
-				nfParam.setValue(exeValue);
 			}else{
 				exeParam.add(nfParam.getValue());
 				m.appendReplacement(buf, "?");
@@ -223,50 +210,36 @@ public abstract class SqlEntity extends Sqls {
 			initParamValue(nfParam, context);
 			initParamType(nfParam);
 
-			// isIsCollection 逻辑支持 2022年07月13日11:21:39
 			if(nfParam.getDataType() == DataType.COLLECTION){
+
+				initCollection(nfParam);
+				SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 
 				StringBuilder paramBuilder = new StringBuilder();
 
-				List<Object> exeValue = new ArrayList<>();
-				Object object = nfParam.getValue();
-				int length  = DataUtil.getDataLength(object);
-				if(length < 1){
-					throw new DBFoundRuntimeException("collection param, data size must >= 1");
-				}
-				Map<String,Object> root = new HashMap<>();
-				Map<String, Object> elCache = new HashMap<>();
-
-				for(int i=0; i < length ; i++){
-					root.put("data",object);
-					String express = getCollectionItemExpress(i,nfParam.getInnerPath());
-					Object value = DBFoundEL.getData(express, root, elCache);
-
-					if(value instanceof Enum) {
-						value = getEnumValue((Enum) value);
-					}
-					exeValue.add(value);
-
-					if(value == null){
+				boolean isFirst = true;
+				for(Object item : itemList){
+					if(item == null){
 						continue;
 					}
 
-					if(value instanceof  java.sql.Date){
+					if(item instanceof  java.sql.Date){
 						SimpleDateFormat format = context.getDateFormat();
-						value = format.format(value);
-					}else if (value instanceof java.util.Date) {
+						item = format.format(item);
+					}else if (item instanceof Date) {
 						SimpleDateFormat format = context.getDateTimeFormat();
-						value = format.format(value);
+						item = format.format(item);
 					} else {
-						value = value.toString();
+						item = item.toString();
 					}
 
-					if(i > 0){
-						paramBuilder.append(", " );
+					if(isFirst){
+						paramBuilder.append(item);
+						isFirst = false;
+					}else{
+						paramBuilder.append(", " ).append(item);
 					}
-					paramBuilder.append(value);
 				}
-				nfParam.setValue(exeValue);
 				paramValue = paramBuilder.toString();
 			}else{
 				paramValue = nfParam.getStringValue(context);
@@ -418,6 +391,30 @@ public abstract class SqlEntity extends Sqls {
 					nfParam.setDataType(DataType.VARCHAR);
 				}
 			}
+		}
+	}
+
+	private void initCollection(Param nfParam){
+		if (!(nfParam.getValue() instanceof SimpleItemList)){
+			int length = DataUtil.getDataLength(nfParam.getValue());
+			if (length < 1) {
+				throw new DBFoundRuntimeException("collection param, data size must >= 1");
+			}
+			SimpleItemList itemList = new SimpleItemList(length);
+
+			Map<String, Object> root = new HashMap<>();
+			Map<String, Object> elCache = new HashMap<>();
+			for (int i = 0; i < length; i++) {
+				root.put("data", nfParam.getValue());
+				String express = getCollectionItemExpress(i, nfParam.getInnerPath());
+				Object pValue = DBFoundEL.getData(express, root, elCache);
+
+				if (pValue instanceof Enum) {
+					pValue = getEnumValue((Enum) pValue);
+				}
+				itemList.add(pValue);
+			}
+			nfParam.setValue(itemList);
 		}
 	}
 
