@@ -12,7 +12,7 @@ import org.apache.commons.beanutils.BeanUtils;
 
 public class DBFoundEL {
 
-	public static Object getData(String express, Map<String, Object> root, Map<String, Object> elCache) {
+	public static Object getData(String express, Object root, Map<String, Object> elCache) {
 
 		String childExpress;
 		String name ;
@@ -40,12 +40,12 @@ public class DBFoundEL {
 		}
 		Object value = getNextObject(currentObject,name);
 		if( index > -1){
-			value = getByIndex(index,value);
+			value = getDataByIndex(index,value);
 		}
 		return value;
 	}
 
-	public static Object getData(String express, Map<String, Object> root) {
+	public static Object getData(String express, Object root) {
 
 		Object currentObject = root;
 		if (express == null) {
@@ -66,7 +66,7 @@ public class DBFoundEL {
 			Object nextObject = getNextObject(currentObject, currentExpree);
 
 			if (index != -1 && nextObject != null) {
-				nextObject = getByIndex(index, nextObject);
+				nextObject = getDataByIndex(index, nextObject);
 			}
 
 			// 判断是否终止
@@ -104,7 +104,7 @@ public class DBFoundEL {
 			nextObj = getNextObject(currentObj,exp);
 
 			if (index != -1 && nextObj != null) {
-				nextObj = getByIndex(index, nextObj);
+				nextObj = getDataByIndex(index, nextObj);
 			}
 
 			if(nextObj == null){
@@ -116,7 +116,7 @@ public class DBFoundEL {
 		}
 	}
 
-	private static Object getByIndex(int index,Object object){
+	public static Object getDataByIndex(int index,Object object){
 		if (object instanceof List) {
 			List l = (List) object;
 			if (index < l.size()) {

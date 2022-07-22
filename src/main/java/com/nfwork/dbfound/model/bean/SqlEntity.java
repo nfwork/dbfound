@@ -260,15 +260,6 @@ public abstract class SqlEntity extends Sqls {
 		return buf.toString();
 	}
 
-	private String getCollectionItemExpress(int index, String innerPath){
-		StringBuilder buffer = new StringBuilder();
-		buffer.append("data[").append(index).append("]");
-		if(DataUtil.isNotNull(innerPath)){
-			buffer.append(".").append(innerPath);
-		}
-		return buffer.toString();
-	}
-
 	/**
 	 * 枚举类型 boolean类型支持 2022年07月08日17:26:06
 	 * @param nfParam param
@@ -403,12 +394,11 @@ public abstract class SqlEntity extends Sqls {
 			}
 			SimpleItemList itemList = new SimpleItemList(length);
 
-			Map<String, Object> root = new HashMap<>();
-			Map<String, Object> elCache = new HashMap<>();
 			for (int i = 0; i < length; i++) {
-				root.put("data", nfParam.getValue());
-				String express = getCollectionItemExpress(i, nfParam.getInnerPath());
-				Object pValue = DBFoundEL.getData(express, root, elCache);
+				Object pValue = DBFoundEL.getDataByIndex(i, nfParam.getValue());
+				if(DataUtil.isNotNull(nfParam.getInnerPath())){
+					pValue = DBFoundEL.getData(nfParam.getInnerPath(),pValue);
+				}
 
 				if (pValue instanceof Enum) {
 					pValue = getEnumValue((Enum) pValue);
