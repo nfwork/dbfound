@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
@@ -26,6 +27,9 @@ public class ExcelWriter {
 		jxl.write.WritableWorkbook wwb = Workbook.createWorkbook(file);
 
 		try {
+			WritableCellFormat dateFormat = null;
+			WritableCellFormat dateTimeFormat = null;
+
 			int length = dataList.size();
 			int sheet = 0;
 			int sheetSize = 50000;
@@ -78,8 +82,19 @@ public class ExcelWriter {
 						} else if (o instanceof Float) {
 							Number number = new Number(i, index, (Float) o);
 							ws.addCell(number);
-						} else if (o instanceof Date) {
-							DateTime dateTime = new DateTime(i, index, (Date) o);
+						} else if (o instanceof java.sql.Date) {
+							if(dateFormat == null) {
+								DateFormat df = new jxl.write.DateFormat(DBFoundConfig.getDateFormat());
+								dateFormat = new WritableCellFormat(df);
+							}
+							DateTime dateTime = new DateTime(i, index, (Date) o,dateFormat);
+							ws.addCell(dateTime);
+						}  else if (o instanceof Date) {
+							if(dateTimeFormat == null) {
+								DateFormat df = new jxl.write.DateFormat(DBFoundConfig.getDateTimeFormat());
+								dateTimeFormat = new WritableCellFormat(df);
+							}
+							DateTime dateTime = new DateTime(i, index, (Date) o,dateTimeFormat);
 							ws.addCell(dateTime);
 						} else {
 							String content = o.toString();
