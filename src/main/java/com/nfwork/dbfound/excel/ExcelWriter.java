@@ -21,59 +21,75 @@ import jxl.write.Number;
 
 public class ExcelWriter {
 
-	public static File writeExcel(File file, List<Map> datas, ExcelCellMeta[] columns) throws Exception {
+	public static File writeExcel(File file, List<Map> dataList, ExcelCellMeta[] columns) throws Exception {
 
 		jxl.write.WritableWorkbook wwb = Workbook.createWorkbook(file);
-		jxl.write.WritableSheet ws = wwb.createSheet("sheet1", 0);
-
-		jxl.write.WritableFont wfc = new jxl.write.WritableFont(
-				WritableFont.ARIAL, 11, WritableFont.BOLD, false,
-				UnderlineStyle.NO_UNDERLINE, jxl.format.Colour.GREEN);
-
-		jxl.write.WritableCellFormat wcfFC = new jxl.write.WritableCellFormat(wfc);
-		wcfFC.setBackground(Colour.GRAY_25);
-		wcfFC.setAlignment(Alignment.CENTRE);
 
 		try {
-			for (int i = 0; i < columns.length; i++) {
-				jxl.write.Label label = new jxl.write.Label(i, 0, columns[i].getContent(), wcfFC);
-				ws.addCell(label);
-				ws.setColumnView(i, columns[i].getWidth());
-			}
-			int index = 1;
-			for (Map data : datas) {
-				for (int i = 0; i < columns.length; i++) {
-					Object o = data.get(columns[i].getName());
-					if (o == null) {
-						Blank blank = new Blank(i, index);
-						ws.addCell(blank);
-					} else if (o instanceof String) {
-						String content = o.toString();
-						Label label = new Label(i, index, content);
-						ws.addCell(label);
-					} else if (o instanceof Integer) {
-						Number number = new Number(i, index, (Integer) o);
-						ws.addCell(number);
-					} else if (o instanceof Double) {
-						Number number = new Number(i, index, (Double) o);
-						ws.addCell(number);
-					} else if (o instanceof Long) {
-						Number number = new Number(i, index, (Long) o);
-						ws.addCell(number);
-					} else if (o instanceof Float) {
-						Number number = new Number(i, index, (Float) o);
-						ws.addCell(number);
-					} else if(o instanceof Date){
-						DateTime  dateTime = new DateTime(i, index, (Date)o);
-						ws.addCell(dateTime);
-					} else {
-						String content = o.toString();
-						Label label = new Label(i, index, content);
-						ws.addCell(label);
-					}
+			int length = dataList.size();
+			int sheet = 0;
+			int sheetSize = 50000;
+
+			do {
+				int begin = sheetSize*(sheet);
+				int end = sheetSize*(sheet+1);
+				if(end >= dataList.size()){
+					end = dataList.size();
 				}
-				index++;
-			}
+
+				List<Map> datas = dataList.subList(begin, end);
+
+				jxl.write.WritableSheet ws = wwb.createSheet("sheet" + (sheet+1), sheet);
+				sheet ++;
+
+				jxl.write.WritableFont wfc = new jxl.write.WritableFont(
+						WritableFont.ARIAL, 11, WritableFont.BOLD, false,
+						UnderlineStyle.NO_UNDERLINE, jxl.format.Colour.GREEN);
+
+				jxl.write.WritableCellFormat wcfFC = new jxl.write.WritableCellFormat(wfc);
+				wcfFC.setBackground(Colour.GRAY_25);
+				wcfFC.setAlignment(Alignment.CENTRE);
+
+				for (int i = 0; i < columns.length; i++) {
+					jxl.write.Label label = new jxl.write.Label(i, 0, columns[i].getContent(), wcfFC);
+					ws.addCell(label);
+					ws.setColumnView(i, columns[i].getWidth());
+				}
+				int index = 1;
+				for (Map data : datas) {
+					for (int i = 0; i < columns.length; i++) {
+						Object o = data.get(columns[i].getName());
+						if (o == null) {
+							Blank blank = new Blank(i, index);
+							ws.addCell(blank);
+						} else if (o instanceof String) {
+							String content = o.toString();
+							Label label = new Label(i, index, content);
+							ws.addCell(label);
+						} else if (o instanceof Integer) {
+							Number number = new Number(i, index, (Integer) o);
+							ws.addCell(number);
+						} else if (o instanceof Double) {
+							Number number = new Number(i, index, (Double) o);
+							ws.addCell(number);
+						} else if (o instanceof Long) {
+							Number number = new Number(i, index, (Long) o);
+							ws.addCell(number);
+						} else if (o instanceof Float) {
+							Number number = new Number(i, index, (Float) o);
+							ws.addCell(number);
+						} else if (o instanceof Date) {
+							DateTime dateTime = new DateTime(i, index, (Date) o);
+							ws.addCell(dateTime);
+						} else {
+							String content = o.toString();
+							Label label = new Label(i, index, content);
+							ws.addCell(label);
+						}
+					}
+					index++;
+				}
+			} while(length > sheet * sheetSize);
 			wwb.write();
 		} finally {
 			wwb.close();
