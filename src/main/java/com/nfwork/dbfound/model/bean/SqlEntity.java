@@ -30,7 +30,7 @@ public abstract class SqlEntity extends Sqls {
 
 	String sql;
 
-	private final static String paramReplace = "\\{@[ a-zA-Z_0-9.\\[\\]:\u4E00-\u9FA5]*}";
+	private final static String paramReplace = "\\{@[ a-zA-Z_0-9\u4E00-\u9FA5]*}";
 
 	protected final static Pattern dynamicPattern = Pattern.compile("\\$" + paramReplace);
 
@@ -114,18 +114,9 @@ public abstract class SqlEntity extends Sqls {
 		while (m.find()) {
 			String paramName = m.group();
 			String name = paramName.substring(2, paramName.length() - 1).trim();
-			String innerPath = null;
-			String sourcePath = null;
-			int index = name.indexOf(":");
-			if(index>-1){
-				innerPath = name.substring(index+1).trim();
-				sourcePath = name.substring(0,index).trim();
-			}
 			if(params.get(name)==null) {
 				Param nfParam = new Param();
 				nfParam.setName(name);
-				nfParam.setSourcePath(sourcePath);
-				nfParam.setInnerPath(innerPath);
 				nfParam.setDataType(DataType.UNKNOWN);
 				params.put(name, nfParam);
 			}

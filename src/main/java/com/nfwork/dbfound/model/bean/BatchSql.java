@@ -82,7 +82,7 @@ public class BatchSql extends SqlEntity {
 			return;
 		}
 
-		List<Param> paramList = new ArrayList<>();
+		List<Param> paramList = new ArrayList<Param>();
 		for (Param param : params.values()){
 			if(!param.isBatchAssign()){
 				continue;
@@ -91,8 +91,7 @@ public class BatchSql extends SqlEntity {
 				param.setBatchAssign(false);
 				continue;
 			}
-			String sourcePath = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
-			if (ELEngine.isAbsolutePath(sourcePath)) {
+			if (ELEngine.isAbsolutePath(param.getSourcePath())) {
 				param.setBatchAssign(false);
 				continue;
 			}
@@ -108,7 +107,7 @@ public class BatchSql extends SqlEntity {
 			Map<String, Object> elCache = new HashMap<>();
 
 			for (Param param : paramList){
-				String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
+				String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
 				param.setSourcePathHistory(currentPath +"."+sp);
 				Object value = context.getData(param.getSourcePathHistory(), elCache);
 				if("".equals(value)){

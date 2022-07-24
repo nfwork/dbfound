@@ -90,10 +90,7 @@ public class BatchExecuteSql extends SqlEntity {
 		for (Param param : params.values()){
 			if (DataUtil.isNotNull(param.getScope())){
 				param.setBatchAssign(false);
-				continue;
-			}
-			String sourcePath = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
-			if (ELEngine.isAbsolutePath(sourcePath)) {
+			}else if (ELEngine.isAbsolutePath(param.getSourcePath())) {
 				param.setBatchAssign(false);
 			}
 		}
@@ -128,7 +125,7 @@ public class BatchExecuteSql extends SqlEntity {
 		listParam.addAll(params.values());
 		exeParams.putAll(params);
 
-		StringBuilder eSql = new StringBuilder(beforeTmpSql);
+		String eSql = beforeTmpSql;
 
 		Map<String, Object> elCache = new HashMap<>();
 
@@ -141,7 +138,7 @@ public class BatchExecuteSql extends SqlEntity {
 				Param newParam = (Param) param.cloneEntity();
 				newParam.setName(newParam.getName()+"_"+i);
 				if (param.isBatchAssign()){
-					String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
+					String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
 					newParam.setSourcePathHistory(exeSourcePath +"[" + i +"]."+ sp);
 					Object value = context.getData(newParam.getSourcePathHistory(), elCache);
 					if("".equals(value)){
@@ -152,13 +149,13 @@ public class BatchExecuteSql extends SqlEntity {
 				exeParams.put(newParam.getName(),newParam);
 				listParam.add(newParam);
 			}
-			eSql.append(tmpSql.replaceAll("##", i + ""));
+			eSql = eSql + tmpSql.replaceAll("##",i+"" );
 			if(i < end-1){
-				eSql.append(",");
+				eSql = eSql +",";
 			}
 		}
-		eSql.append(afterTmpSql);
-		return execute(context,exeParams,provideName, eSql.toString(),listParam);
+		eSql = eSql + afterTmpSql;
+		return execute(context,exeParams,provideName,eSql,listParam);
 	}
 
 	private int execute(Context context, Map<String, Param> params, String provideName,String sql, List<Param> listParam) {
