@@ -52,7 +52,7 @@ public class DataStore extends TagSupport {
 			// 定义数据
 			Map<String, Object> root = new HashMap<String, Object>();
 
-			fields = "'" + fields.replaceAll(",", "','") + "'";
+			fields = "'" + fields.replace(",", "','") + "'";
 			root.put("ds", this);
 
 			String data = getData(context);

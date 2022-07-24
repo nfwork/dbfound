@@ -80,7 +80,7 @@ public class DataSet extends TagSupport {
 			}
 
 			if (fields != null) {
-				String fieldsString = "'" + fields.replaceAll(",", "','") + "'";
+				String fieldsString = "'" + fields.replace(",", "','") + "'";
 				root.put("fields", fieldsString);
 			}
 

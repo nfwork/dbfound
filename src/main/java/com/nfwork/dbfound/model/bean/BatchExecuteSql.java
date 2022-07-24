@@ -148,7 +148,7 @@ public class BatchExecuteSql extends SqlEntity {
 				exeParams.put(newParam.getName(),newParam);
 				listParam.add(newParam);
 			}
-			eSql.append(tmpSql.replaceAll("##", i + ""));
+			eSql.append(tmpSql.replace("##", i + ""));
 			if(i < end-1){
 				eSql.append(",");
 			}
