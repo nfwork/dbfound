@@ -11,7 +11,6 @@ import com.nfwork.dbfound.util.DataUtil;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class BatchExecuteSql extends SqlEntity {
 
@@ -125,7 +124,7 @@ public class BatchExecuteSql extends SqlEntity {
 		listParam.addAll(params.values());
 		exeParams.putAll(params);
 
-		String eSql = beforeTmpSql;
+		StringBuilder eSql = new StringBuilder(beforeTmpSql);
 
 		Map<String, Object> elCache = new HashMap<>();
 
@@ -149,13 +148,13 @@ public class BatchExecuteSql extends SqlEntity {
 				exeParams.put(newParam.getName(),newParam);
 				listParam.add(newParam);
 			}
-			eSql = eSql + tmpSql.replaceAll("##",i+"" );
+			eSql.append(tmpSql.replaceAll("##", i + ""));
 			if(i < end-1){
-				eSql = eSql +",";
+				eSql.append(",");
 			}
 		}
-		eSql = eSql + afterTmpSql;
-		return execute(context,exeParams,provideName,eSql,listParam);
+		eSql.append(afterTmpSql);
+		return execute(context,exeParams,provideName, eSql.toString(),listParam);
 	}
 
 	private int execute(Context context, Map<String, Param> params, String provideName,String sql, List<Param> listParam) {
