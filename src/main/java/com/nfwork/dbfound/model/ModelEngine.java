@@ -401,9 +401,9 @@ public class ModelEngine {
 
 		// 设置 当前取值路径
 		String currentPath = "";
-		if (scope != null && !"".equals(scope)) {
+		if (DataUtil.isNotNull(scope)) {
 			currentPath = scope;
-		} else if (cp != null && !"".equals(cp)) {
+		} else if (DataUtil.isNotNull(cp)) {
 			currentPath = cp;
 		} else {
 			currentPath = defaultPath;
@@ -413,16 +413,15 @@ public class ModelEngine {
 
 		// 得到取值的相对路径
 		String sourcePath = nfParam.getSourcePath();
-		if (sourcePath == null || "".equals(sourcePath)) {
+		if (DataUtil.isNull(sourcePath)) {
 			sourcePath = nfParam.getName();
-			realPath = currentPath + "." + sourcePath;
+		}
+
+		// 判断sourcePath 是绝对路径，还是相当路径
+		if (ELEngine.isAbsolutePath(sourcePath)) {
+			realPath = sourcePath;
 		} else {
-			// 判断sourcePath 是绝对路径，还是相当路径
-			if (ELEngine.isAbsolutePath(sourcePath)) {
-				realPath = sourcePath;
-			} else {
-				realPath = currentPath + "." + sourcePath;
-			}
+			realPath = currentPath + "." + sourcePath;
 		}
 
 		// 取值
@@ -435,7 +434,7 @@ public class ModelEngine {
 			}
 		}
 
-		if (paramValue != null && !"".equals(paramValue)) {
+		if (DataUtil.isNotNull(paramValue)) {
 			nfParam.setValue(paramValue);
 		}
 		nfParam.setSourcePathHistory(realPath);
