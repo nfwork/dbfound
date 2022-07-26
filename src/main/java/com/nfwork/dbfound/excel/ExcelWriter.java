@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
@@ -114,12 +115,18 @@ public class ExcelWriter {
 
 	public static void excelExport(Context context, String modelName,
 			String queryName) throws Exception {
+
 		context.setExport(true);
+
 		// 将parameters中的参数转移到param中
 		Map param = (Map) context.getData("param");
-		Map parameters = (Map) param.get("parameters");
-		param.putAll(parameters);
-		param.remove("parameters");
+		if(param!=null) {
+			Object parameters = param.get("parameters");
+			if (parameters instanceof Map) {
+				param.putAll((Map) parameters);
+				param.remove("parameters");
+			}
+		}
 
 		List<Map> result = ModelEngine.query(context, modelName, queryName, null,false, Map.class).getDatas();
 		excelExport(context, result);
@@ -130,6 +137,9 @@ public class ExcelWriter {
 			throws Exception {
 		// 列处理
 		List<Map> cls = (List<Map>) context.getData("param.columns");
+		if(cls == null){
+			throw new DBFoundRuntimeException("can not found param columns");
+		}
 		ExcelCellMeta[] columns = new ExcelCellMeta[cls.size()];
 		int index = 0;
 		for (Map map : cls) {
