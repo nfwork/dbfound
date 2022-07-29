@@ -69,13 +69,12 @@ public class ExcelWriter {
 			}
 
 			do {
-				int begin = sheetSize*(sheet);
-				int end = sheetSize*(sheet+1);
+				int end = sheetSize;
 				if(end >= dataList.size()){
 					end = dataList.size();
 				}
 
-				List datas = dataList.subList(begin, end);
+				List datas = dataList.subList(0, end);
 
 				jxl.write.WritableSheet ws = wwb.createSheet("sheet" + (sheet+1), sheet);
 				sheet ++;
@@ -148,6 +147,9 @@ public class ExcelWriter {
 					}
 					index++;
 				}
+
+				datas.clear();
+
 			} while(length > sheet * sheetSize);
 			wwb.write();
 		} finally {
