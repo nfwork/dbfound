@@ -26,7 +26,11 @@ public class ExcelWriter {
 
 	private static void writeExcel(File file, List dataList, Context context) throws Exception {
 
-		jxl.write.WritableWorkbook wwb = Workbook.createWorkbook(file);
+		WorkbookSettings wbSetting = new WorkbookSettings();
+		if(dataList.size()> 50000) {
+			wbSetting.setUseTemporaryFileDuringWrite(true);
+		}
+		jxl.write.WritableWorkbook wwb = Workbook.createWorkbook(file,wbSetting);
 
 		try {
 			WritableCellFormat dateFormat = null;
