@@ -162,6 +162,10 @@ public class DBFoundEL {
 		return object;
 	}
 
+	public static Object getDataByProperty(String property,Object object){
+		return getNextObject(object,property);
+	}
+
 	private static Object getNextObject(Object currentObj,String name){
 		if(currentObj instanceof Map){
 			Map currentMap = (Map) currentObj;

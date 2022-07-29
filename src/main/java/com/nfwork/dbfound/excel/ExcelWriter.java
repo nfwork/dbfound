@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.DataUtil;
@@ -23,7 +24,7 @@ import jxl.write.Number;
 
 public class ExcelWriter {
 
-	public static File writeExcel(File file, List<Map> dataList, ExcelCellMeta[] columns) throws Exception {
+	private static void writeExcel(File file, List dataList, Context context) throws Exception {
 
 		jxl.write.WritableWorkbook wwb = Workbook.createWorkbook(file);
 
@@ -35,6 +36,34 @@ public class ExcelWriter {
 			int sheet = 0;
 			int sheetSize = 50000;
 
+			// columns处理
+			List<Map> cls = (List) context.getData("param.columns");
+			if(cls == null){
+				throw new DBFoundRuntimeException("can not found param columns");
+			}
+			ExcelCellMeta[] columns = new ExcelCellMeta[cls.size()];
+			int colIndex = 0;
+			for (Map map : cls) {
+				ExcelCellMeta cellMeta = new ExcelCellMeta(map.get("name").toString(), map.get("content").toString(),
+						Integer.parseInt(map.get("width").toString()));
+				columns[colIndex++] = cellMeta;
+			}
+
+			//mappers处理
+			Map<String,Map<String,Object>> mappers = new HashMap<String, Map<String,Object>>();
+			for (Map col : cls){
+				Object object =col.get("mapper");
+				if (DataUtil.isNotNull(object)){
+					Map mapper = (Map)object;
+					Map<String,Object> newMapper  = new HashMap();
+
+					for (Object key: mapper.keySet()){
+						newMapper.put(key.toString(),mapper.get(key));
+					}
+					mappers.put(col.get("name").toString(),newMapper);
+				}
+			}
+
 			do {
 				int begin = sheetSize*(sheet);
 				int end = sheetSize*(sheet+1);
@@ -42,7 +71,7 @@ public class ExcelWriter {
 					end = dataList.size();
 				}
 
-				List<Map> datas = dataList.subList(begin, end);
+				List datas = dataList.subList(begin, end);
 
 				jxl.write.WritableSheet ws = wwb.createSheet("sheet" + (sheet+1), sheet);
 				sheet ++;
@@ -61,13 +90,23 @@ public class ExcelWriter {
 					ws.setColumnView(i, columns[i].getWidth());
 				}
 				int index = 1;
-				for (Map data : datas) {
+				for (Object data : datas) {
 					for (int i = 0; i < columns.length; i++) {
-						Object o = data.get(columns[i].getName());
+						String property = columns[i].getName();
+						Object o = DBFoundEL.getDataByProperty(property,data);
 						if (o == null) {
 							Blank blank = new Blank(i, index);
 							ws.addCell(blank);
-						} else if (o instanceof String) {
+							continue;
+						}
+
+						//mapper映射处理
+						Map<String,Object> mapper = mappers.get(property);
+						if(mapper != null){
+							o = getMapperValue(o.toString(),mapper);
+						}
+
+						if (o instanceof String) {
 							String content = o.toString();
 							Label label = new Label(i, index, content);
 							ws.addCell(label);
@@ -110,11 +149,30 @@ public class ExcelWriter {
 		} finally {
 			wwb.close();
 		}
-		return file;
 	}
 
-	public static void excelExport(Context context, String modelName,
-			String queryName) throws Exception {
+	private static Object getMapperValue(String value, Map<String,Object> mapper){
+
+		Object valueResult = mapper.get(value);
+
+		//判断是否逗号隔开的多组值
+		if(valueResult == null && value.contains(",")){
+			String[] vals = value.split(",");
+			String values = "";
+			for (int i =0; i < vals.length; i++){
+				Object valItem = mapper.get(vals[i].trim());
+				if(i == 0){
+					values = valItem != null ? valItem.toString(): vals[i];
+				}else{
+					values = values + ", " + (valItem != null ? valItem.toString(): vals[i]);
+				}
+			}
+			valueResult = values;
+		}
+		return valueResult;
+	}
+
+	public static void excelExport(Context context, String modelName, String queryName) throws Exception {
 
 		context.setExport(true);
 
@@ -128,88 +186,38 @@ public class ExcelWriter {
 			}
 		}
 
-		List<Map> result = ModelEngine.query(context, modelName, queryName, null,false, Map.class).getDatas();
+		List result = ModelEngine.query(context, modelName, queryName, null,false).getDatas();
 		excelExport(context, result);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static void excelExport(Context context, List<Map> result)
-			throws Exception {
-		// 列处理
-		List<Map> cls = (List<Map>) context.getData("param.columns");
-		if(cls == null){
-			throw new DBFoundRuntimeException("can not found param columns");
-		}
-		ExcelCellMeta[] columns = new ExcelCellMeta[cls.size()];
-		int index = 0;
-		for (Map map : cls) {
-			ExcelCellMeta cellMeta = new ExcelCellMeta(map.get("name").toString(), map.get("content").toString(),
-					Integer.parseInt(map.get("width").toString()));
-			columns[index++] = cellMeta;
-		}
-
-		//数据转化
-		Map<String,Map<String,Object>> mappers = new HashMap<String, Map<String,Object>>();
-		for (Map col : cls){
-			Object object =col.get("mapper");
-			if (DataUtil.isNotNull(object)){
-				Map mapper = (Map)object;
-				Map<String,Object> newMapper  = new HashMap();
-
-				for (Object key: mapper.keySet()){
-					newMapper.put(key.toString(),mapper.get(key));
-				}
-				mappers.put(col.get("name").toString(),newMapper);
-			}
-		}
-
-		for (Map item : result){
-			for(Map.Entry<String,Map<String,Object>> entry : mappers.entrySet()){
-				if(item.get(entry.getKey()) == null){
-					continue;
-				}
-				String val1 = item.get(entry.getKey()).toString();
-				Object val2 = entry.getValue().get(val1);
-
-				//判断是否逗号隔开的多组值
-				if(val2 == null && val1.contains(",")){
-					String[] vals = val1.split(",");
-					String values = "";
-					for (int i =0; i < vals.length; i++){
-						Object valItem = entry.getValue().get(vals[i].trim());
-						if(i == 0){
-							values = valItem != null ? valItem.toString(): vals[i];
-						}else{
-							values = values + ", " + (valItem != null ? valItem.toString(): vals[i]);
-						}
-					}
-					val2 = values;
-				}
-				if(val2 != null){
-					item.put(entry.getKey(),val2);
-				}
-			}
-		}
+	public static void excelExport(Context context, List result)throws Exception {
 
 		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + ".xls");
-		writeExcel(file, result, columns);
+		try {
+			writeExcel(file, result, context);
 
-		try (InputStream in = new FileInputStream(file);
-			 OutputStream out = context.response.getOutputStream()){
+			try (InputStream in = new FileInputStream(file);
+				 OutputStream out = context.response.getOutputStream()) {
 
-			// 向外输出excel
-			context.response.setContentType("application/x-download");
-			context.response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-			context.response.setHeader("Content-Disposition","attachment;filename=export.xls");
+				// 向外输出excel
+				context.response.setContentType("application/x-download");
+				context.response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+				context.response.setHeader("Content-Disposition", "attachment;filename=export.xls");
 
-			byte[] b = new byte[4096];
-			int i = in.read(b);
-			while (i != -1) {
-				out.write(b, 0, i);
-				i = in.read(b);
+				byte[] b ;
+				if(result.size() > 10000){
+					b = new byte[10240];
+				}else{
+					b = new byte[4096];
+				}
+				int i = -1;
+				while ( (i = in.read(b)) != -1) {
+					out.write(b, 0, i);
+				}
+				out.flush();
 			}
-			out.flush();
-		} finally {
+
+		}finally {
 			if (file.exists()) {
 				file.delete();
 			}
