@@ -98,8 +98,6 @@ public class ExcelWriter {
 						String property = columns[i].getName();
 						Object o = DBFoundEL.getDataByProperty(property,data);
 						if (o == null) {
-							Blank blank = new Blank(i, index);
-							ws.addCell(blank);
 							continue;
 						}
 
@@ -175,7 +173,7 @@ public class ExcelWriter {
 			}
 			valueResult = values;
 		}
-		return valueResult;
+		return valueResult == null ? value: valueResult;
 	}
 
 	public static void excelExport(Context context, String modelName, String queryName) throws Exception {
