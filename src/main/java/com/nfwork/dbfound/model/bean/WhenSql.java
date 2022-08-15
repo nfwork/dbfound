@@ -12,6 +12,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 
@@ -47,22 +48,30 @@ public class WhenSql extends SqlEntity {
 	}
 
 	// 判定条件是否成立
-	public boolean fitWhen(Context context, Map<String, Param> params,
-			String provideName) {
-		Connection conn = context.getConn(provideName);
-		SqlDialect dialect = context.getConnDialect(provideName);
+	private boolean fitWhen(Context context, Map<String, Param> params,String provideName) {
 
 		String whenSql = staticParamParse(when, params, context);
-		whenSql = dialect.getWhenSql(whenSql);
-
 		List<Object> exeParam = new ArrayList<>();
-		String esql = getExecuteSql(whenSql, params, exeParam, context);
+		String eSql = getExecuteSql(whenSql, params, exeParam, context);
+
+		if(!eSql.contains("select ")){
+			String dSql = DSqlEngine.getWhenSql(eSql);
+			Boolean result  = DSqlEngine.checkWhenSql(dSql,exeParam);
+			if(result != null){
+				log(dSql, params, context);
+				return result;
+			}
+		}
+
+		Connection conn = context.getConn(provideName);
+		SqlDialect dialect = context.getConnDialect(provideName);
+		eSql = dialect.getWhenSql(eSql);
 
 		PreparedStatement statement = null;
 		ResultSet set = null;
 		int flag = 0;
 		try {
-			statement = conn.prepareStatement(esql);
+			statement = conn.prepareStatement(eSql);
 			// 参数设定
 			initParam(statement, exeParam);
 			set = statement.executeQuery();
@@ -74,7 +83,7 @@ public class WhenSql extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);
-			log(esql, params, context);
+			log(eSql, params, context);
 		}
 		return flag != 0;
 	}
