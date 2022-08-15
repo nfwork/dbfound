@@ -11,18 +11,30 @@ import net.sf.jsqlparser.statement.select.Select;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
 public class DSqlEngine {
 
+    private static final DSqlCache<String,Expression> lruCache = new DSqlCache<>(5000, new ExpressionFunction());
+
     private static final String NOT_SUPPORT = "Not Support";
+
+    private static final Expression NOT_SUPPORT_EXPRESSION = new Column();
 
     public static String getWhenSql(String sql){
        return "select 1 from dual where " + sql;
     }
 
+    public static class ExpressionFunction implements Function<String,Expression> {
+        @Override
+        public Expression apply(String sql) {
+            return getExpression(sql);
+        }
+    }
+
     public static Boolean checkWhenSql(String sql, List<Object> param){
-        Expression expression = getExpression(sql);
-        if(expression == null){
+        Expression expression =  lruCache.get(sql);
+        if(expression == NOT_SUPPORT_EXPRESSION){
             return null;
         }
         Object result = getExpressionValue(expression,param);
@@ -41,7 +53,7 @@ public class DSqlEngine {
             PlainSelect selectBody = (PlainSelect) select.getSelectBody();
             return selectBody.getWhere();
         }catch (Exception exception){
-            return null;
+            return NOT_SUPPORT_EXPRESSION;
         }
     }
 
