@@ -87,14 +87,13 @@ public class MySqlFunction {
     public static Object ifExpress(Function function,List<Object> param, String provideName){
         List<Expression> list = function.getParameters().getExpressions();
         if (list.size() == 3) {
-            Object p0 = DSqlEngine.getExpressionValue(list.get(0), param, provideName);
+            Boolean p0 = DSqlEngine.getBooleanValue(DSqlEngine.getExpressionValue(list.get(0), param, provideName));
             Object p1 = DSqlEngine.getExpressionValue(list.get(1), param, provideName);
             Object p2 = DSqlEngine.getExpressionValue(list.get(2), param, provideName);
-            if(p0 instanceof Boolean){
-                return (Boolean) p0 ? p1 : p2;
+            if(p0 != null){
+                return p0 ? p1 : p2;
             }
         }
         return DSqlEngine.NOT_SUPPORT;
     }
-
 }

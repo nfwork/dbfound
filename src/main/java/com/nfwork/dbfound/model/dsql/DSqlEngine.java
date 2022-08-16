@@ -42,13 +42,7 @@ public class DSqlEngine {
             return null;
         }
         Object result = getExpressionValue(expression,param,provideName);
-        if(result instanceof Boolean){
-            return (Boolean) result;
-        } if(result instanceof Number){
-            return ((Number) result).doubleValue() > 0;
-        } else {
-            return null;
-        }
+        return getBooleanValue(result);
     }
 
     private static Expression getExpression(String sql) {
@@ -80,19 +74,14 @@ public class DSqlEngine {
         if(expression instanceof JdbcParameter){
             JdbcParameter jdbcParameter = (JdbcParameter) expression;
             int index = jdbcParameter.getIndex();
-            Object result = param.get(index-1);
-            if(result instanceof Boolean){
-                return (Boolean)result?1:0;
-            }else{
-                return result;
-            }
+            return param.get(index-1);
         }
         if(expression instanceof Column){
             Column column = (Column) expression;
             if(column.getColumnName().equals("true")){
-                return 1;
+                return true;
             }else if(column.getColumnName().equals("false")){
-                return 0;
+                return false;
             }else{
                 return NOT_SUPPORT;
             }
@@ -100,10 +89,10 @@ public class DSqlEngine {
 
         if(expression instanceof AndExpression){
             AndExpression andExpression = (AndExpression) expression;
-            Object leftValue = getExpressionValue(andExpression.getLeftExpression(),param, provideName);
-            Object rightValue = getExpressionValue(andExpression.getRightExpression(),param, provideName);
-            if(leftValue instanceof Boolean  && rightValue instanceof Boolean){
-                return (Boolean)leftValue && (Boolean) rightValue;
+            Boolean leftValue = getBooleanValue(getExpressionValue(andExpression.getLeftExpression(),param, provideName));
+            Boolean rightValue = getBooleanValue(getExpressionValue(andExpression.getRightExpression(),param, provideName));
+            if(leftValue != null  && rightValue != null){
+                return leftValue && rightValue;
             }else{
                 return NOT_SUPPORT;
             }
@@ -111,10 +100,10 @@ public class DSqlEngine {
 
         if(expression instanceof OrExpression){
             OrExpression orExpression = (OrExpression) expression;
-            Object leftValue =  getExpressionValue(orExpression.getLeftExpression(),param, provideName);
-            Object rightValue = getExpressionValue(orExpression.getRightExpression(),param, provideName);
-            if(leftValue instanceof Boolean  && rightValue instanceof Boolean){
-                return (Boolean)leftValue || (Boolean) rightValue;
+            Boolean leftValue = getBooleanValue(getExpressionValue(orExpression.getLeftExpression(),param, provideName));
+            Boolean rightValue = getBooleanValue(getExpressionValue(orExpression.getRightExpression(),param, provideName));
+            if(leftValue != null  && rightValue != null){
+                return leftValue || rightValue;
             }else{
                 return NOT_SUPPORT;
             }
@@ -277,6 +266,24 @@ public class DSqlEngine {
                 return leftValue.toString().compareTo(rightValue.toString());
             }
         }
+    }
+
+    static Boolean getBooleanValue(Object value){
+        if(value instanceof Boolean){
+            return (Boolean) value;
+        }
+        if(value instanceof Number){
+           return ((Number) value).doubleValue() != 0;
+        }
+        if(value instanceof String){
+            try {
+                double d = Double.parseDouble((String) value);
+                return d != 0;
+            } catch (NumberFormatException exception){
+                return false;
+            }
+        }
+        return null;
     }
 
 }
