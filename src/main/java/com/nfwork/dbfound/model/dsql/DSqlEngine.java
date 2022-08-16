@@ -5,6 +5,7 @@ import com.nfwork.dbfound.db.ConnectionProvideManager;
 import com.nfwork.dbfound.db.dialect.MySqlDialect;
 import com.nfwork.dbfound.db.dialect.OracleDialect;
 import net.sf.jsqlparser.expression.*;
+import net.sf.jsqlparser.expression.operators.arithmetic.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.*;
@@ -226,6 +227,61 @@ public class DSqlEngine {
             }
         }
 
+        if(expression instanceof Multiplication) {
+            Multiplication multiplication = (Multiplication) expression;
+            Object left = getExpressionValue(multiplication.getLeftExpression(),param,provideName);
+            Object right = getExpressionValue(multiplication.getRightExpression(),param,provideName);
+            if(left instanceof Number && right instanceof Number) {
+                return ((Number) left).doubleValue() * ((Number) right).doubleValue();
+            }
+            return NOT_SUPPORT;
+        }
+
+        if(expression instanceof Division) {
+            Division division = (Division) expression;
+            Object left = getExpressionValue(division.getLeftExpression(),param,provideName);
+            Object right = getExpressionValue(division.getRightExpression(),param,provideName);
+            if(left instanceof Number && right instanceof Number) {
+                return ((Number) left).doubleValue() / ((Number) right).doubleValue();
+            }
+            return NOT_SUPPORT;
+        }
+
+        if(expression instanceof Addition) {
+            Addition addition = (Addition) expression;
+            Object left = getExpressionValue(addition.getLeftExpression(),param,provideName);
+            Object right = getExpressionValue(addition.getRightExpression(),param,provideName);
+            if(left instanceof Number && right instanceof Number) {
+                return ((Number) left).doubleValue() + ((Number) right).doubleValue();
+            }
+            return NOT_SUPPORT;
+        }
+
+        if(expression instanceof Subtraction) {
+            Subtraction subtraction = (Subtraction) expression;
+            Object left = getExpressionValue(subtraction.getLeftExpression(),param,provideName);
+            Object right = getExpressionValue(subtraction.getRightExpression(),param,provideName);
+            if(left instanceof Number && right instanceof Number) {
+                return ((Number) left).doubleValue() - ((Number) right).doubleValue();
+            }
+            return NOT_SUPPORT;
+        }
+
+        if(expression instanceof Modulo) {
+            Modulo modulo = (Modulo) expression;
+            Object left = getExpressionValue(modulo.getLeftExpression(),param,provideName);
+            Object right = getExpressionValue(modulo.getRightExpression(),param,provideName);
+            if(left instanceof Number && right instanceof Number) {
+                return ((Number) left).doubleValue() % ((Number) right).doubleValue();
+            }
+            return NOT_SUPPORT;
+        }
+
+        if(expression instanceof Parenthesis){
+            Parenthesis parenthesis = (Parenthesis) expression;
+            return getExpressionValue(parenthesis.getExpression(),param,provideName);
+        }
+
         return NOT_SUPPORT;
     }
 
@@ -269,6 +325,9 @@ public class DSqlEngine {
     }
 
     static Boolean getBooleanValue(Object value){
+        if(value == DSqlEngine.NOT_SUPPORT){
+            return null;
+        }
         if(value instanceof Boolean){
             return (Boolean) value;
         }
