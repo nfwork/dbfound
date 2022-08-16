@@ -2,23 +2,23 @@ package com.nfwork.dbfound.model.dsql;
 
 public class DSqlConfig {
 
-    private static boolean equalsIgnoreCase = true;
+    private static boolean compareIgnoreCase = true;
 
-    private static boolean userDSql = true;
+    private static boolean useDSql = true;
 
-    public static boolean isEqualsIgnoreCase() {
-        return equalsIgnoreCase;
+    public static boolean isCompareIgnoreCase() {
+        return compareIgnoreCase;
     }
 
-    public static void setEqualsIgnoreCase(boolean equalsIgnoreCase) {
-        DSqlConfig.equalsIgnoreCase = equalsIgnoreCase;
+    public static void setCompareIgnoreCase(boolean compareIgnoreCase) {
+        DSqlConfig.compareIgnoreCase = compareIgnoreCase;
     }
 
-    public static boolean isUserDSql() {
-        return userDSql;
+    public static boolean isUseDSql() {
+        return useDSql;
     }
 
-    public static void setUserDSql(boolean userDSql) {
-        DSqlConfig.userDSql = userDSql;
+    public static void setUseDSql(boolean userDSql) {
+        DSqlConfig.useDSql = userDSql;
     }
 }

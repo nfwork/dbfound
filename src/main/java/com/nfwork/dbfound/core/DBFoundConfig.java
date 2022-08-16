@@ -453,18 +453,18 @@ public class DBFoundConfig {
 			}
 		}
 
-		Element equalsIgnoreCase = system.element("equalsIgnoreCase");
-		if (equalsIgnoreCase != null) {
-			String equalsIgnoreCaseConfig = equalsIgnoreCase.getTextTrim();
-			DSqlConfig.setEqualsIgnoreCase("true".equals(equalsIgnoreCaseConfig));
-			info.append("(equalsIgnoreCase = ").append(DSqlConfig.isEqualsIgnoreCase()).append(")");
+		Element compareIgnoreCase = system.element("sqlCompareIgnoreCase");
+		if (compareIgnoreCase != null) {
+			String compareIgnoreCaseConfig = compareIgnoreCase.getTextTrim();
+			DSqlConfig.setCompareIgnoreCase("true".equals(compareIgnoreCaseConfig));
+			info.append("(sqlEqualsIgnoreCase = ").append(DSqlConfig.isCompareIgnoreCase()).append(")");
 		}
 
-		Element userDSql = system.element("userDSql");
-		if (userDSql != null) {
-			String userDSqlConfig = userDSql.getTextTrim();
-			DSqlConfig.setUserDSql("true".equals(userDSqlConfig));
-			info.append("(userDSql = ").append(DSqlConfig.isUserDSql()).append(")");
+		Element useDSql = system.element("useDSql");
+		if (useDSql != null) {
+			String useDSqlConfig = useDSql.getTextTrim();
+			DSqlConfig.setUseDSql("true".equals(useDSqlConfig));
+			info.append("(useDSql = ").append(DSqlConfig.isUseDSql()).append(")");
 		}
 
 		System.out.println(info);

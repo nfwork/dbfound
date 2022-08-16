@@ -237,7 +237,7 @@ public class DSqlEngine {
         }else{
             String leftString = leftValue.toString();
             String rightString = rightValue.toString();
-            if(DSqlConfig.isEqualsIgnoreCase()) {
+            if(DSqlConfig.isCompareIgnoreCase()) {
                 return leftString.equalsIgnoreCase(rightString);
             }else{
                 return leftString.equals(rightString);
@@ -256,7 +256,11 @@ public class DSqlEngine {
             double right = rightValue instanceof Number?((Number)rightValue).doubleValue():Double.parseDouble(rightValue.toString());
             return left - right;
         }else{
-            return leftValue.toString().compareTo(rightValue.toString());
+            if(DSqlConfig.isCompareIgnoreCase()) {
+                return leftValue.toString().compareToIgnoreCase(rightValue.toString());
+            }else{
+                return leftValue.toString().compareTo(rightValue.toString());
+            }
         }
     }
 

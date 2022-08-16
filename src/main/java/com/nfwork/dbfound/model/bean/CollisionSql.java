@@ -52,7 +52,7 @@ public class CollisionSql extends SqlEntity {
 		List<Object> exeParam = new ArrayList<>();
 		String eSql = getExecuteSql(whereSql, params, exeParam, context);
 
-		if( DSqlConfig.isUserDSql() && !eSql.contains("select ")){
+		if( DSqlConfig.isUseDSql() && !eSql.contains("select ")){
 			String dSql = DSqlEngine.getWhenSql(eSql);
 			Boolean result  = DSqlEngine.checkWhenSql(dSql,exeParam);
 			if(result != null){
