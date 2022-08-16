@@ -9,6 +9,7 @@ import java.util.*;
 
 import javax.sql.DataSource;
 
+import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
 import org.dom4j.Document;
@@ -450,6 +451,20 @@ public class DBFoundConfig {
 				dateTimeFormat = dateTimeFormatConfig;
 				info.append("(dateTimeFormat = ").append(dateTimeFormatConfig).append(")");
 			}
+		}
+
+		Element equalsIgnoreCase = system.element("equalsIgnoreCase");
+		if (equalsIgnoreCase != null) {
+			String equalsIgnoreCaseConfig = equalsIgnoreCase.getTextTrim();
+			DSqlConfig.setEqualsIgnoreCase("true".equals(equalsIgnoreCaseConfig));
+			info.append("(equalsIgnoreCase = ").append(DSqlConfig.isEqualsIgnoreCase()).append(")");
+		}
+
+		Element userDSql = system.element("userDSql");
+		if (userDSql != null) {
+			String userDSqlConfig = userDSql.getTextTrim();
+			DSqlConfig.setUserDSql("true".equals(userDSqlConfig));
+			info.append("(userDSql = ").append(DSqlConfig.isUserDSql()).append(")");
 		}
 
 		System.out.println(info);

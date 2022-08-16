@@ -237,7 +237,11 @@ public class DSqlEngine {
         }else{
             String leftString = leftValue.toString();
             String rightString = rightValue.toString();
-            return leftString.equalsIgnoreCase(rightString);
+            if(DSqlConfig.isEqualsIgnoreCase()) {
+                return leftString.equalsIgnoreCase(rightString);
+            }else{
+                return leftString.equals(rightString);
+            }
         }
     }
 
