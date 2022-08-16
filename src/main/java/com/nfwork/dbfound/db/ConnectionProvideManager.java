@@ -1,14 +1,14 @@
 package com.nfwork.dbfound.db;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.LogUtil;
 
 public class ConnectionProvideManager {
 
-	private static Map<String, ConnectionProvide> provides = new HashMap<String, ConnectionProvide>();
+	private static final Map<String, ConnectionProvide> provides = new ConcurrentHashMap<>();
 
 	// 注册数据源
 	static void registSource(ConnectionProvide provide) {

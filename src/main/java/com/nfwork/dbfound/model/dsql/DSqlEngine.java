@@ -1,5 +1,9 @@
 package com.nfwork.dbfound.model.dsql;
 
+import com.nfwork.dbfound.db.ConnectionProvide;
+import com.nfwork.dbfound.db.ConnectionProvideManager;
+import com.nfwork.dbfound.db.dialect.MySqlDialect;
+import com.nfwork.dbfound.db.dialect.OracleDialect;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
@@ -17,7 +21,7 @@ public class DSqlEngine {
 
     private static final DSqlCache<String,Expression> lruCache = new DSqlCache<>(5000, new ExpressionFunction());
 
-    private static final String NOT_SUPPORT = "Not Support";
+    static final String NOT_SUPPORT = "Not Support";
 
     private static final Expression NOT_SUPPORT_EXPRESSION = new Column();
 
@@ -32,12 +36,12 @@ public class DSqlEngine {
         }
     }
 
-    public static Boolean checkWhenSql(String sql, List<Object> param){
+    public static Boolean checkWhenSql(String sql, List<Object> param, String provideName){
         Expression expression =  lruCache.get(sql);
         if(expression == NOT_SUPPORT_EXPRESSION){
             return null;
         }
-        Object result = getExpressionValue(expression,param);
+        Object result = getExpressionValue(expression,param,provideName);
         if(result instanceof Boolean){
             return (Boolean) result;
         } if(result instanceof Number){
@@ -57,7 +61,7 @@ public class DSqlEngine {
         }
     }
 
-    private static Object getExpressionValue(Expression expression , List<Object> param){
+    static Object getExpressionValue(Expression expression , List<Object> param, String provideName){
         if(expression instanceof StringValue){
             StringValue stringValue = (StringValue) expression;
             return stringValue.getValue();
@@ -96,8 +100,8 @@ public class DSqlEngine {
 
         if(expression instanceof AndExpression){
             AndExpression andExpression = (AndExpression) expression;
-            Object leftValue = getExpressionValue(andExpression.getLeftExpression(),param);
-            Object rightValue = getExpressionValue(andExpression.getRightExpression(),param);
+            Object leftValue = getExpressionValue(andExpression.getLeftExpression(),param, provideName);
+            Object rightValue = getExpressionValue(andExpression.getRightExpression(),param, provideName);
             if(leftValue instanceof Boolean  && rightValue instanceof Boolean){
                 return (Boolean)leftValue && (Boolean) rightValue;
             }else{
@@ -107,8 +111,8 @@ public class DSqlEngine {
 
         if(expression instanceof OrExpression){
             OrExpression orExpression = (OrExpression) expression;
-            Object leftValue =  getExpressionValue(orExpression.getLeftExpression(),param);
-            Object rightValue = getExpressionValue(orExpression.getRightExpression(),param);
+            Object leftValue =  getExpressionValue(orExpression.getLeftExpression(),param, provideName);
+            Object rightValue = getExpressionValue(orExpression.getRightExpression(),param, provideName);
             if(leftValue instanceof Boolean  && rightValue instanceof Boolean){
                 return (Boolean)leftValue || (Boolean) rightValue;
             }else{
@@ -118,7 +122,7 @@ public class DSqlEngine {
 
         if(expression instanceof IsNullExpression){
             IsNullExpression isNullExpression = (IsNullExpression) expression;
-            Object value = getExpressionValue(isNullExpression.getLeftExpression(),param);
+            Object value = getExpressionValue(isNullExpression.getLeftExpression(),param, provideName);
             if(value == null && !isNullExpression.isNot()){
                 return true;
             }else{
@@ -128,8 +132,8 @@ public class DSqlEngine {
 
         if(expression instanceof EqualsTo){
             EqualsTo equalsTo = (EqualsTo) expression;
-            Object leftValue = getExpressionValue(equalsTo.getLeftExpression(),param);
-            Object rightValue  = getExpressionValue(equalsTo.getRightExpression(),param);
+            Object leftValue = getExpressionValue(equalsTo.getLeftExpression(),param, provideName);
+            Object rightValue  = getExpressionValue(equalsTo.getRightExpression(),param, provideName);
 
             //null compare always return false，user is null instead；
             if(leftValue == null || rightValue == null){
@@ -144,8 +148,8 @@ public class DSqlEngine {
 
         if(expression instanceof NotEqualsTo){
             NotEqualsTo notEqualsTo = (NotEqualsTo) expression;
-            Object leftValue = getExpressionValue(notEqualsTo.getLeftExpression(),param);
-            Object rightValue  = getExpressionValue(notEqualsTo.getRightExpression(),param);
+            Object leftValue = getExpressionValue(notEqualsTo.getLeftExpression(),param, provideName);
+            Object rightValue  = getExpressionValue(notEqualsTo.getRightExpression(),param, provideName);
 
             //null compare always return false，user is null instead；
             if(leftValue == null || rightValue == null){
@@ -160,8 +164,8 @@ public class DSqlEngine {
 
         if(expression instanceof GreaterThan){
             GreaterThan greaterThan = (GreaterThan) expression;
-            Object left = getExpressionValue(greaterThan.getLeftExpression(),param);
-            Object right = getExpressionValue(greaterThan.getRightExpression(),param);
+            Object left = getExpressionValue(greaterThan.getLeftExpression(),param, provideName);
+            Object right = getExpressionValue(greaterThan.getRightExpression(),param, provideName);
 
             //null compare always return false，user is null instead；
             if(left == null || right == null){
@@ -176,8 +180,8 @@ public class DSqlEngine {
 
         if(expression instanceof GreaterThanEquals){
             GreaterThanEquals greaterThanEquals = (GreaterThanEquals) expression;
-            Object left = getExpressionValue(greaterThanEquals.getLeftExpression(),param);
-            Object right = getExpressionValue(greaterThanEquals.getRightExpression(),param);
+            Object left = getExpressionValue(greaterThanEquals.getLeftExpression(),param,provideName);
+            Object right = getExpressionValue(greaterThanEquals.getRightExpression(),param,provideName);
 
             //null compare always return false，user is null instead；
             if(left == null || right == null){
@@ -192,8 +196,8 @@ public class DSqlEngine {
 
         if(expression instanceof MinorThan){
             MinorThan minorThan = (MinorThan) expression;
-            Object left = getExpressionValue(minorThan.getLeftExpression(),param);
-            Object right = getExpressionValue(minorThan.getRightExpression(),param);
+            Object left = getExpressionValue(minorThan.getLeftExpression(),param,provideName);
+            Object right = getExpressionValue(minorThan.getRightExpression(),param, provideName);
 
             //null compare always return false，user is null instead；
             if(left == null || right == null){
@@ -208,8 +212,8 @@ public class DSqlEngine {
 
         if(expression instanceof MinorThanEquals){
             MinorThanEquals minorThanEquals = (MinorThanEquals) expression;
-            Object left = getExpressionValue(minorThanEquals.getLeftExpression(),param);
-            Object right = getExpressionValue(minorThanEquals.getRightExpression(),param);
+            Object left = getExpressionValue(minorThanEquals.getLeftExpression(),param,provideName);
+            Object right = getExpressionValue(minorThanEquals.getRightExpression(),param,provideName);
 
             //null compare always return false，user is null instead；
             if(left == null || right == null){
@@ -218,6 +222,17 @@ public class DSqlEngine {
             if(isCompareSupport(left,right)) {
                 return compareTo(left, right) <= 0;
             }else {
+                return NOT_SUPPORT;
+            }
+        }
+
+        if(expression instanceof net.sf.jsqlparser.expression.Function){
+            ConnectionProvide provide = ConnectionProvideManager.getConnectionProvide(provideName);
+            if(provide.getSqlDialect() instanceof MySqlDialect){
+               return MySqlFunction.apply(expression,param,provideName);
+            }else if(provide.getSqlDialect() instanceof OracleDialect){
+                return OracleFunction.apply(expression,param,provideName);
+            }else{
                 return NOT_SUPPORT;
             }
         }
