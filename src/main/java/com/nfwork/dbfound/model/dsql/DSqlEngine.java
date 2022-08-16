@@ -76,14 +76,19 @@ public class DSqlEngine {
         if(expression instanceof JdbcParameter){
             JdbcParameter jdbcParameter = (JdbcParameter) expression;
             int index = jdbcParameter.getIndex();
-            return param.get(index-1);
+            Object result = param.get(index-1);
+            if(result instanceof Boolean){
+                return (Boolean)result?1:0;
+            }else{
+                return result;
+            }
         }
         if(expression instanceof Column){
             Column column = (Column) expression;
             if(column.getColumnName().equals("true")){
-                return true;
+                return 1;
             }else if(column.getColumnName().equals("false")){
-                return false;
+                return 0;
             }else{
                 return NOT_SUPPORT;
             }
@@ -126,10 +131,15 @@ public class DSqlEngine {
             Object leftValue = getExpressionValue(equalsTo.getLeftExpression(),param);
             Object rightValue  = getExpressionValue(equalsTo.getRightExpression(),param);
 
-            if(leftValue == NOT_SUPPORT || rightValue == NOT_SUPPORT || leftValue instanceof Date || rightValue instanceof Date ){
+            //null compare always return false，user is null instead；
+            if(leftValue == null || rightValue == null){
+                return false;
+            }
+            if(isCompareSupport(leftValue,rightValue)){
+                return equalsTo(leftValue,rightValue);
+            }else{
                 return NOT_SUPPORT;
             }
-            return equalsTo(leftValue,rightValue);
         }
 
         if(expression instanceof NotEqualsTo){
@@ -137,62 +147,85 @@ public class DSqlEngine {
             Object leftValue = getExpressionValue(notEqualsTo.getLeftExpression(),param);
             Object rightValue  = getExpressionValue(notEqualsTo.getRightExpression(),param);
 
-            if(leftValue == NOT_SUPPORT || rightValue == NOT_SUPPORT || leftValue instanceof Date || rightValue instanceof Date ){
+            //null compare always return false，user is null instead；
+            if(leftValue == null || rightValue == null){
+                return false;
+            }
+            if(isCompareSupport(leftValue,rightValue)){
+                return !equalsTo(leftValue,rightValue);
+            }else{
                 return NOT_SUPPORT;
             }
-            return ! equalsTo(leftValue,rightValue);
         }
 
         if(expression instanceof GreaterThan){
             GreaterThan greaterThan = (GreaterThan) expression;
             Object left = getExpressionValue(greaterThan.getLeftExpression(),param);
             Object right = getExpressionValue(greaterThan.getRightExpression(),param);
-            if(left == NOT_SUPPORT || right == NOT_SUPPORT ||left instanceof Date || right instanceof Date){
+
+            //null compare always return false，user is null instead；
+            if(left == null || right == null){
+                return false;
+            }
+            if(isCompareSupport(left,right)){
+                return compareTo(left,right)>0;
+            }else{
                 return NOT_SUPPORT;
             }
-            return compareTo(left,right)>0;
         }
 
         if(expression instanceof GreaterThanEquals){
             GreaterThanEquals greaterThanEquals = (GreaterThanEquals) expression;
             Object left = getExpressionValue(greaterThanEquals.getLeftExpression(),param);
             Object right = getExpressionValue(greaterThanEquals.getRightExpression(),param);
-            if(left == NOT_SUPPORT || right == NOT_SUPPORT ||left instanceof Date || right instanceof Date){
+
+            //null compare always return false，user is null instead；
+            if(left == null || right == null){
+                return false;
+            }
+            if(isCompareSupport(left,right)) {
+                return compareTo(left, right) >= 0;
+            }else{
                 return NOT_SUPPORT;
             }
-            return compareTo(left, right) >= 0;
         }
 
         if(expression instanceof MinorThan){
             MinorThan minorThan = (MinorThan) expression;
             Object left = getExpressionValue(minorThan.getLeftExpression(),param);
             Object right = getExpressionValue(minorThan.getRightExpression(),param);
-            if(left == NOT_SUPPORT || right == NOT_SUPPORT ||left instanceof Date || right instanceof Date){
+
+            //null compare always return false，user is null instead；
+            if(left == null || right == null){
+                return false;
+            }
+            if(isCompareSupport(left,right)) {
+                return compareTo(left, right) < 0;
+            }else{
                 return NOT_SUPPORT;
             }
-            return compareTo(left, right) < 0;
         }
 
         if(expression instanceof MinorThanEquals){
             MinorThanEquals minorThanEquals = (MinorThanEquals) expression;
             Object left = getExpressionValue(minorThanEquals.getLeftExpression(),param);
             Object right = getExpressionValue(minorThanEquals.getRightExpression(),param);
-            if(left == NOT_SUPPORT || right == NOT_SUPPORT ||left instanceof Date || right instanceof Date){
+
+            //null compare always return false，user is null instead；
+            if(left == null || right == null){
+                return false;
+            }
+            if(isCompareSupport(left,right)) {
+                return compareTo(left, right) <= 0;
+            }else {
                 return NOT_SUPPORT;
             }
-            return compareTo(left, right) <= 0;
         }
 
         return NOT_SUPPORT;
     }
 
     private static boolean equalsTo(Object leftValue, Object rightValue){
-        if(leftValue == null && rightValue == null){
-            return true;
-        }
-        if(leftValue == null || rightValue == null){
-            return false;
-        }
         if(leftValue instanceof Number || rightValue instanceof Number){
             try {
                 double left = leftValue instanceof Number?((Number)leftValue).doubleValue():Double.parseDouble(leftValue.toString());
@@ -204,20 +237,16 @@ public class DSqlEngine {
         }else{
             String leftString = leftValue.toString();
             String rightString = rightValue.toString();
-            return !leftString.equalsIgnoreCase(rightString);
+            return leftString.equalsIgnoreCase(rightString);
         }
     }
 
+    private static boolean isCompareSupport(Object leftValue, Object rightValue){
+        return leftValue != NOT_SUPPORT && rightValue != NOT_SUPPORT &&
+                !(leftValue instanceof Date) && !(rightValue instanceof Date);
+    }
+
     private static double compareTo(Object leftValue, Object rightValue){
-        if(leftValue == null && rightValue == null){
-            return 0;
-        }
-        if(leftValue == null){
-            return -1;
-        }
-        if(rightValue == null){
-            return  1;
-        }
         if(leftValue instanceof Number || rightValue instanceof Number){
             double left = leftValue instanceof Number?((Number)leftValue).doubleValue():Double.parseDouble(leftValue.toString());
             double right = rightValue instanceof Number?((Number)rightValue).doubleValue():Double.parseDouble(rightValue.toString());

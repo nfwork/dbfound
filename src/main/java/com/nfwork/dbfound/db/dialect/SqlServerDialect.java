@@ -6,9 +6,6 @@ public class SqlServerDialect implements SqlDialect {
 	public String getPagerSql(String sql, int pagerSize, long startWith) {
 
 		int i = sql.toLowerCase().lastIndexOf("order by");
-		if (i == -1) {
-			i = sql.toLowerCase().lastIndexOf("ORDER BY");
-		}
 		String esql = i == -1 ? sql : sql.substring(0, i);
 		String orderBy = i == -1 ? "getdate()" : sql.substring(i + 9);
 
