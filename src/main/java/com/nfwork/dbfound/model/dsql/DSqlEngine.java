@@ -341,15 +341,11 @@ public class DSqlEngine {
             return (Boolean) value;
         }
         if(value instanceof Number){
-           return ((Number) value).doubleValue() != 0;
+           return ((Number) value).intValue() != 0;
         }
         if(value instanceof String){
-            try {
-                double d = Double.parseDouble((String) value);
-                return d != 0;
-            } catch (NumberFormatException exception){
-                return false;
-            }
+            int d = Integer.parseInt((String) value);
+            return d != 0;
         }
         return null;
     }
