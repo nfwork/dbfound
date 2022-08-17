@@ -28,7 +28,7 @@ class WebAction {
 			ro = ModelEngine.batchExecute(context, modelName, executeName,
 					ModelEngine.defaultBatchPath);
 		} else {
-			ro = ModelEngine.execute(context, modelName, executeName, null);
+			ro = ModelEngine.execute(context, modelName, executeName, ModelEngine.defaultPath);
 		}
 		
 		// 提交关闭事务
