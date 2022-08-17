@@ -171,37 +171,35 @@ public class DBFoundEL {
 		if(currentObj instanceof Map){
 			Map currentMap = (Map) currentObj;
 			return currentMap.get(name);
-		} else if(isSampleObject(currentObj)){
-			if("value".equals(name)){
-				return currentObj;
-			}else{
-				return null;
-			}
 		} else{
-			int size = DataUtil.getDataLength(currentObj);
-			if(size != -1){
-				if("size".equals(name)){
-					return size;
-				}else{
-					return null;
+			if("value".equals(name)){
+				if(isSampleObject(currentObj)){
+					return currentObj;
 				}
-			}else {
-				try {
-					Reflector reflector = Reflector.forClass(currentObj.getClass());
-					name = reflector.getFieldName(name);
+				if(DataUtil.getDataLength(currentObj) != -1){
+					return currentObj;
+				}
+			}else if("size".equals(name)){
+				int size = DataUtil.getDataLength(currentObj);
+				if(size != -1){
+					return size;
+				}
+			}
+			try {
+				Reflector reflector = Reflector.forClass(currentObj.getClass());
+				name = reflector.getFieldName(name);
+				if (reflector.hasGetter(name)) {
+					return reflector.getGetInvoker(name).invoke(currentObj, null);
+				}
+				if (name.contains("_")) {
+					name = StringUtil.underscoreToCamelCase(name);
 					if (reflector.hasGetter(name)) {
 						return reflector.getGetInvoker(name).invoke(currentObj, null);
 					}
-					if (name.contains("_")) {
-						name = StringUtil.underscoreToCamelCase(name);
-						if (reflector.hasGetter(name)) {
-							return reflector.getGetInvoker(name).invoke(currentObj, null);
-						}
-					}
-					return null;
-				} catch (Exception e) {
-					return null;
 				}
+				return null;
+			} catch (Exception e) {
+				return null;
 			}
 		}
 	}
