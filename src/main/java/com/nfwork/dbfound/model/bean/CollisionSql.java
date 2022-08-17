@@ -17,6 +17,7 @@ import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.StringUtil;
 
 /**
  * 碰撞sql，检验where条件是否成立 标出message消息
@@ -39,6 +40,7 @@ public class CollisionSql extends SqlEntity {
 			initError = "CollisionSql attribute where and message can not be null";
 			return;
 		}
+		where = StringUtil.fullTrim(where);
 		autoCreateParam(where,this);
 		autoCreateParam(message,this);
 	}
@@ -52,7 +54,7 @@ public class CollisionSql extends SqlEntity {
 		List<Object> exeParam = new ArrayList<>();
 		String eSql = getExecuteSql(whereSql, params, exeParam, context);
 
-		if( DSqlConfig.isUseDSql() && !eSql.contains("select ")){
+		if( DSqlConfig.isOpenDSql() && !eSql.contains("select ")){
 			String dSql = DSqlEngine.getWhenSql(eSql);
 			Boolean result  = DSqlEngine.checkWhenSql(dSql,exeParam,provideName,context);
 			if(result != null){

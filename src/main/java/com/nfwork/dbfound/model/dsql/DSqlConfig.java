@@ -4,7 +4,7 @@ public class DSqlConfig {
 
     private static boolean compareIgnoreCase = true;
 
-    private static boolean useDSql = true;
+    private static boolean openDSql = true;
 
     public static boolean isCompareIgnoreCase() {
         return compareIgnoreCase;
@@ -14,11 +14,11 @@ public class DSqlConfig {
         DSqlConfig.compareIgnoreCase = compareIgnoreCase;
     }
 
-    public static boolean isUseDSql() {
-        return useDSql;
+    public static boolean isOpenDSql() {
+        return openDSql;
     }
 
-    public static void setUseDSql(boolean userDSql) {
-        DSqlConfig.useDSql = userDSql;
+    public static void setOpenDSql(boolean openDSql) {
+        DSqlConfig.openDSql = openDSql;
     }
 }

@@ -460,11 +460,11 @@ public class DBFoundConfig {
 			info.append("(sqlEqualsIgnoreCase = ").append(DSqlConfig.isCompareIgnoreCase()).append(")");
 		}
 
-		Element useDSql = system.element("useDSql");
-		if (useDSql != null) {
-			String useDSqlConfig = useDSql.getTextTrim();
-			DSqlConfig.setUseDSql("true".equals(useDSqlConfig));
-			info.append("(useDSql = ").append(DSqlConfig.isUseDSql()).append(")");
+		Element openDSql = system.element("openDSql");
+		if (openDSql != null) {
+			String openDSqlConfig = openDSql.getTextTrim();
+			DSqlConfig.setOpenDSql("true".equals(openDSqlConfig));
+			info.append("(openDSql = ").append(DSqlConfig.isOpenDSql()).append(")");
 		}
 
 		System.out.println(info);

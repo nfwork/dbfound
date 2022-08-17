@@ -16,6 +16,7 @@ import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.StringUtil;
 
 public class WhenSql extends SqlEntity {
 
@@ -31,6 +32,7 @@ public class WhenSql extends SqlEntity {
 			initError = "WhenSql attribute when can not be null";
 			return;
 		}
+		when = StringUtil.fullTrim(when);
 		autoCreateParam(when,this);
 	}
 
@@ -55,7 +57,7 @@ public class WhenSql extends SqlEntity {
 		List<Object> exeParam = new ArrayList<>();
 		String eSql = getExecuteSql(whenSql, params, exeParam, context);
 
-		if(DSqlConfig.isUseDSql() && !eSql.contains("select ")){
+		if(DSqlConfig.isOpenDSql() && !eSql.contains("select ")){
 			String dSql = DSqlEngine.getWhenSql(eSql);
 			Boolean result  = DSqlEngine.checkWhenSql(dSql,exeParam,provideName,context);
 			if(result != null){

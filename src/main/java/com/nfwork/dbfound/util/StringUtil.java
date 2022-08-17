@@ -10,7 +10,7 @@ public class StringUtil {
         if(ss.length ==1){
             return underscore;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(ss[0]);
         for (int i = 1; i < ss.length; i++) {
             sb.append(upperFirstCase(ss[i]));
@@ -21,5 +21,47 @@ public class StringUtil {
         char[] chars = str.toCharArray();
         chars[0] -= 32;
         return String.valueOf(chars);
+    }
+
+    public static String fullTrim(String value){
+        if(value == null){
+            return null;
+        }
+        value = value.trim();
+        char [] chars = value.toCharArray();
+        if(chars.length == 0){
+            return value;
+        }
+
+        boolean lastIsBlank = false;
+        int dyh = 0;
+        int syh = 0;
+
+        StringBuilder buffer = new StringBuilder();
+        if(chars[0] == '\''){
+            dyh++;
+        }else if(chars[0] == '\"'){
+            syh++;
+        }
+        buffer.append(chars[0]);
+
+        for(int i=1; i< chars.length; i++){
+            if (chars[i] == '\'' && chars[i-1] != '\\' && syh % 2==0) {
+                dyh++;
+            }else if (chars[i] == '\"' && chars[i-1] != '\\' && dyh % 2==0) {
+                syh++;
+            }else if (dyh % 2 == 0 && syh % 2 ==0) {
+                if (chars[i] == ' ' || chars[i] == '\t' || chars[i] == '\n') {
+                    if (!lastIsBlank) {
+                        buffer.append(' ');
+                        lastIsBlank = true;
+                    }
+                    continue;
+                }
+            }
+            buffer.append(chars[i]);
+            lastIsBlank = false;
+        }
+        return buffer.toString();
     }
 }
