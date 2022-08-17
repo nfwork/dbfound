@@ -192,7 +192,7 @@ public class DataUtil {
 			float[] objects = (float[]) data;
 			return objects.length;
 		} else {
-			return 0;
+			return -1;
 		}
 	}
 }

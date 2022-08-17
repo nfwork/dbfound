@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.reflector.Reflector;
+import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -176,22 +177,31 @@ public class DBFoundEL {
 			}else{
 				return null;
 			}
-		}else{
-			try {
-				Reflector reflector = Reflector.forClass(currentObj.getClass());
-				name = reflector.getFieldName(name);
-				if(reflector.hasGetter(name)) {
-					return reflector.getGetInvoker(name).invoke(currentObj, null);
+		} else{
+			int size = DataUtil.getDataLength(currentObj);
+			if(size != -1){
+				if("size".equals(name)){
+					return size;
+				}else{
+					return null;
 				}
-				if(name.contains("_")){
-					name = StringUtil.underscoreToCamelCase(name);
-					if(reflector.hasGetter(name)) {
+			}else {
+				try {
+					Reflector reflector = Reflector.forClass(currentObj.getClass());
+					name = reflector.getFieldName(name);
+					if (reflector.hasGetter(name)) {
 						return reflector.getGetInvoker(name).invoke(currentObj, null);
 					}
+					if (name.contains("_")) {
+						name = StringUtil.underscoreToCamelCase(name);
+						if (reflector.hasGetter(name)) {
+							return reflector.getGetInvoker(name).invoke(currentObj, null);
+						}
+					}
+					return null;
+				} catch (Exception e) {
+					return null;
 				}
-				return null;
-			} catch (Exception e) {
-				return null;
 			}
 		}
 	}

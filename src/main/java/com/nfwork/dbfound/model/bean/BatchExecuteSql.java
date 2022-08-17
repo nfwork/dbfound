@@ -82,7 +82,7 @@ public class BatchExecuteSql extends SqlEntity {
 
 		int dataSize = context.getDataLength(exeSourcePath);
 
-		if(dataSize ==0 ){
+		if(dataSize <= 0){
 			return;
 		}
 

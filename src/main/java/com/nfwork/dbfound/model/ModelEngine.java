@@ -430,7 +430,7 @@ public class ModelEngine {
 
 		if(nfParam.getDataType() == DataType.COLLECTION){
 			int length = DataUtil.getDataLength(paramValue);
-			if (length == 0){
+			if (length <= 0){
 				paramValue = null;
 			}
 		}

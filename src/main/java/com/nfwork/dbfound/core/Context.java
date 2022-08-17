@@ -235,7 +235,7 @@ public class Context {
 	}
 
 	public int getDataLength(String express){
-		int dataSize =0;
+		int dataSize = -1;
 		Object data = this.getData(express);
 		if(data != null) {
 			dataSize = DataUtil.getDataLength(data);
