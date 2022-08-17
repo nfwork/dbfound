@@ -133,9 +133,9 @@ public class DSqlEngine {
             Object leftValue = getExpressionValue(equalsTo.getLeftExpression(),param, provideName,context);
             Object rightValue  = getExpressionValue(equalsTo.getRightExpression(),param, provideName, context);
 
-            //null compare always return false，user is null instead；
+            //null compare always return null;
             if(leftValue == null || rightValue == null){
-                return false;
+                return null;
             }
             if(isCompareSupport(leftValue,rightValue)){
                 return equalsTo(leftValue,rightValue);
@@ -149,9 +149,9 @@ public class DSqlEngine {
             Object leftValue = getExpressionValue(notEqualsTo.getLeftExpression(),param, provideName, context);
             Object rightValue  = getExpressionValue(notEqualsTo.getRightExpression(),param, provideName, context);
 
-            //null compare always return false，user is null instead；
+            //null compare always return null;
             if(leftValue == null || rightValue == null){
-                return false;
+                return null;
             }
             if(isCompareSupport(leftValue,rightValue)){
                 return !equalsTo(leftValue,rightValue);
@@ -165,9 +165,9 @@ public class DSqlEngine {
             Object left = getExpressionValue(greaterThan.getLeftExpression(),param, provideName, context);
             Object right = getExpressionValue(greaterThan.getRightExpression(),param, provideName, context);
 
-            //null compare always return false，user is null instead；
+            //null compare always return null;
             if(left == null || right == null){
-                return false;
+                return null;
             }
             if(isCompareSupport(left,right)){
                 return compareTo(left,right)>0;
@@ -181,9 +181,9 @@ public class DSqlEngine {
             Object left = getExpressionValue(greaterThanEquals.getLeftExpression(),param,provideName, context);
             Object right = getExpressionValue(greaterThanEquals.getRightExpression(),param,provideName, context);
 
-            //null compare always return false，user is null instead；
+            //null compare always return null;
             if(left == null || right == null){
-                return false;
+                return null;
             }
             if(isCompareSupport(left,right)) {
                 return compareTo(left, right) >= 0;
@@ -197,9 +197,9 @@ public class DSqlEngine {
             Object left = getExpressionValue(minorThan.getLeftExpression(),param,provideName,context);
             Object right = getExpressionValue(minorThan.getRightExpression(),param, provideName, context);
 
-            //null compare always return false，user is null instead；
+            //null compare always return null;
             if(left == null || right == null){
-                return false;
+                return null;
             }
             if(isCompareSupport(left,right)) {
                 return compareTo(left, right) < 0;
@@ -213,9 +213,9 @@ public class DSqlEngine {
             Object left = getExpressionValue(minorThanEquals.getLeftExpression(),param,provideName,context);
             Object right = getExpressionValue(minorThanEquals.getRightExpression(),param,provideName,context);
 
-            //null compare always return false，user is null instead；
+            //null compare always return null；
             if(left == null || right == null){
-                return false;
+                return null;
             }
             if(isCompareSupport(left,right)) {
                 return compareTo(left, right) <= 0;
@@ -237,52 +237,87 @@ public class DSqlEngine {
 
         if(expression instanceof Multiplication) {
             Multiplication multiplication = (Multiplication) expression;
-            Object left = getExpressionValue(multiplication.getLeftExpression(),param,provideName,context);
-            Object right = getExpressionValue(multiplication.getRightExpression(),param,provideName,context);
-            if(left instanceof Number && right instanceof Number) {
-                return ((Number) left).doubleValue() * ((Number) right).doubleValue();
+            Object leftValue = getExpressionValue(multiplication.getLeftExpression(),param,provideName,context);
+            Object rightValue = getExpressionValue(multiplication.getRightExpression(),param,provideName,context);
+            //null compare always return null;；
+            if(leftValue == null || rightValue == null){
+                return null;
             }
-            return NOT_SUPPORT;
+            if(isCompareSupport(leftValue,rightValue)) {
+                double left = getDoubleValue(leftValue);
+                double right = getDoubleValue(rightValue);
+                return left * right;
+            }else{
+                return NOT_SUPPORT;
+            }
         }
 
         if(expression instanceof Division) {
             Division division = (Division) expression;
-            Object left = getExpressionValue(division.getLeftExpression(),param,provideName,context);
-            Object right = getExpressionValue(division.getRightExpression(),param,provideName,context);
-            if(left instanceof Number && right instanceof Number) {
-                return ((Number) left).doubleValue() / ((Number) right).doubleValue();
+            Object leftValue = getExpressionValue(division.getLeftExpression(),param,provideName,context);
+            Object rightValue = getExpressionValue(division.getRightExpression(),param,provideName,context);
+            //null compare always return null;；
+            if(leftValue == null || rightValue == null){
+                return null;
             }
-            return NOT_SUPPORT;
+            if(isCompareSupport(leftValue,rightValue)) {
+                double left = getDoubleValue(leftValue);
+                double right = getDoubleValue(rightValue);
+                return left / right;
+            }else{
+                return NOT_SUPPORT;
+            }
         }
 
         if(expression instanceof Addition) {
             Addition addition = (Addition) expression;
-            Object left = getExpressionValue(addition.getLeftExpression(),param,provideName,context);
-            Object right = getExpressionValue(addition.getRightExpression(),param,provideName,context);
-            if(left instanceof Number && right instanceof Number) {
-                return ((Number) left).doubleValue() + ((Number) right).doubleValue();
+            Object leftValue = getExpressionValue(addition.getLeftExpression(),param,provideName,context);
+            Object rightValue = getExpressionValue(addition.getRightExpression(),param,provideName,context);
+            //null compare always return null;；
+            if(leftValue == null || rightValue == null){
+                return null;
             }
-            return NOT_SUPPORT;
+            if(isCompareSupport(leftValue,rightValue)) {
+                double left = getDoubleValue(leftValue);
+                double right = getDoubleValue(rightValue);
+                return left + right;
+            }else{
+                return NOT_SUPPORT;
+            }
         }
 
         if(expression instanceof Subtraction) {
             Subtraction subtraction = (Subtraction) expression;
-            Object left = getExpressionValue(subtraction.getLeftExpression(),param,provideName,context);
-            Object right = getExpressionValue(subtraction.getRightExpression(),param,provideName,context);
-            if(left instanceof Number && right instanceof Number) {
-                return ((Number) left).doubleValue() - ((Number) right).doubleValue();
+            Object leftValue = getExpressionValue(subtraction.getLeftExpression(),param,provideName,context);
+            Object rightValue = getExpressionValue(subtraction.getRightExpression(),param,provideName,context);
+            //null compare always return null;；
+            if(leftValue == null || rightValue == null){
+                return null;
             }
-            return NOT_SUPPORT;
+            if(isCompareSupport(leftValue,rightValue)) {
+                double left = getDoubleValue(leftValue);
+                double right = getDoubleValue(rightValue);
+                return left - right;
+            }else{
+                return NOT_SUPPORT;
+            }
         }
 
         if(expression instanceof Modulo) {
             Modulo modulo = (Modulo) expression;
-            Object left = getExpressionValue(modulo.getLeftExpression(),param,provideName,context);
-            Object right = getExpressionValue(modulo.getRightExpression(),param,provideName,context);
-            if(left instanceof Number && right instanceof Number) {
-                return ((Number) left).doubleValue() % ((Number) right).doubleValue();
+            Object leftValue = getExpressionValue(modulo.getLeftExpression(),param,provideName,context);
+            Object rightValue = getExpressionValue(modulo.getRightExpression(),param,provideName,context);
+            //null compare always return null;；
+            if(leftValue == null || rightValue == null){
+                return null;
             }
-            return NOT_SUPPORT;
+            if(isCompareSupport(leftValue,rightValue)) {
+                double left = getDoubleValue(leftValue);
+                double right = getDoubleValue(rightValue);
+                return left % right;
+            }else{
+                return NOT_SUPPORT;
+            }
         }
 
         if(expression instanceof Parenthesis){
@@ -295,13 +330,9 @@ public class DSqlEngine {
 
     private static boolean equalsTo(Object leftValue, Object rightValue){
         if(leftValue instanceof Number || rightValue instanceof Number){
-            try {
-                double left = leftValue instanceof Number?((Number)leftValue).doubleValue():Double.parseDouble(leftValue.toString());
-                double right = rightValue instanceof Number?((Number)rightValue).doubleValue():Double.parseDouble(rightValue.toString());
-                return left == right;
-            }catch (NumberFormatException exception){
-                return false;
-            }
+            double left = getDoubleValue(leftValue);
+            double right = getDoubleValue(rightValue);
+            return left == right;
         }else{
             String leftString = leftValue.toString();
             String rightString = rightValue.toString();
@@ -321,8 +352,8 @@ public class DSqlEngine {
 
     private static double compareTo(Object leftValue, Object rightValue){
         if(leftValue instanceof Number || rightValue instanceof Number){
-            double left = leftValue instanceof Number?((Number)leftValue).doubleValue():Double.parseDouble(leftValue.toString());
-            double right = rightValue instanceof Number?((Number)rightValue).doubleValue():Double.parseDouble(rightValue.toString());
+            double left = getDoubleValue(leftValue);
+            double right = getDoubleValue(rightValue);
             return left - right;
         }else{
             if(DSqlConfig.isCompareIgnoreCase()) {
@@ -331,6 +362,11 @@ public class DSqlEngine {
                 return leftValue.toString().compareTo(rightValue.toString());
             }
         }
+    }
+
+    private static double getDoubleValue(Object value){
+        assert value != null;
+        return value instanceof Number?((Number)value).doubleValue():Double.parseDouble(value.toString());
     }
 
     static Boolean getBooleanValue(Object value){
