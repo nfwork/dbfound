@@ -1,17 +1,15 @@
 package com.nfwork.dbfound.db.dialect;
 
-public class MySqlDialect implements SqlDialect {
+public class MySqlDialect extends AbstractSqlDialect {
 
 	@Override
-	public String getPagerSql(String sql, int pagerSize, long startWith) {
-		String pagerSql = sql + " limit " + startWith + " , " + pagerSize;
-		return pagerSql;
+	public String getPagerSql(String sql, String limitHold, String startHold) {
+		return sql + " limit " + startHold +", "+limitHold;
 	}
 
 	@Override
 	public String getWhenSql(String when) {
-		String whenSql = "select " + when;
-		return whenSql;
+		return "select " + when;
 	}
 
 }

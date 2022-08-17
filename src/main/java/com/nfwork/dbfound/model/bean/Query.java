@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.nfwork.dbfound.db.dialect.AbstractSqlDialect;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
@@ -127,15 +128,21 @@ public class Query extends SqlEntity {
 
 		List<Map> data = new ArrayList<>();
 		List<Object> exeParam = new ArrayList<>();
-		String eSql = getExecuteSql(querySql,params, exeParam, context);
 
 		if(autoPaging) {
 			if (context.getPagerSize() > 0 || pagerSize != null) {
 				int ps = context.getPagerSize() > 0 ? context.getPagerSize() : pagerSize;
 				SqlDialect dialect = context.getConnDialect(provideName);
-				eSql = dialect.getPagerSql(eSql, ps, context.getStartWith());
+				if(dialect instanceof AbstractSqlDialect){
+					AbstractSqlDialect sqlDialect = (AbstractSqlDialect) dialect;
+					querySql = sqlDialect.getPagerSql(querySql, ps, context.getStartWith(),params);
+				}else{
+					querySql = dialect.getPagerSql(querySql, ps, context.getStartWith());
+				}
 			}
 		}
+		String eSql = getExecuteSql(querySql,params, exeParam, context);
+
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
 		try {
