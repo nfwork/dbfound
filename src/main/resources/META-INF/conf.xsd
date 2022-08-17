@@ -41,6 +41,8 @@
 			<xsd:element maxOccurs="1" minOccurs="0" name="modelModifyCheck" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="dateTimeFormat" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="dateFormat" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="sqlCompareIgnoreCase" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="openDSql" />
 		</xsd:choice>
 	</xsd:complexType>
 

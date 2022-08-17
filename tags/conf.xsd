@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	elementFormDefault="qualified" xmlns="http://dbfound.googlecode.com/conf"
-	targetNamespace="http://dbfound.googlecode.com/conf">
+			elementFormDefault="qualified" xmlns="http://dbfound.googlecode.com/conf"
+			targetNamespace="http://dbfound.googlecode.com/conf">
 
 	<xsd:element name="dbfound">
 		<xsd:complexType>
 			<xsd:choice maxOccurs="unbounded" minOccurs="0">
 				<xsd:element maxOccurs="1" minOccurs="0" name="system"
-					type="system_type" />
+							 type="system_type" />
 				<xsd:element maxOccurs="1" minOccurs="0" name="web"
-					type="web_type" />
+							 type="web_type" />
 				<xsd:element maxOccurs="1" minOccurs="0" name="database"
-					type="database_type" />
+							 type="database_type" />
 			</xsd:choice>
 		</xsd:complexType>
 	</xsd:element>
@@ -41,13 +41,15 @@
 			<xsd:element maxOccurs="1" minOccurs="0" name="modelModifyCheck" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="dateTimeFormat" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="dateFormat" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="sqlCompareIgnoreCase" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="openDSql" />
 		</xsd:choice>
 	</xsd:complexType>
 
 	<xsd:complexType name="database_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
-				name="jdbcConnectionProvide">
+						 name="jdbcConnectionProvide">
 				<xsd:complexType>
 					<xsd:attribute name="provideName" />
 					<xsd:attribute name="driverClass" />
@@ -58,11 +60,11 @@
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0"
-				name="dataSourceConnectionProvide">
+						 name="dataSourceConnectionProvide">
 				<xsd:complexType>
 					<xsd:choice maxOccurs="unbounded" minOccurs="0">
 						<xsd:element maxOccurs="unbounded" minOccurs="0"
-							name="properties" type="properties_type" />
+									 name="properties" type="properties_type" />
 					</xsd:choice>
 					<xsd:attribute name="provideName" />
 					<xsd:attribute name="className" />
@@ -76,7 +78,7 @@
 	<xsd:complexType name="properties_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="property"
-				type="property_type" />
+						 type="property_type" />
 		</xsd:choice>
 	</xsd:complexType>
 
