@@ -31,6 +31,7 @@ public class CollisionSql extends SqlEntity {
 
 	private String where;
 	private String message;
+	private String code;
 	private String initError;
 
 	@Override
@@ -60,7 +61,7 @@ public class CollisionSql extends SqlEntity {
 			if(result != null){
 				log(dSql, params, context);
 				if(result) {
-					throw new CollisionException(staticParamParse(message, params, context));
+					throw new CollisionException(staticParamParse(message, params, context),code);
 				}else{
 					return;
 				}
@@ -81,7 +82,7 @@ public class CollisionSql extends SqlEntity {
 			if (set.next()) {
 				int flag = set.getInt(1);
 				if (flag != 0) {
-					throw new CollisionException(staticParamParse(message, params, context));
+					throw new CollisionException(staticParamParse(message, params, context),code);
 				}
 			}
 		}catch (SQLException e) {
@@ -109,4 +110,11 @@ public class CollisionSql extends SqlEntity {
 		this.message = message;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 }

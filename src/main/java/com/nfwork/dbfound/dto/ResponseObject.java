@@ -7,6 +7,8 @@ public class ResponseObject {
 	private boolean success;
 
 	private String message;
+
+	private String code;
 	
 	private Map<String,Object> outParam;
 
@@ -24,6 +26,14 @@ public class ResponseObject {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public Map<String, Object> getOutParam() {

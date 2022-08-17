@@ -344,6 +344,7 @@
 	<xsd:complexType name="collisionSql_type">
 		<xsd:attribute name="where" />
 		<xsd:attribute name="message" />
+		<xsd:attribute name="code" />
 	</xsd:complexType>
 
 </xsd:schema>
