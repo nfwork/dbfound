@@ -33,6 +33,7 @@ public class CollisionSql extends SqlEntity {
 	private String message;
 	private String code;
 	private String initError;
+	private boolean useDSql = false;
 
 	@Override
 	public void run() {
@@ -42,6 +43,7 @@ public class CollisionSql extends SqlEntity {
 			return;
 		}
 		where = StringUtil.fullTrim(where);
+		useDSql = !where.toLowerCase().contains("select ");
 		autoCreateParam(where,this);
 		autoCreateParam(message,this);
 	}
@@ -55,7 +57,7 @@ public class CollisionSql extends SqlEntity {
 		List<Object> exeParam = new ArrayList<>();
 		String eSql = getExecuteSql(whereSql, params, exeParam, context);
 
-		if( DSqlConfig.isOpenDSql() && !eSql.contains("select ")){
+		if( DSqlConfig.isOpenDSql() && useDSql){
 			String dSql = DSqlEngine.getWhenSql(eSql);
 			Boolean result  = DSqlEngine.checkWhenSql(dSql,exeParam,provideName,context);
 			if(result != null){

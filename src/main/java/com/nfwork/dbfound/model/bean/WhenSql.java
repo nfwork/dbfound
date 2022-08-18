@@ -24,6 +24,7 @@ public class WhenSql extends SqlEntity {
 
 	private String when;
 	private String initError;
+	private boolean useDSql = false;
 
 	@Override
 	public void run() {
@@ -33,6 +34,7 @@ public class WhenSql extends SqlEntity {
 			return;
 		}
 		when = StringUtil.fullTrim(when);
+		useDSql = !when.toLowerCase().contains("select ");
 		autoCreateParam(when,this);
 	}
 
@@ -57,7 +59,7 @@ public class WhenSql extends SqlEntity {
 		List<Object> exeParam = new ArrayList<>();
 		String eSql = getExecuteSql(whenSql, params, exeParam, context);
 
-		if(DSqlConfig.isOpenDSql() && !eSql.contains("select ")){
+		if(DSqlConfig.isOpenDSql() && useDSql){
 			String dSql = DSqlEngine.getWhenSql(eSql);
 			Boolean result  = DSqlEngine.checkWhenSql(dSql,exeParam,provideName,context);
 			if(result != null){
