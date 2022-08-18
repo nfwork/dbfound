@@ -96,6 +96,16 @@ public class DSqlEngine {
             }
         }
 
+        if(expression instanceof NotExpression){
+            NotExpression notExpression = (NotExpression) expression;
+            Boolean result = getBooleanValue(getExpressionValue(notExpression.getExpression(),param,provideName,context));
+            if(result != null){
+                return result;
+            }else{
+                return NOT_SUPPORT;
+            }
+        }
+
         if(expression instanceof AndExpression){
             AndExpression andExpression = (AndExpression) expression;
             Boolean leftValue = getBooleanValue(getExpressionValue(andExpression.getLeftExpression(),param, provideName,context));

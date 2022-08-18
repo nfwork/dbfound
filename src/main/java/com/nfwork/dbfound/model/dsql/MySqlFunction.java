@@ -26,6 +26,9 @@ public class MySqlFunction {
             case "ifnull": {
                 return ifNull(function,param,provideName,context);
             }
+            case "isnull": {
+                return isNull(function,param,provideName,context);
+            }
             case "if": {
                 return ifExpress(function,param,provideName,context);
             }
@@ -81,6 +84,15 @@ public class MySqlFunction {
             Object p0 = DSqlEngine.getExpressionValue(list.get(0), param, provideName,context );
             Object p1 = DSqlEngine.getExpressionValue(list.get(1), param, provideName,context);
             return p0 == null ? p1 : p0;
+        }
+        return DSqlEngine.NOT_SUPPORT;
+    }
+
+    public static Object isNull(Function function,List<Object> param, String provideName, Context context){
+        List<Expression> list = function.getParameters().getExpressions();
+        if (list.size() == 1) {
+            Object p0 = DSqlEngine.getExpressionValue(list.get(0), param, provideName,context );
+            return p0 == null;
         }
         return DSqlEngine.NOT_SUPPORT;
     }
