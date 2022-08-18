@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.web;
 
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +24,19 @@ public class WebWriter {
 
 	public static void jsonWriter(HttpServletResponse response, String message) {
 		response.setCharacterEncoding(encoding);
-		try (Writer writer = response.getWriter()){
-			 response.setContentType("text/html;charset=" + encoding);
-			 response.setHeader("Cache-Control", "no-cache, must-revalidate");
-			 char[] b = message.toCharArray();
-			 writer.write(b, 0, b.length);
-			 writer.flush();
+
+		try (Writer writer = response.getWriter();
+			 StringReader reader = new StringReader(message)){
+
+			response.setContentType("text/html;charset=" + encoding);
+			response.setHeader("Cache-Control", "no-cache, must-revalidate");
+
+			char[] data = new char[1024];
+			int i;
+			while ((i = reader.read(data))!= -1) {
+				writer.write(data, 0, i);
+			}
+			writer.flush();
 		} catch (Exception e) {
 			LogUtil.warn("response writer exception：" + e.getMessage());
 		}
