@@ -13,6 +13,7 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.StringUtil;
 
 /**
  * 批量从数据库查询数据，作为结果集 然后执行
@@ -38,6 +39,7 @@ public class BatchSql extends SqlEntity {
 			return;
 		}
 		if(DataUtil.isNotNull(cursor)) {
+			cursor = StringUtil.fullTrim(cursor);
 			autoCreateParam(cursor, this);
 		}
 	}
