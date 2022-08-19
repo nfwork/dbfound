@@ -53,6 +53,7 @@ public class FileDownloadUtil {
 				 OutputStream out = response.getOutputStream()) {
 
 				filename = URLEncoder.encode(filename, WebWriter.getEncoding());
+				response.setContentLength((int)file.length());
 				response.setContentType("application/x-download");
 				response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 				response.setHeader("Content-Disposition","attachment;filename=" + filename);

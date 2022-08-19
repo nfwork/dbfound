@@ -204,6 +204,7 @@ public class ExcelWriter {
 				 OutputStream out = context.response.getOutputStream()) {
 
 				// 向外输出excel
+				context.response.setContentLength((int)file.length());
 				context.response.setContentType("application/x-download");
 				context.response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 				context.response.setHeader("Content-Disposition", "attachment;filename=export.xls");
