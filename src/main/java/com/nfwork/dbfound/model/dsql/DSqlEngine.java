@@ -39,7 +39,11 @@ public class DSqlEngine {
                 return null;
             }
             Object result = getExpressionValue(expression, param, provideName, context);
-            return getBooleanValue(result);
+            if(result == null){
+                return false;
+            }else {
+                return getBooleanValue(result);
+            }
         }catch (DSqlNotSupportException exception){
             return null;
         }

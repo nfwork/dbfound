@@ -107,7 +107,8 @@ public class MySqlFunction {
     public static Object ifExpress(Function function,List<Object> param, String provideName, Context context){
         List<Expression> list = function.getParameters().getExpressions();
         if (list.size() == 3) {
-            boolean p0 = DSqlEngine.getBooleanValue(DSqlEngine.getExpressionValue(list.get(0), param, provideName, context));
+            Object result =  DSqlEngine.getExpressionValue(list.get(0), param, provideName, context);
+            boolean p0 = result != null && DSqlEngine.getBooleanValue(result);
             Object p1 = DSqlEngine.getExpressionValue(list.get(1), param, provideName,context);
             Object p2 = DSqlEngine.getExpressionValue(list.get(2), param, provideName,context);
             return p0 ? p1 : p2;

@@ -10,7 +10,11 @@ public class NotExpressionResolver extends DSqlValueResolver {
     @Override
     public Object getValue(Expression expression, List<Object> param, String provideName, Context context) {
         NotExpression notExpression = (NotExpression) expression;
-        boolean result = getBooleanValue(DSqlEngine.getExpressionValue(notExpression.getExpression(),param,provideName,context));
+        Object object = DSqlEngine.getExpressionValue(notExpression.getExpression(),param,provideName,context);
+        if(object == null){
+            return null;
+        }
+        boolean result = getBooleanValue(object);
         return ! result;
    }
 }
