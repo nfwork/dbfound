@@ -167,7 +167,7 @@ public class BatchSql extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			log(esql, params, context);
+			log("batchCursorSql",esql, params, context);
 		}
 	}
 

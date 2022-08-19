@@ -105,7 +105,7 @@ public class QuerySql extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			log(esql, params, context);
+			log("querySql",esql, params, context);
 		}
 	}
 

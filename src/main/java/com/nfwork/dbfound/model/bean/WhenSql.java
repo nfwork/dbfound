@@ -60,10 +60,9 @@ public class WhenSql extends SqlEntity {
 		String eSql = getExecuteSql(whenSql, params, exeParam, context);
 
 		if(DSqlConfig.isOpenDSql() && useDSql){
-			String dSql = DSqlEngine.getWhenSql(eSql);
-			Boolean result  = DSqlEngine.checkWhenSql(dSql,exeParam,provideName,context);
+			Boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
 			if(result != null){
-				log(dSql, params, context);
+				log("when dSql", eSql, params, context);
 				return result;
 			}
 		}
@@ -88,7 +87,7 @@ public class WhenSql extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);
-			log(eSql, params, context);
+			log("whenSql",eSql, params, context);
 		}
 		return flag != 0;
 	}

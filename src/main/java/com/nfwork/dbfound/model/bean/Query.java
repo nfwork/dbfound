@@ -193,7 +193,7 @@ public class Query extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.log(eSql, params.values(),context);
+			LogUtil.log("querySql",eSql, params.values(),context);
 		}
 		return (List<T>) data;
 	}
@@ -342,7 +342,7 @@ public class Query extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.info("execute count sql：" + ceSql);
+			LogUtil.info("Execute countSql：" + ceSql);
 		}
 	}
 

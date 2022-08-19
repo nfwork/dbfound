@@ -20,13 +20,13 @@ public class LogUtil {
 
 	private static final Log log = LogFactory.getLog("dbfound");
 
-	public static void log(String sql, Collection<Param> params, Context context) {
+	public static void log(String sqlName, String sql, Collection<Param> params, Context context) {
 		if (openLog) {
-			log.info("execute sql: " + sql);
+			log.info(String.format("Execute %s: %s",sqlName, sql));
 			for (Param param : params) {
 				if(param.isRequireLog()) {
 					param.setRequireLog(false);
-					log.info(String.format("sql param:%s, value:%s, dataType:%s, sourcePath:%s", param.getName(),
+					log.info(String.format("  paramName: %s, value: %s, dataType: %s, sourcePath: %s", param.getName(),
 							param.getStringValue(context), param.getDataType().getValue(), param.getSourcePathHistory()));
 				}
 			}

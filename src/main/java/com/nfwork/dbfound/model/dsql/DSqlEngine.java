@@ -12,8 +12,6 @@ import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
 
 import java.util.Date;
 import java.util.List;
@@ -26,10 +24,6 @@ public class DSqlEngine {
     static final String NOT_SUPPORT = "Not Support";
 
     private static final Expression NOT_SUPPORT_EXPRESSION = new Column();
-
-    public static String getWhenSql(String sql){
-       return "select 1 from dual where " + sql;
-    }
 
     public static class ExpressionFunction implements Function<String,Expression> {
         @Override
@@ -49,9 +43,7 @@ public class DSqlEngine {
 
     private static Expression getExpression(String sql) {
         try {
-            Select select = (Select) CCJSqlParserUtil.parse(sql);
-            PlainSelect selectBody = (PlainSelect) select.getSelectBody();
-            return selectBody.getWhere();
+            return CCJSqlParserUtil.parseExpression(sql);
         }catch (Exception exception){
             return NOT_SUPPORT_EXPRESSION;
         }

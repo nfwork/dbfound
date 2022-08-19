@@ -174,11 +174,11 @@ public class BatchExecuteSql extends SqlEntity {
 			statement.execute();
 			return statement.getUpdateCount();
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("ExecuteSql execute exception:" + e.getMessage(), e);
+			throw new DBFoundPackageException("BatchExecuteSql execute exception:" + e.getMessage(), e);
 		}finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
-			log(esql, listParam, context);
+			log("batchExecuteSql", esql, listParam, context);
 		}
 	}
 

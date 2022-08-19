@@ -491,12 +491,12 @@ public abstract class SqlEntity extends Sqls {
 		return result;
 	}
 
-	public void log(String sql, Map<String, Param> params, Context context) {
-		LogUtil.log(sql, params.values(), context);
+	public void log(String sqlName, String sql, Map<String, Param> params, Context context) {
+		LogUtil.log(sqlName, sql, params.values(), context);
 	}
 
-	public void log(String sql, List<Param> listParam, Context context) {
-		LogUtil.log(sql, listParam, context);
+	public void log(String sqlName,String sql, List<Param> listParam, Context context) {
+		LogUtil.log(sqlName, sql, listParam, context);
 	}
 
 	public void setSql(String sql) {
