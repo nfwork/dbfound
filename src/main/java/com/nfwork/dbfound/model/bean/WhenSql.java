@@ -25,6 +25,7 @@ public class WhenSql extends SqlEntity {
 	private String when;
 	private String initError;
 	private boolean useDSql = false;
+	private Otherwise otherwise;
 
 	@Override
 	public void run() {
@@ -48,6 +49,10 @@ public class WhenSql extends SqlEntity {
 		if (fitWhen(context, params, provideName)) {
 			for (SqlEntity sql : sqlList) {
 				sql.execute(context, params, provideName);
+			}
+		}else{
+			if(otherwise != null){
+				otherwise.execute(context,params,provideName);
 			}
 		}
 	}
@@ -100,4 +105,11 @@ public class WhenSql extends SqlEntity {
 		this.when = when;
 	}
 
+	public Otherwise getOtherwise() {
+		return otherwise;
+	}
+
+	public void setOtherwise(Otherwise otherwise) {
+		this.otherwise = otherwise;
+	}
 }
