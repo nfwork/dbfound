@@ -184,6 +184,10 @@ public class DBFoundEL {
 				if(size != -1){
 					return size;
 				}
+			}else if("length".equals(name)){
+				if(currentObj instanceof String){
+					return ((String) currentObj).length();
+				}
 			}
 			try {
 				Reflector reflector = Reflector.forClass(currentObj.getClass());
