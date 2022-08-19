@@ -12,9 +12,7 @@ public class IsNullExpressionResolver extends DSqlValueResolver {
 
         IsNullExpression isNullExpression = (IsNullExpression) expression;
         Object value = DSqlEngine.getExpressionValue(isNullExpression.getLeftExpression(),param, provideName,context);
-        if(value == DSqlEngine.NOT_SUPPORT){
-            return DSqlEngine.NOT_SUPPORT;
-        }else if(value == null && !isNullExpression.isNot()){
+        if(value == null && !isNullExpression.isNot()){
             return true;
         }else{
             return value != null && isNullExpression.isNot();

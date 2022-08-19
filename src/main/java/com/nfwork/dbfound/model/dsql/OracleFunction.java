@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
 
@@ -25,7 +26,7 @@ public class OracleFunction extends MySqlFunction{
                 return ifNull(function,param,provideName,context);
             }
             default:{
-                return DSqlEngine.NOT_SUPPORT;
+                throw new DSqlNotSupportException();
             }
         }
     }

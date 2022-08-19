@@ -10,12 +10,8 @@ public class AndExpressionResolver extends DSqlValueResolver {
     @Override
     public Object getValue(Expression expression, List<Object> param, String provideName, Context context) {
         AndExpression andExpression = (AndExpression) expression;
-        Boolean leftValue = getBooleanValue(DSqlEngine.getExpressionValue(andExpression.getLeftExpression(),param, provideName,context));
-        Boolean rightValue = getBooleanValue(DSqlEngine.getExpressionValue(andExpression.getRightExpression(),param, provideName, context));
-        if(leftValue != null  && rightValue != null){
-            return leftValue && rightValue;
-        }else{
-            return DSqlEngine.NOT_SUPPORT;
-        }
+        boolean leftValue = getBooleanValue(DSqlEngine.getExpressionValue(andExpression.getLeftExpression(),param, provideName,context));
+        boolean rightValue = getBooleanValue(DSqlEngine.getExpressionValue(andExpression.getRightExpression(),param, provideName, context));
+        return leftValue && rightValue;
     }
 }

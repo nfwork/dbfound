@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.arithmetic.Subtraction;
 
@@ -21,7 +22,7 @@ public class SubtractionResolver extends DSqlValueResolver {
             double right = getDoubleValue(rightValue);
             return left - right;
         }else{
-            return DSqlEngine.NOT_SUPPORT;
+            throw new DSqlNotSupportException();
         }
     }
 }

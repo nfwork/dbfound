@@ -25,8 +25,7 @@ public abstract class DSqlValueResolver {
     }
 
     protected boolean isCompareSupport(Object leftValue, Object rightValue){
-        return  leftValue != DSqlEngine.NOT_SUPPORT && rightValue != DSqlEngine.NOT_SUPPORT
-                && (leftValue instanceof Number || leftValue instanceof String)
+        return  (leftValue instanceof Number || leftValue instanceof String)
                 && (rightValue instanceof Number || rightValue instanceof String);
     }
 
@@ -49,7 +48,7 @@ public abstract class DSqlValueResolver {
         return value instanceof Number?((Number)value).doubleValue():Double.parseDouble(value.toString());
     }
 
-    protected Boolean getBooleanValue(Object value){
+    protected boolean getBooleanValue(Object value){
         return DSqlEngine.getBooleanValue(value);
     }
 

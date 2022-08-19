@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.arithmetic.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
@@ -24,8 +25,6 @@ public class DSqlEngine {
 
     private static final Expression NOT_SUPPORT_EXPRESSION = new Column();
 
-    public static final Object NOT_SUPPORT = new Object();
-
     public static class ExpressionFunction implements Function<String,Expression> {
         @Override
         public Expression apply(String sql) {
@@ -34,12 +33,16 @@ public class DSqlEngine {
     }
 
     public static Boolean checkWhenSql(String sql, List<Object> param, String provideName, Context context){
-        Expression expression =  lruCache.get(sql);
-        if(expression == NOT_SUPPORT_EXPRESSION){
+        try {
+            Expression expression = lruCache.get(sql);
+            if (expression == NOT_SUPPORT_EXPRESSION) {
+                return null;
+            }
+            Object result = getExpressionValue(expression, param, provideName, context);
+            return getBooleanValue(result);
+        }catch (DSqlNotSupportException exception){
             return null;
         }
-        Object result = getExpressionValue(expression,param,provideName, context);
-        return getBooleanValue(result);
     }
 
     private static Expression getExpression(String sql) {
@@ -55,17 +58,14 @@ public class DSqlEngine {
     static Object getExpressionValue(Expression expression , List<Object> param, String provideName, Context context){
         DSqlValueResolver resolver = resolverMap.get(expression.getClass());
         if(resolver == null){
-            return NOT_SUPPORT;
+            return new DSqlNotSupportException();
         }
         return resolver.getValue(expression,param,provideName,context);
     }
 
-    static Boolean getBooleanValue(Object value){
-        if(value == NOT_SUPPORT){
-            return null;
-        }
+    static boolean getBooleanValue(Object value){
         if(value instanceof Boolean){
-            return (Boolean) value;
+            return (boolean) value;
         }
         if(value instanceof Number){
            return ((Number) value).intValue() != 0;
@@ -74,7 +74,7 @@ public class DSqlEngine {
             int d = Integer.parseInt((String) value);
             return d != 0;
         }
-        return null;
+        throw new DSqlNotSupportException();
     }
 
     static {
