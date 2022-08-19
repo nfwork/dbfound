@@ -60,7 +60,7 @@ public class CollisionSql extends SqlEntity {
 		if( DSqlConfig.isOpenDSql() && useDSql){
 			Boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
 			if(result != null){
-				log("collision dSql",eSql, params, context);
+				log("collision dSql","select "+eSql, params, context);
 				if(result) {
 					throw new CollisionException(staticParamParse(message, params, context),code);
 				}else{

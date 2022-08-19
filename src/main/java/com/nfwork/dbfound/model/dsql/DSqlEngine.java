@@ -24,7 +24,7 @@ public class DSqlEngine {
 
     private static final Expression NOT_SUPPORT_EXPRESSION = new Column();
 
-    public static final String NOT_SUPPORT = "Not Support";
+    public static final Object NOT_SUPPORT = new Object();
 
     public static class ExpressionFunction implements Function<String,Expression> {
         @Override
@@ -55,14 +55,14 @@ public class DSqlEngine {
     static Object getExpressionValue(Expression expression , List<Object> param, String provideName, Context context){
         DSqlValueResolver resolver = resolverMap.get(expression.getClass());
         if(resolver == null){
-            return null;
+            return NOT_SUPPORT;
         }
         return resolver.getValue(expression,param,provideName,context);
     }
 
     static Boolean getBooleanValue(Object value){
         if(value == NOT_SUPPORT){
-            return false;
+            return null;
         }
         if(value instanceof Boolean){
             return (Boolean) value;

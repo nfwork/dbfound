@@ -38,14 +38,16 @@ public class MySqlFunction {
         }
     }
 
-    public static String trim(Function function,List<Object> param, String provideName, Context context){
+    public static Object trim(Function function,List<Object> param, String provideName, Context context){
         List<Expression> list = function.getParameters().getExpressions();
         if (list.size() == 1) {
             Object p0 = DSqlEngine.getExpressionValue(list.get(0), param, provideName, context);
-            if(p0 == null){
-                return null;
+            if(p0 != DSqlEngine.NOT_SUPPORT) {
+                if (p0 == null) {
+                    return null;
+                }
+                return p0.toString().trim();
             }
-            return p0.toString().trim();
         }
         return DSqlEngine.NOT_SUPPORT;
     }
@@ -54,13 +56,15 @@ public class MySqlFunction {
         List<Expression> list = function.getParameters().getExpressions();
         if (list.size() == 1) {
             Object p0 = DSqlEngine.getExpressionValue(list.get(0), param, provideName,context);
-            if(p0 == null){
-                return null;
-            }
-            try{
-                return p0.toString().getBytes(WebWriter.getEncoding()).length;
-            }catch (Exception exception){
-                throw new DBFoundPackageException(exception);
+            if(p0 != DSqlEngine.NOT_SUPPORT) {
+                if (p0 == null) {
+                    return null;
+                }
+                try {
+                    return p0.toString().getBytes(WebWriter.getEncoding()).length;
+                } catch (Exception exception) {
+                    throw new DBFoundPackageException(exception);
+                }
             }
         }
         return DSqlEngine.NOT_SUPPORT;
@@ -70,10 +74,12 @@ public class MySqlFunction {
         List<Expression> list = function.getParameters().getExpressions();
         if (list.size() == 1) {
             Object p0 = DSqlEngine.getExpressionValue(list.get(0), param, provideName, context);
-            if(p0 == null){
-                return null;
+            if(p0 != DSqlEngine.NOT_SUPPORT) {
+                if (p0 == null) {
+                    return null;
+                }
+                return p0.toString().length();
             }
-            return p0.toString().length();
         }
         return DSqlEngine.NOT_SUPPORT;
     }
@@ -81,9 +87,11 @@ public class MySqlFunction {
     public static Object ifNull(Function function,List<Object> param, String provideName, Context context){
         List<Expression> list = function.getParameters().getExpressions();
         if (list.size() == 2) {
-            Object p0 = DSqlEngine.getExpressionValue(list.get(0), param, provideName,context );
+            Object p0 = DSqlEngine.getExpressionValue(list.get(0), param, provideName,context);
             Object p1 = DSqlEngine.getExpressionValue(list.get(1), param, provideName,context);
-            return p0 == null ? p1 : p0;
+            if(p0 != DSqlEngine.NOT_SUPPORT && p1 != DSqlEngine.NOT_SUPPORT) {
+                return p0 == null ? p1 : p0;
+            }
         }
         return DSqlEngine.NOT_SUPPORT;
     }
@@ -92,7 +100,9 @@ public class MySqlFunction {
         List<Expression> list = function.getParameters().getExpressions();
         if (list.size() == 1) {
             Object p0 = DSqlEngine.getExpressionValue(list.get(0), param, provideName,context );
-            return p0 == null;
+            if(p0 != DSqlEngine.NOT_SUPPORT) {
+                return p0 == null;
+            }
         }
         return DSqlEngine.NOT_SUPPORT;
     }
@@ -103,7 +113,7 @@ public class MySqlFunction {
             Boolean p0 = DSqlEngine.getBooleanValue(DSqlEngine.getExpressionValue(list.get(0), param, provideName, context));
             Object p1 = DSqlEngine.getExpressionValue(list.get(1), param, provideName,context);
             Object p2 = DSqlEngine.getExpressionValue(list.get(2), param, provideName,context);
-            if(p0 != null){
+            if(p0 !=null && p1 != DSqlEngine.NOT_SUPPORT && p2 != DSqlEngine.NOT_SUPPORT) {
                 return p0 ? p1 : p2;
             }
         }
