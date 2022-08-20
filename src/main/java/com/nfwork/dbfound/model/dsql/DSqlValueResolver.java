@@ -9,6 +9,12 @@ public abstract class DSqlValueResolver {
     public abstract Object getValue(Expression expression , List<Object> param, String provideName, Context context);
 
     protected boolean equalsTo(Object leftValue, Object rightValue){
+        if(leftValue instanceof Boolean){
+            leftValue = (boolean)leftValue ? 1 : 0;
+        }
+        if(rightValue instanceof Boolean){
+            rightValue = (boolean)rightValue ? 1 : 0;
+        }
         if(leftValue instanceof Number || rightValue instanceof Number){
             double left = getDoubleValue(leftValue);
             double right = getDoubleValue(rightValue);
@@ -50,9 +56,6 @@ public abstract class DSqlValueResolver {
 
     protected double getDoubleValue(Object value){
         assert value != null;
-        if(value instanceof Boolean){
-            return (boolean)value ? 1 : 0;
-        }
         return value instanceof Number?((Number)value).doubleValue():Double.parseDouble(value.toString());
     }
 
