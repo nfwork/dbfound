@@ -5,7 +5,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.Entity;
 import java.util.Map;
 
-public class Otherwise extends SqlEntity {
+public class OtherwiseSql extends SqlEntity {
 
     @Override
     public void run() {
@@ -17,16 +17,16 @@ public class Otherwise extends SqlEntity {
                 SqlEntity sqlEntity = sqls.sqlList.get(size-1);
                 if(sqlEntity instanceof WhenSql){
                     WhenSql whenSql = ((WhenSql) sqlEntity);
-                    if(whenSql.getOtherwise() != null){
-                        throw new DBFoundRuntimeException("WhenSql can only have one Otherwise");
+                    if(whenSql.getOtherwiseSql() != null){
+                        throw new DBFoundRuntimeException("WhenSql can only have one OtherwiseSql");
                     }else{
-                        whenSql.setOtherwise(this);
+                        whenSql.setOtherwiseSql(this);
                         return;
                     }
                 }
             }
         }
-        throw new DBFoundRuntimeException("Otherwise must follow with WhenSql");
+        throw new DBFoundRuntimeException("OtherwiseSql must follow with WhenSql");
     }
 
     @Override

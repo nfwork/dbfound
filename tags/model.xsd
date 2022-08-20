@@ -163,7 +163,7 @@
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql"/>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwise" type="otherwise_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="otherwiseSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="collisionSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
@@ -182,8 +182,7 @@
 					<xsd:attribute name="entity" />
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element maxOccurs="unbounded" minOccurs="0"
-						 name="excelReader">
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="excelReader">
 				<xsd:complexType>
 					<xsd:attribute name="sourceParam" />
 					<xsd:attribute name="rootPath" />
@@ -201,7 +200,7 @@
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwise" type="otherwise_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="otherwiseSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="collisionSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
@@ -220,8 +219,7 @@
 					<xsd:attribute name="entity" />
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element maxOccurs="unbounded" minOccurs="0"
-						 name="excelReader">
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="excelReader">
 				<xsd:complexType>
 					<xsd:attribute name="sourceParam" />
 					<xsd:attribute name="rootPath" />
@@ -233,14 +231,14 @@
 		<xsd:attribute name="when" />
 	</xsd:complexType>
 
-	<xsd:complexType name="otherwise_type">
+	<xsd:complexType name="otherwiseSql_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="executeSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql" type="batchExecuteSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwise" type="otherwise_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="otherwiseSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="collisionSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
@@ -277,7 +275,7 @@
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwise" type="otherwise_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="otherwiseSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="collisionSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
@@ -296,8 +294,7 @@
 					<xsd:attribute name="entity" />
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element maxOccurs="unbounded" minOccurs="0"
-						 name="excelReader">
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="excelReader">
 				<xsd:complexType>
 					<xsd:attribute name="sourceParam" />
 					<xsd:attribute name="rootPath" />
