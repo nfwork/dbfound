@@ -10,6 +10,10 @@ public class OtherwiseSql extends SqlEntity {
     @Override
     public void run() {
         Entity entity = getParent();
+        if(entity instanceof CaseSql){
+            super.run();
+            return;
+        }
         if (entity instanceof Sqls) {
             Sqls sqls = (Sqls) entity;
             int size = sqls.sqlList.size();
@@ -26,7 +30,7 @@ public class OtherwiseSql extends SqlEntity {
                 }
             }
         }
-        throw new DBFoundRuntimeException("OtherwiseSql must follow with WhenSql");
+        throw new DBFoundRuntimeException("OtherwiseSql must follow with WhenSql or in CaseSql");
     }
 
     @Override
