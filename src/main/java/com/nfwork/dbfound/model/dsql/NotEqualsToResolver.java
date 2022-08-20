@@ -18,7 +18,7 @@ public class NotEqualsToResolver extends DSqlValueResolver {
         if(leftValue == null || rightValue == null){
             return null;
         }
-        if(isCompareSupport(leftValue,rightValue)){
+        if(isEqualsSupport(leftValue,rightValue)){
             return !equalsTo(leftValue,rightValue);
         }else{
             throw new DSqlNotSupportException();

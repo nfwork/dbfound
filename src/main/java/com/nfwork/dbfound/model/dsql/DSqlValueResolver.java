@@ -24,6 +24,11 @@ public abstract class DSqlValueResolver {
         }
     }
 
+    protected boolean isEqualsSupport(Object leftValue, Object rightValue){
+        return  (leftValue instanceof Number || leftValue instanceof String || leftValue instanceof Boolean)
+                && (rightValue instanceof Number || rightValue instanceof String || leftValue instanceof Boolean);
+    }
+
     protected boolean isCompareSupport(Object leftValue, Object rightValue){
         return  (leftValue instanceof Number || leftValue instanceof String)
                 && (rightValue instanceof Number || rightValue instanceof String);
@@ -45,6 +50,9 @@ public abstract class DSqlValueResolver {
 
     protected double getDoubleValue(Object value){
         assert value != null;
+        if(value instanceof Boolean){
+            return (boolean)value ? 1 : 0;
+        }
         return value instanceof Number?((Number)value).doubleValue():Double.parseDouble(value.toString());
     }
 
