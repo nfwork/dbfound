@@ -26,7 +26,7 @@ public abstract class DSqlValueResolver {
 
     protected boolean isEqualsSupport(Object leftValue, Object rightValue){
         return  (leftValue instanceof Number || leftValue instanceof String || leftValue instanceof Boolean)
-                && (rightValue instanceof Number || rightValue instanceof String || leftValue instanceof Boolean);
+                && (rightValue instanceof Number || rightValue instanceof String || rightValue instanceof Boolean);
     }
 
     protected boolean isCompareSupport(Object leftValue, Object rightValue){
