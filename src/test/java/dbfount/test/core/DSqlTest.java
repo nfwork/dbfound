@@ -136,6 +136,15 @@ public class DSqlTest {
 
         result = DSqlEngine.checkWhenSql("? <= true",list,"", context);
         assert result == null;
+
+        result = DSqlEngine.checkWhenSql("'abc' <= 'bcd'",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("'222' >= '211'",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("'222' >= '222'",list,"", context);
+        assert Boolean.TRUE.equals(result);
     }
 
     @Test
@@ -158,6 +167,9 @@ public class DSqlTest {
 
         result = DSqlEngine.checkWhenSql("1 = if(true,1,2)",list,"_default", context);
         assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("1 = if(null,1,2)",list,"_default", context);
+        assert Boolean.FALSE.equals(result);
 
         result = DSqlEngine.checkWhenSql("isnull(null)",list,"_default", context);
         assert Boolean.TRUE.equals(result);
@@ -212,10 +224,19 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql("? / 100 = 100 or 100 = 99",list,"", context);
         assert Boolean.TRUE.equals(result);
 
+        result = DSqlEngine.checkWhenSql("? / 100 = 100 or null",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
         result = DSqlEngine.checkWhenSql(" '100' = 100 and true = false",list,"", context);
         assert Boolean.FALSE.equals(result);
 
+        result = DSqlEngine.checkWhenSql(" '100' = 100 and null",list,"", context);
+        assert Boolean.FALSE.equals(result);
+
         result = DSqlEngine.checkWhenSql("not (100 = 100)",list,"", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("! (100 = 100)",list,"", context);
         assert Boolean.FALSE.equals(result);
 
     }
