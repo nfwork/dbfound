@@ -4,6 +4,8 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -216,5 +218,13 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql("not (100 = 100)",list,"", context);
         assert Boolean.FALSE.equals(result);
 
+    }
+
+    @Test
+    public void test() {
+        System.out.println(331d/447);
+        BigDecimal a = new BigDecimal("331");
+        BigDecimal b = new BigDecimal("447");
+        System.out.println(a.divide(b,18, RoundingMode.HALF_UP).doubleValue());
     }
 }
