@@ -187,6 +187,12 @@ public class DSqlTest {
 
         result = DSqlEngine.checkWhenSql("(? - 100) * 2 / 2 + 100  = 10000",list,"", context);
         assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("2.22 /2 = 1.11",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("9.4 % 2 = 1.4 and 0.9 * 0.9 = 0.81",list,"", context);
+        assert Boolean.TRUE.equals(result);
     }
 
     @Test
@@ -207,10 +213,8 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql(" '100' = 100 and true = false",list,"", context);
         assert Boolean.FALSE.equals(result);
 
-        result = DSqlEngine.checkWhenSql("9.4 % 2 = 1.4 and 0.9 * 0.9 = 0.81",list,"", context);
-        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("not (100 = 100)",list,"", context);
+        assert Boolean.FALSE.equals(result);
 
-        result = DSqlEngine.checkWhenSql("2.22 /2 = 1.11",list,"", context);
-        assert Boolean.TRUE.equals(result);
     }
 }
