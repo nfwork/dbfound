@@ -62,7 +62,7 @@ public class DSqlEngine {
     static Object getExpressionValue(Expression expression , List<Object> param, String provideName, Context context){
         DSqlValueResolver resolver = resolverMap.get(expression.getClass());
         if(resolver == null){
-            return new DSqlNotSupportException();
+            throw new DSqlNotSupportException();
         }
         return resolver.getValue(expression,param,provideName,context);
     }
@@ -100,6 +100,7 @@ public class DSqlEngine {
         resolverMap.put(GreaterThanEquals.class,new GreaterThanEqualsResolver());
         resolverMap.put(MinorThan.class,new MinorThanResolver());
         resolverMap.put(MinorThanEquals.class,new MinorThanEqualsResolver());
+        resolverMap.put(LikeExpression.class,new LikeResolver());
 
         resolverMap.put(net.sf.jsqlparser.expression.Function.class, new FunctionResolver());
 

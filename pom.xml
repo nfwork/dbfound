@@ -121,7 +121,6 @@
 		</plugins>
 	</build>
 
-
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -206,6 +205,12 @@
 			<groupId>com.github.jsqlparser</groupId>
 			<artifactId>jsqlparser</artifactId>
 			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
