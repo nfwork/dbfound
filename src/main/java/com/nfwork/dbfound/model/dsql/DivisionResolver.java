@@ -22,7 +22,7 @@ public class DivisionResolver extends DSqlValueResolver {
         if(isCompareSupport(leftValue,rightValue)) {
             BigDecimal left = getBigDecimal(leftValue);
             BigDecimal right = getBigDecimal(rightValue);
-            return left.divide(right,9, RoundingMode.HALF_UP) ;
+            return left.divide(right,9, RoundingMode.HALF_UP).stripTrailingZeros() ;
         }else{
             throw new DSqlNotSupportException();
         }
