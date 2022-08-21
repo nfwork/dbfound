@@ -163,4 +163,47 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
     }
 
+    @Test
+    public void testComputer(){
+        Context context = new Context();
+        List<Object> list = new ArrayList<>();
+        list.add(10000);
+
+        Boolean result = DSqlEngine.checkWhenSql("? * 2 = 20000",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("? / 100 = 100",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("? + 100 = 10100",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("? - 100 = 9900",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("? % 100 = 0",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("(? - 100) * 2 / 2 + 100  = 10000",list,"", context);
+        assert Boolean.TRUE.equals(result);
+    }
+
+    @Test
+    public void testAndOR(){
+        Context context = new Context();
+        List<Object> list = new ArrayList<>();
+        list.add(10000);
+
+        Boolean result = DSqlEngine.checkWhenSql("? * 2 = 20000 and 100 = 100",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("? / 100 = 99 or 100 = 100",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("? / 100 = 100 or 100 = 99",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql(" '100' = 100 and true = false",list,"", context);
+        assert Boolean.FALSE.equals(result);
+    }
 }
