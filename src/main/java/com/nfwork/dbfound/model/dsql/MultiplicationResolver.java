@@ -5,6 +5,7 @@ import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.arithmetic.Multiplication;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class MultiplicationResolver extends DSqlValueResolver {
@@ -18,9 +19,9 @@ public class MultiplicationResolver extends DSqlValueResolver {
             return null;
         }
         if(isCompareSupport(leftValue,rightValue)) {
-            double left = getDoubleValue(leftValue);
-            double right = getDoubleValue(rightValue);
-            return left * right;
+            BigDecimal left = getBigDecimal(leftValue);
+            BigDecimal right = getBigDecimal(rightValue);
+            return left.multiply(right);
         }else{
             throw new DSqlNotSupportException();
         }

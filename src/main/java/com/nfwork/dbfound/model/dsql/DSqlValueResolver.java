@@ -2,6 +2,8 @@ package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
 import net.sf.jsqlparser.expression.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 public abstract class DSqlValueResolver {
@@ -52,6 +54,13 @@ public abstract class DSqlValueResolver {
                 return leftValue.toString().compareTo(rightValue.toString());
             }
         }
+    }
+
+    protected BigDecimal getBigDecimal(Object value){
+        if(value instanceof BigDecimal){
+            return (BigDecimal)value;
+        }
+        return new BigDecimal(value.toString());
     }
 
     protected double getDoubleValue(Object value){

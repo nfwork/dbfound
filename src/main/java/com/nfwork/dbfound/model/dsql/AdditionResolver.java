@@ -5,6 +5,7 @@ import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.arithmetic.Addition;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class AdditionResolver extends DSqlValueResolver {
@@ -19,9 +20,9 @@ public class AdditionResolver extends DSqlValueResolver {
             return null;
         }
         if(isCompareSupport(leftValue,rightValue)) {
-            double left = getDoubleValue(leftValue);
-            double right = getDoubleValue(rightValue);
-            return left + right;
+            BigDecimal left = getBigDecimal(leftValue);
+            BigDecimal right = getBigDecimal(rightValue);
+            return left.add(right);
         }else{
             throw new DSqlNotSupportException();
         }

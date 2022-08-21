@@ -3,6 +3,9 @@ package dbfount.test.core;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -205,5 +208,11 @@ public class DSqlTest {
 
         result = DSqlEngine.checkWhenSql(" '100' = 100 and true = false",list,"", context);
         assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("9.4 % 2 = 1.4 and 0.9 * 0.9 = 0.81",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("2.22 /2 = 1.11",list,"", context);
+        assert Boolean.TRUE.equals(result);
     }
 }
