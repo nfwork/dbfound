@@ -109,6 +109,7 @@ public class DSqlEngine {
         resolverMap.put(Addition.class,new AdditionResolver());
         resolverMap.put(Subtraction.class,new SubtractionResolver());
         resolverMap.put(Modulo.class, new ModuloResolver());
+        resolverMap.put(SignedExpression.class, new SignedExpressionResolver());
         resolverMap.put(Parenthesis.class, new ParenthesisResolver());
     }
 }
