@@ -204,8 +204,10 @@ public class Query extends SqlEntity {
 	 * @param ssql
 	 * @return
 	 */
+	private final static Pattern p = Pattern.compile("#[A-Z_]+#");
+
 	public String initFilter(String ssql,Map<String, Param> params) {
-		StringBuffer bfsql = new StringBuffer();
+		StringBuilder bfsql = new StringBuilder();
 		for (Param param : params.values()) {
 			if (param instanceof Filter){
 				Filter nfFilter = (Filter) param;
@@ -217,7 +219,6 @@ public class Query extends SqlEntity {
 			fsql = Matcher.quoteReplacement(fsql);
 		}
 
-		Pattern p = Pattern.compile("\\#[A-Z_]+\\#");
 		Matcher m = p.matcher(ssql);
 		StringBuffer buf = new StringBuffer();
 		while (m.find()) {

@@ -1,5 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
+import com.nfwork.dbfound.util.StringUtil;
+
 public class Filter extends Param {
 
 	private static final long serialVersionUID = -7553494400564901864L;
@@ -9,6 +11,9 @@ public class Filter extends Param {
 
 	@Override
 	public void run(){
+		if(express != null){
+			express = StringUtil.fullTrim(express);
+		}
 		if (getParent() instanceof Query) {
 			Query query = (Query) getParent();
 			query.getFilters().put(getName(), this);
