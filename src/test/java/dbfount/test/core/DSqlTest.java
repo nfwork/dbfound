@@ -23,6 +23,9 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql("? like 'joh%'",list,"", context);
         assert Boolean.TRUE.equals(result);
 
+        result = DSqlEngine.checkWhenSql("? like 'jo%'",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
         result = DSqlEngine.checkWhenSql("? like '%ohn'",list,"", context);
         assert Boolean.TRUE.equals(result);
 
@@ -105,6 +108,19 @@ public class DSqlTest {
 
         result = DSqlEngine.checkWhenSql("0 = false",list,"", context);
         assert Boolean.TRUE.equals(result);
+
+        list.clear();
+        list.add(true);
+        list.add(true);
+        result = DSqlEngine.checkWhenSql("? = ?",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        list.clear();
+        list.add(100);
+        list.add(101);
+        result = DSqlEngine.checkWhenSql("? != ?",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
     }
 
     @Test
