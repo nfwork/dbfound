@@ -443,15 +443,8 @@ public abstract class SqlEntity extends Sqls {
 			case Types.INTEGER:
 			case Types.TINYINT:
 			case Types.SMALLINT:
-				result = dataset.getInt(index);
-				break;
 			case Types.BIT:
 				result = dataset.getInt(index);
-				if((int)result == 49){
-					result =1;
-				}else if((int)result == 48){
-					result =0;
-				}
 				break;
 			case Types.BIGINT:
 				result = dataset.getLong(index);
