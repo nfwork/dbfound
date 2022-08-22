@@ -17,7 +17,7 @@ import freemarker.template.Template;
 
 public class Panel extends TagSupport {
 	private static final long serialVersionUID = 1L;
-	private String templateName = "panel.ftl";
+	private static final String templateName = "panel.ftl";
 	String title;
 	String id;
 	String height = "350";
@@ -27,13 +27,13 @@ public class Panel extends TagSupport {
 	String style = "";
 	String html;
 	String contentCmp;
-	StringBuffer content;
+	StringBuilder content;
 
 	public int doStartTag() throws JspTagException {
 		if (id == null || "".equals(id)) {
 			id = "PANEL" + UUIDUtil.getRandomString(5);
 		}
-		content = new StringBuffer();
+		content = new StringBuilder();
 		contentCmp = null;
 		html = "<div id='" + id + "_div'>";
 		return EVAL_BODY_INCLUDE;
@@ -59,7 +59,7 @@ public class Panel extends TagSupport {
 			Template template = cfg.getTemplate(templateName);
 
 			// 定义数据
-			Map<String, Object> root = new HashMap<String, Object>();
+			Map<String, Object> root = new HashMap<>();
 
 			root.put("panel", this);
 
@@ -142,12 +142,11 @@ public class Panel extends TagSupport {
 		this.style = style;
 	}
 
-	public StringBuffer getContent() {
+	public StringBuilder getContent() {
 		return content;
 	}
 
-	public void setContent(StringBuffer content) {
+	public void setContent(StringBuilder content) {
 		this.content = content;
 	}
-
 }

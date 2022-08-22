@@ -503,7 +503,7 @@ public class JSONArray {
 	 */
 	public String join(String separator) {
 		int len = length();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < len; i += 1) {
 			if (i > 0) {
@@ -1069,7 +1069,7 @@ public class JSONArray {
 			return "[]";
 		}
 		int i;
-		StringBuffer sb = new StringBuffer("[");
+		StringBuilder sb = new StringBuilder("[");
 		if (len == 1) {
 			sb.append(JSONUtils.valueToString(this.myArrayList.get(0),
 					indentFactor, indent));

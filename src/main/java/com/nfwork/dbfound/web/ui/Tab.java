@@ -25,7 +25,7 @@ public class Tab extends Panel implements Cloneable {
 		}
 		html = "<div id='" + id + "_div'>";
 		contentCmp = null;
-		content = new StringBuffer();
+		content = new StringBuilder();
 		return EVAL_BODY_INCLUDE;
 	}
 

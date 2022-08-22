@@ -250,7 +250,7 @@ public final class JSONUtils {
 		char c = 0;
 		int i;
 		int len = string.length();
-		StringBuffer sb = new StringBuffer(len + 4);
+		StringBuilder sb = new StringBuilder(len + 4);
 		String t;
 
 		sb.append('"');

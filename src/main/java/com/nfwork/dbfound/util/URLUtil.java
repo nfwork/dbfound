@@ -17,11 +17,10 @@ public class URLUtil {
 	/**
 	 * 清理url中多斜杠问题
 	 * jetty等容易不支持问题
-	 * @param url
-	 * @return
 	 */
+	private static final Pattern p = Pattern.compile("/[/]+");
+
 	public static String clearUrl(String url) {
-		Pattern p = Pattern.compile("/[/]+");
 		Matcher m = p.matcher(url);
 		StringBuffer buf = new StringBuffer();
 		while (m.find()) {
@@ -30,14 +29,9 @@ public class URLUtil {
 		m.appendTail(buf);
 		return buf.toString();
 	}
-	
-	/**
-	 * 设置basePath
-	 * 
-	 * @param request
-	 */
+
 	public static String getBasePath(HttpServletRequest request) {
-		String basePath = "";
+		String basePath ;
 		
 		if(DataUtil.isNotNull(BASE_PATH)) {
 			basePath = BASE_PATH.replace("${@contextPath}", request.getContextPath()); 
@@ -54,7 +48,7 @@ public class URLUtil {
 			}
 		}
 		
-		if (basePath.endsWith("/") == false) {
+		if (!basePath.endsWith("/")) {
 			basePath = basePath + "/";
 		}
 		return basePath;

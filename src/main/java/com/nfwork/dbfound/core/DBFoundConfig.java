@@ -234,7 +234,7 @@ public class DBFoundConfig {
 	}
 
 	private static void initWeb(Element web) {
-		StringBuffer info = new StringBuffer();
+		StringBuilder info = new StringBuilder();
 		info.append(simpleDateFormat.format(new Date())).append(" set web Param:");
 
 		// i18n 初始化
@@ -341,7 +341,7 @@ public class DBFoundConfig {
 	}
 
 	private static void initSystem(Element system) {
-		StringBuffer info = new StringBuffer();
+		StringBuilder info = new StringBuilder();
 		info.append(simpleDateFormat.format(new Date())).append(" set system Param:");
 
 		// 设置日志开关

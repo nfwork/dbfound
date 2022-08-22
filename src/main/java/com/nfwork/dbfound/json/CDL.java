@@ -219,7 +219,7 @@ public class CDL
     */
    public static String rowToString( JSONArray ja )
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for( int i = 0; i < ja.length(); i += 1 ){
          if( i > 0 ){
             sb.append( ',' );
@@ -281,7 +281,7 @@ public class CDL
       if( names == null || names.length() == 0 ){
          return null;
       }
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for( int i = 0; i < ja.length(); i += 1 ){
          JSONObject jo = ja.optJSONObject( i );
          if( jo != null ){
