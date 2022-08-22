@@ -3,6 +3,7 @@ package dbfount.test.core;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.reflector.Column;
 import com.nfwork.dbfound.util.JsonUtil;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 public class ELTest {
-    public static void main(String[] args) {
+
+    @Test
+    public void testElCache(){
         Context context = new Context();
 
         User user = new User();
@@ -27,22 +30,46 @@ public class ELTest {
 
         Map<String, Object> elCache = new HashMap<>();
 
-        long a1 = System.currentTimeMillis();
-        for (int i=0; i< 1;i++) {
-            context.getData("param.users[0].user_id", elCache);
-            context.getData("param.user[0].user_name", elCache);
-            context.getData("param.user[0].flag", elCache);
-            context.getData("param.user[0].role", elCache);
-        }
-        System.out.println(System.currentTimeMillis() - a1);
+        assert (int)context.getData("param.users[0].user_id.value", elCache) == 10;
+        assert context.getData("param.users[0].userName", elCache).toString().equals("john");
+        assert (Boolean) context.getData("param.users[0].flag", elCache);
+        assert context.getData("param.users[0].role", elCache) == Role.ADMIN;
+    }
 
-        System.out.println(context.getData("param.users[0].user_id.value", elCache));
-        System.out.println(context.getData("param.users[0].userName", elCache));
-        System.out.println(context.getData("param.users[0].flag", elCache));
-        System.out.println(context.getData("param.users[0].role", elCache));
-        System.out.println(context.getData("param"));
-        System.out.println(JsonUtil.mapToJson(context.getDatas()));
+    @Test
+    public void testEl(){
+        Context context = new Context();
 
+        User user = new User();
+        context.setParamData("user",user);
+
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        context.setParamData("users",users);
+
+        context.setData("param.user.user_id", "10");
+        context.setData("param.user.flag", true);
+        context.setData("param.user.user_name", "john");
+        context.setData("param.user.role", "1");
+
+        assert (int)context.getData("param.users[0].user_id.value") == 10;
+        assert context.getData("param.users[0].userName").toString().equals("john");
+        assert (Boolean) context.getData("param.users[0].flag");
+        assert context.getData("param.users[0].role") == Role.ADMIN;
+    }
+
+    @Test
+    public void testSizeAndLength(){
+        Context context = new Context();
+
+        User user = new User();
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        context.setParamData("users",users);
+        context.setParamData("user_name","john");
+
+        assert (int)context.getData("param.users.size") == 1;
+        assert (int)context.getData("param.user_name.length") == 4;
     }
 
     public enum Role{
