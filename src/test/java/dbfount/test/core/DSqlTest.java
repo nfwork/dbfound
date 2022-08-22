@@ -207,6 +207,9 @@ public class DSqlTest {
 
         result = DSqlEngine.checkWhenSql("9.4 % 2 = 1.4 and 0.9 * 0.9 = 0.81",list,"", context);
         assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("10 / 3 * 3 = 10",list,"", context);
+        assert Boolean.TRUE.equals(result);
     }
 
     @Test
