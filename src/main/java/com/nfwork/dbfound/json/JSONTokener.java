@@ -111,10 +111,9 @@ public class JSONTokener
       return this.mySource.length();
    }
 
-   public boolean matches( String pattern )
-   {
+   public boolean matchesNull(){
       String str = this.mySource.substring( this.myIndex );
-      return new JdkRegexpMatcher(pattern).matches( str );
+      return str.startsWith("null");
    }
 
    /**

@@ -283,7 +283,7 @@ public class JSONObject {
 		char c;
 		String key;
 
-		if (x.matches("null.*")) {
+		if (x.matchesNull()) {
 			this.nullObject = true;
 			return;
 		}
