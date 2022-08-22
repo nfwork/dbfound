@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+
+	<execute name="whenAndOtherwise">
+		<sqls>
+			<whenSql when="${@flag} = 0">
+				<setContextData name="result0" value="0" scope="outParam"/>
+			</whenSql>
+			<otherwiseSql>
+				<setContextData name="result1" value="1" scope="outParam"/>
+			</otherwiseSql>
+		</sqls>
+	</execute>
+
+	<execute name="caseAndWhenAndOtherwise">
+		<sqls>
+			<caseSql>
+				<whenSql when="${@flag} = 0">
+					<setContextData name="result0" value="0" scope="outParam"/>
+				</whenSql>
+				<whenSql when="${@flag} = 1">
+					<setContextData name="result1" value="1" scope="outParam"/>
+				</whenSql>
+				<whenSql when="${@flag} = 2">
+					<setContextData name="result2" value="2" scope="outParam"/>
+				</whenSql>
+				<otherwiseSql>
+					<setContextData name="result3" value="3" scope="outParam"/>
+				</otherwiseSql>
+			</caseSql>
+		</sqls>
+	</execute>
+</model>

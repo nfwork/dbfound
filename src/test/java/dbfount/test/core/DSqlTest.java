@@ -213,6 +213,9 @@ public class DSqlTest {
 
         result = DSqlEngine.checkWhenSql("-10 / 3 * 3 = -10",list,"", context);
         assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("10 * '3' = 30",list,"", context);
+        assert Boolean.TRUE.equals(result);
     }
 
     @Test
