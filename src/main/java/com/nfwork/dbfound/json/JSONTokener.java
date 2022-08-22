@@ -112,8 +112,7 @@ public class JSONTokener
    }
 
    public boolean matchesNull(){
-      String str = this.mySource.substring( this.myIndex );
-      return str.startsWith("null");
+      return mySource.startsWith("null",myIndex);
    }
 
    /**

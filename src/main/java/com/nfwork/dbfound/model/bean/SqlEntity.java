@@ -38,6 +38,8 @@ public abstract class SqlEntity extends Sqls {
 
 	protected final static Pattern paramPattern = Pattern.compile(paramReplace);
 
+	protected final static Pattern timeMillisPattern = Pattern.compile("[0123456789]*");
+
 	@Override
 	public void run() {
 		Entity entity = getParent();
@@ -338,7 +340,7 @@ public abstract class SqlEntity extends Sqls {
 					nfParam.setValue(new Timestamp((Long) nfParam.getValue()));
 				} else if(nfParam.getValue() instanceof String){
 					String paramValue = nfParam.getValue().toString().trim();
-					if (paramValue.matches("[0123456789]*")) {
+					if (timeMillisPattern.matcher(paramValue).matches()) {
 						nfParam.setValue(new Timestamp(Long.parseLong(paramValue)));
 					} else if (paramValue.length() == DBFoundConfig.getDateFormat().length()) {
 						try {
