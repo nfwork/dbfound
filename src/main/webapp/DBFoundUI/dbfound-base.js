@@ -87,13 +87,34 @@ $D = DBFound = {
 					Ext.get("dbfoundMask").unmask();
 					div.style.display = "none";
 				}
-				Ext.MessageBox.show( {
+				try{
+					var obj = Ext.util.JSON.decode(res.responseText);
+					if(obj.message){
+						Ext.MessageBox.show( {
+							title : '错误',
+							msg : obj.message,
+							buttons : Ext.MessageBox.OK,
+							icon : Ext.MessageBox.ERROR
+						});
+					}else{
+						Ext.MessageBox.show( {
+							title : '错误',
+							msg : res.responseText,
+							minWidth : $D.getFullWidth()-80,
+							buttons : Ext.MessageBox.OK,
+							icon : Ext.MessageBox.ERROR
+						});
+					}
+				} catch (e) {
+					Ext.MessageBox.show( {
 						title : '错误',
 						msg : res.responseText,
 						minWidth : $D.getFullWidth()-80,
 						buttons : Ext.MessageBox.OK,
 						icon : Ext.MessageBox.ERROR
-				});
+					});
+				}
+
 			},
 			params : param
 		});
@@ -119,8 +140,12 @@ $D = DBFound = {
 		}
 		
 		var successFunction = function(obj,response, action) {
+			var message = obj.message;
+			if(message == "success"){
+				message = "操作成功！";
+			}
 			if (obj.success == true) {
-				$D.showMessage(obj.message, function() {
+				$D.showMessage(message, function() {
 					if (type == "update") {
 						for (i = 0; i < records.length; i++) {
 							records[i].commit();
