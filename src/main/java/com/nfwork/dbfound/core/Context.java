@@ -653,9 +653,8 @@ public class Context {
 	private void checkContext(){
 		long runThread = Thread.currentThread().getId();
 		if (runThread != createThread) {
-			throw new DBFoundRuntimeException(String.format(
-					"Context can not be user by different thread，create thread id:%s, run thread id:%s",
-					createThread, runThread));
+			throw new DBFoundRuntimeException("Context can not be user by different thread，create thread id:"+
+					createThread + ", run thread id:" + runThread);
 		}
 	}
 

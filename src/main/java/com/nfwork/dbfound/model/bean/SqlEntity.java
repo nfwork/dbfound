@@ -313,7 +313,7 @@ public abstract class SqlEntity extends Sqls {
 						nfParam.setValue(Double.parseDouble(paramValue));
 					}
 				} else {
-					throw new DBFoundRuntimeException(String.format("can not cost %s to number", nfParam.getValue().getClass()));
+					throw new DBFoundRuntimeException("can not cost "+ nfParam.getValue().getClass() +" to number");
 				}
 			}
 		}else if (nfParam.getDataType() == DataType.VARCHAR) {
@@ -358,7 +358,7 @@ public abstract class SqlEntity extends Sqls {
 						}
 					}
 				} else {
-					throw new DBFoundRuntimeException(String.format("can not cost %s to date", nfParam.getValue().getClass()));
+					throw new DBFoundRuntimeException("can not cost "+ nfParam.getValue().getClass() +" to date");
 				}
 			}
 		}

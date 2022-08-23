@@ -22,12 +22,12 @@ public class LogUtil {
 
 	public static void log(String sqlName, String sql, Collection<Param> params, Context context) {
 		if (openLog) {
-			log.info(String.format("Execute %s: %s",sqlName, sql));
+			log.info("Execute " + sqlName + ": "+sql);
 			for (Param param : params) {
 				if(param.isRequireLog()) {
 					param.setRequireLog(false);
-					log.info(String.format("  paramName: %s, value: %s, dataType: %s, sourcePath: %s", param.getName(),
-							param.getStringValue(context), param.getDataType().getValue(), param.getSourcePathHistory()));
+					log.info("  paramName: "+ param.getName() +", value: "+ param.getStringValue(context) +
+									", dataType: "+ param.getDataType().getValue() +", sourcePath: " + param.getSourcePathHistory());
 				}
 			}
 		}
