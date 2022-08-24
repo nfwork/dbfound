@@ -31,7 +31,7 @@ public class ModelReader {
 		SAXReader reader = new SAXReader();
 
 		Document doc ;
-		String fileLocation = null;
+		String fileLocation ;
 
 		if (DataUtil.isNull(modelLoadRoot)) {
 			modelLoadRoot = DBFoundConfig.CLASSPATH;

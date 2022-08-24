@@ -55,8 +55,8 @@ public class Query extends SqlEntity {
 
 	@Override
 	public void init(Element element) {
-		params = new HashMap<String, Param>();
-		filters = new HashMap<String, Filter>();
+		params = new HashMap<>();
+		filters = new HashMap<>();
 		super.init(element);
 	}
 
@@ -75,7 +75,7 @@ public class Query extends SqlEntity {
 				entityClass = Class.forName(entity);
 			}catch (Exception exception){
 				String message = "entity init failed";
-				throw new DBFoundPackageException(exception);
+				throw new DBFoundPackageException(message,exception);
 			}
 		}
 
@@ -102,7 +102,7 @@ public class Query extends SqlEntity {
 	}
 
 	public Map<String, Param> cloneParams() {
-		HashMap<String, Param> params = new HashMap<String, Param>();
+		HashMap<String, Param> params = new HashMap<>();
 		for(Map.Entry<String,Param> entry : this.params.entrySet()){
 			params.put(entry.getKey(), (Param) entry.getValue().cloneEntity());
 		}
@@ -110,7 +110,7 @@ public class Query extends SqlEntity {
 	}
 
 	public HashMap<String, Filter> cloneFilters() {
-		HashMap<String, Filter> filters = new HashMap<String, Filter>();
+		HashMap<String, Filter> filters = new HashMap<>();
 		for(Map.Entry<String,Filter> entry : this.filters.entrySet()){
 			filters.put(entry.getKey(), (Filter) entry.getValue().cloneEntity());
 		}
@@ -123,7 +123,7 @@ public class Query extends SqlEntity {
 		return querySql;
 	}
 
-	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> object, boolean autoPaging) {
+	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> clazz, boolean autoPaging) {
 		Connection conn = context.getConn(provideName);
 
 		List<Map> data = new ArrayList<>();
@@ -156,12 +156,11 @@ public class Query extends SqlEntity {
 			ResultSetMetaData metaset = dataset.getMetaData();
 
 			// 如果对象不为null，利用反射构建object对象
-			if(object == null && entityClass != null){
-				object = entityClass;
+			if(clazz == null && entityClass != null){
+				clazz = entityClass;
 			}
-			if (object != null && ! Map.class.isAssignableFrom(object)) {
-				List<T> list = (List<T>) ReflectorUtil.parseResultList(object, dataset, context);
-				return list;
+			if (clazz != null && ! Map.class.isAssignableFrom(clazz) && !clazz.equals(Object.class)) {
+				return ReflectorUtil.parseResultList(clazz, dataset, context);
 			}
 
 			String[] colNames = getColNames(metaset);
@@ -172,7 +171,7 @@ public class Query extends SqlEntity {
 				if (context.isQueryLimit() && ++totalCounts > context.getQueryLimitSize()) {
 					break;
 				}
-				Map<String, Object> mapdata = new HashMap<String, Object>();
+				Map<String, Object> mapdata = new HashMap<>();
 				for (int i = 1; i <= colNames.length; i++) {
 					String value = dataset.getString(i);
 					String columnName = colNames[i-1];
@@ -198,15 +197,9 @@ public class Query extends SqlEntity {
 		return (List<T>) data;
 	}
 
-	/**
-	 * 初始化过滤条件
-	 * 
-	 * @param ssql
-	 * @return
-	 */
 	private final static Pattern p = Pattern.compile("#[A-Z_]+#");
 
-	public String initFilter(String ssql,Map<String, Param> params) {
+	private String initFilter(String ssql,Map<String, Param> params) {
 		StringBuilder bfsql = new StringBuilder();
 		for (Param param : params.values()) {
 			if (param instanceof Filter){
@@ -356,11 +349,7 @@ public class Query extends SqlEntity {
 				return false;
 			}
 		}
-		if (sqls[index] == ' ' || sqls[index] == '\n' || sqls[index] == '\t' || sqls[index] == '(') {
-			return true;
-		}else{
-			return false;
-		}
+		return sqls[index] == ' ' || sqls[index] == '\n' || sqls[index] == '\t' || sqls[index] == '(';
 	}
 
 	public String getName() {

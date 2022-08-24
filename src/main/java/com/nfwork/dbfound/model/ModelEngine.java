@@ -31,23 +31,23 @@ public class ModelEngine {
 	/**
 	 * 查询 根据传入的class返回对应的对象集合
 	 * 
-	 * @param context
-	 * @param modelName
-	 * @param queryName
-	 * @param object
-	 * @return
+	 * @param context context
+	 * @param modelName modelName
+	 * @param queryName queryName
+	 * @param clazz class
+	 * @return T
 	 */
-	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, Class<T> object) {
-		return query(context, modelName, queryName, defaultPath, true, object);
+	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, Class<T> clazz) {
+		return query(context, modelName, queryName, defaultPath, true, clazz);
 	}
 
 	/**
 	 * 查询 返回一个list的Map集合
 	 * 
-	 * @param context
-	 * @param modelName
-	 * @param queryName
-	 * @return
+	 * @param context context
+	 * @param modelName modelName
+	 * @param queryName query name
+	 * @return QueryResponseObject
 	 */
 	public static QueryResponseObject query(Context context, String modelName, String queryName) {
 		return query(context, modelName, queryName, defaultPath, true, null);
@@ -56,12 +56,12 @@ public class ModelEngine {
 	/**
 	 * 可指定当前路径，是否自动分页的查询
 	 * 
-	 * @param context
-	 * @param modelName
-	 * @param queryName
-	 * @param currentPath
-	 * @param autoPaging
-	 * @return
+	 * @param context context
+	 * @param modelName modelName
+	 * @param queryName query name
+	 * @param currentPath current path
+	 * @param autoPaging auto paging
+	 * @return QueryResponseObject
 	 */
 	public static QueryResponseObject query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging) {
 		return query(context, modelName, queryName, currentPath, autoPaging, null);
@@ -70,16 +70,16 @@ public class ModelEngine {
 	/**
 	 * 查询 可以指定当前路径、是否自动分页、返回对象的查询
 	 * 
-	 * @param context
-	 * @param modelName
-	 * @param queryName
-	 * @param currentPath
-	 * @param autoPaging
-	 * @param obect
-	 * @return
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param currentPath current path
+	 * @param autoPaging auto paging
+	 * @param clazz clazz
+	 * @return T
 	 */
 	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging,
-			Class<T> obect) {
+			Class<T> clazz) {
 
 		LogUtil.info("-----------------------query begin--------------------------------------");
 		try {
@@ -145,9 +145,9 @@ public class ModelEngine {
 			String querySql = query.getQuerySql(context, params, provideName);
 
 			// 查询数据，返回结果
-			List<T> datas = query.query(context, querySql, params, provideName, obect, autoPaging);
+			List<T> datas = query.query(context, querySql, params, provideName, clazz, autoPaging);
 
-			QueryResponseObject<T> ro = new QueryResponseObject<T>();
+			QueryResponseObject<T> ro = new QueryResponseObject<>();
 			ro.setDatas(datas);
 
 			int dataSize = datas.size();
@@ -194,11 +194,11 @@ public class ModelEngine {
 	/**
 	 * 批量执行操作
 	 * 
-	 * @param context
-	 * @param modelName
-	 * @param executeName
-	 * @param sourcePath
-	 * @return
+	 * @param context context
+	 * @param modelName model name
+	 * @param executeName execute name
+	 * @param sourcePath sourcePath;
+	 * @return ResponseObject
 	 */
 	public static ResponseObject batchExecute(Context context, String modelName, String executeName, String sourcePath) {
 
@@ -225,7 +225,7 @@ public class ModelEngine {
 			if (size > 0) {
 				Map<String, Param> params = null;
 				for (int j = 0; j < size; j++) {
-					String en = null;
+					String en ;
 					String currentPath = batchExecutePath + "[" + j + "]";
 					if ("addOrUpdate".equals(executeName)) {
 						String status = context.getString(currentPath + "._status");
@@ -260,11 +260,11 @@ public class ModelEngine {
 	/**
 	 * 执行操作
 	 * 
-	 * @param context
-	 * @param modelName
-	 * @param executeName
-	 * @param currentPath
-	 * @return
+	 * @param context context
+	 * @param modelName model name
+	 * @param executeName execute name
+	 * @param currentPath current path
+	 * @return ResponseObject
 	 */
 	public static ResponseObject execute(Context context, String modelName, String executeName, String currentPath) {
 
@@ -329,9 +329,9 @@ public class ModelEngine {
 	/**
 	 * 处理参数 放入session、cookie、或者以outParam返回
 	 * 
-	 * @param context
-	 * @param params
-	 * @return
+	 * @param context context
+	 * @param params params
+	 * @return Map
 	 */
 	private static Map<String, Object> getOutParams(Context context, Map<String, Param> params) {
 		for (Param p : params.values()) {
@@ -375,13 +375,6 @@ public class ModelEngine {
 		return context.getOutParamDatas();
 	}
 
-	/**
-	 * 参数设定
-	 * 
-	 * @param nfParam
-	 * @param context
-	 * @param cp
-	 */
 	private static void setParam(Param nfParam, Context context, String cp, Map<String, Object> elCache) {
 
 		// 增加UUID取值 在sql执行的时候动态的获取UUID 2012年8月8日8:47:08
@@ -400,7 +393,7 @@ public class ModelEngine {
 		String scope = nfParam.getScope();
 
 		// 设置 当前取值路径
-		String currentPath = "";
+		String currentPath;
 		if (scope != null && !"".equals(scope)) {
 			currentPath = scope;
 		} else if (cp != null && !"".equals(cp)) {
@@ -409,7 +402,7 @@ public class ModelEngine {
 			currentPath = defaultPath;
 		}
 
-		String realPath = "";// 绝对路径
+		String realPath ;// 绝对路径
 
 		// 得到取值的相对路径
 		String sourcePath = nfParam.getSourcePath();
