@@ -1,13 +1,12 @@
 package com.nfwork.dbfound.model;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
@@ -25,16 +24,13 @@ public class ModelReader {
 
 	/**
 	 * 读取一个model
-	 * 
-	 * @param modelName
-	 * @return
-	 * @throws Exception
+	 *
 	 */
 	static Model readerModel(String modelName) {
 
 		SAXReader reader = new SAXReader();
 
-		Document doc = null;
+		Document doc ;
 		String fileLocation = null;
 
 		if (DataUtil.isNull(modelLoadRoot)) {
@@ -45,9 +41,9 @@ public class ModelReader {
 
 		if (file.exists()) {
 			fileLocation = file.getAbsolutePath();
-			try {
-				doc = reader.read(file);
-			} catch (DocumentException e) {
+			try (FileInputStream inputStream = new FileInputStream(file)){
+				doc = reader.read(inputStream);
+			} catch (Exception e) {
 				String message = "modelReader exception，file:" + fileLocation;
 				throw new DBFoundPackageException(message, e);
 			}
@@ -56,44 +52,33 @@ public class ModelReader {
 				String cPath = filePath.substring(DBFoundConfig.CLASSPATH.length() + 1);
 
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
-				InputStream inputStream = null;
+				URL url = loader.getResource(cPath);
 
-				try {
-					URL url = loader.getResource(cPath);
-
-					if (url != null) {
-						if (url.getFile() != null) {
-							file = new File(url.getFile());
-						}
-						if (file.exists()) {
-							fileLocation = file.getAbsolutePath();
-							try {
-								doc = reader.read(file);
-							} catch (Exception e) {
-								String message = "modelReader exception, file:" + fileLocation;
-								throw new DBFoundPackageException(message, e);
-							}
-						} else {
-							fileLocation = url.getFile();
-							try {
-								inputStream = url.openStream();
-								doc = reader.read(inputStream);
-							} catch (Exception e) {
-								String message = "modelReader exception, url:" + fileLocation;
-								throw new DBFoundPackageException(message, e);
-							}
+				if (url != null) {
+					if (url.getFile() != null) {
+						file = new File(url.getFile());
+					}
+					if (file.exists()) {
+						fileLocation = file.getAbsolutePath();
+						try (FileInputStream inputStream = new FileInputStream(file)){
+							doc = reader.read(inputStream);
+						} catch (Exception e) {
+							String message = "modelReader exception, file:" + fileLocation;
+							throw new DBFoundPackageException(message, e);
 						}
 					} else {
-						throw new DBFoundRuntimeException("ModelReader not found file：" + modelName + ".xml, please check config");
-					}
-				} finally {
-					if (inputStream != null) {
-						try {
-							inputStream.close();
-						} catch (IOException e) {
+						fileLocation = url.getFile();
+						try (InputStream inputStream = url.openStream()){
+							doc = reader.read(inputStream);
+						} catch (Exception e) {
+							String message = "modelReader exception, url:" + fileLocation;
+							throw new DBFoundPackageException(message, e);
 						}
 					}
+				} else {
+					throw new DBFoundRuntimeException("ModelReader not found file：" + modelName + ".xml, please check config");
 				}
+
 			} else {
 				throw new DBFoundRuntimeException("ModelReader not found file：" + modelLoadRoot + "/" + modelName + ".xml , please check config");
 			}
@@ -103,7 +88,7 @@ public class ModelReader {
 		Model model = new Model(modelName);
 		model.setFileLastModify(file.lastModified());
 		model.init(root);
-		readerChrild(root, model);
+		readerChild(root, model);
 		model.run();
 
 		fileLocation = PathFormat.format(fileLocation);
@@ -115,24 +100,23 @@ public class ModelReader {
 	/**
 	 * 初始化 他的儿子节点 信息
 	 */
-	@SuppressWarnings("unchecked")
-	static void readerChrild(Element parent, Entity parentEntity) {
+	static void readerChild(Element parent, Entity parentEntity) {
 		List<Element> elements = parent.elements();
 		for (Element unit : elements) {
 			String className = getClassName(unit);
-			Entity entity = null;
+			Entity entity ;
 			try {
 				entity = (Entity) Class.forName(className).newInstance();
 				entity.setParent(parentEntity);
 				entity.init(unit);
-				readerChrild(unit, entity);
+				readerChild(unit, entity);
 				entity.run();
 			} catch (Exception e) {
 				if(e instanceof DBFoundRuntimeException){
 					throw (DBFoundRuntimeException)e;
 				}else{
 					String message = "ModelReader exception:" + e.getMessage();
-					throw new DBFoundRuntimeException(message, e);
+					throw new DBFoundPackageException(message, e);
 				}
 			}
 		}
@@ -140,9 +124,7 @@ public class ModelReader {
 
 	/**
 	 * 得到 对应的class 名字
-	 * 
-	 * @param element
-	 * @return
+	 *
 	 */
 	static String getClassName(Element element) {
 		String path = element.getNamespace().getText();
