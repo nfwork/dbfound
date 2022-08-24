@@ -39,6 +39,8 @@ public class ModelReader {
 		String filePath = modelLoadRoot + "/" + modelName + ".xml";
 		File file = new File(DBFoundConfig.getRealPath(filePath));
 
+		boolean pkgModel = false;
+
 		if (file.exists()) {
 			fileLocation = file.getAbsolutePath();
 			try (FileInputStream inputStream = new FileInputStream(file)){
@@ -68,6 +70,7 @@ public class ModelReader {
 						}
 					} else {
 						fileLocation = url.getFile();
+						pkgModel = true;
 						try (InputStream inputStream = url.openStream()){
 							doc = reader.read(inputStream);
 						} catch (Exception e) {
@@ -87,6 +90,8 @@ public class ModelReader {
 		Element root = doc.getRootElement();
 		Model model = new Model(modelName);
 		model.setFileLastModify(file.lastModified());
+		model.setPkgModel(pkgModel);
+
 		model.init(root);
 		readerChild(root, model);
 		model.run();

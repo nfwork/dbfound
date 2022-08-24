@@ -19,6 +19,7 @@ public class Model extends Entity {
 	private String modelName;
 	private String connectionProvide = "_default";
 	private String fileLocation;
+	private boolean pkgModel = false;
 
 	@Override
 	public void init(Element element) {
@@ -123,5 +124,13 @@ public class Model extends Entity {
 
 	public void setFileLastModify(long fileLastModify) {
 		this.fileLastModify = fileLastModify;
+	}
+
+	public boolean isPkgModel() {
+		return pkgModel;
+	}
+
+	public void setPkgModel(boolean pkgModel) {
+		this.pkgModel = pkgModel;
 	}
 }

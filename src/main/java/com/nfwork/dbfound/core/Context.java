@@ -380,7 +380,7 @@ public class Context {
 	public Model getModel(String modelName) {
 		Model model = ModelCache.get(modelName);
 
-		if(DBFoundConfig.isModelModifyCheck()) {
+		if(!model.isPkgModel() && DBFoundConfig.isModelModifyCheck()) {
 			File file = new File(model.getFileLocation());
 			long newFileLastModify = file.lastModified();
 			if (newFileLastModify > model.getFileLastModify()) {
