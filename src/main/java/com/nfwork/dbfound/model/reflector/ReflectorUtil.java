@@ -38,16 +38,7 @@ public class ReflectorUtil {
 					String propertyName = colNameMap.get(labName);
 
 					if (propertyName == null){
-						String colName = md.getColumnName(i);
-						if (labName.equalsIgnoreCase(colName)){
-							colName = colName.toLowerCase();
-						}else{
-							colName = labName;
-						}
-						propertyName = reflector.getFieldName(colName);
-						if (!reflector.hasSetter(propertyName)) {
-							propertyName = StringUtil.underscoreToCamelCase(propertyName);
-						}
+						propertyName = getPropertyName(reflector,labName);
 						colNameMap.put(labName,propertyName);
 					}
 
@@ -101,5 +92,32 @@ public class ReflectorUtil {
 		}
 
 		return array;
+	}
+
+
+	private static String getPropertyName(Reflector reflector, String labName){
+		String propertyName = reflector.getFieldName(labName);
+		if (reflector.hasSetter(propertyName)) {
+			return propertyName;
+		}
+		if(propertyName.contains("_")) {
+			propertyName = StringUtil.underscoreToCamelCase(propertyName);
+			if (reflector.hasSetter(propertyName)) {
+				return propertyName;
+			}
+		}
+
+		propertyName = reflector.getFieldName(labName.toLowerCase());
+		if (reflector.hasSetter(propertyName)) {
+			return propertyName;
+		}
+		if(propertyName.contains("_")) {
+			propertyName = StringUtil.underscoreToCamelCase(propertyName);
+			if (reflector.hasSetter(propertyName)) {
+				return propertyName;
+			}
+		}
+
+		return labName;
 	}
 }
