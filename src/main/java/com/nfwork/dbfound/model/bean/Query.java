@@ -120,7 +120,7 @@ public class Query extends SqlEntity {
 	public String getQuerySql(Context context,Map<String, Param> params, String provideName){
 		String querySql = initFilter(sql, params);
 		querySql = staticParamParse(querySql, params, context);
-		return querySql;
+		return querySql.trim();
 	}
 
 	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> clazz, boolean autoPaging) {
