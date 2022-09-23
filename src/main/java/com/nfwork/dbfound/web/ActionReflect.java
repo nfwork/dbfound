@@ -43,11 +43,12 @@ public class ActionReflect {
 			if(throwable instanceof DBFoundRuntimeException){
 				throw (DBFoundRuntimeException)throwable;
 			}
-			if(e instanceof InvocationTargetException && throwable !=null){
-				throw new DBFoundPackageException("ActionReflect execute failed, "+e.getMessage(), (Exception) throwable);
-			}else{
-				throw new DBFoundPackageException("ActionReflect execute failed, "+e.getMessage(), e);
+			if(e instanceof InvocationTargetException){
+				if(throwable instanceof Exception) {
+					throw new DBFoundPackageException("ActionReflect execute failed, " + e.getMessage(), (Exception) throwable);
+				}
 			}
+			throw new DBFoundPackageException("ActionReflect execute failed, "+e.getMessage(), e);
 		}
 	}
 }
