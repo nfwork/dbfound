@@ -25,7 +25,6 @@ import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
-import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.reflector.ReflectorUtil;
 
 public class Query extends SqlEntity {
@@ -461,7 +460,7 @@ public class Query extends SqlEntity {
 			exePath = currentPath;
 		}
 		String mName = modelName != null?modelName : currentModel;
-		List data = ModelEngine.query(context, mName, name, exePath, false, entityClass).getDatas();
+		List data = InnerModelExe.innerQuery(context, mName, name, exePath, false, entityClass).getDatas();
 
 		String setPath = rootPath;
 		if(!ELEngine.isAbsolutePath(setPath)){

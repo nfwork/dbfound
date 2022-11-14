@@ -18,7 +18,6 @@ import com.nfwork.dbfound.util.StreamUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.model.ModelEngine;
 
 public class Execute extends SqlEntity {
 
@@ -94,7 +93,7 @@ public class Execute extends SqlEntity {
 		}else{
 			exePath = currentPath;
 		}
-		ModelEngine.execute(context, mName, name, exePath);
+		InnerModelExe.innerExecute(context, mName, name, exePath);
 		context.setCurrentPath(currentPath);
 		context.setCurrentModel(currentModel);
 	}
