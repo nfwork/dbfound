@@ -16,6 +16,8 @@ public class Transaction {
 
 	private boolean open = false;
 
+	private int transactionIsolation;
+
 	public Transaction() {
 	}
 
@@ -88,5 +90,13 @@ public class Transaction {
 				LogUtil.error("transaction rollback exception:" + e.getMessage(), e);
 			}
 		}
+	}
+
+	public int getTransactionIsolation() {
+		return transactionIsolation;
+	}
+
+	public void setTransactionIsolation(int transactionIsolation) {
+		this.transactionIsolation = transactionIsolation;
 	}
 }

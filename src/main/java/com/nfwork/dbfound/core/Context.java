@@ -19,6 +19,7 @@ import com.nfwork.dbfound.db.ConnectionProvideManager;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.el.ELEngine;
+import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelCache;
 import com.nfwork.dbfound.model.bean.Model;
@@ -410,6 +411,16 @@ public class Context {
 			if (connObject == null) {
 				ConnectionProvide provide = ConnectionProvideManager.getConnectionProvide(provideName);
 				Connection conn = provide.getConnection();
+				if(transaction.getTransactionIsolation()>0) {
+					try {
+						int currentIsolation = conn.getTransactionIsolation();
+						if(currentIsolation != transaction.getTransactionIsolation()) {
+							conn.setTransactionIsolation(transaction.getTransactionIsolation());
+						}
+					} catch (SQLException e) {
+						throw new DBFoundPackageException("set transaction isolation failed", e);
+					}
+				}
 				provide.closeAutoCommit(conn);
 				connObject = new ConnObject(provide, conn);
 				transaction.connMap.put(provideName, connObject);
