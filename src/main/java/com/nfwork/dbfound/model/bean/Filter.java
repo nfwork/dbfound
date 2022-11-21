@@ -8,6 +8,7 @@ public class Filter extends Param {
 
 	private String express;
 	private boolean active;
+	private String condition;
 
 	@Override
 	public void run(){
@@ -34,5 +35,13 @@ public class Filter extends Param {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
 	}
 }

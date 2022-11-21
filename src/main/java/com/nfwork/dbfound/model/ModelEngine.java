@@ -121,11 +121,17 @@ public class ModelEngine {
 		Map<String, Filter> filters = query.cloneFilters();
 		for (Filter filter : filters.values()) {
 			setParam(filter, context, currentPath, elCache);
-			Object value = filter.getValue();
-			if(DataUtil.isNotNull(value)){
+
+			if(DataUtil.isNotNull(filter.getCondition())) {
 				filter.setActive(true);
+			}else{
+				Object value = filter.getValue();
+				if (DataUtil.isNotNull(value)) {
+					filter.setActive(true);
+				}
 			}
-			if(filter.isActive()){
+
+			if(filter.isActive()) {
 				params.put(filter.getName(), filter);
 			}
 		}

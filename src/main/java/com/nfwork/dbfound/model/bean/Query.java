@@ -19,6 +19,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
+import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
 
@@ -117,7 +118,7 @@ public class Query extends SqlEntity {
 	}
 
 	public String getQuerySql(Context context,Map<String, Param> params, String provideName){
-		String querySql = initFilter(sql, params);
+		String querySql = initFilter(sql, params, context, provideName);
 		querySql = staticParamParse(querySql, params, context);
 		return querySql.trim();
 	}
@@ -198,11 +199,25 @@ public class Query extends SqlEntity {
 
 	private final static Pattern p = Pattern.compile("#[A-Z_]+#");
 
-	private String initFilter(String ssql,Map<String, Param> params) {
+	private String initFilter(String ssql,Map<String, Param> params, Context context, String provideName) {
 		StringBuilder bfsql = new StringBuilder();
 		for (Param param : params.values()) {
 			if (param instanceof Filter){
 				Filter nfFilter = (Filter) param;
+
+				//condition 逻辑判断；
+				if (DataUtil.isNotNull(nfFilter.getCondition())) {
+					String conditionSql = staticParamParse(nfFilter.getCondition(), params, context);
+					List<Object> exeParam = new ArrayList<>();
+					conditionSql = getExecuteSql(conditionSql, params, exeParam, context);
+					Boolean result = DSqlEngine.checkWhenSql(conditionSql, exeParam, provideName, context);
+					if (result == null) {
+						throw new DBFoundRuntimeException("Filter condition express is not support, condition:" + nfFilter.getCondition());
+					}
+					if (!result) {
+						continue;
+					}
+				}
 				bfsql.append(nfFilter.getExpress()).append(" and ");
 			}
 		}

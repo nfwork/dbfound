@@ -28,6 +28,7 @@
 						</xsd:simpleType>
 					</xsd:attribute>
 					<xsd:attribute name="name" />
+					<xsd:attribute name="condition" />
 					<xsd:attribute name="express" />
 					<xsd:attribute name="dataType">
 						<xsd:simpleType>
