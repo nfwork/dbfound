@@ -13,20 +13,27 @@ public class CountTest {
 
     @Test
     public void testCount() throws Exception{
-        String sql = "select count(1) from sys_user u left join sys_role r on u.role_id = role_id where r.role=123";
+        String sql = "select count(1) from sys_user u left join sys_role r on u.role_id = role_id where r.role=${@abc}";
 
-        Select select = (Select) CCJSqlParserUtil.parse(sql);
+        int whereLoc =sql.toLowerCase().lastIndexOf(" where ");
+        String whereSql = "";
+        String selectSql = sql;
+        if(whereLoc> 0) {
+            selectSql = sql.substring(0, whereLoc);
+            whereSql = sql.substring(whereLoc);
+        }
+
+        Select select = (Select) CCJSqlParserUtil.parse(selectSql);
         PlainSelect plainSelect = (PlainSelect) select.getSelectBody();
-        String whereSql = plainSelect.getWhere()==null?"":plainSelect.getWhere().toString();
+
         Iterator<Join> joinIterator = plainSelect.getJoins().iterator();
-        while (joinIterator.hasNext()){
-            Join join =joinIterator.next();
+        while (joinIterator.hasNext()) {
+            Join join = joinIterator.next();
             String name = join.getRightItem().getAlias().getName() + ".";
-            if (!whereSql.contains(name)){
+            if (!whereSql.contains(name)) {
                 joinIterator.remove();
             }
         }
-
-        System.out.println(select.toString());
+        System.out.println(select + whereSql);
     }
 }
