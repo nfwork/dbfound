@@ -4,6 +4,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import com.nfwork.dbfound.json.JSONNull;
 import com.nfwork.dbfound.json.JSONObject;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
+import com.nfwork.dbfound.model.reflector.Reflector;
 
 /**
  * Json数据处理
@@ -43,26 +45,24 @@ public class JsonUtil {
 	public static String beanToJson(Object bean, Context context) {
 		StringBuilder json = new StringBuilder();
 		json.append("{");
-		PropertyDescriptor[] props = null;
-		try {
-			props = Introspector.getBeanInfo(bean.getClass(), Object.class)
-					.getPropertyDescriptors();
-		} catch (IntrospectionException e) {
-		}
-		if (props != null) {
-			for (int i = 0; i < props.length; i++) {
+
+		Reflector reflector = Reflector.forClass(bean.getClass());
+		String[] properties = reflector.getGetablePropertyNames();
+
+		if(properties != null && properties.length > 0){
+			for (String property : properties){
 				try {
-					String name = objectToJson(props[i].getName(),context);
-					String value = objectToJson(props[i].getReadMethod().invoke(bean),context);
+					String name = objectToJson(property,context);
+					String value = objectToJson(reflector.getGetInvoker(property).invoke(bean,null),context);
 					json.append(name);
 					json.append(":");
 					json.append(value);
 					json.append(",");
-				} catch (Exception e) {
+				} catch (Exception ignored) {
 				}
 			}
 			json.setCharAt(json.length() - 1, '}');
-		} else {
+		}else {
 			json.append("}");
 		}
 		return json.toString();
