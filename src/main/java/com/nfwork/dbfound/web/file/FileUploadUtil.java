@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.web.file;
 import java.util.List;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -11,8 +12,6 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.UploadSizeException;
 
 public class FileUploadUtil {
-
-	public static int maxUploadSize = 10; // 单位M
 
 	public static void initFileUpload(Context context) {
 		try {
@@ -29,7 +28,7 @@ public class FileUploadUtil {
 				upload.setHeaderEncoding(encoding);
 
 				// 设置允许用户上传文件大小,单位:字节
-				upload.setSizeMax(1024L * 1024 * maxUploadSize);
+				upload.setSizeMax(1024L * 1024 * DBFoundConfig.getMaxUploadSize());
 
 				List<FileItem> items ;
 
@@ -50,7 +49,7 @@ public class FileUploadUtil {
 				}
 			}
 		} catch (SizeLimitExceededException e) {
-			throw new UploadSizeException("上传附件大小超过最大限制" + maxUploadSize + "M");
+			throw new UploadSizeException("上传附件大小超过最大限制" + DBFoundConfig.getMaxUploadSize() + "M");
 		} catch (Exception e) {
 			throw new DBFoundPackageException("文件上传处理异常:" + e.getMessage(), e);
 		}

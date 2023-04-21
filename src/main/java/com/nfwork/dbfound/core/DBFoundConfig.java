@@ -63,6 +63,8 @@ public class DBFoundConfig {
 	private static boolean openSession = true;
 	private static boolean openLog = true;
 	private static String encoding = "UTF-8";
+	private static Integer maxUploadSize = 10; // 单位M
+	private static String basePath ;
 
 	public static void destory() {
 		for (DataSourceConnectionProvide provide : dsp) {
@@ -284,13 +286,13 @@ public class DBFoundConfig {
 			}
 		}
 
-		// 文件上传路径
+		// 文件上传大小
 		Element size = web.element("maxUploadSize");
 		if (size != null) {
 			String maxUploadSize = size.getTextTrim();
 			if (DataUtil.isNotNull(maxUploadSize)) {
-				FileUploadUtil.maxUploadSize = DataUtil.intValue(maxUploadSize);
-				info.append("(maxUploadSize = ").append(FileUploadUtil.maxUploadSize).append(")");
+				DBFoundConfig.maxUploadSize = DataUtil.intValue(maxUploadSize);
+				info.append("(maxUploadSize = ").append(DBFoundConfig.maxUploadSize).append(")");
 			}
 		}
 
@@ -299,7 +301,7 @@ public class DBFoundConfig {
 		if (basePathEl != null) {
 			String basePath = basePathEl.getTextTrim();
 			if (!"".equals(basePath)) {
-				URLUtil.setBasePath(basePath);
+				DBFoundConfig.basePath = basePath;
 				info.append("(basePath = ").append(basePath).append(")");
 			}
 		}
@@ -693,5 +695,21 @@ public class DBFoundConfig {
 
 	public static void setEncoding(String encoding) {
 		DBFoundConfig.encoding = encoding;
+	}
+
+	public static Integer getMaxUploadSize() {
+		return maxUploadSize;
+	}
+
+	public static void setMaxUploadSize(Integer maxUploadSize) {
+		DBFoundConfig.maxUploadSize = maxUploadSize;
+	}
+
+	public static String getBasePath() {
+		return basePath;
+	}
+
+	public static void setBasePath(String basePath) {
+		DBFoundConfig.basePath = basePath;
 	}
 }

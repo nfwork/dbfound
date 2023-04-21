@@ -1,5 +1,7 @@
 package com.nfwork.dbfound.util;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,8 +13,6 @@ import javax.servlet.http.HttpServletRequest;
  *
  */
 public class URLUtil {
-	
-	private static String BASE_PATH = "";
 
 	/**
 	 * 清理url中多斜杠问题
@@ -33,8 +33,8 @@ public class URLUtil {
 	public static String getBasePath(HttpServletRequest request) {
 		String basePath ;
 		
-		if(DataUtil.isNotNull(BASE_PATH)) {
-			basePath = BASE_PATH.replace("${@contextPath}", request.getContextPath()); 
+		if(DataUtil.isNotNull(DBFoundConfig.getBasePath())) {
+			basePath = DBFoundConfig.getBasePath().replace("${@contextPath}", request.getContextPath());
 		}else {
 			StringBuffer requestUrl = request.getRequestURL();
 			String servletPath = request.getServletPath();
@@ -52,9 +52,5 @@ public class URLUtil {
 			basePath = basePath + "/";
 		}
 		return basePath;
-	}
-
-	public static void setBasePath(String basePath) {
-		URLUtil.BASE_PATH = basePath;
 	}
 }
