@@ -61,7 +61,7 @@ public class DBFoundConfig {
 	private static Integer maxUploadSize = 10; // 单位M
 	private static String basePath ;
 
-	public static void destory() {
+	public static void destroy() {
 		for (DataSourceConnectionProvide provide : dsp) {
 			DataSource dataSource = provide.getDataSource();
 			if (dataSource != null) {

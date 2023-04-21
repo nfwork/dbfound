@@ -302,7 +302,7 @@ public class ModelTool {
 			e.printStackTrace();
 		} finally {
 			context.closeConns();
-			DBFoundConfig.destory();
+			DBFoundConfig.destroy();
 		}
 		return null;
 	}
