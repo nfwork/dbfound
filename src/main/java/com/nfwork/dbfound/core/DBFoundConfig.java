@@ -45,7 +45,7 @@ public class DBFoundConfig {
 	private static String projectRoot;
 	private static boolean underscoreToCamelCase = false;
 	private static boolean camelCaseToUnderscore = false;
-	private static boolean modelModifyCheck = true;
+	private static boolean modelModifyCheck = false;
 	private static boolean jsonStringAutoCover = true;
 	private final static Set<String> jsonStringForceCoverSet = new HashSet<>();
 	static {
