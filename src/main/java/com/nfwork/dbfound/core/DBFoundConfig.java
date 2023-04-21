@@ -61,6 +61,7 @@ public class DBFoundConfig {
 	private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd";
 	private static boolean openSession = true;
+	public static boolean openLog = true;
 
 	public static void destory() {
 		for (DataSourceConnectionProvide provide : dsp) {
@@ -364,10 +365,10 @@ public class DBFoundConfig {
 		if (log != null) {
 			String openLog = log.getTextTrim();
 			if ("false".equals(openLog.trim())) {
-				LogUtil.setOpenLog(false);
+				DBFoundConfig.openLog = false;
 				info.append("(openLog=false) ");
 			} else if ("true".equals(openLog.trim())) {
-				LogUtil.setOpenLog(true);
+				DBFoundConfig.openLog = true;
 				info.append("(openLog=true) ");
 			}
 		}
@@ -664,5 +665,13 @@ public class DBFoundConfig {
 
 	public static void setOpenSession(boolean openSession) {
 		DBFoundConfig.openSession = openSession;
+	}
+
+	public static boolean isOpenLog() {
+		return openLog;
+	}
+
+	public static void setOpenLog(boolean openLog) {
+		DBFoundConfig.openLog = openLog;
 	}
 }
