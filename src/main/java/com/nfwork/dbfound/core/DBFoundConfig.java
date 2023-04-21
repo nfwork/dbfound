@@ -60,6 +60,7 @@ public class DBFoundConfig {
 	}
 	private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd";
+	private static boolean openSession = true;
 
 	public static void destory() {
 		for (DataSourceConnectionProvide provide : dsp) {
@@ -316,10 +317,10 @@ public class DBFoundConfig {
 		if (openSession != null) {
 			String open = openSession.getTextTrim();
 			if ("true".equals(open)) {
-				Context.setOpenSession(true);
+				DBFoundConfig.openSession = true;
 				info.append("(openSession = true)");
 			}else{
-				Context.setOpenSession(false);
+				DBFoundConfig.openSession = false;
 				info.append("(openSession = false)");
 			}
 		}
@@ -655,5 +656,13 @@ public class DBFoundConfig {
 
 	public static void setCamelCaseToUnderscore(boolean camelCaseToUnderscore) {
 		DBFoundConfig.camelCaseToUnderscore = camelCaseToUnderscore;
+	}
+
+	public static boolean isOpenSession() {
+		return openSession;
+	}
+
+	public static void setOpenSession(boolean openSession) {
+		DBFoundConfig.openSession = openSession;
 	}
 }

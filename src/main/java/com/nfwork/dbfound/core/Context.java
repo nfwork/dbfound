@@ -52,7 +52,6 @@ public class Context {
 	private Map<String, Object> sessionDatas;
 	private Map<String, Object> cookieDatas;
 	private Map<String, Object> headerDatas;
-	private static boolean openSession = true;
 
 	private Transaction transaction;
 	private final long createThread = Thread.currentThread().getId();
@@ -106,7 +105,7 @@ public class Context {
 		cloneRequestBodyData(request);
 		cloneHeaderData(request);
 		cloneCookieData(request);
-		if (openSession) {
+		if (DBFoundConfig.isOpenSession()) {
 			cloneSessionData(request.getSession());
 		}
 
@@ -150,7 +149,7 @@ public class Context {
 	 * 复制session数据
 	 */
 	public void cloneSessionData(HttpSession session) {
-		if (!openSession) {
+		if (!DBFoundConfig.isOpenSession()) {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
 		}
 		Enumeration<String> enumeration = session.getAttributeNames();
@@ -358,7 +357,7 @@ public class Context {
 	 * @param value value
 	 */
 	public void setSessionData(String name, Object value) {
-		if (!openSession) {
+		if (!DBFoundConfig.isOpenSession()) {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
 		}
 		if (name.contains(".")) {
@@ -549,6 +548,9 @@ public class Context {
 	}
 
 	public Map<String, Object> getSessionDatas() {
+		if (!DBFoundConfig.isOpenSession()) {
+			throw new DBFoundRuntimeException("session is not opened, can not get data from session ");
+		}
 		if (sessionDatas == null) {
 			Object o = rootDatas.get("session");
 			if (o instanceof Map) {
@@ -589,10 +591,6 @@ public class Context {
 
 	public boolean isInWebContainer() {
 		return inWebContainer;
-	}
-	
-	public static void setOpenSession(boolean openSession) {
-		Context.openSession = openSession;
 	}
 
 	public int getPagerSize() {
