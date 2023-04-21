@@ -1,10 +1,6 @@
 package com.nfwork.dbfound.util;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,6 +13,7 @@ import java.util.Set;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.json.JSONArray;
 import com.nfwork.dbfound.json.JSONNull;
 import com.nfwork.dbfound.json.JSONObject;
@@ -52,7 +49,17 @@ public class JsonUtil {
 		if(properties != null && properties.length > 0){
 			for (String property : properties){
 				try {
-					String name = objectToJson(property,context);
+					String name;
+					if(DBFoundConfig.isCamelCaseToUnderscore() && !(bean instanceof ResponseObject)){
+						if(context == null){
+							name = StringUtil.camelCaseToUnderscore(property);
+						}else{
+							name = context.getUnderLineNameByCache(property);
+						}
+					}else{
+						name = property;
+					}
+					name = objectToJson(name, context);
 					String value = objectToJson(reflector.getGetInvoker(property).invoke(bean,null),context);
 					json.append(name);
 					json.append(":");

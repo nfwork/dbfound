@@ -47,6 +47,7 @@ public class DBFoundConfig {
 	private static String projectRoot;
 	private static boolean queryLimit = true;
 	private static boolean underscoreToCamelCase = false;
+	private static boolean camelCaseToUnderscore = false;
 	private static int queryLimitSize = 5000;
 	private static int reportQueryLimitSize = 50000;
 	private static boolean modelModifyCheck = true;
@@ -370,6 +371,19 @@ public class DBFoundConfig {
 			}
 		}
 
+		// 设置下划线转化开关
+		Element camelCaseToUnderscore = system.element("camelCaseToUnderscore");
+		if (camelCaseToUnderscore != null) {
+			String open = camelCaseToUnderscore.getTextTrim();
+			if ("false".equals(open.trim())) {
+				DBFoundConfig.camelCaseToUnderscore = false;
+				info.append("(camelCaseToUnderscore=false) ");
+			} else if ("true".equals(open.trim())) {
+				DBFoundConfig.camelCaseToUnderscore = true;
+				info.append("(camelCaseToUnderscore=true) ");
+			}
+		}
+
 		// 设置model跟目录
 		Element modeRoot = system.element("modeRootPath");
 		if (modeRoot != null) {
@@ -622,4 +636,11 @@ public class DBFoundConfig {
 		return jsonStringForceCoverSet;
 	}
 
+	public static boolean isCamelCaseToUnderscore() {
+		return camelCaseToUnderscore;
+	}
+
+	public static void setCamelCaseToUnderscore(boolean camelCaseToUnderscore) {
+		DBFoundConfig.camelCaseToUnderscore = camelCaseToUnderscore;
+	}
 }

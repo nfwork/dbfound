@@ -3,8 +3,8 @@ package com.nfwork.dbfound.util;
 public class StringUtil {
 
     public static String underscoreToCamelCase(String underscore){
-        if(underscore == null){
-            return null;
+        if(DataUtil.isNull(underscore)){
+            return underscore;
         }
         String[] ss = underscore.split("_");
         if(ss.length ==1){
@@ -17,6 +17,25 @@ public class StringUtil {
         }
         return sb.toString();
     }
+
+    public static String camelCaseToUnderscore(String name) {
+        if(DataUtil.isNull(name)){
+            return name;
+        }
+        StringBuilder result = new StringBuilder();
+        result.append(name.charAt(0));
+        for (int i = 1; i < name.length(); i++) {
+            char s = name.charAt(i);
+            if (s >= 'A' && s <= 'Z') {
+                result.append("_");
+                result.append( (char)(s + 32));
+            }else {
+                result.append(s);
+            }
+        }
+        return result.toString();
+    }
+
     private static String upperFirstCase(String str) {
         char[] chars = str.toCharArray();
         chars[0] -= 32;

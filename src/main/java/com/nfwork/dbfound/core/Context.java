@@ -23,10 +23,7 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelCache;
 import com.nfwork.dbfound.model.bean.Model;
-import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.JsonUtil;
-import com.nfwork.dbfound.util.LogUtil;
-import com.nfwork.dbfound.util.StreamUtils;
+import com.nfwork.dbfound.util.*;
 import com.nfwork.dbfound.web.WebWriter;
 
 public class Context {
@@ -59,6 +56,7 @@ public class Context {
 
 	private Transaction transaction;
 	private final long createThread = Thread.currentThread().getId();
+	private Map<String,String> underLineNameCache ;
 
 	public Transaction getTransaction() {
 		checkContext();
@@ -439,6 +437,18 @@ public class Context {
 			}
 			return connObject.connection;
 		}
+	}
+
+	public String getUnderLineNameByCache(String property){
+		if(underLineNameCache == null){
+			underLineNameCache = new HashMap<>();
+		}
+		String value = underLineNameCache.get(property);
+		if(value == null){
+			value = StringUtil.camelCaseToUnderscore(property);
+			underLineNameCache.put(property,value);
+		}
+		return value;
 	}
 
 	/**
