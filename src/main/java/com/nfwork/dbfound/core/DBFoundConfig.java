@@ -20,7 +20,6 @@ import com.nfwork.dbfound.db.ConnectionProvide;
 import com.nfwork.dbfound.db.DataSourceConnectionProvide;
 import com.nfwork.dbfound.db.JdbcConnectionProvide;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.model.ModelReader;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.URLUtil;
@@ -40,6 +39,8 @@ public class DBFoundConfig {
 
 	public static final String CLASSPATH = "${@classpath}";
 	public static final String PROJECT_ROOT = "${@projectRoot}";
+
+	private static String modelLoadRoot;
 
 	private static boolean inited = false;
 	private static String configFilePath;
@@ -404,7 +405,7 @@ public class DBFoundConfig {
 		if (modeRoot != null) {
 			String modeRootPath = modeRoot.getTextTrim();
 			if (!"".equals(modeRootPath)) {
-				ModelReader.setModelLoadRoot(modeRootPath);
+				DBFoundConfig.modelLoadRoot = modeRootPath;
 				info.append("(modeRootPath = ").append(modeRootPath).append(")");
 			}
 		}
@@ -673,5 +674,16 @@ public class DBFoundConfig {
 
 	public static void setOpenLog(boolean openLog) {
 		DBFoundConfig.openLog = openLog;
+	}
+
+	public static String getModelLoadRoot() {
+		if (DataUtil.isNull(modelLoadRoot)) {
+			modelLoadRoot = DBFoundConfig.CLASSPATH + "/model";
+		}
+		return modelLoadRoot;
+	}
+
+	public static void setModelLoadRoot(String modelLoadRoot) {
+		DBFoundConfig.modelLoadRoot = modelLoadRoot;
 	}
 }

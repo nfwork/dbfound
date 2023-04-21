@@ -16,11 +16,9 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.model.bean.Model;
-import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
 
 public class ModelReader {
-	static String modelLoadRoot = DBFoundConfig.CLASSPATH;
 
 	/**
 	 * 读取一个model
@@ -33,10 +31,7 @@ public class ModelReader {
 		Document doc ;
 		String fileLocation ;
 
-		if (DataUtil.isNull(modelLoadRoot)) {
-			modelLoadRoot = DBFoundConfig.CLASSPATH;
-		}
-		String filePath = modelLoadRoot + "/" + modelName + ".xml";
+		String filePath = DBFoundConfig.getModelLoadRoot() + "/" + modelName + ".xml";
 		File file = new File(DBFoundConfig.getRealPath(filePath));
 
 		boolean pkgModel = false;
@@ -83,7 +78,7 @@ public class ModelReader {
 				}
 
 			} else {
-				throw new DBFoundRuntimeException("ModelReader not found file：" + modelLoadRoot + "/" + modelName + ".xml , please check config");
+				throw new DBFoundRuntimeException("ModelReader not found file：" + DBFoundConfig.getModelLoadRoot() + "/" + modelName + ".xml , please check config");
 			}
 		}
 
@@ -140,14 +135,6 @@ public class ModelReader {
 		}
 		String name = element.getName();
 		return path + name.substring(0, 1).toUpperCase() + name.substring(1);
-	}
-
-	public static String getModelLoadRoot() {
-		return modelLoadRoot;
-	}
-
-	public static void setModelLoadRoot(String modelLoadRoot) {
-		ModelReader.modelLoadRoot = modelLoadRoot;
 	}
 
 }
