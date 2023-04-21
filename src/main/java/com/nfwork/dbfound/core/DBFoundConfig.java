@@ -311,6 +311,19 @@ public class DBFoundConfig {
 			}
 		}
 
+		// interceptor 初始化
+		Element openSession = web.element("openSession");
+		if (openSession != null) {
+			String open = openSession.getTextTrim();
+			if ("true".equals(open)) {
+				Context.setOpenSession(true);
+				info.append("(openSession = true)");
+			}else{
+				Context.setOpenSession(false);
+				info.append("(openSession = false)");
+			}
+		}
+
 		System.out.println(info);
 
 		// 初始化dbfound mvc
