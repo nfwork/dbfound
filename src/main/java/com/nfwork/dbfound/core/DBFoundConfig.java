@@ -22,11 +22,9 @@ import com.nfwork.dbfound.db.JdbcConnectionProvide;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
-import com.nfwork.dbfound.util.URLUtil;
 import com.nfwork.dbfound.web.ActionEngine;
 import com.nfwork.dbfound.web.DispatcherFilter;
 import com.nfwork.dbfound.web.InterceptorEngine;
-import com.nfwork.dbfound.web.file.FileUploadUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 import com.nfwork.dbfound.web.i18n.MultiLangUtil;
 
@@ -45,11 +43,8 @@ public class DBFoundConfig {
 	private static String configFilePath;
 	private static String classpath;
 	private static String projectRoot;
-	private static boolean queryLimit = true;
 	private static boolean underscoreToCamelCase = false;
 	private static boolean camelCaseToUnderscore = false;
-	private static int queryLimitSize = 5000;
-	private static int reportQueryLimitSize = 50000;
 	private static boolean modelModifyCheck = true;
 	private static boolean jsonStringAutoCover = true;
 	private final static Set<String> jsonStringForceCoverSet = new HashSet<>();
@@ -412,38 +407,6 @@ public class DBFoundConfig {
 			}
 		}
 
-		// 设置queryLimit
-		Element queryLimitElement = system.element("queryLimit");
-		if (queryLimitElement != null) {
-			String queryLimitvalue = queryLimitElement.getTextTrim();
-			if (DataUtil.isNotNull(queryLimitvalue)) {
-				if (queryLimitvalue.equals("false")) {
-					queryLimit = false;
-				}
-				info.append("(queryLimit = ").append(queryLimit).append(")");
-			}
-		}
-
-		// 设置queryLimitsize
-		Element queryLimitSizeElement = system.element("queryLimitSize");
-		if (queryLimitSizeElement != null) {
-			String queryLimitSizeElementValue = queryLimitSizeElement.getTextTrim();
-			if (DataUtil.isNotNull(queryLimitSizeElementValue)) {
-				queryLimitSize = DataUtil.intValue(queryLimitSizeElementValue);
-				info.append("(queryLimitSize = ").append(queryLimitSize).append(")");
-			}
-		}
-
-		// 设置reportqueryLimitsize
-		Element reportQueryLimitSizeElement = system.element("reportQueryLimitSize");
-		if (reportQueryLimitSizeElement != null) {
-			String reportQueryLimitSizeElementValue = reportQueryLimitSizeElement.getTextTrim();
-			if (DataUtil.isNotNull(reportQueryLimitSizeElementValue)) {
-				reportQueryLimitSize = DataUtil.intValue(reportQueryLimitSizeElementValue);
-				info.append("(reportQueryLimitSize = ").append(reportQueryLimitSize).append(")");
-			}
-		}
-
 		// 设置启动监听类
 		Element listener = system.element("startListener");
 		if (listener != null) {
@@ -570,18 +533,6 @@ public class DBFoundConfig {
 		DBFoundConfig.projectRoot = PathFormat.format(projectRoot);
 	}
 
-	public static boolean getQueryLimit() {
-		return queryLimit;
-	}
-
-	public static int getQueryLimitSize() {
-		return queryLimitSize;
-	}
-
-	public static int getReportQueryLimitSize() {
-		return reportQueryLimitSize;
-	}
-
 	public static String getListenerClass() {
 		return listenerClass;
 	}
@@ -594,28 +545,12 @@ public class DBFoundConfig {
 		return dsp;
 	}
 
-	public static void setQueryLimit(boolean queryLimit) {
-		DBFoundConfig.queryLimit = queryLimit;
-	}
-
-	public static void setQueryLimitSize(int queryLimitSize) {
-		DBFoundConfig.queryLimitSize = queryLimitSize;
-	}
-
-	public static boolean isQueryLimit() {
-		return queryLimit;
-	}
-
 	public static boolean isUnderscoreToCamelCase() {
 		return underscoreToCamelCase;
 	}
 
 	public static void setUnderscoreToCamelCase(boolean underscoreToCamelCase) {
 		DBFoundConfig.underscoreToCamelCase = underscoreToCamelCase;
-	}
-
-	public static void setReportQueryLimitSize(int reportQueryLimitSize) {
-		DBFoundConfig.reportQueryLimitSize = reportQueryLimitSize;
 	}
 
 	public static boolean isModelModifyCheck() {
@@ -712,4 +647,5 @@ public class DBFoundConfig {
 	public static void setBasePath(String basePath) {
 		DBFoundConfig.basePath = basePath;
 	}
+
 }

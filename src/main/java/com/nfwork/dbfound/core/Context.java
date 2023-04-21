@@ -24,15 +24,11 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelCache;
 import com.nfwork.dbfound.model.bean.Model;
 import com.nfwork.dbfound.util.*;
-import com.nfwork.dbfound.web.WebWriter;
 
 public class Context {
 
 	private boolean outMessage = true;
 	private boolean isExport = false;
-	private boolean queryLimit = DBFoundConfig.getQueryLimit();
-	private int queryLimitSize = DBFoundConfig.getQueryLimitSize();
-	private int reportQueryLimitSize = DBFoundConfig.getReportQueryLimitSize();
 	private SimpleDateFormat dateFormat;
 	private SimpleDateFormat dateTimeFormat;
 	public HttpServletRequest request;
@@ -625,32 +621,8 @@ public class Context {
 		isExport = export;
 	}
 
-	public boolean isQueryLimit() {
-		return queryLimit;
-	}
-
-	public void setQueryLimit(boolean queryLimit) {
-		this.queryLimit = queryLimit;
-	}
-
-	public int getQueryLimitSize() {
-		return queryLimitSize;
-	}
-
-	public void setQueryLimitSize(int queryLimitSize) {
-		this.queryLimitSize = queryLimitSize;
-	}
-
-	public int getReportQueryLimitSize() {
-		return reportQueryLimitSize;
-	}
-
 	public void setTransaction(Transaction transaction) {
 		this.transaction = transaction;
-	}
-
-	public void setReportQueryLimitSize(int reportQueryLimitSize) {
-		this.reportQueryLimitSize = reportQueryLimitSize;
 	}
 
 	public SimpleDateFormat getDateFormat() {

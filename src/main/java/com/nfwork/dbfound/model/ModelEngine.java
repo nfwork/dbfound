@@ -106,9 +106,6 @@ public class ModelEngine {
 		if (query == null) {
 			throw new QueryNotFoundException("can not found Query:" + queryName + ", on Model:" + modelName);
 		}
-		if (context.isExport()) {
-			context.setQueryLimitSize(context.getReportQueryLimitSize());
-		}
 
 		// 初始化查询参数param
 		Map<String, Object> elCache = new HashMap<>();

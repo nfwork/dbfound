@@ -160,17 +160,11 @@ public class Query extends SqlEntity {
 				clazz = entityClass;
 			}
 			if (clazz != null && ! Map.class.isAssignableFrom(clazz) && !clazz.equals(Object.class)) {
-				return ReflectorUtil.parseResultList(clazz, dataset, context);
+				return ReflectorUtil.parseResultList(clazz, dataset);
 			}
-
 			String[] colNames = getColNames(metaset);
-
-			int totalCounts = 0;
 			Calendar defaultCalendar = Calendar.getInstance();
 			while (dataset.next()) {
-				if (context.isQueryLimit() && ++totalCounts > context.getQueryLimitSize()) {
-					break;
-				}
 				Map<String, Object> mapdata = new HashMap<>();
 				for (int i = 1; i <= colNames.length; i++) {
 					String value = dataset.getString(i);

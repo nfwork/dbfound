@@ -6,18 +6,16 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.*;
 
-import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.util.StringUtil;
 
 public class ReflectorUtil {
 
-	public static <T> List<T> parseResultList(Class<T> clazz, ResultSet rs, Context context) throws SQLException {
+	public static <T> List<T> parseResultList(Class<T> clazz, ResultSet rs) throws SQLException {
 		List<T> array = new ArrayList<>();
 
 		if (rs != null) {
-			
 			Calendar defaultCalendar = Calendar.getInstance();
 			
 			ResultSetMetaData md = rs.getMetaData();
@@ -27,11 +25,7 @@ public class ReflectorUtil {
 			Map<String,String> colNameMap = new HashMap<>();
 			ObjectFactory objectFactory = new DefaultObjectFactory();
 
-			int totalCounts = 0;
 			while (rs.next()) {
-				if (context.isQueryLimit() && ++totalCounts > context.getQueryLimitSize()) {
-					break;
-				}
 				T obj = objectFactory.create(clazz);
 				for (int i = 1; i <= columnCount; i++) {
 					String labName =  md.getColumnLabel(i);
