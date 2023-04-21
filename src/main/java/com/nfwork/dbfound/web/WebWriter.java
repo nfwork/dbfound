@@ -8,11 +8,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.excel.ExcelWriter;
 import com.nfwork.dbfound.util.LogUtil;
 
 public class WebWriter {
-	private static String encoding = "UTF-8";
 
 	public static void excelWriter(Context context, List<Map> result) {
 		try {
@@ -23,12 +23,12 @@ public class WebWriter {
 	}
 
 	public static void jsonWriter(HttpServletResponse response, String message) {
-		response.setCharacterEncoding(encoding);
+		response.setCharacterEncoding(DBFoundConfig.getEncoding());
 
 		try (Writer writer = response.getWriter();
 			 StringReader reader = new StringReader(message)){
 
-			response.setContentType("text/html;charset=" + encoding);
+			response.setContentType("text/html;charset=" + DBFoundConfig.getEncoding());
 			response.setHeader("Cache-Control", "no-cache, must-revalidate");
 
 			char[] data = new char[1024];
@@ -40,14 +40,6 @@ public class WebWriter {
 		} catch (Exception e) {
 			LogUtil.warn("response writer exception：" + e.getMessage());
 		}
-	}
-
-	public static String getEncoding() {
-		return encoding;
-	}
-
-	public static void setEncoding(String encoding) {
-		WebWriter.encoding = encoding.toUpperCase();
 	}
 
 }

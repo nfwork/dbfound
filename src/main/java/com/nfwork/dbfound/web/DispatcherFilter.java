@@ -50,7 +50,7 @@ public class DispatcherFilter implements Filter {
 			Transaction transaction = null;
 			try {
 				if (request.getCharacterEncoding() == null) {
-					request.setCharacterEncoding(WebWriter.getEncoding());// 编码设置
+					request.setCharacterEncoding(DBFoundConfig.getEncoding());// 编码设置
 				}
 				Context context = Context.getCurrentContext(request, response);
 

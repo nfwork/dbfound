@@ -26,7 +26,6 @@ import com.nfwork.dbfound.util.URLUtil;
 import com.nfwork.dbfound.web.ActionEngine;
 import com.nfwork.dbfound.web.DispatcherFilter;
 import com.nfwork.dbfound.web.InterceptorEngine;
-import com.nfwork.dbfound.web.WebWriter;
 import com.nfwork.dbfound.web.file.FileUploadUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 import com.nfwork.dbfound.web.i18n.MultiLangUtil;
@@ -62,7 +61,8 @@ public class DBFoundConfig {
 	private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd";
 	private static boolean openSession = true;
-	public static boolean openLog = true;
+	private static boolean openLog = true;
+	private static String encoding = "UTF-8";
 
 	public static void destory() {
 		for (DataSourceConnectionProvide provide : dsp) {
@@ -256,7 +256,7 @@ public class DBFoundConfig {
 		if (enco != null) {
 			String encoding = enco.getTextTrim();
 			if (!"".equals(encoding)) {
-				WebWriter.setEncoding(encoding);
+				DBFoundConfig.encoding = encoding;
 				info.append("(encoding = ").append(encoding).append(")");
 			}
 		}
@@ -685,5 +685,13 @@ public class DBFoundConfig {
 
 	public static void setModelLoadRoot(String modelLoadRoot) {
 		DBFoundConfig.modelLoadRoot = modelLoadRoot;
+	}
+
+	public static String getEncoding() {
+		return encoding;
+	}
+
+	public static void setEncoding(String encoding) {
+		DBFoundConfig.encoding = encoding;
 	}
 }

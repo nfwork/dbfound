@@ -207,7 +207,7 @@ public class Context {
 			String contentType = request.getHeader("Content-Type");
 			if (contentType != null && contentType.contains("application/json")) {
 				try (InputStream inputStream = request.getInputStream()){
-					String payload = StreamUtils.copyToString(inputStream, Charset.forName(WebWriter.getEncoding())).trim();
+					String payload = StreamUtils.copyToString(inputStream, Charset.forName(DBFoundConfig.getEncoding())).trim();
 					if (payload.startsWith("{")) {
 						Map<String, Object> map = JsonUtil.jsonToMap(payload);
 						for (Map.Entry<String, Object> entry : map.entrySet()) {

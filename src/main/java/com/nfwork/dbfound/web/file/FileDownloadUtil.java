@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.model.bean.Param;
@@ -52,7 +54,7 @@ public class FileDownloadUtil {
 			try (InputStream in = new FileInputStream(file);
 				 OutputStream out = response.getOutputStream()) {
 
-				filename = URLEncoder.encode(filename, WebWriter.getEncoding());
+				filename = URLEncoder.encode(filename, DBFoundConfig.getEncoding());
 				response.setContentLength((int)file.length());
 				response.setContentType("application/x-download");
 				response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");

@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.web.WebWriter;
@@ -61,7 +62,7 @@ public class MySqlFunction {
                 return null;
             }
             try {
-                return p0.toString().getBytes(WebWriter.getEncoding()).length;
+                return p0.toString().getBytes(DBFoundConfig.getEncoding()).length;
             } catch (Exception exception) {
                 throw new DBFoundPackageException(exception);
             }
