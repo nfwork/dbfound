@@ -47,6 +47,7 @@ public class Query extends SqlEntity {
 	private static final char[] GROUP = "group".toCharArray();
 
 	private Integer pagerSize;
+	private Integer exportSize;
 	private String adapter;
 	private QueryAdapter queryAdapter;
 	private String entity;
@@ -138,6 +139,17 @@ public class Query extends SqlEntity {
 					querySql = sqlDialect.getPagerSql(querySql, ps, context.getStartWith(),params);
 				}else{
 					querySql = dialect.getPagerSql(querySql, ps, context.getStartWith());
+				}
+			}
+		}else{
+			//对于非autoPaging查询，设置导出exportSize
+			if(context.isExport()  && exportSize != null){
+				SqlDialect dialect = context.getConnDialect(provideName);
+				if(dialect instanceof AbstractSqlDialect){
+					AbstractSqlDialect sqlDialect = (AbstractSqlDialect) dialect;
+					querySql = sqlDialect.getPagerSql(querySql, exportSize, 0,params);
+				}else{
+					querySql = dialect.getPagerSql(querySql, exportSize, 0);
 				}
 			}
 		}
@@ -450,6 +462,14 @@ public class Query extends SqlEntity {
 
 	public void setCurrentPath(String currentPath) {
 		this.currentPath = currentPath;
+	}
+
+	public Integer getExportSize() {
+		return exportSize;
+	}
+
+	public void setExportSize(Integer exportSize) {
+		this.exportSize = exportSize;
 	}
 
 	@Override

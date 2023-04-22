@@ -61,6 +61,7 @@
 			</xsd:element>
 		</xsd:choice>
 		<xsd:attribute name="pagerSize" />
+		<xsd:attribute name="exportSize" />
 		<xsd:attribute name="name" />
 		<xsd:attribute name="queryTimeout" />
 		<xsd:attribute name="adapter" />
