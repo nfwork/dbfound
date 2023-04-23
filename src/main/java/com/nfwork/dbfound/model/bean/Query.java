@@ -47,6 +47,7 @@ public class Query extends SqlEntity {
 	private static final char[] GROUP = "group".toCharArray();
 
 	private Integer pagerSize;
+	private Integer maxPagerSize;
 	private Integer exportSize;
 	private String adapter;
 	private QueryAdapter queryAdapter;
@@ -133,6 +134,9 @@ public class Query extends SqlEntity {
 		if(autoPaging) {
 			if (context.getPagerSize() > 0 || pagerSize != null) {
 				int ps = context.getPagerSize() > 0 ? context.getPagerSize() : pagerSize;
+				if(maxPagerSize != null && ps > maxPagerSize){
+					throw new DBFoundRuntimeException("pager size can not great than " + maxPagerSize);
+				}
 				SqlDialect dialect = context.getConnDialect(provideName);
 				if(dialect instanceof AbstractSqlDialect){
 					AbstractSqlDialect sqlDialect = (AbstractSqlDialect) dialect;
@@ -470,6 +474,14 @@ public class Query extends SqlEntity {
 
 	public void setExportSize(Integer exportSize) {
 		this.exportSize = exportSize;
+	}
+
+	public Integer getMaxPagerSize() {
+		return maxPagerSize;
+	}
+
+	public void setMaxPagerSize(Integer maxPagerSize) {
+		this.maxPagerSize = maxPagerSize;
 	}
 
 	@Override
