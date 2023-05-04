@@ -2,22 +2,18 @@
 <dbfound xmlns="http://dbfound.googlecode.com/conf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dbfound.googlecode.com/conf https://raw.githubusercontent.com/nfwork/dbfound/master/tags/conf.xsd">
 
 	<system>
-		<openLog>true</openLog>
-		<modeRootPath>${@classpath}/model</modeRootPath>
-		<queryLimit>true</queryLimit>
-		<queryLimitSize>5000</queryLimitSize>
-		<reportQueryLimitSize>50000</reportQueryLimitSize>
+		<modelModifyCheck>true</modelModifyCheck>
 	</system>
 
 	<database>
 		<dataSourceConnectionProvide className="org.apache.commons.dbcp.BasicDataSource" dialect="MySqlDialect">
 			<properties>
 				<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://127.0.0.1/dbfound?useUnicode=true&amp;characterEncoding=utf8" />
+				<property name="url" value="jdbc:mysql://192.168.0.156/dbfound?useUnicode=true&amp;characterEncoding=utf8" />
 				<property name="username" value="dbfound" />
 				<property name="password" value="dbfound" />
 				<property name="initialSize" value="5" />
-				<property name="maxActive" value="200" />
+				<property name="maxActive" value="10" />
 				<property name="maxIdle" value="5" />
 				<property name="testOnBorrow" value="true" />
 				<property name="validationQuery" value="select 1" />
@@ -26,9 +22,7 @@
 	</database>
 
 	<web>
-		<encoding>utf-8</encoding>
 		<interceptor>dbfount.test.core.AccessCheckInterceptor</interceptor>
-		<maxUploadSize>20</maxUploadSize>
 	</web>
 
 </dbfound>
