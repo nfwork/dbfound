@@ -52,6 +52,7 @@ public class Context {
 	private Transaction transaction;
 	private final long createThread = Thread.currentThread().getId();
 	private Map<String,String> underLineNameCache ;
+	private int deep = 0;
 
 	public Transaction getTransaction() {
 		checkContext();
@@ -611,6 +612,14 @@ public class Context {
 
 	public void setOutMessage(boolean outMessage) {
 		this.outMessage = outMessage;
+	}
+
+	public int getDeep() {
+		return deep;
+	}
+
+	public void setDeep(int deep) {
+		this.deep = deep;
 	}
 
 	public boolean isExport() {

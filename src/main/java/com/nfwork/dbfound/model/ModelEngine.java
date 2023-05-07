@@ -78,120 +78,121 @@ public class ModelEngine {
 	 * @param clazz clazz
 	 * @return T
 	 */
-	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging,
-			Class<T> clazz) {
-		LogUtil.info("-----------------------query begin--------------------------------------");
+	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging, Class<T> clazz) {
+		if(context.getDeep()==0) {
+			LogUtil.info("-----------------------query begin--------------------------------------");
+		}
 		try {
-			return exeQuery(context,modelName,queryName,currentPath,autoPaging,clazz);
-		} finally {
-			context.closeConns();
-			LogUtil.info("-----------------------query end----------------------------------------");
-		}
-	}
+			context.setDeep(context.getDeep()+1);
 
-	protected static <T> QueryResponseObject<T> exeQuery(Context context, String modelName, String queryName,
-														 String currentPath, boolean autoPaging, Class<T> clazz) {
-		if (queryName == null || "".equals(queryName))
-			queryName = "_default";
+			if (queryName == null || "".equals(queryName))
+				queryName = "_default";
 
-		LogUtil.info("Query info (modelName:" + modelName + ", queryName:" + queryName + ")");
+			LogUtil.info("Query info (modelName:" + modelName + ", queryName:" + queryName + ")");
 
-		Model model = context.getModel(modelName);
+			Model model = context.getModel(modelName);
 
-		// 把model、currentPath对象放入到 当前线程里
-		context.setCurrentModel(modelName);
-		context.setCurrentPath(currentPath);
+			// 把model、currentPath对象放入到 当前线程里
+			context.setCurrentModel(modelName);
+			context.setCurrentPath(currentPath);
 
-		Query query = model.getQuery(queryName);
-		if (query == null) {
-			throw new QueryNotFoundException("can not found Query:" + queryName + ", on Model:" + modelName);
-		}
+			Query query = model.getQuery(queryName);
+			if (query == null) {
+				throw new QueryNotFoundException("can not found Query:" + queryName + ", on Model:" + modelName);
+			}
 
-		// 初始化查询参数param
-		Map<String, Object> elCache = new HashMap<>();
-		Map<String, Param> params = query.cloneParams();
-		for (Param nfParam : params.values()) {
-			setParam(nfParam, context, currentPath, elCache);
-		}
+			// 初始化查询参数param
+			Map<String, Object> elCache = new HashMap<>();
+			Map<String, Param> params = query.cloneParams();
+			for (Param nfParam : params.values()) {
+				setParam(nfParam, context, currentPath, elCache);
+			}
 
-		// 初始化查询过滤参数filter
-		Map<String, Filter> filters = query.cloneFilters();
-		for (Filter filter : filters.values()) {
-			setParam(filter, context, currentPath, elCache);
+			// 初始化查询过滤参数filter
+			Map<String, Filter> filters = query.cloneFilters();
+			for (Filter filter : filters.values()) {
+				setParam(filter, context, currentPath, elCache);
 
-			if(DataUtil.isNotNull(filter.getCondition())) {
-				filter.setActive(true);
-			}else{
-				Object value = filter.getValue();
-				if (DataUtil.isNotNull(value)) {
+				if(DataUtil.isNotNull(filter.getCondition())) {
 					filter.setActive(true);
+				}else{
+					Object value = filter.getValue();
+					if (DataUtil.isNotNull(value)) {
+						filter.setActive(true);
+					}
+				}
+
+				if(filter.isActive()) {
+					params.put(filter.getName(), filter);
 				}
 			}
 
-			if(filter.isActive()) {
-				params.put(filter.getName(), filter);
+			// 设想分页参数
+			if (autoPaging) {
+				String startMessage = context.getString("param.start");
+				if (DataUtil.isNotNull(startMessage)) {
+					long start = Long.parseLong(startMessage);
+					context.setStartWith(start);
+				}
+				String sizeMessage = context.getString("param.limit");
+				if (DataUtil.isNotNull(sizeMessage)) {
+					int size = Integer.parseInt(sizeMessage);
+					context.setPagerSize(size);
+				}
 			}
-		}
-
-		// 设想分页参数
-		if (autoPaging) {
-			String startMessage = context.getString("param.start");
-			if (DataUtil.isNotNull(startMessage)) {
-				long start = Long.parseLong(startMessage);
-				context.setStartWith(start);
-			}
-			String sizeMessage = context.getString("param.limit");
-			if (DataUtil.isNotNull(sizeMessage)) {
-				int size = Integer.parseInt(sizeMessage);
-				context.setPagerSize(size);
-			}
-		}
-
-		if(query.getQueryAdapter() != null){
-			query.getQueryAdapter().beforeQuery(context, params);
-		}
-
-		String provideName = model.getConnectionProvide(context);
-		//获取querySql
-		String querySql = query.getQuerySql(context, params, provideName);
-
-		// 查询数据，返回结果
-		List<T> datas = query.query(context, querySql, params, provideName, clazz, autoPaging);
-
-		QueryResponseObject<T> ro = new QueryResponseObject<>();
-		ro.setDatas(datas);
-
-		int dataSize = datas.size();
-		int pSize = context.getPagerSize();
-		if(pSize ==0 && query.getPagerSize() != null){
-			pSize = query.getPagerSize();
-		}
-		long start = context.getStartWith();
-		if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
-			ro.setTotalCounts(datas.size());
-		} else {
-			Count count = query.getCount(querySql);
-			count.setDataSize(dataSize);
-			count.setTotalCounts(dataSize);
 
 			if(query.getQueryAdapter() != null){
-				query.getQueryAdapter().beforeCount(context,params,count);
+				query.getQueryAdapter().beforeQuery(context, params);
 			}
 
-			if(count.isExecuteCount()) {
-				query.countItems(context, count, params, provideName);
+			String provideName = model.getConnectionProvide(context);
+			//获取querySql
+			String querySql = query.getQuerySql(context, params, provideName);
+
+			// 查询数据，返回结果
+			List<T> datas = query.query(context, querySql, params, provideName, clazz, autoPaging);
+
+			QueryResponseObject<T> ro = new QueryResponseObject<>();
+			ro.setDatas(datas);
+
+			int dataSize = datas.size();
+			int pSize = context.getPagerSize();
+			if(pSize ==0 && query.getPagerSize() != null){
+				pSize = query.getPagerSize();
 			}
-			ro.setTotalCounts(count.getTotalCounts());
-		}
-		ro.setSuccess(true);
-		ro.setMessage("success");
-		ro.setOutParam(getOutParams(context, params));
+			long start = context.getStartWith();
+			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
+				ro.setTotalCounts(datas.size());
+			} else {
+				Count count = query.getCount(querySql);
+				count.setDataSize(dataSize);
+				count.setTotalCounts(dataSize);
 
-		if(query.getQueryAdapter() != null){
-			query.getQueryAdapter().afterQuery(context,params,ro);
-		}
+				if(query.getQueryAdapter() != null){
+					query.getQueryAdapter().beforeCount(context,params,count);
+				}
 
-		return ro;
+				if(count.isExecuteCount()) {
+					query.countItems(context, count, params, provideName);
+				}
+				ro.setTotalCounts(count.getTotalCounts());
+			}
+			ro.setSuccess(true);
+			ro.setMessage("success");
+			ro.setOutParam(getOutParams(context, params));
+
+			if(query.getQueryAdapter() != null){
+				query.getQueryAdapter().afterQuery(context,params,ro);
+			}
+
+			return ro;
+		} finally {
+			context.setDeep(context.getDeep()-1);
+			if(context.getDeep()==0) {
+				context.closeConns();
+				LogUtil.info("-----------------------query end----------------------------------------");
+			}
+		}
 	}
 
 
@@ -210,8 +211,12 @@ public class ModelEngine {
 	 */
 	public static ResponseObject batchExecute(Context context, String modelName, String executeName, String sourcePath) {
 
-		LogUtil.info("-----------------------batch execute begin------------------------------");
+		if(context.getDeep()==0) {
+			LogUtil.info("-----------------------batch execute begin------------------------------");
+		}
 		try {
+			context.setDeep(context.getDeep()+1);
+
 			if (executeName == null || "".equals(executeName))
 				executeName = "addOrUpdate";
 
@@ -254,10 +259,12 @@ public class ModelEngine {
 				ro.setOutParam(getOutParams(context, params));
 			}
 			return ro;
-
 		} finally {
-			context.closeConns();
-			LogUtil.info("-----------------------batch execute end--------------------------------");
+			context.setDeep(context.getDeep()-1);
+			if(context.getDeep()==0) {
+				context.closeConns();
+				LogUtil.info("-----------------------batch execute end--------------------------------");
+			}
 		}
 	}
 
@@ -276,8 +283,13 @@ public class ModelEngine {
 	 */
 	public static ResponseObject execute(Context context, String modelName, String executeName, String currentPath) {
 
-		LogUtil.info("-----------------------execute begin------------------------------------");
+		if(context.getDeep()==0) {
+			LogUtil.info("-----------------------execute begin------------------------------------");
+		}
+
 		try {
+			context.setDeep(context.getDeep()+1);
+
 			Map<String, Param> params;
 
 			if (executeName == null || "".equals(executeName))
@@ -292,8 +304,11 @@ public class ModelEngine {
 			ro.setOutParam(getOutParams(context, params));
 			return ro;
 		} finally {
-			context.closeConns();
-			LogUtil.info("-----------------------execute end--------------------------------------");
+			context.setDeep(context.getDeep()-1);
+			if(context.getDeep()==0) {
+				context.closeConns();
+				LogUtil.info("-----------------------execute end--------------------------------------");
+			}
 		}
 	}
 

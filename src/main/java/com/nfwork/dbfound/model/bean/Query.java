@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import com.nfwork.dbfound.db.dialect.AbstractSqlDialect;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
@@ -501,7 +502,7 @@ public class Query extends SqlEntity {
 			exePath = currentPath;
 		}
 		String mName = modelName != null?modelName : currentModel;
-		List data = InnerModelExe.innerQuery(context, mName, name, exePath, false, entityClass).getDatas();
+		List data = ModelEngine.query(context, mName, name, exePath, false, entityClass).getDatas();
 
 		String setPath = rootPath;
 		if(!ELEngine.isAbsolutePath(setPath)){

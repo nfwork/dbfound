@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
 import com.nfwork.dbfound.model.base.DataType;
@@ -93,7 +94,7 @@ public class Execute extends SqlEntity {
 		}else{
 			exePath = currentPath;
 		}
-		InnerModelExe.innerExecute(context, mName, name, exePath);
+		ModelEngine.execute(context, mName, name, exePath);
 		context.setCurrentPath(currentPath);
 		context.setCurrentModel(currentModel);
 	}
