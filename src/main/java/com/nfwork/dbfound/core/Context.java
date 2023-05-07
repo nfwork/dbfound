@@ -614,12 +614,16 @@ public class Context {
 		this.outMessage = outMessage;
 	}
 
-	public int getDeep() {
-		return deep;
+	public boolean onTopDeep(){
+		return deep == 0 ;
 	}
 
-	public void setDeep(int deep) {
-		this.deep = deep;
+	public void deepIncrease() {
+		deep ++ ;
+	}
+
+	public void deepReduce() {
+		deep -- ;
 	}
 
 	public boolean isExport() {
