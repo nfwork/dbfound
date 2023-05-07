@@ -30,6 +30,8 @@ import com.nfwork.dbfound.web.i18n.MultiLangUtil;
 
 public class DBFoundConfig {
 
+	public static final String VERSION = "3.2.1" ;
+
 	private static String listenerClass;
 	private final static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 	private final static List<DataSourceConnectionProvide> dsp = new ArrayList<>();
@@ -97,7 +99,7 @@ public class DBFoundConfig {
 		}
 		try {
 			System.out.println("**************************************************************************");
-			System.out.println(simpleDateFormat.format(new Date()) + " NFWork dbfound service init begin");
+			System.out.println(simpleDateFormat.format(new Date()) + " NFWork dbfound "+VERSION+" service init begin");
 			SAXReader reader = new SAXReader();
 			File file = new File(getRealPath(confFile));
 			Document doc = null;
