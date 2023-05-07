@@ -79,11 +79,11 @@ public class ModelEngine {
 	 * @return T
 	 */
 	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging, Class<T> clazz) {
-		if(context.onTopDeep()) {
+		if(context.onTopModelDeep()) {
 			LogUtil.info("-----------------------query begin--------------------------------------");
 		}
 		try {
-			context.deepIncrease();
+			context.modelDeepIncrease();
 
 			if (queryName == null || "".equals(queryName))
 				queryName = "_default";
@@ -187,8 +187,8 @@ public class ModelEngine {
 
 			return ro;
 		} finally {
-			context.deepReduce();
-			if(context.onTopDeep()) {
+			context.modelDeepReduce();
+			if(context.onTopModelDeep()) {
 				context.closeConns();
 				LogUtil.info("-----------------------query end----------------------------------------");
 			}
@@ -211,11 +211,11 @@ public class ModelEngine {
 	 */
 	public static ResponseObject batchExecute(Context context, String modelName, String executeName, String sourcePath) {
 
-		if(context.onTopDeep()) {
+		if(context.onTopModelDeep()) {
 			LogUtil.info("-----------------------batch execute begin------------------------------");
 		}
 		try {
-			context.deepIncrease();
+			context.modelDeepIncrease();
 
 			if (executeName == null || "".equals(executeName))
 				executeName = "addOrUpdate";
@@ -260,8 +260,8 @@ public class ModelEngine {
 			}
 			return ro;
 		} finally {
-			context.deepReduce();
-			if(context.onTopDeep()) {
+			context.modelDeepReduce();
+			if(context.onTopModelDeep()) {
 				context.closeConns();
 				LogUtil.info("-----------------------batch execute end--------------------------------");
 			}
@@ -283,12 +283,12 @@ public class ModelEngine {
 	 */
 	public static ResponseObject execute(Context context, String modelName, String executeName, String currentPath) {
 
-		if(context.onTopDeep()) {
+		if(context.onTopModelDeep()) {
 			LogUtil.info("-----------------------execute begin------------------------------------");
 		}
 
 		try {
-			context.deepIncrease();
+			context.modelDeepIncrease();
 
 			Map<String, Param> params;
 
@@ -304,8 +304,8 @@ public class ModelEngine {
 			ro.setOutParam(getOutParams(context, params));
 			return ro;
 		} finally {
-			context.deepReduce();
-			if(context.onTopDeep()) {
+			context.modelDeepReduce();
+			if(context.onTopModelDeep()) {
 				context.closeConns();
 				LogUtil.info("-----------------------execute end--------------------------------------");
 			}
