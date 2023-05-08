@@ -7,6 +7,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.Entity;
+import com.nfwork.dbfound.util.DataUtil;
 
 public class Param extends Entity {
 
@@ -78,6 +79,22 @@ public class Param extends Entity {
 		return value;
 	}
 
+	public Integer getIntValue(){
+		return DataUtil.intValue(value);
+	}
+
+	public Long getLongValue(){
+		return DataUtil.longValue(value);
+	}
+
+	public Float getFloatValue(){
+		return DataUtil.floatValue(value);
+	}
+
+	public Double getDoubleValue(){
+		return DataUtil.doubleValue(value);
+	}
+
 	public String getStringValue() {
 		return getStringValue(null);
 	}
@@ -86,7 +103,9 @@ public class Param extends Entity {
 		if (value == null) {
 			return null;
 		} else {
-			if(value instanceof  java.sql.Date){
+			if(value instanceof String) {
+				return (String) value;
+			}else if(value instanceof  java.sql.Date){
 				SimpleDateFormat dateFormat;
 				if(context != null){
 					dateFormat = context.getDateFormat();
@@ -106,10 +125,6 @@ public class Param extends Entity {
 				return value.toString();
 			}
 		}
-	}
-
-	public void setValue(String value) {
-		this.value = value;
 	}
 
 	public void setValue(Object value) {

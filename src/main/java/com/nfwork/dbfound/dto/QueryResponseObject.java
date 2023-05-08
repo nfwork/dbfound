@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.dto;
 
 import com.nfwork.dbfound.el.DBFoundEL;
+import com.nfwork.dbfound.util.DataUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class QueryResponseObject<T> extends ResponseObject{
 		if(datas == null){
 			return null;
 		}
-		return datas.stream().collect(Collectors.toMap(value -> stringValue(DBFoundEL.getData(keyProperty, value)), value -> value));
+		return datas.stream().collect(Collectors.toMap(value -> DataUtil.stringValue(DBFoundEL.getData(keyProperty, value)), value -> value, (v1,v2)->v2));
 	}
 
 	public Object getProperty(String propertyName){
@@ -51,27 +52,27 @@ public class QueryResponseObject<T> extends ResponseObject{
 
 	public String getString(String propertyName){
 		Object value = getProperty(propertyName);
-		return stringValue(value);
+		return DataUtil.stringValue(value);
 	}
 
 	public Integer getInt(String propertyName){
 		Object value = getProperty(propertyName);
-		return intValue(value);
+		return DataUtil.intValue(value);
 	}
 
 	public Long getLong(String propertyName){
 		Object value = getProperty(propertyName);
-		return longValue(value);
+		return DataUtil.longValue(value);
 	}
 
 	public Double getDouble(String propertyName){
 		Object value = getProperty(propertyName);
-		return doubleValue(value);
+		return DataUtil.doubleValue(value);
 	}
 
 	public Float getFloat(String propertyName){
 		Object value = getProperty(propertyName);
-		return floatValue(value);
+		return DataUtil.floatValue(value);
 	}
 
 	public List<Object> getPropertyList(String propertyName){
@@ -85,82 +86,34 @@ public class QueryResponseObject<T> extends ResponseObject{
 		if(datas == null){
 			return null;
 		}
-		return datas.stream().map(value -> stringValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
+		return datas.stream().map(value -> DataUtil.stringValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
 
 	public List<Integer> getIntList(String propertyName){
 		if(datas == null ){
 			return null;
 		}
-		return datas.stream().map(value -> intValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
+		return datas.stream().map(value -> DataUtil.intValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
 
 	public List<Long> getLongList(String propertyName){
 		if(datas == null ){
 			return null;
 		}
-		return datas.stream().map(value -> longValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
+		return datas.stream().map(value -> DataUtil.longValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
 
 	public List<Double> getDoubleList(String propertyName){
 		if(datas == null ){
 			return null;
 		}
-		return datas.stream().map(value -> doubleValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
+		return datas.stream().map(value -> DataUtil.doubleValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
 
 	public List<Float> getFloatList(String propertyName){
 		if(datas == null ){
 			return null;
 		}
-		return datas.stream().map(value -> floatValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
+		return datas.stream().map(value -> DataUtil.floatValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
-
-	private static String stringValue(Object value){
-		if(value == null){
-			return null;
-		}
-		return value.toString();
-	}
-
-	private static Integer intValue(Object value){
-		if(value == null){
-			return null;
-		}
-		if(value instanceof Integer){
-			return (Integer)value;
-		}
-		return Integer.parseInt(value.toString());
-	}
-
-	private static Long longValue(Object value){
-		if(value == null){
-			return null;
-		}
-		if(value instanceof Long){
-			return (Long) value;
-		}
-		return Long.parseLong(value.toString());
-	}
-
-	private static Double doubleValue(Object value){
-		if(value == null){
-			return null;
-		}
-		if(value instanceof Double){
-			return (Double) value;
-		}
-		return Double.parseDouble(value.toString());
-	}
-
-	private static Float floatValue(Object value){
-		if(value == null){
-			return null;
-		}
-		if(value instanceof Float){
-			return (Float) value;
-		}
-		return Float.parseFloat(value.toString());
-	}
-
 }
