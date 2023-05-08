@@ -22,6 +22,9 @@ public class ResponseDataTest {
 
         object.setDatas(datas);
 
+        System.out.println(object.get());
+        System.out.println(object.getMap("user_id"));
+
         System.out.println(object.getPropertyList("user_id"));
         System.out.println(object.getIntList("user_id"));
         System.out.println(object.getLongList("user_id"));

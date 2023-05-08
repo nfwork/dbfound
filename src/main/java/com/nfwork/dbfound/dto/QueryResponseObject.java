@@ -3,7 +3,7 @@ package com.nfwork.dbfound.dto;
 import com.nfwork.dbfound.el.DBFoundEL;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class QueryResponseObject<T> extends ResponseObject{
@@ -33,6 +33,13 @@ public class QueryResponseObject<T> extends ResponseObject{
 			return null;
 		}
 		return datas.get(0);
+	}
+
+	public Map<String,T> getMap(String keyProperty){
+		if(datas == null){
+			return null;
+		}
+		return datas.stream().collect(Collectors.toMap(value -> stringValue(DBFoundEL.getData(keyProperty, value)), value -> value));
 	}
 
 	public Object getProperty(String propertyName){
@@ -71,56 +78,42 @@ public class QueryResponseObject<T> extends ResponseObject{
 		if(datas == null){
 			return null;
 		}
-		return datas.stream().map(new ObjFunction(propertyName)).collect(Collectors.toList());
+		return datas.stream().map(value -> DBFoundEL.getData(propertyName, value)).collect(Collectors.toList());
 	}
 
 	public List<String> getStringList(String propertyName){
 		if(datas == null){
 			return null;
 		}
-		return datas.stream().map(new ObjFunction(propertyName)).map(QueryResponseObject::stringValue).collect(Collectors.toList());
+		return datas.stream().map(value -> stringValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
 
 	public List<Integer> getIntList(String propertyName){
 		if(datas == null ){
 			return null;
 		}
-		return datas.stream().map(new ObjFunction(propertyName)).map(QueryResponseObject::intValue).collect(Collectors.toList());
+		return datas.stream().map(value -> intValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
 
 	public List<Long> getLongList(String propertyName){
 		if(datas == null ){
 			return null;
 		}
-		return datas.stream().map(new ObjFunction(propertyName)).map(QueryResponseObject::longValue).collect(Collectors.toList());
+		return datas.stream().map(value -> longValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
 
 	public List<Double> getDoubleList(String propertyName){
 		if(datas == null ){
 			return null;
 		}
-		return datas.stream().map(new ObjFunction(propertyName)).map(QueryResponseObject::doubleValue).collect(Collectors.toList());
+		return datas.stream().map(value -> doubleValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
 
 	public List<Float> getFloatList(String propertyName){
 		if(datas == null ){
 			return null;
 		}
-		return datas.stream().map(new ObjFunction(propertyName)).map(QueryResponseObject::floatValue).collect(Collectors.toList());
-	}
-
-	private static class ObjFunction implements Function<Object, Object>{
-
-		String propertyName;
-
-		ObjFunction(String propertyName){
-			this.propertyName = propertyName;
-		}
-
-		@Override
-		public Object apply(Object data) {
-			return DBFoundEL.getData(propertyName, data);
-		}
+		return datas.stream().map(value -> floatValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
 
 	private static String stringValue(Object value){
