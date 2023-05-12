@@ -1,31 +1,12 @@
 package com.nfwork.dbfound.model.reflector;
 
-/*
- *    Copyright 2009-2012 The MyBatis Team
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
-
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,66 +15,36 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 
-/*
+/**
  * This class represents a cached set of class definition information that
  * allows for easy mapping between property names and getter/setter methods.
  */
 public class Reflector {
 
-	private static final String[] EMPTY_STRING_ARRAY = new String[0];
-	private Class<?> type;
-	private String[] readablePropertyNames = EMPTY_STRING_ARRAY;
-	private String[] writeablePropertyNames = EMPTY_STRING_ARRAY;
-	private Map<String, Invoker> setMethods = new HashMap<String, Invoker>();
-	private Map<String, Invoker> getMethods = new HashMap<String, Invoker>();
-	private Map<String, Class<?>> setTypes = new HashMap<String, Class<?>>();
-	private Map<String, Class<?>> getTypes = new HashMap<String, Class<?>>();
-	private Constructor<?> defaultConstructor;
-	// 字段的别名-字段名
-	private Map<String, String> alias_name = new HashMap<String, String>();
-	// 字段名-字段的别名
-	private Map<String, String> name_alias = new HashMap<String, String>();
-
-	private Map<String, String> caseInsensitivePropertyMap = new HashMap<String, String>();
+	private final Class<?> type;
+	private final String[] readablePropertyNames;
+	private final String[] writeablePropertyNames;
+	private final Map<String, Invoker> setMethods = new HashMap<>();
+	private final Map<String, Invoker> getMethods = new HashMap<>();
+	private final Map<String, Class<?>> setTypes = new HashMap<>();
+	private final Map<String, Class<?>> getTypes = new HashMap<>();
+	private final Map<String, String> alias_name = new HashMap<>(); // 字段的别名-字段名
 
 	private Reflector(Class<?> clazz) {
 		type = clazz;
-		addDefaultConstructor(clazz);
-		addGetMethods(clazz);
-		addSetMethods(clazz);
+		Method[] methods = getClassMethods(clazz);
+		addGetMethods(methods);
+		addSetMethods(methods);
 		addFields(clazz);
-		readablePropertyNames = getMethods.keySet().toArray(new String[getMethods.keySet().size()]);
-		writeablePropertyNames = setMethods.keySet().toArray(new String[setMethods.keySet().size()]);
-		for (String propName : readablePropertyNames) {
-			caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
-		}
-		for (String propName : writeablePropertyNames) {
-			caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
-		}
+		int rSize = getMethods.size();
+		readablePropertyNames = getMethods.keySet().toArray(new String[rSize]);
+		int wSize = setMethods.size();
+		writeablePropertyNames = setMethods.keySet().toArray(new String[wSize]);
 	}
 
-	private void addDefaultConstructor(Class<?> clazz) {
-		Constructor<?>[] consts = clazz.getDeclaredConstructors();
-		for (Constructor<?> constructor : consts) {
-			if (constructor.getParameterTypes().length == 0) {
-				if (canAccessPrivateMethods()) {
-					try {
-						constructor.setAccessible(true);
-					} catch (Exception e) {
-						// Ignored. This is only a final precaution, nothing we
-						// can do.
-					}
-				}
-				if (constructor.isAccessible()) {
-					this.defaultConstructor = constructor;
-				}
-			}
-		}
-	}
+	private void addGetMethods(Method[] methods) {
+		Map<String, List<Method>> conflictingGetters = new HashMap<>();
 
-	private void addGetMethods(Class<?> cls) {
-		Map<String, List<Method>> conflictingGetters = new HashMap<String, List<Method>>();
-		Method[] methods = getClassMethods(cls);
 		for (Method method : methods) {
 			String name = method.getName();
 			if (name.startsWith("get") && name.length() > 3) {
@@ -155,9 +106,8 @@ public class Reflector {
 		}
 	}
 
-	private void addSetMethods(Class<?> cls) {
-		Map<String, List<Method>> conflictingSetters = new HashMap<String, List<Method>>();
-		Method[] methods = getClassMethods(cls);
+	private void addSetMethods(Method[] methods) {
+		Map<String, List<Method>> conflictingSetters = new HashMap<>();
 		for (Method method : methods) {
 			String name = method.getName();
 			if (name.startsWith("set") && name.length() > 3) {
@@ -173,7 +123,7 @@ public class Reflector {
 	private void addMethodConflict(Map<String, List<Method>> conflictingMethods, String name, Method method) {
 		List<Method> list = conflictingMethods.get(name);
 		if (list == null) {
-			list = new ArrayList<Method>();
+			list = new ArrayList<>();
 			conflictingMethods.put(name, list);
 		}
 		list.add(method);
@@ -249,7 +199,6 @@ public class Reflector {
 			Column alias = field.getAnnotation(Column.class);
 			if (alias != null) {
 				alias_name.put(alias.name(), field.getName());
-				name_alias.put(field.getName(), alias.name());
 			}
 		}
 		if (clazz.getSuperclass() != null) {
@@ -275,7 +224,7 @@ public class Reflector {
 		return !(name.startsWith("$") || "serialVersionUID".equals(name) || "class".equals(name));
 	}
 
-	/*
+	/**
 	 * This method returns an array containing all methods declared in this
 	 * class and any superclass. We use this method, instead of the simpler
 	 * Class.getMethods(), because we want to look for private methods as well.
@@ -285,9 +234,9 @@ public class Reflector {
 	 * @return An array containing all methods in this class
 	 */
 	private Method[] getClassMethods(Class<?> cls) {
-		HashMap<String, Method> uniqueMethods = new HashMap<String, Method>();
+		HashMap<String, Method> uniqueMethods = new HashMap<>();
 		Class<?> currentClass = cls;
-		while (currentClass != null) {
+		while (currentClass != null && currentClass != Object.class) {
 			addUniqueMethods(uniqueMethods, currentClass.getDeclaredMethods());
 
 			// we also need to look for interface methods -
@@ -302,7 +251,8 @@ public class Reflector {
 
 		Collection<Method> methods = uniqueMethods.values();
 
-		return methods.toArray(new Method[methods.size()]);
+		int size = methods.size();
+		return methods.toArray(new Method[size]);
 	}
 
 	private void addUniqueMethods(HashMap<String, Method> uniqueMethods, Method[] methods) {
@@ -331,9 +281,7 @@ public class Reflector {
 	private String getSignature(Method method) {
 		StringBuilder sb = new StringBuilder();
 		Class<?> returnType = method.getReturnType();
-		if (returnType != null) {
-			sb.append(returnType.getName()).append('#');
-		}
+		sb.append(returnType.getName()).append('#');
 		sb.append(method.getName());
 		Class<?>[] parameters = method.getParameterTypes();
 		for (int i = 0; i < parameters.length; i++) {
@@ -347,33 +295,19 @@ public class Reflector {
 		return sb.toString();
 	}
 
+
 	private static boolean canAccessPrivateMethods() {
-		try {
-			SecurityManager securityManager = System.getSecurityManager();
-			if (null != securityManager) {
-				securityManager.checkPermission(new ReflectPermission("suppressAccessChecks"));
-			}
-		} catch (SecurityException e) {
-			return false;
-		}
-		return true;
+		// jdk 11后，不再允许反射执行 私有方法，改为false；
+		return false;
 	}
 
-	/*
+	/**
 	 * Gets the name of the class the instance provides information for
 	 * 
 	 * @return The class name
 	 */
 	public Class<?> getType() {
 		return type;
-	}
-
-	public Constructor<?> getDefaultConstructor() {
-		if (defaultConstructor != null) {
-			return defaultConstructor;
-		} else {
-			throw new ReflectionException("There is no default constructor for " + type);
-		}
 	}
 
 	public Invoker getSetInvoker(String propertyName) {
@@ -394,7 +328,7 @@ public class Reflector {
 		return method;
 	}
 
-	/*
+	/**
 	 * Gets the type for a property setter
 	 * 
 	 * @param propertyName - the name of the property
@@ -410,7 +344,7 @@ public class Reflector {
 		return clazz;
 	}
 
-	/*
+	/**
 	 * Gets the type for a property getter
 	 * 
 	 * @param propertyName - the name of the property
@@ -426,7 +360,7 @@ public class Reflector {
 		return clazz;
 	}
 
-	/*
+	/**
 	 * Gets an array of the readable properties for an object
 	 * 
 	 * @return The array
@@ -435,7 +369,7 @@ public class Reflector {
 		return readablePropertyNames;
 	}
 
-	/*
+	/**
 	 * Gets an array of the writeable properties for an object
 	 * 
 	 * @return The array
@@ -444,7 +378,7 @@ public class Reflector {
 		return writeablePropertyNames;
 	}
 
-	/*
+	/**
 	 * Check to see if a class has a writeable property by name
 	 * 
 	 * @param propertyName - the name of the property to check
@@ -452,10 +386,10 @@ public class Reflector {
 	 * @return True if the object has a writeable property by the name
 	 */
 	public boolean hasSetter(String propertyName) {
-		return setMethods.keySet().contains(propertyName);
+		return setMethods.containsKey(propertyName);
 	}
 
-	/*
+	/**
 	 * Check to see if a class has a readable property by name
 	 * 
 	 * @param propertyName - the name of the property to check
@@ -463,32 +397,24 @@ public class Reflector {
 	 * @return True if the object has a readable property by the name
 	 */
 	public boolean hasGetter(String propertyName) {
-		return getMethods.keySet().contains(propertyName);
+		return getMethods.containsKey(propertyName);
 	}
 
-	public String findPropertyName(String name) {
-		return caseInsensitivePropertyMap.get(name.toUpperCase(Locale.ENGLISH));
-	}
+	private static final ConcurrentMap<Class<?>, Future<Reflector>> REFLECTOR_MAP = new ConcurrentHashMap<>();
 
-	/*
+	/**
 	 * Gets an instance of ClassInfo for the specified class.
-	 * 
+	 *
 	 * @param clazz The class for which to lookup the method cache.
-	 * 
+	 *
 	 * @return The method cache for the class
 	 */
-	private static final ConcurrentMap<Class<?>, Future<Reflector>> REFLECTOR_MAP = new ConcurrentHashMap<Class<?>, Future<Reflector>>();
-
 	public static Reflector forClass(final Class<?> clazz) {
 
 		Future<Reflector> future = REFLECTOR_MAP.get(clazz);
 		if (future == null) {
-			Callable<Reflector> callable = new Callable<Reflector>() {
-				public Reflector call() throws Exception {
-					return new Reflector(clazz);
-				}
-			};
-			FutureTask<Reflector> task = new FutureTask<Reflector>(callable);
+			Callable<Reflector> callable = () -> new Reflector(clazz);
+			FutureTask<Reflector> task = new FutureTask<>(callable);
 
 			future = REFLECTOR_MAP.putIfAbsent(clazz, task);
 			if (future == null) {
@@ -503,7 +429,6 @@ public class Reflector {
 			REFLECTOR_MAP.remove(clazz);
 			throw new DBFoundPackageException(e);
 		}
-
 	}
 
 	public String getFieldName(String column) {
@@ -512,15 +437,6 @@ public class Reflector {
 			return name;
 		} else {
 			return column;
-		}
-	}
-
-	public String getColumn(String name) {
-		String column = name_alias.get(name);
-		if (column != null) {
-			return column;
-		} else {
-			return name;
 		}
 	}
 }
