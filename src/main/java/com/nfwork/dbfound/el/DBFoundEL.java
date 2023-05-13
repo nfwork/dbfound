@@ -221,7 +221,7 @@ public class DBFoundEL {
 						name = StringUtil.underscoreToCamelCase(name);
 					}
 				}
-				if(reflector.hasGetter(name)) {
+				if(reflector.hasSetter(name)) {
 					Class<?> fieldType = reflector.getSetterType(name);
 					if (nextObj!=null && Enum.class.isAssignableFrom(fieldType) && !(nextObj instanceof Enum)) {
 						nextObj = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(nextObj.toString());
