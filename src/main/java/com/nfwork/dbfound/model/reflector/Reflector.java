@@ -2,6 +2,7 @@ package com.nfwork.dbfound.model.reflector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -175,15 +176,7 @@ public class Reflector {
 	private void addFields(Class<?> clazz) {
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
-			if (canAccessPrivateMethods()) {
-				try {
-					field.setAccessible(true);
-				} catch (Exception e) {
-					// Ignored. This is only a final precaution, nothing we can
-					// do.
-				}
-			}
-			if (field.isAccessible()) {
+			if (Modifier.isPublic(field.getModifiers())) {
 				if (!setMethods.containsKey(field.getName())) {
 					// issue 379 - removed the check for final because JDK 1.5
 					// allows
@@ -259,20 +252,10 @@ public class Reflector {
 		for (Method currentMethod : methods) {
 			if (!currentMethod.isBridge()) {
 				String signature = getSignature(currentMethod);
-				// check to see if the method is already known
-				// if it is known, then an extended class must have
-				// overridden a method
 				if (!uniqueMethods.containsKey(signature)) {
-					if (canAccessPrivateMethods()) {
-						try {
-							currentMethod.setAccessible(true);
-						} catch (Exception e) {
-							// Ignored. This is only a final precaution, nothing
-							// we can do.
-						}
+					if (Modifier.isPublic(currentMethod.getModifiers())) {
+						uniqueMethods.put(signature, currentMethod);
 					}
-
-					uniqueMethods.put(signature, currentMethod);
 				}
 			}
 		}
@@ -295,12 +278,6 @@ public class Reflector {
 		return sb.toString();
 	}
 
-
-	private static boolean canAccessPrivateMethods() {
-		// jdk 11后，不再允许反射执行 私有方法，改为false；
-		return false;
-	}
-
 	/**
 	 * Gets the name of the class the instance provides information for
 	 * 
@@ -313,7 +290,7 @@ public class Reflector {
 	public Invoker getSetInvoker(String propertyName) {
 		Invoker method = setMethods.get(propertyName);
 		if (method == null) {
-			throw new ReflectionException("There is no setter for property named '" + propertyName + "' in '" + type
+			throw new ReflectionException("There is no setter or setter is not public for property named '" + propertyName + "' in '" + type
 					+ "'");
 		}
 		return method;
@@ -322,7 +299,7 @@ public class Reflector {
 	public Invoker getGetInvoker(String propertyName) {
 		Invoker method = getMethods.get(propertyName);
 		if (method == null) {
-			throw new ReflectionException("There is no getter for property named '" + propertyName + "' in '" + type
+			throw new ReflectionException("There is no getter or getter is not public for property named '" + propertyName + "' in '" + type
 					+ "'");
 		}
 		return method;
@@ -338,7 +315,7 @@ public class Reflector {
 	public Class<?> getSetterType(String propertyName) {
 		Class<?> clazz = setTypes.get(propertyName);
 		if (clazz == null) {
-			throw new ReflectionException("There is no setter for property named '" + propertyName + "' in '" + type
+			throw new ReflectionException("There is no setter or setter is not public for property named '" + propertyName + "' in '" + type
 					+ "'");
 		}
 		return clazz;
@@ -354,7 +331,7 @@ public class Reflector {
 	public Class<?> getGetterType(String propertyName) {
 		Class<?> clazz = getTypes.get(propertyName);
 		if (clazz == null) {
-			throw new ReflectionException("There is no getter for property named '" + propertyName + "' in '" + type
+			throw new ReflectionException("There is no getter or getter is not public for property named '" + propertyName + "' in '" + type
 					+ "'");
 		}
 		return clazz;
