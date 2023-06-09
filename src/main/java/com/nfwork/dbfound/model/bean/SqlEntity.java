@@ -5,8 +5,7 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -337,8 +336,7 @@ public abstract class SqlEntity extends Sqls {
 				}
 			}
 		} else if (nfParam.getDataType() == DataType.DATE) {
-			if (!(nfParam.getValue() instanceof Date) && !(nfParam.getValue() instanceof LocalDateTime)
-					&& !(nfParam.getValue() instanceof LocalDate)) {
+			if (!(nfParam.getValue() instanceof Date) && !(nfParam.getValue() instanceof Temporal)) {
 				if(nfParam.getValue() instanceof Long){
 					nfParam.setValue(new Timestamp((Long) nfParam.getValue()));
 				} else if(nfParam.getValue() instanceof String){
