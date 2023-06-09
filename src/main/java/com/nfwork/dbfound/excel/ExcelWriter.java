@@ -1,6 +1,10 @@
 package com.nfwork.dbfound.excel;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -136,6 +140,24 @@ public class ExcelWriter {
 								dateTimeFormat = new WritableCellFormat(df);
 							}
 							DateTime dateTime = new DateTime(i, index, (Date) o,dateTimeFormat);
+							ws.addCell(dateTime);
+						} else if (o instanceof LocalDate) {
+							if(dateFormat == null) {
+								DateFormat df = new jxl.write.DateFormat(DBFoundConfig.getDateFormat());
+								dateFormat = new WritableCellFormat(df);
+							}
+							LocalDate localDate =  (LocalDate) o;
+							ZonedDateTime zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault());
+							DateTime dateTime = new DateTime(i, index, Date.from(zonedDateTime.toInstant()),dateFormat);
+							ws.addCell(dateTime);
+						} else if (o instanceof LocalDateTime) {
+							if(dateTimeFormat == null) {
+								DateFormat df = new jxl.write.DateFormat(DBFoundConfig.getDateTimeFormat());
+								dateTimeFormat = new WritableCellFormat(df);
+							}
+							LocalDateTime localDateTime =  (LocalDateTime) o;
+							ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+							DateTime dateTime = new DateTime(i, index, Date.from(zonedDateTime.toInstant()),dateTimeFormat);
 							ws.addCell(dateTime);
 						} else {
 							String content = o.toString();
