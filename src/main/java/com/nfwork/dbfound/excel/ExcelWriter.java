@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.excel;
 
 import java.io.*;
+import java.sql.Time;
 import java.time.*;
 import java.util.Date;
 import java.util.HashMap;
@@ -132,7 +133,10 @@ public class ExcelWriter {
 							}
 							DateTime dateTime = new DateTime(i, index, (Date) o,dateFormat);
 							ws.addCell(dateTime);
-						}  else if (o instanceof Date) {
+						} else if (o instanceof Time) {
+							Label label = new Label(i, index, o.toString());
+							ws.addCell(label);
+						} else if (o instanceof Date) {
 							if(dateTimeFormat == null) {
 								DateFormat df = new jxl.write.DateFormat(DBFoundConfig.getDateTimeFormat());
 								dateTimeFormat = new WritableCellFormat(df);
