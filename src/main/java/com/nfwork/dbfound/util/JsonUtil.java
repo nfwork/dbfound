@@ -3,6 +3,9 @@ package com.nfwork.dbfound.util;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +23,7 @@ import com.nfwork.dbfound.json.JSONObject;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
 import com.nfwork.dbfound.model.reflector.Reflector;
+import javafx.scene.input.DataFormat;
 
 /**
  * Json数据处理
@@ -267,6 +271,10 @@ public class JsonUtil {
 				datetimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
 			}
 			json.append("\"").append(datetimeFormat.format(obj)).append("\"");
+		} else if(obj instanceof LocalDateTime) {
+			json.append("\"").append(LocalDateUtil.formatDateTime((LocalDateTime)obj)).append("\"");
+		} else if(obj instanceof LocalDate) {
+			json.append("\"").append(LocalDateUtil.formatDate((LocalDate)obj)).append("\"");
 		} else if (obj instanceof List) {
 			json.append(listToJson((List<?>) obj, context));
 		} else if (obj instanceof Map) {

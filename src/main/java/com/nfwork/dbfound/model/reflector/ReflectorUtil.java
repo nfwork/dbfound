@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
@@ -71,6 +73,10 @@ public class ReflectorUtil {
 								columnValue = rs.getByte(i);
 							} else if (fieldType.equals(byte[].class)) {
 								columnValue = rs.getBytes(i);
+							} else if (fieldType.equals(LocalDateTime.class)) {
+								columnValue = rs.getTimestamp(i, defaultCalendar).toLocalDateTime();
+							} else if (fieldType.equals(LocalDate.class)) {
+								columnValue = rs.getDate(i, defaultCalendar).toLocalDate();
 							}
 
 							try {

@@ -1,6 +1,8 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.nfwork.dbfound.core.Context;
@@ -8,6 +10,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.LocalDateUtil;
 
 public class Param extends Entity {
 
@@ -121,7 +124,11 @@ public class Param extends Entity {
 					datetimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
 				}
 				return datetimeFormat.format(value);
-			} else {
+			}else if (value instanceof LocalDate) {
+				return LocalDateUtil.formatDate((LocalDate) value);
+			}else if(value instanceof LocalDateTime){
+				return LocalDateUtil.formatDateTime((LocalDateTime) value);
+			}else {
 				return value.toString();
 			}
 		}
