@@ -274,9 +274,10 @@ public class DispatcherFilter implements Filter {
 	 * 容器销毁
 	 */
 	public void destroy() {
-		System.out.println("" + new SimpleDateFormat(DBFoundConfig.getDateTimeFormat()).format(new Date()) + " NFWork dbfound");
-		System.out.println("信息: Closing dbfound service");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+		System.out.println(format.format(new Date()) + " NFWork dbfound " + DBFoundConfig.VERSION +", closing dbfound service");
 		DBFoundConfig.destroy();
+		System.out.println(format.format(new Date()) + " NFWork dbfound " + DBFoundConfig.VERSION +", dbfound service closed");
 	}
 
 	/**

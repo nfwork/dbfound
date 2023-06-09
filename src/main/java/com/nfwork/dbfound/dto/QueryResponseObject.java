@@ -116,4 +116,20 @@ public class QueryResponseObject<T> extends ResponseObject{
 		}
 		return datas.stream().map(value -> DataUtil.floatValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
+
+	public void join(QueryResponseObject joinData, String joinField){
+		Map<String,Map> joinMap = joinData.getMap(joinField);
+		for (T data : datas){
+			Map mapData = (Map)data;
+			Object key = mapData.get(joinField);
+			if(key ==null){
+				continue;
+			}
+			Map joinMapData = joinMap.get(key.toString());
+			if(joinMapData == null){
+				continue;
+			}
+			mapData.putAll(joinMapData);
+		}
+	}
 }
