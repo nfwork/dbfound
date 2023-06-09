@@ -248,12 +248,8 @@ public class JsonUtil {
 			json.append("null");
 		} else if (obj instanceof Number) {
 			json.append(numberToJson((Number) obj));
-		} else if (obj instanceof Boolean) {
-			json.append(booleanToJson((Boolean) obj));
 		} else if (obj instanceof String) {
 			json.append("\"").append(stringToJson(obj.toString())).append("\"");
-		} else if (obj instanceof Object[]) {
-			json.append(arrayToJson((Object[]) obj, context));
 		} else if (obj instanceof java.sql.Date) {
 			SimpleDateFormat dateFormat;
 			if(context != null){
@@ -270,6 +266,8 @@ public class JsonUtil {
 				datetimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
 			}
 			json.append("\"").append(datetimeFormat.format(obj)).append("\"");
+		} else if (obj instanceof Boolean) {
+			json.append(booleanToJson((Boolean) obj));
 		} else if(obj instanceof LocalDateTime) {
 			json.append("\"").append(LocalDateUtil.formatDateTime((LocalDateTime)obj)).append("\"");
 		} else if(obj instanceof LocalDate) {
@@ -280,6 +278,8 @@ public class JsonUtil {
 			json.append(mapToJson((Map<?, ?>) obj, context));
 		} else if (obj instanceof Set) {
 			json.append(setToJson((Set<?>) obj, context));
+		} else if (obj instanceof Object[]) {
+			json.append(arrayToJson((Object[]) obj, context));
 		} else if (obj instanceof Enum) {
 			EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(obj.getClass());
 			Object value = handler.getEnumValue(obj);
