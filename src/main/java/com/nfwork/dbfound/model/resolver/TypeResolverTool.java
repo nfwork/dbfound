@@ -3,6 +3,7 @@ package com.nfwork.dbfound.model.resolver;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -44,6 +45,8 @@ public class TypeResolverTool {
         resolverMap.put(java.sql.Date.class, new SqlDateResolver());
 
         resolverMap.put(Date.class, new DateResolver());
+
+        resolverMap.put(Time.class, new TimeResolver());
 
         resolverMap.put(BigDecimal.class, new BigDecimalResolver());
 

@@ -1,10 +1,12 @@
 package com.nfwork.dbfound.util;
 
 import java.io.InputStream;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -258,6 +260,8 @@ public class JsonUtil {
 				dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
 			}
 			json.append("\"").append(dateFormat.format(obj)).append("\"");
+		} else if (obj instanceof Time || obj instanceof LocalTime) {
+			json.append("\"").append(obj).append("\"");
 		} else if (obj instanceof Date) {
 			SimpleDateFormat datetimeFormat;
 			if(context != null){

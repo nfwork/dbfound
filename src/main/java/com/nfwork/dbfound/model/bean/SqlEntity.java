@@ -473,6 +473,8 @@ public abstract class SqlEntity extends Sqls {
 				result = dataset.getDate(index, defaultCalendar);
 				break;
 			case Types.TIME:
+				result = dataset.getTime(index, defaultCalendar);
+				break;
 			case Types.TIMESTAMP:
 				result = dataset.getTimestamp(index, defaultCalendar);
 				break;
