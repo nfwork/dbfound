@@ -1,10 +1,7 @@
 package com.nfwork.dbfound.excel;
 
 import java.io.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +13,7 @@ import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.LocalDateUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 
@@ -159,6 +157,10 @@ public class ExcelWriter {
 							ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
 							DateTime dateTime = new DateTime(i, index, Date.from(zonedDateTime.toInstant()),dateTimeFormat);
 							ws.addCell(dateTime);
+						} else if (o instanceof LocalTime) {
+							String content = LocalDateUtil.formatTime((LocalTime) o);
+							Label label = new Label(i, index, content);
+							ws.addCell(label);
 						} else {
 							String content = o.toString();
 							Label label = new Label(i, index, content);

@@ -260,7 +260,7 @@ public class JsonUtil {
 				dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
 			}
 			json.append("\"").append(dateFormat.format(obj)).append("\"");
-		} else if (obj instanceof Time || obj instanceof LocalTime) {
+		} else if (obj instanceof Time) {
 			json.append("\"").append(obj).append("\"");
 		} else if (obj instanceof Date) {
 			SimpleDateFormat datetimeFormat;
@@ -276,6 +276,8 @@ public class JsonUtil {
 			json.append("\"").append(LocalDateUtil.formatDateTime((LocalDateTime)obj)).append("\"");
 		} else if(obj instanceof LocalDate) {
 			json.append("\"").append(LocalDateUtil.formatDate((LocalDate)obj)).append("\"");
+		} else if(obj instanceof LocalTime) {
+			json.append("\"").append(LocalDateUtil.formatTime((LocalTime)obj)).append("\"");
 		} else if (obj instanceof List) {
 			json.append(listToJson((List<?>) obj, context));
 		} else if (obj instanceof Map) {

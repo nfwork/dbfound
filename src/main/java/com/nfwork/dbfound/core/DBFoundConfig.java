@@ -57,6 +57,7 @@ public class DBFoundConfig {
 	}
 	private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd";
+	private static String timeFormat = "HH:mm:ss";
 	private static boolean openSession = true;
 	private static boolean openLog = true;
 	private static String encoding = "UTF-8";
@@ -650,4 +651,11 @@ public class DBFoundConfig {
 		DBFoundConfig.basePath = basePath;
 	}
 
+	public static String getTimeFormat() {
+		return timeFormat;
+	}
+
+	public static void setTimeFormat(String timeFormat) {
+		DBFoundConfig.timeFormat = timeFormat;
+	}
 }
