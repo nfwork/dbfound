@@ -33,7 +33,7 @@ public class ActionReflect {
 					transaction.commit();
 					transaction.end();
 
-					WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(result, context));
+					WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(result));
 				} else {
 					throw new DBFoundRuntimeException("return object must extends ResponseObject");
 				}

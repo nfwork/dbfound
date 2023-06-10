@@ -329,16 +329,16 @@ public abstract class SqlEntity extends Sqls {
 		}else if (nfParam.getDataType() == DataType.VARCHAR) {
 			if(!(nfParam.getValue() instanceof String)) {
 				if (nfParam.getValue() instanceof Map) {
-					String paramValue = JsonUtil.mapToJson((Map) nfParam.getValue(), context);
+					String paramValue = JsonUtil.mapToJson((Map) nfParam.getValue());
 					nfParam.setValue(paramValue);
 				} else if (nfParam.getValue() instanceof Set) {
-					String paramValue = JsonUtil.setToJson((Set) nfParam.getValue(), context);
+					String paramValue = JsonUtil.setToJson((Set) nfParam.getValue());
 					nfParam.setValue(paramValue);
 				} else if (nfParam.getValue() instanceof List) {
-					String paramValue = JsonUtil.listToJson((List) nfParam.getValue(), context);
+					String paramValue = JsonUtil.listToJson((List) nfParam.getValue());
 					nfParam.setValue(paramValue);
 				} else if (nfParam.getValue() instanceof Object[]) {
-					String paramValue = JsonUtil.arrayToJson((Object[]) nfParam.getValue(), context);
+					String paramValue = JsonUtil.arrayToJson((Object[]) nfParam.getValue());
 					nfParam.setValue(paramValue);
 				} else{
 					nfParam.setValue(nfParam.getStringValue(context));

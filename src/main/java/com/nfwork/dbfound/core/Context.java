@@ -48,7 +48,6 @@ public class Context {
 
 	private Transaction transaction;
 	private final long createThread = Thread.currentThread().getId();
-	private Map<String,String> underLineNameCache ;
 	private int modelDeep = 0;
 
 	public Transaction getTransaction() {
@@ -430,18 +429,6 @@ public class Context {
 			}
 			return connObject.connection;
 		}
-	}
-
-	public String getUnderLineNameByCache(String property){
-		if(underLineNameCache == null){
-			underLineNameCache = new HashMap<>();
-		}
-		String value = underLineNameCache.get(property);
-		if(value == null){
-			value = StringUtil.camelCaseToUnderscore(property);
-			underLineNameCache.put(property,value);
-		}
-		return value;
 	}
 
 	/**

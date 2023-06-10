@@ -10,7 +10,7 @@ public class PrintContext extends SqlEntity{
 
     @Override
     public void execute(Context context, Map<String, Param> params, String provideName) {
-        LogUtil.info("PrintContext currentPath: "+context.getCurrentPath()+", data: "+JsonUtil.mapToJson(context.getDatas(),context));
+        LogUtil.info("PrintContext currentPath: "+context.getCurrentPath()+", data: "+JsonUtil.mapToJson(context.getDatas()));
     }
 
 }

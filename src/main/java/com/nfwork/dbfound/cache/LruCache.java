@@ -1,4 +1,4 @@
-package com.nfwork.dbfound.model.dsql;
+package com.nfwork.dbfound.cache;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
-public class DSqlCache<K, V> {
+public class LruCache<K, V> {
 
     private final int sizeLimit;
 
@@ -26,7 +26,7 @@ public class DSqlCache<K, V> {
      * (0 indicates no caching, always generating a new value)
      * @param generator a function to generate a new value for a given key
      */
-    public DSqlCache(int sizeLimit, Function<K, V> generator) {
+    public LruCache(int sizeLimit, Function<K, V> generator) {
         this.sizeLimit = sizeLimit;
         this.generator = generator;
     }

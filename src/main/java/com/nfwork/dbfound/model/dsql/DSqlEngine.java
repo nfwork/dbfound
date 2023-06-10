@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.model.dsql;
 
+import com.nfwork.dbfound.cache.LruCache;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import net.sf.jsqlparser.expression.*;
@@ -19,7 +20,7 @@ import java.util.function.Function;
 
 public class DSqlEngine {
 
-    private static final DSqlCache<String,Expression> lruCache = new DSqlCache<>(5000, new ExpressionFunction());
+    private static final LruCache<String,Expression> lruCache = new LruCache<>(5000, new ExpressionFunction());
 
     private static final Map<Class<? extends Expression>,DSqlValueResolver> resolverMap = new ConcurrentHashMap<>();
 

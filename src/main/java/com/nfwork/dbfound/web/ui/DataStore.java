@@ -85,7 +85,7 @@ public class DataStore extends TagSupport {
 					new Object[] { context });
 			if (ro instanceof QueryResponseObject) {
 				QueryResponseObject qro = (QueryResponseObject) ro;
-				return JsonUtil.beanToJson(qro, context);
+				return JsonUtil.beanToJson(qro);
 			}
 		} else {
 			throw new DBFoundRuntimeException("Provide必须实现StoreDataProvide接口");
