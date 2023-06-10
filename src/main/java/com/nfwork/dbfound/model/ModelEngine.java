@@ -54,8 +54,35 @@ public class ModelEngine {
 	}
 
 	/**
+	 * 查询 返回一个list的Map集合
+	 *
+	 * @param context context
+	 * @param modelName modelName
+	 * @param queryName query name
+	 * @param autoPaging 是否分页
+	 * @return QueryResponseObject
+	 */
+	public static QueryResponseObject query(Context context, String modelName, String queryName, boolean autoPaging) {
+		return query(context, modelName, queryName, defaultPath, autoPaging, null);
+	}
+
+	/**
+	 * 查询 可以指定当前路径、是否自动分页、返回对象的查询
+	 *
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param autoPaging auto paging
+	 * @param clazz clazz
+	 * @return T
+	 */
+	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, boolean autoPaging, Class<T> clazz) {
+		return query(context, modelName, queryName, defaultPath, autoPaging, clazz);
+	}
+
+	/**
 	 * 可指定当前路径，是否自动分页的查询
-	 * 
+	 *
 	 * @param context context
 	 * @param modelName modelName
 	 * @param queryName query name
