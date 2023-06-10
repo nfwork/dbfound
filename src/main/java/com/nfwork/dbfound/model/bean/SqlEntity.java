@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.Date;
@@ -227,12 +230,18 @@ public abstract class SqlEntity extends Sqls {
 					}
 
 					String value;
-					if(item instanceof  java.sql.Date){
-						SimpleDateFormat format = context.getDateFormat();
-						value = format.format(item);
-					}else if (item instanceof Date) {
-						SimpleDateFormat format = context.getDateTimeFormat();
-						value = format.format(item);
+					if (item instanceof Date) {
+						value = LocalDateUtil.formatDate((Date) item);
+					} else if(item instanceof Temporal) {
+						if(item instanceof LocalDateTime) {
+							value = LocalDateUtil.formatDateTime((LocalDateTime)item);
+						} else if(item instanceof LocalDate) {
+							value = LocalDateUtil.formatDate((LocalDate)item);
+						} else if(item instanceof LocalTime) {
+							value = LocalDateUtil.formatTime((LocalTime)item);
+						} else {
+							value = item.toString();
+						}
 					} else {
 						value = item.toString();
 					}
@@ -345,17 +354,21 @@ public abstract class SqlEntity extends Sqls {
 						nfParam.setValue(new Timestamp(Long.parseLong(paramValue)));
 					} else if (paramValue.length() == DBFoundConfig.getDateFormat().length()) {
 						try {
-							SimpleDateFormat dateFormat = context.getDateFormat();
-							nfParam.setValue(new java.sql.Date(dateFormat.parse(paramValue).getTime()));
-						} catch (ParseException exception) {
+							nfParam.setValue(LocalDateUtil.parseDate(paramValue));
+						} catch (Exception exception) {
 							throw new DBFoundRuntimeException("parse date exception, value :" + paramValue, exception);
 						}
 					} else if (paramValue.length() == DBFoundConfig.getDateTimeFormat().length()) {
 						try {
-							SimpleDateFormat dateTimeFormat = context.getDateTimeFormat();
-							nfParam.setValue(dateTimeFormat.parse(paramValue));
-						} catch (ParseException exception) {
+							nfParam.setValue(LocalDateUtil.parseDateTime(paramValue));
+						} catch (Exception exception) {
 							throw new DBFoundRuntimeException("parse datetime exception, value :" + paramValue, exception);
+						}
+					} else if (paramValue.length() == DBFoundConfig.getTimeFormat().length()) {
+						try {
+							nfParam.setValue(LocalDateUtil.parseTime(paramValue));
+						} catch (Exception exception) {
+							throw new DBFoundRuntimeException("parse time exception, value :" + paramValue, exception);
 						}
 					}
 				} else {

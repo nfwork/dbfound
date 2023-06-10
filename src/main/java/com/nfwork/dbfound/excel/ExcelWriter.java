@@ -2,6 +2,7 @@ package com.nfwork.dbfound.excel;
 
 import java.io.*;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.*;
 import java.util.Date;
 import java.util.HashMap;
@@ -134,7 +135,7 @@ public class ExcelWriter {
 							DateTime dateTime = new DateTime(i, index, (Date) o,dateFormat);
 							ws.addCell(dateTime);
 						} else if (o instanceof Time) {
-							Label label = new Label(i, index, o.toString());
+							Label label = new Label(i, index, LocalDateUtil.formatTime((Time) o));
 							ws.addCell(label);
 						} else if (o instanceof Date) {
 							if(dateTimeFormat == null) {
@@ -149,8 +150,7 @@ public class ExcelWriter {
 								dateFormat = new WritableCellFormat(df);
 							}
 							LocalDate localDate =  (LocalDate) o;
-							ZonedDateTime zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault());
-							DateTime dateTime = new DateTime(i, index, Date.from(zonedDateTime.toInstant()),dateFormat);
+							DateTime dateTime = new DateTime(i, index, java.sql.Date.valueOf(localDate),dateFormat);
 							ws.addCell(dateTime);
 						} else if (o instanceof LocalDateTime) {
 							if(dateTimeFormat == null) {
@@ -158,12 +158,10 @@ public class ExcelWriter {
 								dateTimeFormat = new WritableCellFormat(df);
 							}
 							LocalDateTime localDateTime =  (LocalDateTime) o;
-							ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
-							DateTime dateTime = new DateTime(i, index, Date.from(zonedDateTime.toInstant()),dateTimeFormat);
+							DateTime dateTime = new DateTime(i, index, Timestamp.valueOf(localDateTime),dateTimeFormat);
 							ws.addCell(dateTime);
 						} else if (o instanceof LocalTime) {
-							String content = LocalDateUtil.formatTime((LocalTime) o);
-							Label label = new Label(i, index, content);
+							Label label = new Label(i, index, LocalDateUtil.formatTime((LocalTime) o));
 							ws.addCell(label);
 						} else {
 							String content = o.toString();

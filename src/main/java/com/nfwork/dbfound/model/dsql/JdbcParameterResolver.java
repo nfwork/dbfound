@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.util.LocalDateUtil;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.JdbcParameter;
 
@@ -13,10 +14,8 @@ public class JdbcParameterResolver extends DSqlValueResolver {
         JdbcParameter jdbcParameter = (JdbcParameter) expression;
         int index = jdbcParameter.getIndex();
         Object result = param.get(index-1);
-        if(result instanceof java.sql.Date){
-            return context.getDateFormat().format((java.sql.Date)result);
-        }else if(result instanceof Date){
-            return context.getDateTimeFormat().format((Date)result);
+        if(result instanceof Date){
+            return LocalDateUtil.formatDate((Date)result);
         }else{
             return result;
         }

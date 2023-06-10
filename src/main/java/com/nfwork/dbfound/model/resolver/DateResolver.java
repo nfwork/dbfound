@@ -8,6 +8,6 @@ public class DateResolver implements TypeResolver{
 
     @Override
     public Object getValue(ResultSet rs, int index, Calendar defaultCalendar) throws SQLException {
-        return rs.getTimestamp(index);
+        return rs.getTimestamp(index, defaultCalendar);
     }
 }

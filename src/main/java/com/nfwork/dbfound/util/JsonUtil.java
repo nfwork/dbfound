@@ -1,12 +1,12 @@
 package com.nfwork.dbfound.util;
 
 import java.io.InputStream;
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,7 +24,6 @@ import com.nfwork.dbfound.json.JSONObject;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
 import com.nfwork.dbfound.model.reflector.Reflector;
-import javafx.scene.input.DataFormat;
 
 /**
  * Json数据处理
@@ -252,32 +251,20 @@ public class JsonUtil {
 			json.append(numberToJson((Number) obj));
 		} else if (obj instanceof String) {
 			json.append("\"").append(stringToJson(obj.toString())).append("\"");
-		} else if (obj instanceof java.sql.Date) {
-			SimpleDateFormat dateFormat;
-			if(context != null){
-				dateFormat = context.getDateFormat();
-			}else{
-				dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
-			}
-			json.append("\"").append(dateFormat.format(obj)).append("\"");
-		} else if (obj instanceof Time) {
-			json.append("\"").append(obj).append("\"");
 		} else if (obj instanceof Date) {
-			SimpleDateFormat datetimeFormat;
-			if(context != null){
-				datetimeFormat = context.getDateTimeFormat();
-			}else {
-				datetimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
-			}
-			json.append("\"").append(datetimeFormat.format(obj)).append("\"");
+			json.append("\"").append(LocalDateUtil.formatDate((Date)obj)).append("\"");
 		} else if (obj instanceof Boolean) {
 			json.append(booleanToJson((Boolean) obj));
-		} else if(obj instanceof LocalDateTime) {
-			json.append("\"").append(LocalDateUtil.formatDateTime((LocalDateTime)obj)).append("\"");
-		} else if(obj instanceof LocalDate) {
-			json.append("\"").append(LocalDateUtil.formatDate((LocalDate)obj)).append("\"");
-		} else if(obj instanceof LocalTime) {
-			json.append("\"").append(LocalDateUtil.formatTime((LocalTime)obj)).append("\"");
+		} else if(obj instanceof Temporal) {
+			if(obj instanceof LocalDateTime) {
+				json.append("\"").append(LocalDateUtil.formatDateTime((LocalDateTime)obj)).append("\"");
+			} else if(obj instanceof LocalDate) {
+				json.append("\"").append(LocalDateUtil.formatDate((LocalDate)obj)).append("\"");
+			} else if(obj instanceof LocalTime) {
+				json.append("\"").append(LocalDateUtil.formatTime((LocalTime)obj)).append("\"");
+			} else {
+				json.append("null");
+			}
 		} else if (obj instanceof List) {
 			json.append(listToJson((List<?>) obj, context));
 		} else if (obj instanceof Map) {

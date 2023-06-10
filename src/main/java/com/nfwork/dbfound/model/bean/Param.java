@@ -108,22 +108,8 @@ public class Param extends Entity {
 		} else {
 			if(value instanceof String) {
 				return (String) value;
-			}else if(value instanceof  java.sql.Date){
-				SimpleDateFormat dateFormat;
-				if(context != null){
-					dateFormat = context.getDateFormat();
-				}else{
-					dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
-				}
-				return dateFormat.format(value);
-			}else if (value instanceof Date) {
-				SimpleDateFormat datetimeFormat;
-				if(context != null){
-					datetimeFormat = context.getDateTimeFormat();
-				}else {
-					datetimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
-				}
-				return datetimeFormat.format(value);
+			} if (value instanceof Date) {
+				return LocalDateUtil.formatDate((Date) value);
 			}else if (value instanceof LocalDate) {
 				return LocalDateUtil.formatDate((LocalDate) value);
 			}else if(value instanceof LocalDateTime){

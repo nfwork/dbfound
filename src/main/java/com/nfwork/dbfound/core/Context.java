@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.http.Cookie;
@@ -29,8 +28,6 @@ public class Context {
 
 	private boolean outMessage = true;
 	private boolean isExport = false;
-	private SimpleDateFormat dateFormat;
-	private SimpleDateFormat dateTimeFormat;
 	public HttpServletRequest request;
 	public HttpServletResponse response;
 
@@ -636,22 +633,6 @@ public class Context {
 
 	public void setTransaction(Transaction transaction) {
 		this.transaction = transaction;
-	}
-
-	public SimpleDateFormat getDateFormat() {
-		checkContext();
-		if(dateFormat == null){
-			dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
-		}
-		return dateFormat;
-	}
-
-	public SimpleDateFormat getDateTimeFormat() {
-		checkContext();
-		if(dateTimeFormat == null){
-			dateTimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
-		}
-		return dateTimeFormat;
 	}
 
 	private void checkContext(){
