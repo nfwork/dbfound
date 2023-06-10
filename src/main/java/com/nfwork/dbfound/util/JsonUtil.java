@@ -234,15 +234,8 @@ public class JsonUtil {
 		} else if (obj instanceof Boolean) {
 			json.append(booleanToJson((Boolean) obj));
 		} else if(obj instanceof Temporal) {
-			if(obj instanceof LocalDateTime) {
-				json.append("\"").append(LocalDateUtil.formatDateTime((LocalDateTime)obj)).append("\"");
-			} else if(obj instanceof LocalDate) {
-				json.append("\"").append(LocalDateUtil.formatDate((LocalDate)obj)).append("\"");
-			} else if(obj instanceof LocalTime) {
-				json.append("\"").append(LocalDateUtil.formatTime((LocalTime)obj)).append("\"");
-			} else {
-				json.append(objectToJson(obj.toString()));
-			}
+			String value = LocalDateUtil.formatTemporal((Temporal) obj);
+			json.append("\"").append(value).append("\"");
 		} else if (obj instanceof List) {
 			json.append(listToJson((List<?>) obj));
 		} else if (obj instanceof Map) {

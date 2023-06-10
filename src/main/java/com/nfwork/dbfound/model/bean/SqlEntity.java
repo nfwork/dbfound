@@ -233,15 +233,7 @@ public abstract class SqlEntity extends Sqls {
 					if (item instanceof Date) {
 						value = LocalDateUtil.formatDate((Date) item);
 					} else if(item instanceof Temporal) {
-						if(item instanceof LocalDateTime) {
-							value = LocalDateUtil.formatDateTime((LocalDateTime)item);
-						} else if(item instanceof LocalDate) {
-							value = LocalDateUtil.formatDate((LocalDate)item);
-						} else if(item instanceof LocalTime) {
-							value = LocalDateUtil.formatTime((LocalTime)item);
-						} else {
-							value = item.toString();
-						}
+						value = LocalDateUtil.formatTemporal((Temporal) item);
 					} else {
 						value = item.toString();
 					}

@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
 import java.util.Date;
 
 public class LocalDateUtil {
@@ -18,13 +19,25 @@ public class LocalDateUtil {
 
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(DBFoundConfig.getTimeFormat());
 
+    public static String formatTemporal(Temporal temporal){
+        if(temporal instanceof LocalDate){
+            return formatDate((LocalDate) temporal);
+        } else if(temporal instanceof LocalTime){
+            return formatTime((LocalTime) temporal);
+        } else if(temporal instanceof LocalDateTime){
+            return formatDateTime((LocalDateTime) temporal);
+        } else{
+            return temporal.toString();
+        }
+    }
+
     public static String formatDate(LocalDate date){
         return dateFormatter.format(date);
     }
 
     public static String formatDate(Date date){
         if(date instanceof java.sql.Date) {
-            return dateFormatter.format(((java.sql.Date)date).toLocalDate());
+            return formatDate((java.sql.Date)date);
         }else if(date instanceof Timestamp){
             return formatDateTime((Timestamp) date);
         }else if(date instanceof Time){
@@ -32,6 +45,10 @@ public class LocalDateUtil {
         }else{
             return formatDateTime(new Timestamp(date.getTime()));
         }
+    }
+
+    public static String formatDate(java.sql.Date date){
+        return dateFormatter.format(date.toLocalDate());
     }
 
     public static String formatTime(LocalTime time){

@@ -3,6 +3,8 @@ package com.nfwork.dbfound.model.bean;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.Temporal;
 import java.util.Date;
 
 import com.nfwork.dbfound.core.Context;
@@ -110,11 +112,9 @@ public class Param extends Entity {
 				return (String) value;
 			} if (value instanceof Date) {
 				return LocalDateUtil.formatDate((Date) value);
-			}else if (value instanceof LocalDate) {
-				return LocalDateUtil.formatDate((LocalDate) value);
-			}else if(value instanceof LocalDateTime){
-				return LocalDateUtil.formatDateTime((LocalDateTime) value);
-			}else {
+			} else if (value instanceof Temporal) {
+				return LocalDateUtil.formatTemporal((Temporal) value);
+			} else {
 				return value.toString();
 			}
 		}
