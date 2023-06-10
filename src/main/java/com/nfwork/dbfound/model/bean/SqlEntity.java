@@ -3,8 +3,6 @@ package com.nfwork.dbfound.model.bean;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -150,34 +148,57 @@ public abstract class SqlEntity extends Sqls {
 	 * @throws NumberFormatException Number Format Exception
 	 */
 	public void initParam(PreparedStatement statement, List<Object> exeParam)throws SQLException {
+		Calendar defaultCalendar = Calendar.getInstance();
 		int cursor = 1;
 		for (Object value : exeParam){
 			if(value == null){
 				statement.setString(cursor,null);
 			}else if(value instanceof String){
 				statement.setString(cursor,(String)value);
-			} else if(value instanceof Integer){
-				statement.setInt(cursor,(Integer)value);
-			} else if(value instanceof Long){
-				statement.setLong(cursor,(Long) value);
-			} else if(value instanceof Double){
-				statement.setDouble(cursor,(Double) value);
-			} else if(value instanceof Float){
-				statement.setFloat(cursor,(Float) value);
-			} else if(value instanceof Short){
-				statement.setShort(cursor,(Short) value);
-			} else if(value instanceof BigDecimal){
-				statement.setBigDecimal(cursor,(BigDecimal) value);
-			} else if(value instanceof Byte){
-				statement.setByte(cursor,(Byte) value);
-			} else if(value instanceof Boolean){
+			}else if(value instanceof Number){
+				if(value instanceof Integer){
+					statement.setInt(cursor,(Integer)value);
+				} else if(value instanceof Long){
+					statement.setLong(cursor,(Long) value);
+				} else if(value instanceof Double){
+					statement.setDouble(cursor,(Double) value);
+				} else if(value instanceof Float){
+					statement.setFloat(cursor,(Float) value);
+				} else if(value instanceof Short){
+					statement.setShort(cursor,(Short) value);
+				} else if(value instanceof BigDecimal){
+					statement.setBigDecimal(cursor,(BigDecimal) value);
+				} else if(value instanceof Byte){
+					statement.setByte(cursor,(Byte) value);
+				} else {
+					statement.setString(cursor, value.toString());
+				}
+			}else if(value instanceof Boolean){
 				statement.setBoolean(cursor,(Boolean) value);
-			} else if (value instanceof java.sql.Date) {
-				java.sql.Date date = (java.sql.Date) value;
-				statement.setDate(cursor, date);
 			} else if (value instanceof Date) {
-				Date date = (Date) value;
-				statement.setTimestamp(cursor, new Timestamp(date.getTime()));
+				if (value instanceof java.sql.Date) {
+					statement.setDate(cursor, (java.sql.Date) value, defaultCalendar);
+				} else if(value instanceof Time){
+					statement.setTime(cursor,(Time) value, defaultCalendar);
+				} else if(value instanceof Timestamp){
+					statement.setTimestamp(cursor,(Timestamp) value, defaultCalendar);
+				} else {
+					Date date = (Date) value;
+					statement.setTimestamp(cursor, new Timestamp(date.getTime()), defaultCalendar);
+				}
+			} else if (value instanceof Temporal) {
+				if(value instanceof LocalDate){
+					java.sql.Date date =  java.sql.Date.valueOf((LocalDate) value);
+					statement.setDate(cursor, date, defaultCalendar);
+				}else if(value instanceof LocalTime){
+					Time time = Time.valueOf((LocalTime) value);
+					statement.setTime(cursor, time, defaultCalendar);
+				}else if(value instanceof LocalDateTime){
+					Timestamp timestamp = Timestamp.valueOf((LocalDateTime) value);
+					statement.setTimestamp(cursor, timestamp, defaultCalendar);
+				}else {
+					statement.setString(cursor, value.toString());
+				}
 			} else if (value instanceof InputStream) {
 				statement.setBinaryStream(cursor, (InputStream) value);
 			} else if (value instanceof byte[]) {
@@ -202,7 +223,7 @@ public abstract class SqlEntity extends Sqls {
 		Matcher m = staticPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
 		while (m.find()) {
-			String paramValue = "";
+			String paramValue;
 
 			String param = m.group();
 			String pn = param.substring(3, param.length() - 1);
