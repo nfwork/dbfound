@@ -403,10 +403,10 @@ public abstract class SqlEntity extends Sqls {
 					nfParam.setDataType(DataType.DATE);
 				} else if (value instanceof Boolean){
 					nfParam.setDataType(DataType.BOOLEAN);
-				} else if (value instanceof Collection || DataUtil.isArray(value)) {
-					nfParam.setDataType(DataType.COLLECTION);
 				} else if (value instanceof InputStream || value instanceof byte[]){
 					nfParam.setDataType(DataType.FILE);
+				} else if (value instanceof Collection || DataUtil.isArray(value)) {
+					nfParam.setDataType(DataType.COLLECTION);
 				} else {
 					nfParam.setDataType(DataType.VARCHAR);
 				}
