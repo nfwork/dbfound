@@ -127,9 +127,9 @@ public class DBFoundEL {
 			}
 		} else if (DataUtil.isArray(object)) {
 			return DataUtil.getArrayDataByIndex(object,index);
-		} else if (object instanceof Set) {
-			LogUtil.warn("dbfound el in handling Set is relatively poor, recommend change to List or Array");
-			Set s = (Set) object;
+		} else if (object instanceof Collection) {
+			LogUtil.warn("dbfound el in handling " + object.getClass() + " is relatively poor, recommend change to List or Array");
+			Collection<?> s = (Collection<?>) object;
 			if (index < s.size()) {
 				for (Object o : s) {
 					if (index == 0) {
