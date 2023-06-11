@@ -10,10 +10,9 @@ import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
-import com.nfwork.dbfound.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
 
-public class DBFoundEL {
+public class DBFoundEL extends PropertyTransfer{
 
 	public static Object getData(String express, Object root, Map<String, Object> elCache) {
 
@@ -191,7 +190,7 @@ public class DBFoundEL {
 					return reflector.getGetInvoker(name).invoke(currentObj, null);
 				}
 				if (name.contains("_")) {
-					name = StringUtil.underscoreToCamelCase(name);
+					name = underscoreToCamelCase(name);
 					if (reflector.hasGetter(name)) {
 						return reflector.getGetInvoker(name).invoke(currentObj, null);
 					}
@@ -213,7 +212,7 @@ public class DBFoundEL {
 				name = reflector.getFieldName(name);
 				if(!reflector.hasSetter(name)) {
 					if(name.contains("_")){
-						name = StringUtil.underscoreToCamelCase(name);
+						name = underscoreToCamelCase(name);
 					}
 				}
 				if(reflector.hasSetter(name)) {

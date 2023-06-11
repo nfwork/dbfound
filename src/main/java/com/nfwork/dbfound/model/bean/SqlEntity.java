@@ -464,7 +464,7 @@ public abstract class SqlEntity extends Sqls {
 			}
 
 			if (DBFoundConfig.isUnderscoreToCamelCase()){
-				colName = StringUtil.underscoreToCamelCase(colName);
+				colName = underscoreToCamelCase(colName);
 			}
 			colNames[i-1] = colName;
 		}

@@ -20,7 +20,6 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.StringUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 
@@ -75,7 +74,7 @@ public class QuerySql extends SqlEntity {
 
 					Param param = params.get(columnName);
 					if (param == null){
-						String newName = StringUtil.underscoreToCamelCase(columnName);
+						String newName = underscoreToCamelCase(columnName);
 						param = params.get(newName);
 					}
 

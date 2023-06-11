@@ -5,12 +5,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.*;
 
+import com.nfwork.dbfound.el.PropertyTransfer;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.resolver.TypeResolverTool;
-import com.nfwork.dbfound.util.StringUtil;
 
-public class ReflectorUtil {
+public class ReflectorUtil extends PropertyTransfer {
 
 	public static <T> List<T> parseResultList(Class<T> clazz, ResultSet rs) throws SQLException {
 		List<T> array = new ArrayList<>();
@@ -72,7 +72,7 @@ public class ReflectorUtil {
 			return propertyName;
 		}
 		if(propertyName.contains("_")) {
-			propertyName = StringUtil.underscoreToCamelCase(propertyName);
+			propertyName = underscoreToCamelCase(propertyName);
 			if (reflector.hasSetter(propertyName)) {
 				return propertyName;
 			}
@@ -83,7 +83,7 @@ public class ReflectorUtil {
 			return propertyName;
 		}
 		if(propertyName.contains("_")) {
-			propertyName = StringUtil.underscoreToCamelCase(propertyName);
+			propertyName = underscoreToCamelCase(propertyName);
 			if (reflector.hasSetter(propertyName)) {
 				return propertyName;
 			}

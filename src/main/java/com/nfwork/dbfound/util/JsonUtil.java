@@ -3,9 +3,6 @@ package com.nfwork.dbfound.util;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +14,7 @@ import java.util.Set;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.dto.ResponseObject;
+import com.nfwork.dbfound.el.PropertyTransfer;
 import com.nfwork.dbfound.json.JSONArray;
 import com.nfwork.dbfound.json.JSONNull;
 import com.nfwork.dbfound.json.JSONObject;
@@ -30,7 +28,7 @@ import com.nfwork.dbfound.model.reflector.Reflector;
  * @author Administrator
  * 
  */
-public class JsonUtil {
+public class JsonUtil extends PropertyTransfer {
 
 	/**
 	 * 将一个实体类对象转换成Json数据格式
@@ -51,7 +49,7 @@ public class JsonUtil {
 				try {
 					String name;
 					if(DBFoundConfig.isCamelCaseToUnderscore() && !(bean instanceof ResponseObject)){
-						name = StringUtil.camelCaseToUnderscore(property);
+						name = camelCaseToUnderscore(property);
 					}else{
 						name = property;
 					}

@@ -1,18 +1,9 @@
 package com.nfwork.dbfound.util;
 
-import com.nfwork.dbfound.cache.JvmCache;
-
 public class StringUtil {
 
-    private static final JvmCache<String, String> camelCaseLruCache = new JvmCache<>(StringUtil::generatorCamelCase);
-
-    private static final JvmCache<String, String> underscoreLruCache = new JvmCache<>(StringUtil::generatorUnderscore);
-
     public static String underscoreToCamelCase(String underscore){
-        return camelCaseLruCache.get(underscore);
-    }
 
-    private static String generatorCamelCase(String underscore){
         if(DataUtil.isNull(underscore)){
             return underscore;
         }
@@ -29,10 +20,7 @@ public class StringUtil {
     }
 
     public static String camelCaseToUnderscore(String name) {
-        return underscoreLruCache.get(name);
-    }
 
-    private static String generatorUnderscore(String name) {
         if(DataUtil.isNull(name)){
             return name;
         }
