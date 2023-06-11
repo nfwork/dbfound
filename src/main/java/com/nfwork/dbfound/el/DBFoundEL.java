@@ -17,7 +17,7 @@ public class DBFoundEL {
 
 	public static Object getData(String express, Object root, Map<String, Object> elCache) {
 
-		String childExpress;
+		String childExpress = null;
 		String name ;
 		Object currentObject;
 
@@ -29,22 +29,37 @@ public class DBFoundEL {
 
 			currentObject = elCache.get(childExpress);
 			if(currentObject == null){
-				currentObject = getData(childExpress, root);
-				elCache.put(childExpress, currentObject);
+				currentObject = getData(childExpress, root, elCache);
+				if(!isSampleObject(currentObject)) {
+					elCache.put(childExpress, currentObject);
+				}
 			}
 		}else{
 			currentObject = root;
 			name = express.trim();
 		}
 
+		Object value;
 		int index = findIndex(name);
 		if (index > -1) {
 			name = name.substring(0, name.indexOf("["));
-		}
-		Object value = getNextObject(currentObject,name);
-		if( index > -1){
+			String cacheName = childExpress == null ? name : childExpress+ "." + name;
+			value = elCache.get(cacheName);
+
+			if(value == null){
+				value = getNextObject(currentObject,name);
+				if(value instanceof Collection){
+					if(!(value instanceof ArrayList)){
+						value = ((Collection<?>)value).toArray();
+					}
+					elCache.put(cacheName,value);
+				}
+			}
 			value = getDataByIndex(index,value);
+		} else {
+			value = getNextObject(currentObject,name);
 		}
+
 		return value;
 	}
 
@@ -121,7 +136,7 @@ public class DBFoundEL {
 
 	public static Object getDataByIndex(int index,Object object){
 		if (object instanceof List) {
-			List l = (List) object;
+			List<?> l = (List<?>) object;
 			if (index < l.size()) {
 				object = l.get(index);
 			}
@@ -149,7 +164,7 @@ public class DBFoundEL {
 
 	private static Object getNextObject(Object currentObj,String name){
 		if(currentObj instanceof Map){
-			Map currentMap = (Map) currentObj;
+			Map<?,?> currentMap = (Map<?,?>) currentObj;
 			return currentMap.get(name);
 		} else{
 			if("value".equals(name)){

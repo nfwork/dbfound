@@ -100,13 +100,13 @@ public class BatchSql extends SqlEntity {
 			paramList.add(param);
 		}
 
+		Map<String, Object> elCache = new HashMap<>();
+
 		for (int i=0 ; i < dataSize ; i++) {
 			String currentPath = exeSourcePath +"[" + i +"]";
 
 			//执行过程中改变currentPath
 			context.setCurrentPath(currentPath);
-
-			Map<String, Object> elCache = new HashMap<>();
 
 			for (Param param : paramList){
 				String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();

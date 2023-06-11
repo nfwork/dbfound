@@ -263,6 +263,8 @@ public class ModelEngine {
 			ro.setMessage("success");
 
 			if (size > 0) {
+				Map<String, Object> elCache = new HashMap<>();
+
 				Map<String, Param> params = null;
 				for (int j = 0; j < size; j++) {
 					String en ;
@@ -281,7 +283,7 @@ public class ModelEngine {
 					} else {
 						en = executeName;
 					}
-					params = executeRun(context, modelName, en, currentPath);
+					params = executeRun(context, modelName, en, currentPath, elCache);
 				}
 				ro.setOutParam(getOutParams(context, params));
 			}
@@ -322,7 +324,8 @@ public class ModelEngine {
 			if (executeName == null || "".equals(executeName))
 				executeName = "_default";
 
-			params = executeRun(context, modelName, executeName, currentPath);
+			Map<String, Object> elCache = new HashMap<>();
+			params = executeRun(context, modelName, executeName, currentPath, elCache);
 
 			// 向客服端传送成功消息
 			ResponseObject ro = new ResponseObject();
@@ -340,7 +343,7 @@ public class ModelEngine {
 	}
 
 
-	protected static  Map<String, Param> executeRun(Context context, String modelName, String executeName, String currentPath) {
+	protected static  Map<String, Param> executeRun(Context context, String modelName, String executeName, String currentPath, Map<String, Object> elCache) {
 
 		LogUtil.info("Execute info (modelName:" + modelName + ", executeName:" + executeName + ")");
 
@@ -358,7 +361,6 @@ public class ModelEngine {
 		Map<String, Param> params = execute.cloneParams();
 
 		// 设想sql查询参数
-		Map<String, Object> elCache = new HashMap<>();
 		for (Param nfParam : params.values()) {
 			setParam(nfParam, context, currentPath, elCache);
 		}

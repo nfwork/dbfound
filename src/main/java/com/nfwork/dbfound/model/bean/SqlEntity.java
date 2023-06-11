@@ -422,10 +422,10 @@ public abstract class SqlEntity extends Sqls {
 			}
 			SimpleItemList itemList = new SimpleItemList(length);
 
-			//el处理set性能较差，转化为array
+			//el处理非arrayList集合性能较差，转化为array
 			Object value = nfParam.getValue();
-			if(value instanceof Set){
-				value = ((Set<?>)value).toArray();
+			if(!(value instanceof ArrayList) && value instanceof Collection){
+				value = ((Collection<?>)value).toArray();
 			}
 
 			for (int i = 0; i < length; i++) {

@@ -1,16 +1,48 @@
 package dbfount.test.core;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.model.reflector.Column;
 import com.nfwork.dbfound.util.JsonUtil;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ELTest {
+
+    @Test
+    public void testCollection(){
+        Set<String> set = new HashSet<>();
+        set.add("xiao");
+        set.add("ming");
+        Map<String,Object> data = new HashMap<>();
+        data.put("set",set);
+
+        List<String> list = new ArrayList<>();
+        Map<String,Object> param = new HashMap<>();
+        param.put("list",list);
+        list.add("hello");
+        list.add("world");
+        data.put("param",param);
+
+        List<User> users = new ArrayList<>();
+        User lucy = new User();
+        lucy.setUserName("lucy");
+        users.add(lucy);
+        User lily = new User();
+        lily.setUserName("lily");
+        users.add(lily);
+        param.put("users", users);
+
+        Map<String,Object> elCache = new HashMap<>();
+        System.out.println(DBFoundEL.getData("set[0]",data,elCache));
+        System.out.println(DBFoundEL.getData("set[1]",data,elCache));
+        System.out.println(DBFoundEL.getData("param.list[0]",data,elCache));
+        System.out.println(DBFoundEL.getData("param.list[1]",data,elCache));
+        System.out.println(DBFoundEL.getData("param.users[0].user_name",data,elCache));
+        System.out.println(DBFoundEL.getData("param.users[1].user_name",data,elCache));
+        System.out.println(JsonUtil.mapToJson(elCache));
+    }
 
     @Test
     public void testElCache(){
