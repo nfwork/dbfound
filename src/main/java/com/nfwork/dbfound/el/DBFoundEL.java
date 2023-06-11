@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.el;
 
+import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,6 +9,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -123,7 +125,10 @@ public class DBFoundEL {
 			if (index < l.size()) {
 				object = l.get(index);
 			}
+		} else if (DataUtil.isArray(object)) {
+			return DataUtil.getArrayDataByIndex(object,index);
 		} else if (object instanceof Set) {
+			LogUtil.warn("dbfound el in handling Set is relatively poor, recommend change to List or Array");
 			Set s = (Set) object;
 			if (index < s.size()) {
 				for (Object o : s) {
@@ -133,31 +138,6 @@ public class DBFoundEL {
 					}
 					index--;
 				}
-			}
-		} else if (object instanceof Object[]) {
-			Object[] objects = (Object[]) object;
-			if (index < objects.length) {
-				object = objects[index];
-			}
-		}  else if (object instanceof int[]) {
-			int[] objects = (int[]) object;
-			if (index < objects.length) {
-				object = objects[index];
-			}
-		} else if (object instanceof long[]) {
-			long[] objects = (long[]) object;
-			if (index < objects.length) {
-				object = objects[index];
-			}
-		} else if (object instanceof double[]) {
-			double[] objects = (double[]) object;
-			if (index < objects.length) {
-				object = objects[index];
-			}
-		} else if (object instanceof float[]) {
-			float[] objects = (float[]) object;
-			if (index < objects.length) {
-				object = objects[index];
 			}
 		}
 		return object;
@@ -235,8 +215,8 @@ public class DBFoundEL {
 	}
 
 	private static  boolean isSampleObject(Object object){
-		return object instanceof Number || object instanceof Date || object instanceof String
-				|| object instanceof Enum || object instanceof Boolean;
+		return object instanceof Number || object instanceof Date || object instanceof Temporal
+				|| object instanceof String || object instanceof Enum || object instanceof Boolean;
 	}
 
 	private final static Pattern p = Pattern.compile("\\[[0123456789 ]+]");

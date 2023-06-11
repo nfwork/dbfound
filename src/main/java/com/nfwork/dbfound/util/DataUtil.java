@@ -1,11 +1,9 @@
 package com.nfwork.dbfound.util;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.Map.Entry;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
@@ -22,11 +20,7 @@ import com.nfwork.dbfound.model.reflector.Reflector;
 public class DataUtil {
 
 	public static boolean isNull(Object value) {
-		if (value == null || value.equals("")) {
-			return true;
-		} else {
-			return false;
-		}
+		return value == null || value.equals("");
 	}
 
 	public static boolean isNotNull(Object value) {
@@ -170,29 +164,20 @@ public class DataUtil {
 	}
 
 	public static int getDataLength(Object data){
-		if (data instanceof List) {
-			List dataList = (List) data;
-			return dataList.size();
-		} else if (data instanceof Set) {
-			Set set = (Set) data;
-			return set.size();
-		} else if (data instanceof Object[]) {
-			Object[] objects = (Object[]) data;
-			return objects.length;
-		} else if (data instanceof int[]) {
-			int[] objects = (int[]) data;
-			return objects.length;
-		} else if (data instanceof long[]) {
-			long[] objects = (long[]) data;
-			return objects.length;
-		} else if (data instanceof double[]) {
-			double[] objects = (double[]) data;
-			return objects.length;
-		} else if (data instanceof float[]) {
-			float[] objects = (float[]) data;
-			return objects.length;
+		if (data instanceof Collection) {
+			return ((Collection<?>)data).size();
+		} else if (isArray(data)) {
+			return Array.getLength( data );
 		} else {
 			return -1;
 		}
+	}
+
+	public static Object getArrayDataByIndex(Object data, int index){
+		return Array.get(data,index);
+	}
+
+	public static boolean isArray(Object obj) {
+		return obj != null && obj.getClass().isArray();
 	}
 }

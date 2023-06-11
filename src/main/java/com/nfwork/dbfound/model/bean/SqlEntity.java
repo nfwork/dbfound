@@ -399,12 +399,11 @@ public abstract class SqlEntity extends Sqls {
 					nfParam.setDataType(DataType.VARCHAR);
 				} else if (value instanceof Number){
 					nfParam.setDataType(DataType.NUMBER);
-				} else if (value instanceof Date){
+				} else if (value instanceof Date || value instanceof Temporal){
 					nfParam.setDataType(DataType.DATE);
 				} else if (value instanceof Boolean){
 					nfParam.setDataType(DataType.BOOLEAN);
-				} else if (value instanceof List || value instanceof Set || value instanceof Object[]
-						|| value instanceof int[] || value instanceof long[] ||value instanceof double[] ||value instanceof float[] ) {
+				} else if (value instanceof Collection || DataUtil.isArray(value)) {
 					nfParam.setDataType(DataType.COLLECTION);
 				} else if (value instanceof InputStream || value instanceof byte[]){
 					nfParam.setDataType(DataType.FILE);
@@ -423,8 +422,14 @@ public abstract class SqlEntity extends Sqls {
 			}
 			SimpleItemList itemList = new SimpleItemList(length);
 
+			//el处理set性能较差，转化为array
+			Object value = nfParam.getValue();
+			if(value instanceof Set){
+				value = ((Set<?>)value).toArray();
+			}
+
 			for (int i = 0; i < length; i++) {
-				Object pValue = DBFoundEL.getDataByIndex(i, nfParam.getValue());
+				Object pValue = DBFoundEL.getDataByIndex(i, value);
 				if(DataUtil.isNotNull(nfParam.getInnerPath())){
 					pValue = DBFoundEL.getData(nfParam.getInnerPath(),pValue);
 				}
