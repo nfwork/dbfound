@@ -15,6 +15,8 @@ public abstract class ConnectionProvide {
 
 	public static final String SqlServerDialect = "SqlServerDialect";
 
+	public static final String SqlServerDialectV2 = "SqlServerDialectV2";
+
 	public static final String AccessDialect = "AccessDialect";
 
 	public static final String InformixDialect = "InformixDialect";

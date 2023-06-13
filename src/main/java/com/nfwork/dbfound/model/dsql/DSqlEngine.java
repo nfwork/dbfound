@@ -16,22 +16,14 @@ import net.sf.jsqlparser.statement.select.Select;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 public class DSqlEngine {
 
-    private static final LruCache<String,Expression> lruCache = new LruCache<>(5000, new ExpressionFunction());
+    private static final LruCache<String,Expression> lruCache = new LruCache<>(5000, DSqlEngine::getExpression);
 
     private static final Map<Class<? extends Expression>,DSqlValueResolver> resolverMap = new ConcurrentHashMap<>();
 
     private static final Expression NOT_SUPPORT_EXPRESSION = new Column();
-
-    public static class ExpressionFunction implements Function<String,Expression> {
-        @Override
-        public Expression apply(String sql) {
-            return getExpression(sql);
-        }
-    }
 
     public static Boolean checkWhenSql(String sql, List<Object> param, String provideName, Context context){
         try {

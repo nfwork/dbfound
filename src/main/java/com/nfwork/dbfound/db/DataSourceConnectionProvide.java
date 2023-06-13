@@ -8,8 +8,10 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.util.DBUtil;
+import org.apache.commons.beanutils.MethodUtils;
 
 public class DataSourceConnectionProvide extends ConnectionProvide {
 
@@ -85,6 +87,20 @@ public class DataSourceConnectionProvide extends ConnectionProvide {
 			init(jndiName);
 		}
 		super.regist();
+		if(dataSource != null){
+			DBFoundConfig.getDsp().add(this);
+		}
+	}
+
+	@Override
+	public void unRegist() {
+		super.unRegist();
+		if(dataSource != null){
+			DBFoundConfig.getDsp().remove(this);
+			try {
+				MethodUtils.invokeMethod(dataSource, "close", new Object[]{});
+			}catch (Exception ignore){}
+		}
 	}
 
 	public DataSource getDataSource() {

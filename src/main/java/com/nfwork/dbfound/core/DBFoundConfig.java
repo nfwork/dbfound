@@ -69,8 +69,7 @@ public class DBFoundConfig {
 			DataSource dataSource = provide.getDataSource();
 			if (dataSource != null) {
 				try {
-					System.out.println(
-							simpleDateFormat.format(new Date()) + " dbfound close dataSource :" + provide.getProvideName());
+					System.out.println(simpleDateFormat.format(new Date()) + " dbfound close dataSource :" + provide.getProvideName());
 					MethodUtils.invokeMethod(dataSource, "close", new Object[] {});
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -228,7 +227,6 @@ public class DBFoundConfig {
 				}
 				DataSourceConnectionProvide provide = new DataSourceConnectionProvide(provideName, ds, dialect);
 				provide.regist();
-				dsp.add(provide);
 				System.out.println(simpleDateFormat.format(new Date()) + " regist dataSourceConnProvide success, provideName:"
 						+ provideName);
 			} else {

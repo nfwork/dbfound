@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.util.LogUtil;
 
 public class ConnectionProvideManager {
 
@@ -16,8 +15,7 @@ public class ConnectionProvideManager {
 		synchronized (provides) {
 			ConnectionProvide s = provides.get(provideName);
 			if (s != null) {
-				LogUtil.info("close provide (" + provides + "),release resource");
-				provides.remove(provideName);
+				throw new DBFoundRuntimeException("ConnectionProvide named " + provideName +" already exists");
 			}
 			provides.put(provideName, provide);
 		}
