@@ -1486,12 +1486,12 @@
 		<tag-class>com.nfwork.dbfound.web.ui.DataSet</tag-class>
 		<attribute>
 			<name>id</name>
-			<required>ture</required>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<name>modelName</name>
-			<required>ture</required>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
@@ -1585,7 +1585,7 @@
 	<tag>
 		<name>forEach</name>
 		<tag-class>com.nfwork.dbfound.web.jstl.ForEach</tag-class>
-		<tei-class>org.apache.taglibs.standard.tei.ForEachTEI</tei-class>
+		<tei-class>com.nfwork.dbfound.web.jstl.ForEachTEI</tei-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>sourcePath</name>
@@ -1629,12 +1629,12 @@
 	</tag>
 	<tag>
 		<name>choose</name>
-		<tag-class>org.apache.taglibs.standard.tag.common.core.ChooseTag</tag-class>
+		<tag-class>com.nfwork.dbfound.web.jstl.ChooseTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	<tag>
 		<name>when</name>
-		<tag-class>org.apache.taglibs.standard.tag.rt.core.WhenTag</tag-class>
+		<tag-class>com.nfwork.dbfound.web.jstl.WhenTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>test</name>
@@ -1645,7 +1645,7 @@
 	</tag>
 	<tag>
 		<name>otherwise</name>
-		<tag-class>org.apache.taglibs.standard.tag.common.core.OtherwiseTag</tag-class>
+		<tag-class>com.nfwork.dbfound.web.jstl.OtherwiseTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	<tag>
@@ -1668,21 +1668,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
-	<tag>
-		<name>remove</name>
-		<tag-class>org.apache.taglibs.standard.tag.common.core.RemoveTag</tag-class>
-		<body-content>empty</body-content>
-		<attribute>
-			<name>var</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>scope</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-	</tag>
+
 	<tag>
 		<name>out</name>
 		<tag-class>com.nfwork.dbfound.web.jstl.Out</tag-class>
