@@ -1,6 +1,6 @@
 package com.nfwork.dbfound.web.i18n;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 
 public interface I18NProvide {
 

@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.web.ui;
 
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;

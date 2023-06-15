@@ -3,8 +3,8 @@ package com.nfwork.dbfound.web.ui;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.util.DataUtil;

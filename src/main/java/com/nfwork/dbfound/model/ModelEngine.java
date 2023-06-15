@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model;
 
 import java.util.*;
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.base.DataType;

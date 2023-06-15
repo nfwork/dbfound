@@ -5,7 +5,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 清理url中多斜杠问题

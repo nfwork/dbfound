@@ -3,7 +3,7 @@ package com.nfwork.dbfound.web.ui;
 import java.io.File;
 import java.util.Locale;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;

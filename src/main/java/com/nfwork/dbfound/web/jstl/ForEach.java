@@ -1,7 +1,6 @@
 package com.nfwork.dbfound.web.jstl;
 
-import javax.servlet.jsp.JspException;
-import org.apache.taglibs.standard.tag.rt.core.ForEachTag;
+import jakarta.servlet.jsp.JspException;
 
 public class ForEach extends ForEachTag {
 	private static final long serialVersionUID = 4338106166444815853L;
