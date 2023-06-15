@@ -1486,12 +1486,12 @@
 		<tag-class>com.nfwork.dbfound.web.ui.DataSet</tag-class>
 		<attribute>
 			<name>id</name>
-			<required>ture</required>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<name>modelName</name>
-			<required>ture</required>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
