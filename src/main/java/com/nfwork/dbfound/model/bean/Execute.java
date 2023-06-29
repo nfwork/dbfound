@@ -24,6 +24,7 @@ public class Execute extends SqlEntity {
 
 	private static final long serialVersionUID = 7670352852092590245L;
 
+	private String connectionProvide;
 	private String name = "_default";// execute对象的名字
 	private String modelName;
 	private Sqls sqls; // execute对象对应的配置sql
@@ -185,5 +186,13 @@ public class Execute extends SqlEntity {
 
 	public void setCurrentPath(String currentPath) {
 		this.currentPath = currentPath;
+	}
+
+	public String getConnectionProvide() {
+		return connectionProvide;
+	}
+
+	public void setConnectionProvide(String connectionProvide) {
+		this.connectionProvide = connectionProvide;
 	}
 }

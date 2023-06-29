@@ -33,6 +33,7 @@ public class Query extends SqlEntity {
 
 	private static final long serialVersionUID = 83009892861541099L;
 
+	private String connectionProvide;
 	private String name = "_default"; // query对象的名字
 	private Map<String, Param> params; // query对象对应参数
 	private Map<String, Filter> filters;
@@ -483,6 +484,14 @@ public class Query extends SqlEntity {
 
 	public void setMaxPagerSize(Integer maxPagerSize) {
 		this.maxPagerSize = maxPagerSize;
+	}
+
+	public String getConnectionProvide() {
+		return connectionProvide;
+	}
+
+	public void setConnectionProvide(String connectionProvide) {
+		this.connectionProvide = connectionProvide;
 	}
 
 	@Override

@@ -115,8 +115,6 @@ public class ModelEngine {
 			if (queryName == null || "".equals(queryName))
 				queryName = "_default";
 
-			LogUtil.info("Query info (modelName:" + modelName + ", queryName:" + queryName + ")");
-
 			Model model = context.getModel(modelName);
 
 			// 把model、currentPath对象放入到 当前线程里
@@ -172,7 +170,10 @@ public class ModelEngine {
 				query.getQueryAdapter().beforeQuery(context, params);
 			}
 
-			String provideName = model.getConnectionProvide(context);
+			String provideName = model.getConnectionProvide(context,query.getConnectionProvide());
+
+			LogUtil.info("Query info (modelName:" + modelName + ", queryName:" + queryName + ", provideName:"+provideName+")");
+
 			//获取querySql
 			String querySql = query.getQuerySql(context, params, provideName);
 
@@ -345,8 +346,6 @@ public class ModelEngine {
 
 	protected static  Map<String, Param> executeRun(Context context, String modelName, String executeName, String currentPath, Map<String, Object> elCache) {
 
-		LogUtil.info("Execute info (modelName:" + modelName + ", executeName:" + executeName + ")");
-
 		Model model = context.getModel(modelName);
 
 		Execute execute = model.getExecute(executeName);
@@ -369,7 +368,10 @@ public class ModelEngine {
 			execute.getExecuteAdapter().beforeExecute(context,params);
 		}
 
-		execute.executeRun(context, params, model.getConnectionProvide(context)); // 执行
+		String provideName =  model.getConnectionProvide(context, execute.getConnectionProvide());
+		LogUtil.info("Execute info (modelName:" + modelName + ", executeName:" + executeName + ", provideName:"+provideName+")");
+
+		execute.executeRun(context, params, provideName); // 执行
 
 		if(execute.getExecuteAdapter()!=null){
 			execute.getExecuteAdapter().afterExecute(context,params);
