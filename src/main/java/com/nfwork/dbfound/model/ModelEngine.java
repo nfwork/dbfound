@@ -170,7 +170,7 @@ public class ModelEngine {
 				query.getQueryAdapter().beforeQuery(context, params);
 			}
 
-			String provideName = model.getConnectionProvide(context);
+			String provideName = model.getConnectionProvide(context,query.getConnectionProvide());
 
 			LogUtil.info("Query info (modelName:" + modelName + ", queryName:" + queryName + ", provideName:"+provideName+")");
 
@@ -368,7 +368,7 @@ public class ModelEngine {
 			execute.getExecuteAdapter().beforeExecute(context,params);
 		}
 
-		String provideName =  model.getConnectionProvide(context);
+		String provideName =  model.getConnectionProvide(context, execute.getConnectionProvide());
 		LogUtil.info("Execute info (modelName:" + modelName + ", executeName:" + executeName + ", provideName:"+provideName+")");
 
 		execute.executeRun(context, params, provideName); // 执行

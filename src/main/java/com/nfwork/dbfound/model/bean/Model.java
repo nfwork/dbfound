@@ -3,7 +3,9 @@ package com.nfwork.dbfound.model.bean;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.model.base.DataType;
+import com.nfwork.dbfound.util.DataUtil;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.base.Entity;
@@ -23,9 +25,9 @@ public class Model extends Entity {
 
 	@Override
 	public void init(Element element) {
-		querys = new HashMap<String, Query>();
-		executes = new HashMap<String, Execute>();
-		params = new HashMap<String, Param>();
+		querys = new HashMap<>();
+		executes = new HashMap<>();
+		params = new HashMap<>();
 		super.init(element);
 	}
 
@@ -83,10 +85,6 @@ public class Model extends Entity {
 		this.modelName = modelName;
 	}
 
-	public Model() {
-
-	}
-
 	public Map<String, Param> getParams() {
 		return params;
 	}
@@ -95,15 +93,18 @@ public class Model extends Entity {
 		this.params = params;
 	}
 
-	public String getConnectionProvide(Context context) {
+	public String getConnectionProvide(Context context, String provideName) {
+		if(DataUtil.isNull(provideName)){
+			provideName = connectionProvide;
+		}
 		// 支持动态设置数据来源
-		if (!"_default".equals(connectionProvide)) {
-			String value = context.getString(connectionProvide);
+		if (ELEngine.isAbsolutePath(provideName)) {
+			String value = context.getString(provideName);
 			if (value != null) {
 				return value;
 			}
 		}
-		return connectionProvide;
+		return provideName;
 	}
 
 	public void setConnectionProvide(String connectionProvide) {
