@@ -216,6 +216,11 @@ public class ExcelWriter {
 			}
 		}
 
+		Object columns = context.getData("param.columns");
+		if(columns == null){
+			throw new DBFoundRuntimeException("can not found param columns");
+		}
+
 		List result = ModelEngine.query(context, modelName, queryName, null,false).getDatas();
 		excelExport(context, result);
 	}
