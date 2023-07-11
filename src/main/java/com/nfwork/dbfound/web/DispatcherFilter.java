@@ -46,7 +46,7 @@ public class DispatcherFilter implements Filter {
 		String requestUrl = request.getServletPath();
 		int actionType = analysisActionType(requestUrl);
 
-		if (actionType > 0) {
+		if (actionType > 0 && !"OPTIONS".equalsIgnoreCase(request.getMethod())) {
 			Transaction transaction = null;
 			try {
 				if (request.getCharacterEncoding() == null) {

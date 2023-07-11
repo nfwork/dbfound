@@ -68,8 +68,9 @@ public class ExecuteSql extends SqlEntity {
 					if (param == null) {
 						throw new ParamNotFoundException("param: " + generatedKeyParam + " not defined");
 					}
+					param.setRequireLog(true);
 					param.setValue(rs.getLong(1));
-					param.setSourcePathHistory("set by generatedKey");
+					param.setSourcePathHistory("set_by_generatedKey");
 
 					if(!"in".equals(param.getIoType())){
 						context.setOutParamData(param.getName(),param.getValue());
@@ -85,8 +86,9 @@ public class ExecuteSql extends SqlEntity {
 				if (param == null) {
 					throw new ParamNotFoundException("param: " + affectedCountParam + " not defined");
 				}
+				param.setRequireLog(true);
 				param.setValue(fetchSize);
-				param.setSourcePathHistory("set by affectedCount");
+				param.setSourcePathHistory("set_by_affectedCount");
 
 				if(!"in".equals(param.getIoType())){
 					context.setOutParamData(param.getName(),param.getValue());

@@ -110,7 +110,6 @@ public class BatchExecuteSql extends SqlEntity {
 				throw new ParamNotFoundException("param: " + affectedCountParam + " not defined");
 			}
 			param.setValue(updateCount);
-			param.setSourcePathHistory("set by affectedCount");
 
 			if(!"in".equals(param.getIoType())){
 				context.setOutParamData(param.getName(),param.getValue());
@@ -172,7 +171,18 @@ public class BatchExecuteSql extends SqlEntity {
 			// 参数设定
 			initParam(statement, exeParam);
 			statement.execute();
-			return statement.getUpdateCount();
+
+			int updateCount =  statement.getUpdateCount();
+			if (DataUtil.isNotNull(affectedCountParam)) {
+				Param param = params.get(affectedCountParam);
+				if (param == null) {
+					throw new ParamNotFoundException("param: " + affectedCountParam + " not defined");
+				}
+				param.setRequireLog(true);
+				param.setValue(updateCount);
+				param.setSourcePathHistory("set_by_affectedCount");
+			}
+			return updateCount;
 		} catch (SQLException e) {
 			throw new DBFoundPackageException("BatchExecuteSql execute exception:" + e.getMessage(), e);
 		}finally {

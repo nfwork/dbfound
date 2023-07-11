@@ -92,7 +92,8 @@ public class QuerySql extends SqlEntity {
 						int columnType = metaset.getColumnType(i);
 						param.setValue(getData(value,columnType,dataset,i,defaultCalendar));
 					}
-					param.setSourcePathHistory("querySql");
+					param.setSourcePathHistory("set_by_querySql");
+					param.setRequireLog(true);
 
 					if(!"in".equals(param.getIoType())){
 						context.setOutParamData(param.getName(),param.getValue());
