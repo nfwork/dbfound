@@ -18,6 +18,8 @@ public class Transaction {
 
 	private int transactionIsolation;
 
+	private boolean readOnly;
+
 	public Transaction() {
 	}
 
@@ -90,6 +92,14 @@ public class Transaction {
 				LogUtil.error("transaction rollback exception:" + e.getMessage(), e);
 			}
 		}
+	}
+
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
 	}
 
 	public int getTransactionIsolation() {

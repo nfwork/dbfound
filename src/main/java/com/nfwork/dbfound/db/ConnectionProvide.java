@@ -3,6 +3,7 @@ package com.nfwork.dbfound.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.db.dialect.DialectFactory;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
@@ -53,14 +54,34 @@ public abstract class ConnectionProvide {
 		ConnectionProvideManager.unRegistSource(this);
 	}
 
-	public void closeAutoCommit(Connection conn) {
+	public void prepareTransaction(Connection con, Transaction transaction) {
 		try {
-			if (conn.getAutoCommit()) {
-				conn.setAutoCommit(false);
+			if (transaction.isReadOnly()) {
+				try {
+					con.setReadOnly(true);
+				}catch (SQLException | RuntimeException ex) {
+					Throwable exToCheck = ex;
+					while (exToCheck != null) {
+						if (exToCheck.getClass().getSimpleName().contains("Timeout")) {
+							throw ex;
+						}
+						exToCheck = exToCheck.getCause();
+					}
+				}
+			}
+
+			if(transaction.getTransactionIsolation()>0) {
+				int currentIsolation = con.getTransactionIsolation();
+				if(currentIsolation != transaction.getTransactionIsolation()) {
+					con.setTransactionIsolation(transaction.getTransactionIsolation());
+				}
+			}
+
+			if (con.getAutoCommit()) {
+				con.setAutoCommit(false);
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("closeAutoCommit异常:"
-					+ e.getMessage(), e);
+			throw new DBFoundPackageException("prepareTransaction failed:"+ e.getMessage(), e);
 		}
 	}
 
