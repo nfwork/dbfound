@@ -401,17 +401,8 @@ public class Context {
 			if (connObject == null) {
 				ConnectionProvide provide = ConnectionProvideManager.getConnectionProvide(provideName);
 				Connection conn = provide.getConnection();
-				if(transaction.getTransactionIsolation()>0) {
-					try {
-						int currentIsolation = conn.getTransactionIsolation();
-						if(currentIsolation != transaction.getTransactionIsolation()) {
-							conn.setTransactionIsolation(transaction.getTransactionIsolation());
-						}
-					} catch (SQLException e) {
-						throw new DBFoundPackageException("set transaction isolation failed", e);
-					}
-				}
-				provide.closeAutoCommit(conn);
+
+				provide.prepareTransaction(conn, transaction);
 				connObject = new ConnObject(provide, conn);
 				transaction.connMap.put(provideName, connObject);
 			}
