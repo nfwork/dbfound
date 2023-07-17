@@ -3,6 +3,7 @@ package com.nfwork.dbfound.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.db.dialect.DialectFactory;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
@@ -51,17 +52,6 @@ public abstract class ConnectionProvide {
 
 	public void unRegist() {
 		ConnectionProvideManager.unRegistSource(this);
-	}
-
-	public void closeAutoCommit(Connection conn) {
-		try {
-			if (conn.getAutoCommit()) {
-				conn.setAutoCommit(false);
-			}
-		} catch (SQLException e) {
-			throw new DBFoundPackageException("closeAutoCommit异常:"
-					+ e.getMessage(), e);
-		}
 	}
 
 	public abstract Connection getConnection();
