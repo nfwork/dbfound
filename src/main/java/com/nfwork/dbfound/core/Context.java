@@ -402,7 +402,7 @@ public class Context {
 				ConnectionProvide provide = ConnectionProvideManager.getConnectionProvide(provideName);
 				Connection conn = provide.getConnection();
 
-				provide.prepareTransaction(conn, transaction);
+				DBUtil.prepareTransaction(conn, transaction);
 				connObject = new ConnObject(provide, conn);
 				transaction.connMap.put(provideName, connObject);
 			}
