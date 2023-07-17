@@ -8,6 +8,7 @@ import java.util.Map;
 import com.nfwork.dbfound.core.Context.ConnObject;
 import com.nfwork.dbfound.db.ConnectionProvide;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.LogUtil;
 
 public class Transaction {
@@ -19,6 +20,8 @@ public class Transaction {
 	private int transactionIsolation;
 
 	private boolean readOnly;
+
+	private Integer transactionIsolationHistory;
 
 	public Transaction() {
 	}
@@ -51,7 +54,7 @@ public class Transaction {
 					ConnectionProvide provide = connObject.provide;
 					Connection connection = connObject.connection;
 					provide.closeConnection(connection);
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					LogUtil.error("transaction close exception:" + e.getMessage(), e);
 				}
 			}
@@ -71,9 +74,9 @@ public class Transaction {
 			try {
 				connObject.connection.commit();
 			} catch (SQLException e) {
-				LogUtil.error("transaction commit exception:" + e.getMessage(), e);
-				throw new DBFoundRuntimeException("transaction commit exception:" +e.getMessage(), e);
+				throw new DBFoundRuntimeException("transaction commit exception: " +e.getMessage(), e);
 			}
+			DBUtil.resetTransaction(connObject.connection,this);
 		}
 	}
 
@@ -88,9 +91,10 @@ public class Transaction {
 		for (ConnObject connObject : connObjects) {
 			try {
 				connObject.connection.rollback();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				LogUtil.error("transaction rollback exception:" + e.getMessage(), e);
 			}
+			DBUtil.resetTransaction(connObject.connection,this);
 		}
 	}
 
@@ -100,6 +104,14 @@ public class Transaction {
 
 	public void setReadOnly(boolean readOnly) {
 		this.readOnly = readOnly;
+	}
+
+	public Integer getTransactionIsolationHistory() {
+		return transactionIsolationHistory;
+	}
+
+	public void setTransactionIsolationHistory(Integer transactionIsolationHistory) {
+		this.transactionIsolationHistory = transactionIsolationHistory;
 	}
 
 	public int getTransactionIsolation() {

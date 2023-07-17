@@ -54,37 +54,6 @@ public abstract class ConnectionProvide {
 		ConnectionProvideManager.unRegistSource(this);
 	}
 
-	public void prepareTransaction(Connection con, Transaction transaction) {
-		try {
-			if (transaction.isReadOnly()) {
-				try {
-					con.setReadOnly(true);
-				}catch (SQLException | RuntimeException ex) {
-					Throwable exToCheck = ex;
-					while (exToCheck != null) {
-						if (exToCheck.getClass().getSimpleName().contains("Timeout")) {
-							throw ex;
-						}
-						exToCheck = exToCheck.getCause();
-					}
-				}
-			}
-
-			if(transaction.getTransactionIsolation()>0) {
-				int currentIsolation = con.getTransactionIsolation();
-				if(currentIsolation != transaction.getTransactionIsolation()) {
-					con.setTransactionIsolation(transaction.getTransactionIsolation());
-				}
-			}
-
-			if (con.getAutoCommit()) {
-				con.setAutoCommit(false);
-			}
-		} catch (SQLException e) {
-			throw new DBFoundPackageException("prepareTransaction failed:"+ e.getMessage(), e);
-		}
-	}
-
 	public abstract Connection getConnection();
 
 	public abstract void closeConnection(Connection connection);
