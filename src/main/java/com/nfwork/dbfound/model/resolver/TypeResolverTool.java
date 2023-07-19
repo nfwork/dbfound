@@ -69,4 +69,8 @@ public class TypeResolverTool {
         }
         return resolver.getValue(rs, index, defaultCalendar);
     }
+
+    public static boolean isSupport(Class<?> clazz){
+       return resolverMap.get(clazz) != null;
+    }
 }

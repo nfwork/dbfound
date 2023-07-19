@@ -65,6 +65,31 @@ public class ReflectorUtil extends PropertyTransfer {
 		return array;
 	}
 
+	public static <T> List<T> parseSimpleList(Class<T> clazz, ResultSet rs) throws SQLException {
+		List<T> list = new ArrayList<>();
+		if (rs != null) {
+			Calendar defaultCalendar = Calendar.getInstance();
+			while (rs.next()) {
+				Object value = TypeResolverTool.getValue(clazz, rs, 1, defaultCalendar);
+				list.add((T) value);
+			}
+		}
+		return list;
+	}
+
+	public static <T> List<T> parseEnumList(Class<T> clazz, ResultSet rs) throws SQLException {
+		List<T> list = new ArrayList<>();
+		if (rs != null) {
+			while (rs.next()) {
+				Object value = rs.getString(1);
+				if(value!=null) {
+					value = EnumHandlerFactory.getEnumHandler(clazz).locateEnum((String) value);
+				}
+				list.add((T) value);
+			}
+		}
+		return list;
+	}
 
 	private static String getPropertyName(Reflector reflector, String labName){
 		String propertyName = reflector.getFieldName(labName);
