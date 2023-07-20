@@ -4,10 +4,7 @@ import java.io.*;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
@@ -108,7 +105,15 @@ public class ExcelWriter {
 						//mapper映射处理
 						Map<String,Object> mapper = mappers.get(property);
 						if(mapper != null){
-							o = getMapperValue(o.toString(),mapper);
+							Object values;
+							if(o instanceof Collection){
+								values = ((Collection<?>)o).toArray();
+							}else if(o instanceof String && ((String) o).contains(",")){
+								values = o.toString().split(",");
+							}else{
+								values = o;
+							}
+							o = getMapperValue(values,mapper);
 						}
 
 						if (o instanceof String) {
@@ -181,25 +186,24 @@ public class ExcelWriter {
 		}
 	}
 
-	private static Object getMapperValue(String value, Map<String,Object> mapper){
-
-		Object valueResult = mapper.get(value);
-
-		//判断是否逗号隔开的多组值
-		if(valueResult == null && value.contains(",")){
-			String[] vals = value.split(",");
-			String values = "";
-			for (int i =0; i < vals.length; i++){
-				Object valItem = mapper.get(vals[i].trim());
-				if(i == 0){
-					values = valItem != null ? valItem.toString(): vals[i];
-				}else{
-					values = values + ", " + (valItem != null ? valItem.toString(): vals[i]);
-				}
-			}
-			valueResult = values;
+	private static Object getMapperValue(Object values, Map<String,Object> mapper){
+		if(!DataUtil.isArray(values)){
+			Object valItem = mapper.get(values.toString().trim());
+			return valItem == null ? values: valItem;
 		}
-		return valueResult == null ? value: valueResult;
+		StringBuilder valueBuilder = new StringBuilder();
+		for (int i =0; i< DataUtil.getDataLength(values); i++) {
+			Object value = DataUtil.getArrayDataByIndex(values, i);
+			Object valItem = null;
+			if (value != null) {
+				valItem = mapper.get(value.toString().trim());
+			}
+			valueBuilder.append(valItem != null ? valItem : value).append(",");
+		}
+		if(valueBuilder.length()>0) {
+			valueBuilder.deleteCharAt(valueBuilder.length() - 1);
+		}
+		return valueBuilder.toString();
 	}
 
 	public static void excelExport(Context context, String modelName, String queryName) throws Exception {

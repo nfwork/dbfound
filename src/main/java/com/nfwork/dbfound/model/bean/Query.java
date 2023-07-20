@@ -21,6 +21,7 @@ import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
+import com.nfwork.dbfound.model.resolver.TypeResolverTool;
 import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
 
@@ -178,7 +179,13 @@ public class Query extends SqlEntity {
 				clazz = entityClass;
 			}
 			if (clazz != null && ! Map.class.isAssignableFrom(clazz) && !clazz.equals(Object.class)) {
-				return ReflectorUtil.parseResultList(clazz, dataset);
+				if(TypeResolverTool.isSupport(clazz)){
+					return ReflectorUtil.parseSimpleList(clazz,dataset);
+				}else if(Enum.class.isAssignableFrom(clazz)){
+					return ReflectorUtil.parseEnumList(clazz,dataset);
+				}else{
+					return ReflectorUtil.parseResultList(clazz, dataset);
+				}
 			}
 			String[] colNames = getColNames(metaset);
 			Calendar defaultCalendar = Calendar.getInstance();
