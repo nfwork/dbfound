@@ -108,10 +108,10 @@ public class ExcelWriter {
 							Object values;
 							if(o instanceof Collection){
 								values = ((Collection<?>)o).toArray();
-							}else if(DataUtil.isArray(o)){
-								values = o;
-							}else{
+							}else if(o instanceof String && ((String) o).contains(",")){
 								values = o.toString().split(",");
+							}else{
+								values = o;
 							}
 							o = getMapperValue(values,mapper);
 						}
@@ -187,6 +187,10 @@ public class ExcelWriter {
 	}
 
 	private static Object getMapperValue(Object values, Map<String,Object> mapper){
+		if(!DataUtil.isArray(values)){
+			Object valItem = mapper.get(values.toString().trim());
+			return valItem == null ? values: valItem;
+		}
 		StringBuilder valueBuilder = new StringBuilder();
 		for (int i =0; i< DataUtil.getDataLength(values); i++) {
 			Object value = DataUtil.getArrayDataByIndex(values, i);
