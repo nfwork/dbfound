@@ -25,6 +25,8 @@ public class DefaultEnumTypeHandler<E extends Enum<E> >  implements EnumTypeHand
                 Reflector reflector = Reflector.forClass(param.getClass());
                 if(reflector.hasGetter("value")) {
                     return reflector.getGetInvoker("value").invoke(param, null);
+                }else if(reflector.hasGetter("code")){
+                    return reflector.getGetInvoker("code").invoke(param, null);
                 }else{
                     return param.toString();
                 }

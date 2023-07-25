@@ -89,15 +89,12 @@ public abstract class SqlEntity extends Sqls {
 				SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 
 				StringBuilder value = new StringBuilder();
-				boolean isFirst = true;
 				for(Object item : itemList){
-					if(isFirst){
-						value.append("?");
-						isFirst = false;
-					}else{
-						value.append(", ?");
-					}
+					value.append("?,");
 					exeParam.add(item);
+				}
+				if(value.length()>0){
+					value.deleteCharAt(value.length()-1);
 				}
 				m.appendReplacement(buf, value.toString());
 			}else{
@@ -244,12 +241,10 @@ public abstract class SqlEntity extends Sqls {
 
 				StringBuilder paramBuilder = new StringBuilder();
 
-				boolean isFirst = true;
 				for(Object item : itemList){
 					if(item == null){
 						continue;
 					}
-
 					String value;
 					if (item instanceof Date) {
 						value = LocalDateUtil.formatDate((Date) item);
@@ -258,13 +253,10 @@ public abstract class SqlEntity extends Sqls {
 					} else {
 						value = item.toString();
 					}
-
-					if(isFirst){
-						paramBuilder.append(value);
-						isFirst = false;
-					}else{
-						paramBuilder.append(", " ).append(value);
-					}
+					paramBuilder.append(value).append("," );
+				}
+				if(paramBuilder.length()>0){
+					paramBuilder.deleteCharAt(paramBuilder.length()-1);
 				}
 				paramValue = paramBuilder.toString();
 			}else{
