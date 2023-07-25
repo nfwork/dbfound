@@ -5,8 +5,6 @@ import org.dom4j.Element;
 
 import com.nfwork.dbfound.model.base.Entity;
 import org.dom4j.Node;
-import org.dom4j.Text;
-import org.dom4j.tree.DefaultText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +20,11 @@ public class Sql extends Entity {
 
 		StringBuilder builder = new StringBuilder();
 		for(Node node: nodes){
-			if(node instanceof Text){
+			if(node instanceof Element){
+				builder.append(Query.SQL_PART);
+			}else{
 				String text = node.getText();
 				builder.append(text);
-			}else if(node instanceof Element){
-				builder.append(Query.SQL_PART);
 			}
 		}
 		sql = StringUtil.fullTrim(builder.toString());
