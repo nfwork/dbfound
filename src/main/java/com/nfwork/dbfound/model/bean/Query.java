@@ -204,7 +204,7 @@ public class Query extends SqlEntity {
 				for (int i = 1; i <= colNames.length; i++) {
 					String value = dataset.getString(i);
 					String columnName = colNames[i-1];
-					if ("_drm".equals(columnName)) {// 分页参数 不放入map
+					if ("d_rm".equals(columnName)) {// 分页参数 不放入map
 						continue;
 					}
 					if (value == null) {
