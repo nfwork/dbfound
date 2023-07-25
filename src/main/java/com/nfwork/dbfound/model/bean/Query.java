@@ -74,7 +74,7 @@ public class Query extends SqlEntity {
 			try {
 				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
 			}catch (Exception exception){
-				String message = "queryAdapter init failed, queryAdapter must implement QueryAdapter";
+				String message = "queryAdapter init failed, please check the class "+ adapter+" is exists or it is implement QueryAdapter";
 				throw new DBFoundPackageException(message,exception);
 			}
 		}
@@ -105,9 +105,11 @@ public class Query extends SqlEntity {
 				autoCreateParam(sql, params);
 			}
 			if(sqlPartList!=null && !sqlPartList.isEmpty()){
+				StringBuilder builder = new StringBuilder();
 				for (SqlPart sqlPart : sqlPartList) {
-					autoCreateParam(sqlPart.getPart(),params);
+					builder.append(sqlPart.getCondition()).append(" ").append(sqlPart.getPart());
 				}
+				autoCreateParam(builder.toString(),params);
 			}
 		} else {
 			super.run();
@@ -202,7 +204,7 @@ public class Query extends SqlEntity {
 				for (int i = 1; i <= colNames.length; i++) {
 					String value = dataset.getString(i);
 					String columnName = colNames[i-1];
-					if ("d_p_rm".equals(columnName)) {// 分页参数 不放入map
+					if ("_drm".equals(columnName)) {// 分页参数 不放入map
 						continue;
 					}
 					if (value == null) {

@@ -46,7 +46,7 @@ public class Execute extends SqlEntity {
 			try {
 				executeAdapter = AdapterFactory.getExecuteAdapter(Class.forName(adapter));
 			}catch (Exception exception){
-				String message = "ExecuteAdapter init failed, executeAdapter must implement ExecuteAdapter";
+				String message = "ExecuteAdapter init failed, please check the class "+ adapter+" is exists or it is implement ExecuteAdapter";
 				throw new DBFoundPackageException(message, exception);
 			}
 		}
