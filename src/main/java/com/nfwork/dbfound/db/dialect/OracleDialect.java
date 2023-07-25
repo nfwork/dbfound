@@ -4,9 +4,9 @@ public class OracleDialect implements SqlDialect {
 
 	@Override
 	public String getPagerSql(String sql, int pagerSize, long startWith) {
-		String pagerSql = "select * from (select v.*, rownum _drm from (" + sql
+		String pagerSql = "select * from (select v.*, rownum d_rm from (" + sql
 				+ ") v where rownum<=" + (startWith + pagerSize)
-				+ ") where _drm >= " + (startWith + 1);
+				+ ") where d_rm >= " + (startWith + 1);
 		return pagerSql;
 	}
 
