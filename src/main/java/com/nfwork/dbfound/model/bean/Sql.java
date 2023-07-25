@@ -21,7 +21,7 @@ public class Sql extends Entity {
 		StringBuilder builder = new StringBuilder();
 		for(Node node: nodes){
 			if(node instanceof Element){
-				builder.append(Query.SQL_PART);
+				builder.append(" ").append(Query.SQL_PART).append(" ");
 			}else{
 				String text = node.getText();
 				builder.append(text);
