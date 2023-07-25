@@ -1,7 +1,6 @@
 package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.model.base.Entity;
-import com.nfwork.dbfound.util.StringUtil;
 import org.dom4j.Element;
 
 public class SqlPart extends Entity {
@@ -13,7 +12,7 @@ public class SqlPart extends Entity {
     @Override
     public void init(Element element) {
         super.init(element);
-        part = StringUtil.fullTrim(element.getTextTrim());
+        part = element.getTextTrim();
     }
 
     @Override
