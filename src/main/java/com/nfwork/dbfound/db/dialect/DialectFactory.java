@@ -7,16 +7,17 @@ public class DialectFactory {
 
 	public static SqlDialect createDialect(String dialectType) {
 		if (dialectType == null) {
-			throw new DBFoundRuntimeException("数据库dialect为空，请确认是否设置或进行初始化");
+			throw new DBFoundRuntimeException("dialect is empty，please check");
 		}
-		String className = "com.nfwork.dbfound.db.dialect."
-				+ dialectType.trim();
+		String className =  dialectType.trim();
+		if(!dialectType.contains(".")){
+			className = "com.nfwork.dbfound.db.dialect." + className;
+		}
+
 		try {
-			SqlDialect dialect = (SqlDialect) Class.forName(className)
-					.newInstance();
-			return dialect;
+			 return (SqlDialect) Class.forName(className).getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
-			LogUtil.error("数据库方言初始化错误，请确认是否存在方言实现类：" + className, e);
+			LogUtil.error("SqlDialect init failed, please check ：" + className, e);
 		}
 		return null;
 	}

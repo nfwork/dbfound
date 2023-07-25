@@ -74,7 +74,7 @@ public class Query extends SqlEntity {
 			try {
 				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
 			}catch (Exception exception){
-				String message = "queryAdapter init failed, queryAdapter must implement QueryAdapter";
+				String message = "queryAdapter init failed, please check the class "+ adapter+" is exists or it is implement QueryAdapter";
 				throw new DBFoundPackageException(message,exception);
 			}
 		}
