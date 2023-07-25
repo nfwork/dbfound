@@ -43,6 +43,7 @@ public class Query extends SqlEntity {
 	private Integer queryTimeout;
 	private static final String WHERE_CLAUSE = "#WHERE_CLAUSE#";
 	private static final String AND_CLAUSE = "#AND_CLAUSE#";
+	static final String SQL_PART = "#SQL_PART#";
 	private static final char[] FROM = "from".toCharArray();
 	private static final char[] ORDER = "order".toCharArray();
 	private static final char[] DISTINCT = "distinct".toCharArray();
@@ -58,6 +59,8 @@ public class Query extends SqlEntity {
 	private Class entityClass;
 	private String currentPath;
 
+	private List<SqlPart> sqlPartList;
+
 	@Override
 	public void init(Element element) {
 		params = new HashMap<>();
@@ -71,7 +74,7 @@ public class Query extends SqlEntity {
 			try {
 				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
 			}catch (Exception exception){
-				String message = "queryAdapter init failed, queryAdapter must implement QueryAdapter";
+				String message = "queryAdapter init failed, please check the class "+ adapter+" is exists or it is implement QueryAdapter";
 				throw new DBFoundPackageException(message,exception);
 			}
 		}
@@ -101,6 +104,13 @@ public class Query extends SqlEntity {
 			if(DataUtil.isNotNull(sql)) {
 				autoCreateParam(sql, params);
 			}
+			if(sqlPartList!=null && !sqlPartList.isEmpty()){
+				StringBuilder builder = new StringBuilder();
+				for (SqlPart sqlPart : sqlPartList) {
+					builder.append(sqlPart.getCondition()).append(" ").append(sqlPart.getPart());
+				}
+				autoCreateParam(builder.toString(),params);
+			}
 		} else {
 			super.run();
 		}
@@ -123,7 +133,7 @@ public class Query extends SqlEntity {
 	}
 
 	public String getQuerySql(Context context,Map<String, Param> params, String provideName){
-		String querySql = initFilter(sql, params, context, provideName);
+		String querySql = initFilterAndSqlPart(sql, params, context, provideName);
 		querySql = staticParamParse(querySql, params, context);
 		return querySql.trim();
 	}
@@ -194,7 +204,7 @@ public class Query extends SqlEntity {
 				for (int i = 1; i <= colNames.length; i++) {
 					String value = dataset.getString(i);
 					String columnName = colNames[i-1];
-					if ("d_p_rm".equals(columnName)) {// 分页参数 不放入map
+					if ("d_rm".equals(columnName)) {// 分页参数 不放入map
 						continue;
 					}
 					if (value == null) {
@@ -218,7 +228,7 @@ public class Query extends SqlEntity {
 
 	private final static Pattern p = Pattern.compile("#[A-Z_]+#");
 
-	private String initFilter(String ssql,Map<String, Param> params, Context context, String provideName) {
+	private String initFilterAndSqlPart(String ssql, Map<String, Param> params, Context context, String provideName) {
 		StringBuilder bfsql = new StringBuilder();
 		for (Param param : params.values()) {
 			if (param instanceof Filter){
@@ -226,14 +236,7 @@ public class Query extends SqlEntity {
 
 				//condition 逻辑判断；
 				if (DataUtil.isNotNull(nfFilter.getCondition())) {
-					String conditionSql = staticParamParse(nfFilter.getCondition(), params, context);
-					List<Object> exeParam = new ArrayList<>();
-					conditionSql = getExecuteSql(conditionSql, params, exeParam, context);
-					Boolean result = DSqlEngine.checkWhenSql(conditionSql, exeParam, provideName, context);
-					if (result == null) {
-						throw new DBFoundRuntimeException("Filter condition express is not support, condition:" + nfFilter.getCondition());
-					}
-					if (!result) {
+					if(!checkCondition(nfFilter.getCondition(),params,context,provideName)){
 						continue;
 					}
 				}
@@ -245,26 +248,50 @@ public class Query extends SqlEntity {
 			fsql = Matcher.quoteReplacement(fsql);
 		}
 
+		int sqlPartIndex = 0;
+
 		Matcher m = p.matcher(ssql);
-		StringBuffer buf = new StringBuffer();
+		StringBuffer buffer = new StringBuffer();
 		while (m.find()) {
 			String text = m.group();
-			if (text.equals(WHERE_CLAUSE)) {
-				if (fsql == null) {
-					m.appendReplacement(buf, " ");
-				} else {
-					m.appendReplacement(buf, " where " + fsql);
-				}
-			} else if (text.equals(AND_CLAUSE)) {
-				if (fsql == null) {
-					m.appendReplacement(buf, " ");
-				} else {
-					m.appendReplacement(buf, " and " + fsql);
-				}
+			switch (text) {
+				case WHERE_CLAUSE:
+					if (fsql == null) {
+						m.appendReplacement(buffer, " ");
+					} else {
+						m.appendReplacement(buffer, " where " + fsql);
+					}
+					break;
+				case AND_CLAUSE:
+					if (fsql == null) {
+						m.appendReplacement(buffer, " ");
+					} else {
+						m.appendReplacement(buffer, " and " + fsql);
+					}
+					break;
+				case SQL_PART:
+					SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
+					if (DataUtil.isNotNull(sqlPart.getCondition()) && checkCondition(sqlPart.getCondition(),params,context,provideName)){
+						m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart()));
+					}else{
+						m.appendReplacement(buffer, "");
+					}
+					break;
 			}
 		}
-		m.appendTail(buf);
-		return buf.toString();
+		m.appendTail(buffer);
+		return buffer.toString();
+	}
+
+	private Boolean checkCondition(String condition,  Map<String, Param> params, Context context, String provideName){
+		String conditionSql = staticParamParse(condition, params, context);
+		List<Object> exeParam = new ArrayList<>();
+		conditionSql = getExecuteSql(conditionSql, params, exeParam, context);
+		Boolean result = DSqlEngine.checkWhenSql(conditionSql, exeParam, provideName, context);
+		if (result == null) {
+			throw new DBFoundRuntimeException("condition express is not support, condition:" + condition);
+		}
+		return result;
 	}
 
 	public Count getCount(String querySql){
@@ -499,6 +526,14 @@ public class Query extends SqlEntity {
 
 	public void setConnectionProvide(String connectionProvide) {
 		this.connectionProvide = connectionProvide;
+	}
+
+	public List<SqlPart> getSqlPartList() {
+		return sqlPartList;
+	}
+
+	public void setSqlPartList(List<SqlPart> sqlPartList) {
+		this.sqlPartList = sqlPartList;
 	}
 
 	@Override

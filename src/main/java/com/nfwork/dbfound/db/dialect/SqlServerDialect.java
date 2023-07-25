@@ -11,9 +11,9 @@ public class SqlServerDialect implements SqlDialect {
 		String orderBy = orderIndex == -1 ? "getdate()" : sql.substring(orderIndex + 9);
 
 		int selectIndex = holdSql.indexOf("select");
-		eSql = eSql.substring(0, selectIndex + 6) + " row_number() over(order by " + orderBy + ") d_p_rm ," + eSql.substring(selectIndex + 6);
+		eSql = eSql.substring(0, selectIndex + 6) + " row_number() over(order by " + orderBy + ") d_rm ," + eSql.substring(selectIndex + 6);
 
-		return " select * from (" + eSql + ") v where d_p_rm <=" + (startWith + pagerSize) + " and d_p_rm >= " + (startWith + 1);
+		return " select * from (" + eSql + ") v where d_rm <=" + (startWith + pagerSize) + " and d_rm >= " + (startWith + 1);
 	}
 
 	@Override
