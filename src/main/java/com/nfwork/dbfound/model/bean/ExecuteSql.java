@@ -116,7 +116,7 @@ public class ExecuteSql extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
-			log("executeSql",esql, params, context);
+			log("executeSql",esql, params);
 		}
 	}
 

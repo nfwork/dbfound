@@ -3,7 +3,6 @@ package com.nfwork.dbfound.util;
 import java.util.Collection;
 import java.util.Comparator;
 
-import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,7 +19,7 @@ public class LogUtil {
 
 	private static final Log log = LogFactory.getLog("dbfound");
 
-	public static void log(String sqlName, String sql, Collection<Param> params, Context context) {
+	public static void log(String sqlName, String sql, Collection<Param> params) {
 		if (DBFoundConfig.isOpenLog()) {
 			log.info("Execute " + sqlName + ": "+sql);
 			params.stream().sorted(Comparator.comparing(Param::getName)).forEach(param -> {
