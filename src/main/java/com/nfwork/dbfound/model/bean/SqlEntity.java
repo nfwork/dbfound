@@ -252,7 +252,7 @@ public abstract class SqlEntity extends Sqls {
 				}
 				paramValue = paramBuilder.toString();
 			}else{
-				paramValue = nfParam.getStringValue(context);
+				paramValue = nfParam.getStringValue();
 			}
 
 			// UUID取值
@@ -338,7 +338,7 @@ public abstract class SqlEntity extends Sqls {
 					String paramValue = JsonUtil.arrayToJson((Object[]) nfParam.getValue());
 					nfParam.setValue(paramValue);
 				} else{
-					nfParam.setValue(nfParam.getStringValue(context));
+					nfParam.setValue(nfParam.getStringValue());
 				}
 			}
 		} else if (nfParam.getDataType() == DataType.DATE) {
