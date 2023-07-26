@@ -188,7 +188,7 @@ public class BatchExecuteSql extends SqlEntity {
 		}finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
-			log("batchExecuteSql", esql, params, context);
+			log("batchExecuteSql", esql, params);
 		}
 	}
 

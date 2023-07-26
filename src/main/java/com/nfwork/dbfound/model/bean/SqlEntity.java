@@ -513,8 +513,8 @@ public abstract class SqlEntity extends Sqls {
 		return result;
 	}
 
-	public void log(String sqlName, String sql, Map<String, Param> params, Context context) {
-		LogUtil.log(sqlName, sql, params.values(), context);
+	public void log(String sqlName, String sql, Map<String, Param> params) {
+		LogUtil.log(sqlName, sql, params.values());
 	}
 
 	public List<SqlEntity> getSqlList() {
