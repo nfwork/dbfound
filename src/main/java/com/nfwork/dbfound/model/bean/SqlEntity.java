@@ -17,10 +17,10 @@ import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.SimpleItemList;
+import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
 import com.nfwork.dbfound.util.*;
-import org.dom4j.Element;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
@@ -29,8 +29,6 @@ import com.nfwork.dbfound.model.base.Entity;
 public abstract class SqlEntity extends Sqls {
 
 	private static final long serialVersionUID = 3035666882993092230L;
-
-	String sql;
 
 	private final static String paramReplace = "\\{@[ a-zA-Z_0-9\u4E00-\u9FA5]*}";
 
@@ -49,12 +47,6 @@ public abstract class SqlEntity extends Sqls {
 			Sqls sqls = (Sqls) entity;
 			sqls.sqlList.add(this);
 		}
-	}
-
-	@Override
-	public void init(Element element) {
-		sql = element.getTextTrim();
-		super.init(element);
 	}
 
 	public abstract void execute(Context context, Map<String, Param> params, String provideName);
@@ -510,20 +502,23 @@ public abstract class SqlEntity extends Sqls {
 		return result;
 	}
 
+	protected Boolean checkCondition(String condition,  Map<String, Param> params, Context context, String provideName){
+		String conditionSql = staticParamParse(condition, params, context);
+		List<Object> exeParam = new ArrayList<>();
+		conditionSql = getExecuteSql(conditionSql, params, exeParam, context);
+		Boolean result = DSqlEngine.checkWhenSql(conditionSql, exeParam, provideName, context);
+		if (result == null) {
+			throw new DBFoundRuntimeException("condition express is not support, condition:" + condition);
+		}
+		return result;
+	}
+
 	public void log(String sqlName, String sql, Map<String, Param> params, Context context) {
 		LogUtil.log(sqlName, sql, params.values(), context);
 	}
 
 	public void log(String sqlName,String sql, List<Param> listParam, Context context) {
 		LogUtil.log(sqlName, sql, listParam, context);
-	}
-
-	public void setSql(String sql) {
-		this.sql = sql;
-	}
-
-	public String getSql() {
-		return sql;
 	}
 
 	public List<SqlEntity> getSqlList() {

@@ -2,12 +2,11 @@ package com.nfwork.dbfound.model.bean;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.nfwork.dbfound.model.base.Entity;
 
-public class Sqls extends Entity {
+public class Sqls extends Sql {
 
 	private static final long serialVersionUID = -5219823527523277120L;
-	List<SqlEntity> sqlList = new ArrayList<SqlEntity>();
+	List<SqlEntity> sqlList = new ArrayList<>();
 
 	@Override
 	public void run() {
