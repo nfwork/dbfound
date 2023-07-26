@@ -12,7 +12,7 @@ public class Param extends Entity {
 
 	private static final long serialVersionUID = 5538229252299018282L;
 
-	private String name;
+	private String name = "";
 	private DataType dataType = DataType.VARCHAR;
 	private String ioType = "in";
 	private String autoSession;
