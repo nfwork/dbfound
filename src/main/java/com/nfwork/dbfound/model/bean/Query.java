@@ -267,14 +267,20 @@ public class Query extends SqlEntity {
 					break;
 				case SQL_PART:
 					SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
-					if(sqlPart.type ==SqlPartType.IF) {
-						if (DataUtil.isNotNull(sqlPart.getCondition()) && checkCondition(sqlPart.getCondition(), params, context, provideName)) {
+					if(sqlPart.type == SqlPartType.FOR) {
+						if(DataUtil.isNull(sqlPart.getSourcePath())){
+							throw new DBFoundRuntimeException("SqlPart when type is FOR, the sourcePath can not be null");
+						}
+						m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart(context, params)));
+					}else{
+						if(DataUtil.isNull(sqlPart.getCondition())){
+							throw new DBFoundRuntimeException("SqlPart when type is IF, the condition can not be null");
+						}
+						if (checkCondition(sqlPart.getCondition(), params, context, provideName)) {
 							m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart()));
 						} else {
 							m.appendReplacement(buffer, "");
 						}
-					}else{
-						m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart(context, params)));
 					}
 					break;
 			}
