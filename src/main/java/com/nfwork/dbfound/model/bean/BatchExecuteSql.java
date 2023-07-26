@@ -86,20 +86,23 @@ public class BatchExecuteSql extends SqlEntity {
 			return;
 		}
 
+		String realTmpSql = tmpSql;
 		for (Param param : params.values()){
 			if (DataUtil.isNotNull(param.getScope())){
 				param.setBatchAssign(false);
 			}else if (ELEngine.isAbsolutePath(param.getSourcePath())) {
 				param.setBatchAssign(false);
 			}
+			if(!param.isBatchAssign()){
+				realTmpSql = realTmpSql.replace(param.getName()+"_##",param.getName());
+			}
 		}
 
 		int updateCount = 0;
-		for (int i= 0 ; i < dataSize; i=i+batchSize){
-			int begin = i;
-			int end = i + batchSize;
+		for (int begin= 0 ; begin < dataSize; begin=begin+batchSize){
+			int end = begin + batchSize;
 			if(end > dataSize) end = dataSize;
-			int size = execute(context,params,exeSourcePath,provideName,begin,end);
+			int size = execute(context,realTmpSql,params,exeSourcePath,provideName,begin,end);
 			updateCount = updateCount +size;
 		}
 
@@ -117,7 +120,7 @@ public class BatchExecuteSql extends SqlEntity {
 		}
 	}
 
-	private int execute(Context context, Map<String, Param> params, String exeSourcePath,String provideName, int begin ,int end){
+	private int execute(Context context, String realTmpSql, Map<String, Param> params, String exeSourcePath,String provideName, int begin ,int end){
 		Map<String, Param> exeParams = new HashMap<>(params);
 
 		StringBuilder eSql = new StringBuilder(beforeTmpSql);
@@ -130,9 +133,10 @@ public class BatchExecuteSql extends SqlEntity {
 				if(param == null){
 					throw new DBFoundRuntimeException("param: "+ paramName +" not defined");
 				}
-				Param newParam = (Param) param.cloneEntity();
-				newParam.setName(newParam.getName()+"_"+i);
+
 				if (param.isBatchAssign()){
+					Param newParam = (Param) param.cloneEntity();
+					newParam.setName(newParam.getName()+"_"+i);
 					String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
 					newParam.setSourcePathHistory(exeSourcePath +"[" + i +"]."+ sp);
 					Object value = context.getData(newParam.getSourcePathHistory(), elCache);
@@ -140,10 +144,10 @@ public class BatchExecuteSql extends SqlEntity {
 						value = null;
 					}
 					newParam.setValue(value);
+					exeParams.put(newParam.getName(),newParam);
 				}
-				exeParams.put(newParam.getName(),newParam);
 			}
-			eSql.append(tmpSql.replace("##", i + ""));
+			eSql.append(realTmpSql.replace("##", i + ""));
 			if(i < end-1){
 				eSql.append(",");
 			}
