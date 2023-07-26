@@ -335,6 +335,9 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="executeSql_type" mixed="true">
+		<xsd:sequence>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
+		</xsd:sequence>
 		<xsd:attribute name="generatedKeyParam" />
 		<xsd:attribute name="affectedCountParam" />
 	</xsd:complexType>

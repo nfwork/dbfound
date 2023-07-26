@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
@@ -40,8 +41,16 @@ public class ExecuteSql extends SqlEntity {
 		if(initError != null){
 			throw new DBFoundRuntimeException(initError);
 		}
+
+		String executeSql;
+		if(sqlPartList != null && !sqlPartList.isEmpty()){
+			executeSql = initSqlPart(sql,params,context,provideName);
+		}else{
+			executeSql = sql;
+		}
+
 		Connection conn = context.getConn(provideName);
-		String executeSql = staticParamParse(sql, params, context);
+		executeSql = staticParamParse(executeSql, params, context);
 
 		List<Object> exeParam = new ArrayList<>();
 		String esql = getExecuteSql(executeSql, params, exeParam, context);
@@ -102,6 +111,27 @@ public class ExecuteSql extends SqlEntity {
 			log("executeSql",esql, params, context);
 		}
 	}
+
+	private String initSqlPart(String sql, Map<String, Param> params, Context context, String provideName) {
+		int sqlPartIndex = 0;
+
+		Matcher m = SQL_PART_PATTERN.matcher(sql);
+		StringBuffer buffer = new StringBuffer();
+		while (m.find()) {
+			String text = m.group();
+			if (SQL_PART.equals(text)) {
+				SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
+				if (DataUtil.isNotNull(sqlPart.getCondition()) && checkCondition(sqlPart.getCondition(), params, context, provideName)) {
+					m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart()));
+				} else {
+					m.appendReplacement(buffer, "");
+				}
+			}
+		}
+		m.appendTail(buffer);
+		return buffer.toString();
+	}
+
 
 	public String getGeneratedKeyParam() {
 		return generatedKeyParam;

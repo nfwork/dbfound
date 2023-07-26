@@ -43,7 +43,6 @@ public class Query extends SqlEntity {
 	private Integer queryTimeout;
 	private static final String WHERE_CLAUSE = "#WHERE_CLAUSE#";
 	private static final String AND_CLAUSE = "#AND_CLAUSE#";
-	static final String SQL_PART = "#SQL_PART#";
 	private static final char[] FROM = "from".toCharArray();
 	private static final char[] ORDER = "order".toCharArray();
 	private static final char[] DISTINCT = "distinct".toCharArray();
@@ -58,8 +57,6 @@ public class Query extends SqlEntity {
 	private String entity;
 	private Class entityClass;
 	private String currentPath;
-
-	private List<SqlPart> sqlPartList;
 
 	@Override
 	public void init(Element element) {
@@ -226,8 +223,6 @@ public class Query extends SqlEntity {
 		return (List<T>) data;
 	}
 
-	private final static Pattern p = Pattern.compile("#[A-Z_]+#");
-
 	private String initFilterAndSqlPart(String ssql, Map<String, Param> params, Context context, String provideName) {
 		StringBuilder bfsql = new StringBuilder();
 		for (Param param : params.values()) {
@@ -250,7 +245,7 @@ public class Query extends SqlEntity {
 
 		int sqlPartIndex = 0;
 
-		Matcher m = p.matcher(ssql);
+		Matcher m = SQL_PART_PATTERN.matcher(ssql);
 		StringBuffer buffer = new StringBuffer();
 		while (m.find()) {
 			String text = m.group();
@@ -281,17 +276,6 @@ public class Query extends SqlEntity {
 		}
 		m.appendTail(buffer);
 		return buffer.toString();
-	}
-
-	private Boolean checkCondition(String condition,  Map<String, Param> params, Context context, String provideName){
-		String conditionSql = staticParamParse(condition, params, context);
-		List<Object> exeParam = new ArrayList<>();
-		conditionSql = getExecuteSql(conditionSql, params, exeParam, context);
-		Boolean result = DSqlEngine.checkWhenSql(conditionSql, exeParam, provideName, context);
-		if (result == null) {
-			throw new DBFoundRuntimeException("condition express is not support, condition:" + condition);
-		}
-		return result;
 	}
 
 	public Count getCount(String querySql){
