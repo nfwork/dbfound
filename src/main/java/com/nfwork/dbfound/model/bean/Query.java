@@ -73,7 +73,7 @@ public class Query extends SqlEntity {
 				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
 			}catch (Exception exception){
 				String message = "queryAdapter init failed, please check the class "+ adapter+" is exists or it is implement QueryAdapter";
-				throw new DBFoundPackageException(message,exception);
+				throw new DBFoundRuntimeException(message,exception);
 			}
 		}
 		if(DataUtil.isNotNull(entity)){
@@ -215,7 +215,7 @@ public class Query extends SqlEntity {
 				data.add(mapdata);
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("Query执行异常:" + e.getMessage(), e);
+			throw new DBFoundPackageException("Query execute failed, " + e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);

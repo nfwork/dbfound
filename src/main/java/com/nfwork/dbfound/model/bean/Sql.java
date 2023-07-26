@@ -27,7 +27,8 @@ public class Sql extends Entity {
 		super.init(element);
 
 		Class<?> className = getClass();
-		if(className.equals(Sql.class) || className.equals(ExecuteSql.class) ||className.equals(BatchExecuteSql.class)) {
+		if(className.equals(Sql.class) || className.equals(ExecuteSql.class)
+				|| className.equals(BatchExecuteSql.class) || className.equals(QuerySql.class)) {
 			sqlPartList = new ArrayList<>();
 			List<Node> nodes = element.content();
 			StringBuilder builder = new StringBuilder();
