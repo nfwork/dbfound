@@ -36,7 +36,7 @@ public abstract class SqlEntity extends Sqls {
 
 	protected final static Pattern staticPattern = Pattern.compile("#" + paramReplace);
 
-	protected final static Pattern paramPattern = Pattern.compile(paramReplace);
+	final static Pattern paramPattern = Pattern.compile(paramReplace);
 
 	protected final static Pattern timeMillisPattern = Pattern.compile("[0123456789]*");
 
@@ -515,10 +515,6 @@ public abstract class SqlEntity extends Sqls {
 
 	public void log(String sqlName, String sql, Map<String, Param> params, Context context) {
 		LogUtil.log(sqlName, sql, params.values(), context);
-	}
-
-	public void log(String sqlName,String sql, List<Param> listParam, Context context) {
-		LogUtil.log(sqlName, sql, listParam, context);
 	}
 
 	public List<SqlEntity> getSqlList() {

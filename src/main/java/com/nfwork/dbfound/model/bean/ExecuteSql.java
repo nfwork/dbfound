@@ -14,6 +14,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
+import com.nfwork.dbfound.model.base.SqlPartType;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 
@@ -35,6 +36,13 @@ public class ExecuteSql extends SqlEntity {
 			return;
 		}
 		autoCreateParam(sql,this);
+		if(sqlPartList!=null && !sqlPartList.isEmpty()){
+			StringBuilder builder = new StringBuilder();
+			for (SqlPart sqlPart : sqlPartList) {
+				builder.append(sqlPart.getCondition()).append(" ").append(sqlPart.getPart());
+			}
+			autoCreateParam(builder.toString(),this);
+		}
 	}
 
 	public void execute(Context context, Map<String, Param> params, String provideName) {
@@ -121,10 +129,14 @@ public class ExecuteSql extends SqlEntity {
 			String text = m.group();
 			if (SQL_PART.equals(text)) {
 				SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
-				if (DataUtil.isNotNull(sqlPart.getCondition()) && checkCondition(sqlPart.getCondition(), params, context, provideName)) {
-					m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart()));
-				} else {
-					m.appendReplacement(buffer, "");
+				if(sqlPart.type ==SqlPartType.IF) {
+					if (DataUtil.isNotNull(sqlPart.getCondition()) && checkCondition(sqlPart.getCondition(), params, context, provideName)) {
+						m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart()));
+					} else {
+						m.appendReplacement(buffer, "");
+					}
+				}else{
+					m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart(context, params)));
 				}
 			}
 		}
