@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.util;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
@@ -22,13 +23,13 @@ public class LogUtil {
 	public static void log(String sqlName, String sql, Collection<Param> params, Context context) {
 		if (DBFoundConfig.isOpenLog()) {
 			log.info("Execute " + sqlName + ": "+sql);
-			for (Param param : params) {
+			params.stream().sorted(Comparator.comparing(Param::getName)).forEach(param -> {
 				if(param.isRequireLog()) {
 					param.setRequireLog(false);
 					log.info("  paramName: "+ param.getName() +", value: "+ param.getStringValue(context) +
-									", dataType: "+ param.getDataType().getValue() +", sourcePath: " + param.getSourcePathHistory());
+							", dataType: "+ param.getDataType().getValue() +", sourcePath: " + param.getSourcePathHistory());
 				}
-			}
+			});
 		}
 	}
 

@@ -168,7 +168,19 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="sqlPart_type" mixed="true">
+		<xsd:attribute name="type">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="if" />
+					<xsd:enumeration value="for" />
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
 		<xsd:attribute name="condition" />
+		<xsd:attribute name="sourcePath" />
+		<xsd:attribute name="separator" />
+		<xsd:attribute name="begin" />
+		<xsd:attribute name="end" />
 	</xsd:complexType>
 
 	<xsd:complexType name="sqls_type">

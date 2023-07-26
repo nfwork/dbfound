@@ -118,10 +118,7 @@ public class BatchExecuteSql extends SqlEntity {
 	}
 
 	private int execute(Context context, Map<String, Param> params, String exeSourcePath,String provideName, int begin ,int end){
-		Map<String, Param> exeParams = new HashMap<String, Param>();
-		List<Param> listParam = new ArrayList<Param>();
-		listParam.addAll(params.values());
-		exeParams.putAll(params);
+		Map<String, Param> exeParams = new HashMap<>(params);
 
 		StringBuilder eSql = new StringBuilder(beforeTmpSql);
 
@@ -145,7 +142,6 @@ public class BatchExecuteSql extends SqlEntity {
 					newParam.setValue(value);
 				}
 				exeParams.put(newParam.getName(),newParam);
-				listParam.add(newParam);
 			}
 			eSql.append(tmpSql.replace("##", i + ""));
 			if(i < end-1){
@@ -153,10 +149,10 @@ public class BatchExecuteSql extends SqlEntity {
 			}
 		}
 		eSql.append(afterTmpSql);
-		return execute(context,exeParams,provideName, eSql.toString(),listParam);
+		return execute(context,exeParams,provideName, eSql.toString());
 	}
 
-	private int execute(Context context, Map<String, Param> params, String provideName,String sql, List<Param> listParam) {
+	private int execute(Context context, Map<String, Param> params, String provideName,String sql) {
 		Connection conn = context.getConn(provideName);
 
 		sql = staticParamParse(sql, params, context);
@@ -188,7 +184,7 @@ public class BatchExecuteSql extends SqlEntity {
 		}finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
-			log("batchExecuteSql", esql, listParam, context);
+			log("batchExecuteSql", esql, params, context);
 		}
 	}
 

@@ -20,6 +20,7 @@ import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
+import com.nfwork.dbfound.model.base.SqlPartType;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.resolver.TypeResolverTool;
 import com.nfwork.dbfound.util.*;
@@ -266,10 +267,14 @@ public class Query extends SqlEntity {
 					break;
 				case SQL_PART:
 					SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
-					if (DataUtil.isNotNull(sqlPart.getCondition()) && checkCondition(sqlPart.getCondition(),params,context,provideName)){
-						m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart()));
+					if(sqlPart.type ==SqlPartType.IF) {
+						if (DataUtil.isNotNull(sqlPart.getCondition()) && checkCondition(sqlPart.getCondition(), params, context, provideName)) {
+							m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart()));
+						} else {
+							m.appendReplacement(buffer, "");
+						}
 					}else{
-						m.appendReplacement(buffer, "");
+						m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart(context, params)));
 					}
 					break;
 			}
