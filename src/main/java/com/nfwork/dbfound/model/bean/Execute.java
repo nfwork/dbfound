@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
@@ -47,7 +48,7 @@ public class Execute extends SqlEntity {
 				executeAdapter = AdapterFactory.getExecuteAdapter(Class.forName(adapter));
 			}catch (Exception exception){
 				String message = "ExecuteAdapter init failed, please check the class "+ adapter+" is exists or it is implement ExecuteAdapter";
-				throw new DBFoundPackageException(message, exception);
+				throw new DBFoundRuntimeException(message, exception);
 			}
 		}
 		if (getParent() instanceof Model) {
