@@ -26,7 +26,7 @@ public class LogUtil {
 			params.stream().sorted(Comparator.comparing(Param::getName)).forEach(param -> {
 				if(param.isRequireLog()) {
 					param.setRequireLog(false);
-					log.info("  paramName: "+ param.getName() +", value: "+ param.getStringValue(context) +
+					log.info("  paramName: "+ param.getName() +", value: "+ param.getStringValue() +
 							", dataType: "+ param.getDataType().getValue() +", sourcePath: " + param.getSourcePathHistory());
 				}
 			});
