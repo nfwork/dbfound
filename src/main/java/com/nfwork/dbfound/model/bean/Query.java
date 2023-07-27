@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.db.dialect.AbstractSqlDialect;
 import com.nfwork.dbfound.el.ELEngine;
@@ -20,8 +19,6 @@ import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
-import com.nfwork.dbfound.model.base.SqlPartType;
-import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.resolver.TypeResolverTool;
 import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
@@ -267,21 +264,7 @@ public class Query extends SqlEntity {
 					break;
 				case SQL_PART:
 					SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
-					if(sqlPart.type == SqlPartType.FOR) {
-						if(DataUtil.isNull(sqlPart.getSourcePath())){
-							throw new DBFoundRuntimeException("SqlPart when type is FOR, the sourcePath can not be null");
-						}
-						m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart(context, params)));
-					}else{
-						if(DataUtil.isNull(sqlPart.getCondition())){
-							throw new DBFoundRuntimeException("SqlPart when type is IF, the condition can not be null");
-						}
-						if (checkCondition(sqlPart.getCondition(), params, context, provideName)) {
-							m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart()));
-						} else {
-							m.appendReplacement(buffer, "");
-						}
-					}
+					m.appendReplacement(buffer, Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName)));
 					break;
 			}
 		}
