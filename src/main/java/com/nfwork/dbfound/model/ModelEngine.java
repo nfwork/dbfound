@@ -396,7 +396,7 @@ public class ModelEngine {
 				}
 				// 设定cookie参数
 				if ("true".equals(p.getAutoCookie())) {
-					Cookie cookie = new Cookie(p.getName(), p.getStringValue(context));
+					Cookie cookie = new Cookie(p.getName(), p.getStringValue());
 					String path = context.request.getContextPath();
 					if (!path.endsWith("/")) {
 						path = path + "/";

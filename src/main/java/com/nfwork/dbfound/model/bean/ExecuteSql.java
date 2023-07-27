@@ -34,14 +34,29 @@ public class ExecuteSql extends SqlEntity {
 			return;
 		}
 		autoCreateParam(sql,this);
+		if(sqlPartList!=null && !sqlPartList.isEmpty()){
+			StringBuilder builder = new StringBuilder();
+			for (SqlPart sqlPart : sqlPartList) {
+				builder.append(sqlPart.getCondition()).append(" ").append(sqlPart.getPart());
+			}
+			autoCreateParam(builder.toString(),this);
+		}
 	}
 
 	public void execute(Context context, Map<String, Param> params, String provideName) {
 		if(initError != null){
 			throw new DBFoundRuntimeException(initError);
 		}
+
+		String executeSql;
+		if(sqlPartList != null && !sqlPartList.isEmpty()){
+			executeSql = initSqlPart(sql,params,context,provideName);
+		}else{
+			executeSql = sql;
+		}
+
 		Connection conn = context.getConn(provideName);
-		String executeSql = staticParamParse(sql, params, context);
+		executeSql = staticParamParse(executeSql, params, context);
 
 		List<Object> exeParam = new ArrayList<>();
 		String esql = getExecuteSql(executeSql, params, exeParam, context);
@@ -99,7 +114,7 @@ public class ExecuteSql extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
-			log("executeSql",esql, params, context);
+			log("executeSql",esql, params);
 		}
 	}
 

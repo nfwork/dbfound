@@ -168,14 +168,26 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="sqlPart_type" mixed="true">
+		<xsd:attribute name="type">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="if" />
+					<xsd:enumeration value="for" />
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
 		<xsd:attribute name="condition" />
+		<xsd:attribute name="sourcePath" />
+		<xsd:attribute name="separator" />
+		<xsd:attribute name="begin" />
+		<xsd:attribute name="end" />
 	</xsd:complexType>
 
 	<xsd:complexType name="sqls_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="executeSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql" type="batchExecuteSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql"/>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="querySql_type"/>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="caseSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
@@ -335,8 +347,17 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="executeSql_type" mixed="true">
+		<xsd:sequence>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
+		</xsd:sequence>
 		<xsd:attribute name="generatedKeyParam" />
 		<xsd:attribute name="affectedCountParam" />
+	</xsd:complexType>
+
+	<xsd:complexType name="querySql_type" mixed="true">
+		<xsd:sequence>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
+		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="setContextData_type">

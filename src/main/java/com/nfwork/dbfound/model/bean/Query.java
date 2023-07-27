@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.db.dialect.AbstractSqlDialect;
 import com.nfwork.dbfound.el.ELEngine;
@@ -20,7 +19,6 @@ import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
-import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.resolver.TypeResolverTool;
 import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
@@ -43,7 +41,6 @@ public class Query extends SqlEntity {
 	private Integer queryTimeout;
 	private static final String WHERE_CLAUSE = "#WHERE_CLAUSE#";
 	private static final String AND_CLAUSE = "#AND_CLAUSE#";
-	static final String SQL_PART = "#SQL_PART#";
 	private static final char[] FROM = "from".toCharArray();
 	private static final char[] ORDER = "order".toCharArray();
 	private static final char[] DISTINCT = "distinct".toCharArray();
@@ -59,8 +56,6 @@ public class Query extends SqlEntity {
 	private Class entityClass;
 	private String currentPath;
 
-	private List<SqlPart> sqlPartList;
-
 	@Override
 	public void init(Element element) {
 		params = new HashMap<>();
@@ -75,7 +70,7 @@ public class Query extends SqlEntity {
 				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
 			}catch (Exception exception){
 				String message = "queryAdapter init failed, please check the class "+ adapter+" is exists or it is implement QueryAdapter";
-				throw new DBFoundPackageException(message,exception);
+				throw new DBFoundRuntimeException(message,exception);
 			}
 		}
 		if(DataUtil.isNotNull(entity)){
@@ -217,16 +212,14 @@ public class Query extends SqlEntity {
 				data.add(mapdata);
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("Query执行异常:" + e.getMessage(), e);
+			throw new DBFoundPackageException("Query execute failed, " + e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.log("querySql",eSql, params.values(),context);
+			LogUtil.log("querySql",eSql, params.values());
 		}
 		return (List<T>) data;
 	}
-
-	private final static Pattern p = Pattern.compile("#[A-Z_]+#");
 
 	private String initFilterAndSqlPart(String ssql, Map<String, Param> params, Context context, String provideName) {
 		StringBuilder bfsql = new StringBuilder();
@@ -250,7 +243,7 @@ public class Query extends SqlEntity {
 
 		int sqlPartIndex = 0;
 
-		Matcher m = p.matcher(ssql);
+		Matcher m = SQL_PART_PATTERN.matcher(ssql);
 		StringBuffer buffer = new StringBuffer();
 		while (m.find()) {
 			String text = m.group();
@@ -271,27 +264,12 @@ public class Query extends SqlEntity {
 					break;
 				case SQL_PART:
 					SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
-					if (DataUtil.isNotNull(sqlPart.getCondition()) && checkCondition(sqlPart.getCondition(),params,context,provideName)){
-						m.appendReplacement(buffer, Matcher.quoteReplacement(sqlPart.getPart()));
-					}else{
-						m.appendReplacement(buffer, "");
-					}
+					m.appendReplacement(buffer, Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName)));
 					break;
 			}
 		}
 		m.appendTail(buffer);
 		return buffer.toString();
-	}
-
-	private Boolean checkCondition(String condition,  Map<String, Param> params, Context context, String provideName){
-		String conditionSql = staticParamParse(condition, params, context);
-		List<Object> exeParam = new ArrayList<>();
-		conditionSql = getExecuteSql(conditionSql, params, exeParam, context);
-		Boolean result = DSqlEngine.checkWhenSql(conditionSql, exeParam, provideName, context);
-		if (result == null) {
-			throw new DBFoundRuntimeException("condition express is not support, condition:" + condition);
-		}
-		return result;
 	}
 
 	public Count getCount(String querySql){

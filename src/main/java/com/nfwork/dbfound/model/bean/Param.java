@@ -1,14 +1,8 @@
 package com.nfwork.dbfound.model.bean;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.Temporal;
 import java.util.Date;
 
-import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.util.DataUtil;
@@ -18,7 +12,7 @@ public class Param extends Entity {
 
 	private static final long serialVersionUID = 5538229252299018282L;
 
-	private String name;
+	private String name = "";
 	private DataType dataType = DataType.VARCHAR;
 	private String ioType = "in";
 	private String autoSession;
@@ -101,10 +95,6 @@ public class Param extends Entity {
 	}
 
 	public String getStringValue() {
-		return getStringValue(null);
-	}
-
-	public String getStringValue(Context context) {
 		if (value == null) {
 			return null;
 		} else {
