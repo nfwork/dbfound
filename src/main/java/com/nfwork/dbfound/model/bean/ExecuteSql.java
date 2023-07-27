@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
@@ -35,11 +36,8 @@ public class ExecuteSql extends SqlEntity {
 		}
 		autoCreateParam(sql,this);
 		if(sqlPartList!=null && !sqlPartList.isEmpty()){
-			StringBuilder builder = new StringBuilder();
-			for (SqlPart sqlPart : sqlPartList) {
-				builder.append(sqlPart.getCondition()).append(" ").append(sqlPart.getPart());
-			}
-			autoCreateParam(builder.toString(),this);
+			String tmp = sqlPartList.stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+			autoCreateParam(tmp,this);
 		}
 	}
 
