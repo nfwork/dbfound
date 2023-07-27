@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
@@ -36,6 +37,10 @@ public class QuerySql extends SqlEntity {
 			return;
 		}
 		autoCreateParam(sql,this);
+		if(sqlPartList!=null && !sqlPartList.isEmpty()){
+			String tmp = sqlPartList.stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+			autoCreateParam(tmp,this);
+		}
 	}
 
 	public void execute(Context context, Map<String, Param> params, String provideName) {

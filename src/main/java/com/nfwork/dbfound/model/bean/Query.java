@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.db.dialect.AbstractSqlDialect;
 import com.nfwork.dbfound.el.ELEngine;
@@ -100,11 +101,8 @@ public class Query extends SqlEntity {
 				autoCreateParam(sql, params);
 			}
 			if(sqlPartList!=null && !sqlPartList.isEmpty()){
-				StringBuilder builder = new StringBuilder();
-				for (SqlPart sqlPart : sqlPartList) {
-					builder.append(sqlPart.getCondition()).append(" ").append(sqlPart.getPart());
-				}
-				autoCreateParam(builder.toString(),params);
+				String tmp = sqlPartList.stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+				autoCreateParam(tmp,params);
 			}
 		} else {
 			super.run();
