@@ -42,8 +42,16 @@ public class QuerySql extends SqlEntity {
 		if(initError != null){
 			throw new DBFoundRuntimeException(initError);
 		}
+		String querySql;
+		if(sqlPartList != null && !sqlPartList.isEmpty()){
+			querySql = initSqlPart(sql,params,context,provideName);
+		}else{
+			querySql = sql;
+		}
+
 		Connection conn = context.getConn(provideName);
-		String querySql = staticParamParse(sql, params, context);
+
+		querySql = staticParamParse(querySql, params, context);
 
 		List<Object> exeParam = new ArrayList<>();
 		String esql = getExecuteSql(querySql, params, exeParam, context);

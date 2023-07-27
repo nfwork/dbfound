@@ -17,6 +17,7 @@ import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.SimpleItemList;
+import com.nfwork.dbfound.model.base.SqlPartType;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
@@ -512,6 +513,41 @@ public abstract class SqlEntity extends Sqls {
 		}
 		return result;
 	}
+
+	protected String initSqlPart(String sql, Map<String, Param> params, Context context, String provideName) {
+		int sqlPartIndex = 0;
+
+		Matcher m = SQL_PART_PATTERN.matcher(sql);
+		StringBuffer buffer = new StringBuffer();
+		while (m.find()) {
+			String text = m.group();
+			if (SQL_PART.equals(text)) {
+				SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
+				m.appendReplacement(buffer, Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName)));
+			}
+		}
+		m.appendTail(buffer);
+		return buffer.toString();
+	}
+
+	protected String getPartSql(SqlPart sqlPart, Context context,Map<String, Param> params,String provideName ){
+		if(sqlPart.type == SqlPartType.FOR) {
+			if(DataUtil.isNull(sqlPart.getSourcePath())){
+				throw new DBFoundRuntimeException("SqlPart the sourcePath can not be null when the type is FOR");
+			}
+			return sqlPart.getPart(context, params);
+		}else{
+			if(DataUtil.isNull(sqlPart.getCondition())){
+				throw new DBFoundRuntimeException("SqlPart the condition can not be null when the type is IF");
+			}
+			if (checkCondition(sqlPart.getCondition(), params, context, provideName)) {
+				return sqlPart.getPart();
+			} else {
+				return "";
+			}
+		}
+	}
+
 
 	public void log(String sqlName, String sql, Map<String, Param> params) {
 		LogUtil.log(sqlName, sql, params.values());
