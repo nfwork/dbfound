@@ -9,10 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.Context;
@@ -49,6 +46,7 @@ public class QuerySql extends SqlEntity {
 		}
 		String querySql;
 		if(sqlPartList != null && !sqlPartList.isEmpty()){
+			params = new HashMap<>(params);
 			querySql = initSqlPart(sql,params,context,provideName);
 		}else{
 			querySql = sql;

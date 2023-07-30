@@ -28,7 +28,7 @@ public class BatchExecuteSql extends SqlEntity {
 
 	private String afterTmpSql;
 
-	private List<String> paramNameList;
+	private Set<String> paramNameSet;
 
 	private static  final  String BATCH_TEMPLATE_BEGIN = "#BATCH_TEMPLATE_BEGIN#";
 	private static  final  String BATCH_TEMPLATE_END = "#BATCH_TEMPLATE_END#";
@@ -65,8 +65,8 @@ public class BatchExecuteSql extends SqlEntity {
 		tmpSql = sql.substring(indexBegin+BATCH_TEMPLATE_BEGIN.length(), indexEnd);
 		afterTmpSql = sql.substring(indexEnd + BATCH_TEMPLATE_END.length());
 
-		paramNameList = new ArrayList<String>();
-		tmpSql = analysisTmpSql(tmpSql, paramNameList);
+		paramNameSet = new HashSet<>();
+		tmpSql = analysisTmpSql(tmpSql, paramNameSet);
 	}
 
 	public void execute(Context context, Map<String, Param> params, String provideName){
@@ -128,10 +128,10 @@ public class BatchExecuteSql extends SqlEntity {
 		Map<String, Object> elCache = new HashMap<>();
 
 		for (int i =begin; i< end; i++){
-			for (String paramName : paramNameList){
+			for (String paramName : paramNameSet){
 				Param param = params.get(paramName);
 				if(param == null){
-					throw new DBFoundRuntimeException("param: "+ paramName +" not defined");
+					throw new ParamNotFoundException("param: "+ paramName +" not defined");
 				}
 
 				if (param.isBatchAssign()){
@@ -139,6 +139,11 @@ public class BatchExecuteSql extends SqlEntity {
 					newParam.setName(newParam.getName()+"_"+i);
 					String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
 					newParam.setSourcePathHistory(exeSourcePath +"[" + i +"]."+ sp);
+
+					if(exeParams.containsKey(newParam.getName())){
+						throw new DBFoundRuntimeException("BatchExecuteSql create param failed, the param '" + newParam.getName() +"' already exists");
+					}
+
 					Object value = context.getData(newParam.getSourcePathHistory(), elCache);
 					if("".equals(value)){
 						value = null;
@@ -192,13 +197,13 @@ public class BatchExecuteSql extends SqlEntity {
 		}
 	}
 
-	private String analysisTmpSql(String sql, List<String> batchParamNameList ) {
+	private String analysisTmpSql(String sql, Set<String> batchParamNameSet ) {
 		Matcher m = paramPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
 		while (m.find()) {
 			String param = m.group();
 			String pn = param.substring(2, param.length() - 1).trim();
-			batchParamNameList.add(pn);
+			batchParamNameSet.add(pn);
 			String value = "{@" + pn +"_##}";
 			m.appendReplacement(buf, value);
 		}
