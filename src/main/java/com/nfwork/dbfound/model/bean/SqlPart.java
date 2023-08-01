@@ -3,15 +3,13 @@ package com.nfwork.dbfound.model.bean;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.model.base.SqlPartType;
 import com.nfwork.dbfound.util.DataUtil;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 
 public class SqlPart extends Entity {
@@ -32,15 +30,15 @@ public class SqlPart extends Entity {
 
     String end = "";
 
-    private List<String> paramNameList;
+    private Set<String> paramNameSet;
 
     @Override
     public void init(Element element) {
         super.init(element);
         part = element.getTextTrim();
         if(type == SqlPartType.FOR){
-            paramNameList = new ArrayList<>();
-            partTmp = initPartSql(part, paramNameList);
+            paramNameSet = new HashSet<>();
+            partTmp = initPartSql(part, paramNameSet);
         }
     }
 
@@ -70,7 +68,8 @@ public class SqlPart extends Entity {
         eSql.append(begin);
 
         String partSql = partTmp;
-        for (Param param : params.values()){
+        for (String paramName : paramNameSet){
+            Param param = params.get(paramName);
             if (DataUtil.isNotNull(param.getScope())){
                 param.setBatchAssign(false);
             }else if (ELEngine.isAbsolutePath(param.getSourcePath())) {
@@ -84,22 +83,34 @@ public class SqlPart extends Entity {
         Map<String, Object> elCache = new HashMap<>();
 
         for (int i =0; i< dataSize; i++){
-            for (String paramName : paramNameList){
+            for (String paramName : paramNameSet){
                 Param param = params.get(paramName);
                 if(param == null){
-                    throw new DBFoundRuntimeException("param: "+ paramName +" not defined");
+                    throw new ParamNotFoundException("param: "+ paramName +" not defined");
                 }
                 if (param.isBatchAssign()){
-                    Param newParam = (Param) param.cloneEntity();
-                    newParam.setName(newParam.getName()+"_"+i);
+                    String newParamName = param.getName()+"_"+i;
                     String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
-                    newParam.setSourcePathHistory(exeSourcePath +"[" + i +"]."+ sp);
+                    String sph = exeSourcePath +"[" + i +"]."+ sp;
+
+                    Param existsParam = params.get(newParamName);
+                    if(existsParam != null) {
+                        if(sph.equals(existsParam.getSourcePathHistory())){
+                            continue;
+                        }else{
+                            throw new DBFoundRuntimeException("SqlPart create param failed, the param '" + newParamName +"' already exists of sourcePath '" + existsParam.getSourcePathHistory() + "'");
+                        }
+                    }
+
+                    Param newParam = (Param) param.cloneEntity();
+                    newParam.setName(newParamName);
+                    newParam.setSourcePathHistory(sph);
                     Object value = context.getData(newParam.getSourcePathHistory(), elCache);
-                    if("".equals(value)){
+                    if ("".equals(value)) {
                         value = null;
                     }
                     newParam.setValue(value);
-                    params.put(newParam.getName(),newParam);
+                    params.put(newParam.getName(), newParam);
                 }
             }
             eSql.append(partSql.replace("##", i + "")).append(separator);
@@ -110,13 +121,13 @@ public class SqlPart extends Entity {
         return eSql.toString();
     }
 
-    private String initPartSql(String sql, List<String> batchParamNameList ) {
+    private String initPartSql(String sql, Set<String> batchParamNameSet ) {
         Matcher m = SqlEntity.paramPattern.matcher(sql);
         StringBuffer buf = new StringBuffer();
         while (m.find()) {
             String param = m.group();
             String pn = param.substring(2, param.length() - 1).trim();
-            batchParamNameList.add(pn);
+            batchParamNameSet.add(pn);
             String value = "{@" + pn +"_##}";
             m.appendReplacement(buf, value);
         }

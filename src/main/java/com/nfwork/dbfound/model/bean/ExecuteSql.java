@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,6 +49,7 @@ public class ExecuteSql extends SqlEntity {
 
 		String executeSql;
 		if(sqlPartList != null && !sqlPartList.isEmpty()){
+			params = new HashMap<>(params);
 			executeSql = initSqlPart(sql,params,context,provideName);
 		}else{
 			executeSql = sql;
