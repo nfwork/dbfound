@@ -31,15 +31,21 @@ public class LogUtil {
 	}
 
 	public static void debug(String message) {
-		log.debug(message);
+		if (DBFoundConfig.isOpenLog()) {
+			log.debug(message);
+		}
 	}
 
 	public static void info(String message) {
-		log.info(message);
+		if (DBFoundConfig.isOpenLog()) {
+			log.info(message);
+		}
 	}
 
 	public static void warn(String message) {
-		log.warn(message);
+		if (DBFoundConfig.isOpenLog()) {
+			log.warn(message);
+		}
 	}
 
 	public static void error(String message, Throwable throwable) {
