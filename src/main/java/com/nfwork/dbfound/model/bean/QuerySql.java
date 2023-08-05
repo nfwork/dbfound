@@ -71,8 +71,6 @@ public class QuerySql extends SqlEntity {
 
 			if (dataset.next()) {
 				for (int i = 1; i <= metaset.getColumnCount(); i++) {
-					String value = dataset.getString(i);
-
 					String columnName = metaset.getColumnName(i);
 
 					// 判断是否有as 逻辑，如果没有as，强制转化为小写
@@ -101,7 +99,11 @@ public class QuerySql extends SqlEntity {
 						blobExecute(dataset, param, i);
 					}else{
 						int columnType = metaset.getColumnType(i);
-						param.setValue(getData(value,columnType,dataset,i,defaultCalendar));
+						if (dataset.getObject(i) == null) {
+							param.setValue(null);
+						}else{
+							param.setValue(getData(columnType,dataset,i,defaultCalendar));
+						}
 					}
 					param.setSourcePathHistory("set_by_querySql");
 					param.setRequireLog(true);

@@ -195,17 +195,16 @@ public class Query extends SqlEntity {
 			while (dataset.next()) {
 				Map<String, Object> mapdata = new HashMap<>();
 				for (int i = 1; i <= colNames.length; i++) {
-					String value = dataset.getString(i);
 					String columnName = colNames[i-1];
 					if ("d_rm".equals(columnName)) {// 分页参数 不放入map
 						continue;
 					}
-					if (value == null) {
+					if (dataset.getObject(i) == null) {
 						mapdata.put(columnName, null);
 						continue;
 					}
 					int columnType = metaset.getColumnType(i);
-					mapdata.put(columnName,getData(value,columnType,dataset,i,defaultCalendar));
+					mapdata.put(columnName,getData(columnType,dataset,i,defaultCalendar));
 				}
 				data.add(mapdata);
 			}
