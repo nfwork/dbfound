@@ -456,7 +456,7 @@ public abstract class SqlEntity extends Sqls {
 		return  colNames;
 	}
 
-	public Object getData(String value, int columnType, ResultSet dataset, int index, Calendar defaultCalendar) throws SQLException {
+	public Object getData(int columnType, ResultSet dataset, int index, Calendar defaultCalendar) throws SQLException {
 		Object result ;
 		switch (columnType) {
 			case Types.INTEGER:
@@ -470,20 +470,12 @@ public abstract class SqlEntity extends Sqls {
 				break;
 			case Types.FLOAT:
 			case Types.REAL:
-				if (value.endsWith(".0") || !value.contains(".")) {
-					result = dataset.getInt(index);
-				} else {
-					result = dataset.getFloat(index);
-				}
+				result = dataset.getFloat(index);
 				break;
 			case Types.DOUBLE:
 			case Types.DECIMAL:
 			case Types.NUMERIC:
-				if (value.endsWith(".0") || !value.contains(".")) {
-					result = dataset.getLong(index);
-				} else {
-					result = dataset.getDouble(index);
-				}
+				result = dataset.getDouble(index);
 				break;
 			case Types.DATE:
 				result = dataset.getDate(index, defaultCalendar);
@@ -498,7 +490,7 @@ public abstract class SqlEntity extends Sqls {
 				result = dataset.getBoolean(index);
 				break;
 			default:
-				result = value;
+				result = dataset.getString(index);
 		}
 		return result;
 	}
