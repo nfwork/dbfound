@@ -152,15 +152,13 @@ public class BatchSql extends SqlEntity {
 			while (dataset.next()) {
 				Map<String, Object> mapdata = new HashMap<String, Object>();
 				for (int i = 1; i <= colNames.length; i++) {
-					String value = dataset.getString(i);
 					String columnName = colNames[i-1];
-
-					if (value == null) {
+					if (dataset.getObject(i) == null) {
 						mapdata.put(columnName, null);
 						continue;
 					}
 					int columnType = metaset.getColumnType(i);
-					mapdata.put(columnName,getData(value,columnType,dataset,i,defaultCalendar));
+					mapdata.put(columnName,getData(columnType,dataset,i,defaultCalendar));
 				}
 				cursorValues.add(mapdata);
 			}
