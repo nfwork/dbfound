@@ -1,6 +1,8 @@
 package com.nfwork.dbfound.model.base;
 
-public enum DataType {
+import com.nfwork.dbfound.model.enums.BaseEnum;
+
+public enum DataType implements BaseEnum<DataType,String> {
 
     NUMBER("number"),
     VARCHAR("varchar"),
