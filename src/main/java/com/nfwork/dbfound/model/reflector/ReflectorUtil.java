@@ -70,7 +70,10 @@ public class ReflectorUtil extends PropertyTransfer {
 		if (rs != null) {
 			Calendar defaultCalendar = Calendar.getInstance();
 			while (rs.next()) {
-				Object value = TypeResolverTool.getValue(clazz, rs, 1, defaultCalendar);
+				Object value =  rs.getObject(1);
+				if(value != null || clazz.isPrimitive()){
+					value = TypeResolverTool.getValue(clazz, rs, 1, defaultCalendar);
+				}
 				list.add((T) value);
 			}
 		}
