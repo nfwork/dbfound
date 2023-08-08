@@ -35,6 +35,7 @@ public class Sql extends Entity {
 			StringBuilder builder = new StringBuilder();
 			for (Node node : nodes) {
 				if(node instanceof Comment){
+					builder.append(" ");
 					continue;
 				}
 				if (node instanceof Element) {
