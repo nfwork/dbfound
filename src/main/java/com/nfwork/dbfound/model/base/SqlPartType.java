@@ -1,6 +1,8 @@
 package com.nfwork.dbfound.model.base;
 
-public enum SqlPartType {
+import com.nfwork.dbfound.model.enums.BaseEnum;
+
+public enum SqlPartType implements BaseEnum<SqlPartType, String> {
 
     IF("if"),
     FOR("for");

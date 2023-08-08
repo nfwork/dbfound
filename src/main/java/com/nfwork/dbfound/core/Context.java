@@ -18,9 +18,9 @@ import com.nfwork.dbfound.db.ConnectionProvideManager;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.el.ELEngine;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelCache;
+import com.nfwork.dbfound.model.base.CountType;
 import com.nfwork.dbfound.model.bean.Model;
 import com.nfwork.dbfound.util.*;
 
@@ -33,6 +33,7 @@ public class Context {
 
 	private int pagerSize = 0;
 	private long startWith = 0;
+	private CountType countType = CountType.REQUIRED;
 
 	private String currentPath;
 	private String currentModel;
@@ -599,6 +600,14 @@ public class Context {
 
 	public void modelDeepReduce() {
 		modelDeep -- ;
+	}
+
+	public CountType getCountType() {
+		return countType;
+	}
+
+	public void setCountType(CountType countType) {
+		this.countType = countType;
 	}
 
 	public boolean isExport() {

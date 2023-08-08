@@ -4,6 +4,7 @@ import java.util.*;
 import jakarta.servlet.http.Cookie;
 
 import com.nfwork.dbfound.model.base.Count;
+import com.nfwork.dbfound.model.base.CountType;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.core.Context;
@@ -154,16 +155,7 @@ public class ModelEngine {
 
 			// 设想分页参数
 			if (autoPaging) {
-				String startMessage = context.getString("param.start");
-				if (DataUtil.isNotNull(startMessage)) {
-					long start = Long.parseLong(startMessage);
-					context.setStartWith(start);
-				}
-				String sizeMessage = context.getString("param.limit");
-				if (DataUtil.isNotNull(sizeMessage)) {
-					int size = Integer.parseInt(sizeMessage);
-					context.setPagerSize(size);
-				}
+				query.prePager(context);
 			}
 
 			if(query.getQueryAdapter() != null){
@@ -183,28 +175,31 @@ public class ModelEngine {
 			QueryResponseObject<T> ro = new QueryResponseObject<>();
 			ro.setDatas(datas);
 
-			int dataSize = datas.size();
-			int pSize = context.getPagerSize();
-			if(pSize ==0 && query.getPagerSize() != null){
-				pSize = query.getPagerSize();
-			}
-			long start = context.getStartWith();
-			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
-				ro.setTotalCounts(datas.size());
-			} else {
-				Count count = query.getCount(querySql);
-				count.setDataSize(dataSize);
-				count.setTotalCounts(dataSize);
-
-				if(query.getQueryAdapter() != null){
-					query.getQueryAdapter().beforeCount(context,params,count);
+			if(context.getCountType() == CountType.REQUIRED) {
+				int dataSize = datas.size();
+				int pSize = context.getPagerSize();
+				if (pSize == 0 && query.getPagerSize() != null) {
+					pSize = query.getPagerSize();
 				}
+				long start = context.getStartWith();
+				if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
+					ro.setTotalCounts(datas.size());
+				} else {
+					Count count = query.getCount(querySql);
+					count.setDataSize(dataSize);
+					count.setTotalCounts(dataSize);
 
-				if(count.isExecuteCount()) {
-					query.countItems(context, count, params, provideName);
+					if (query.getQueryAdapter() != null) {
+						query.getQueryAdapter().beforeCount(context, params, count);
+					}
+
+					if (count.isExecuteCount()) {
+						query.countItems(context, count, params, provideName);
+					}
+					ro.setTotalCounts(count.getTotalCounts());
 				}
-				ro.setTotalCounts(count.getTotalCounts());
 			}
+
 			ro.setSuccess(true);
 			ro.setMessage("success");
 			ro.setOutParam(getOutParams(context, params));

@@ -20,6 +20,8 @@ import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
+import com.nfwork.dbfound.model.base.CountType;
+import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.resolver.TypeResolverTool;
 import com.nfwork.dbfound.util.*;
 import org.dom4j.Element;
@@ -385,6 +387,25 @@ public class Query extends SqlEntity {
 			}
 		}
 		return sqls[index] == ' ' || sqls[index] == '\n' || sqls[index] == '\t' || sqls[index] == '(';
+	}
+
+	public void prePager(Context context){
+		Map<String,Object> params = context.getParamDatas();
+		Object start = params.get("start");
+		if (DataUtil.isNotNull(start)) {
+			context.setStartWith(Long.parseLong(start.toString()));
+		}
+		Object limit = params.get("limit");
+		if (DataUtil.isNotNull(limit)) {
+			context.setPagerSize(Integer.parseInt(limit.toString()));
+		}
+		Object count = params.get("count");
+		if(DataUtil.isNotNull(count)) {
+			CountType countType = (CountType) EnumHandlerFactory.getEnumHandler(CountType.class).locateEnum(count.toString().toLowerCase());
+			if(countType != null){
+				context.setCountType(countType);
+			}
+		}
 	}
 
 	public String getName() {
