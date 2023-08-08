@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.util.StringUtil;
+import org.dom4j.Comment;
 import org.dom4j.Element;
 
 import com.nfwork.dbfound.model.base.Entity;
@@ -33,6 +34,9 @@ public class Sql extends Entity {
 			List<Node> nodes = element.content();
 			StringBuilder builder = new StringBuilder();
 			for (Node node : nodes) {
+				if(node instanceof Comment){
+					continue;
+				}
 				if (node instanceof Element) {
 					builder.append(" ").append(SQL_PART).append(" ");
 				} else {

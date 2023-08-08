@@ -58,6 +58,10 @@ public class StringUtil {
         int dyh = 0;
         int syh = 0;
 
+        boolean noteBasic = false;
+        boolean noteMulti = false;
+        int noteMaxIndex = chars.length - 1;
+
         StringBuilder buffer = new StringBuilder();
         if(chars[0] == '\''){
             dyh++;
@@ -67,11 +71,39 @@ public class StringUtil {
         buffer.append(chars[0]);
 
         for(int i=1; i< chars.length; i++){
+
+            // 注释处理
+            if(noteBasic){
+                if(chars[i] == '\n'){
+                    noteBasic = false;
+                }else{
+                    continue;
+                }
+            }
+            if(noteMulti){
+                if(chars[i] == '/' && chars[i-1] == '*'){
+                    noteMulti = false;
+                }
+                continue;
+            }
+
             if (chars[i] == '\'' && chars[i-1] != '\\' && syh % 2==0) {
                 dyh++;
             }else if (chars[i] == '\"' && chars[i-1] != '\\' && dyh % 2==0) {
                 syh++;
             }else if (dyh % 2 == 0 && syh % 2 ==0) {
+
+                // 注释处理
+                if(i < noteMaxIndex ) {
+                    if (chars[i] == '-' && chars[i + 1] == '-') {
+                        noteBasic = true;
+                        continue;
+                    } else if (chars[i] == '/' && chars[i + 1] == '*') {
+                        noteMulti = true;
+                        continue;
+                    }
+                }
+
                 if (chars[i] == ' ' || chars[i] == '\t' || chars[i] == '\n') {
                     if (!lastIsBlank) {
                         buffer.append(' ');
