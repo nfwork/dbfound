@@ -83,6 +83,10 @@ public class StringUtil {
             if(noteMulti){
                 if(chars[i] == '/' && chars[i-1] == '*'){
                     noteMulti = false;
+                    if(!lastIsBlank){
+                        buffer.append(" ");
+                        lastIsBlank = true;
+                    }
                 }
                 continue;
             }
