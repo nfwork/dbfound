@@ -63,14 +63,8 @@ public class StringUtil {
         int noteMaxIndex = chars.length - 1;
 
         StringBuilder buffer = new StringBuilder();
-        if(chars[0] == '\''){
-            dyh = dyh ^ 1;
-        }else if(chars[0] == '\"'){
-            syh = syh ^ 1;
-        }
-        buffer.append(chars[0]);
 
-        for(int i=1; i< chars.length; i++){
+        for(int i=0; i< chars.length; i++){
 
             // 注释处理
             if(noteBasic){
@@ -91,9 +85,9 @@ public class StringUtil {
                 continue;
             }
 
-            if (chars[i] == '\'' && chars[i-1] != '\\' && syh==0) {
+            if (chars[i] == '\'' && (i==0 || chars[i-1] != '\\') && syh==0) {
                 dyh = dyh ^ 1;
-            }else if (chars[i] == '\"' && chars[i-1] != '\\' && dyh==0) {
+            }else if (chars[i] == '\"' && (i==0 || chars[i-1] != '\\') && dyh==0) {
                 syh = syh ^ 1;
             }else if (dyh == 0 && syh ==0) {
 
