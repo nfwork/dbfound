@@ -30,6 +30,8 @@ public class SqlPart extends SqlEntity {
 
     String end = "";
 
+    boolean autoCompletion;
+
     private Set<String> paramNameSet;
 
     @Override
@@ -194,5 +196,13 @@ public class SqlPart extends SqlEntity {
 
     public void setEnd(String end) {
         this.end = end;
+    }
+
+    public boolean isAutoCompletion() {
+        return autoCompletion;
+    }
+
+    public void setAutoCompletion(boolean autoCompletion) {
+        this.autoCompletion = autoCompletion;
     }
 }

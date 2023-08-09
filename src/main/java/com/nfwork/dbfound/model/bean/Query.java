@@ -247,6 +247,8 @@ public class Query extends SqlEntity {
 
 		int sqlPartIndex = 0;
 
+		int followType = 0;
+
 		Matcher m = SQL_PART_PATTERN.matcher(ssql);
 		StringBuffer buffer = new StringBuffer();
 		while (m.find()) {
@@ -254,12 +256,15 @@ public class Query extends SqlEntity {
 			switch (text) {
 				case WHERE_CLAUSE:
 					if (fsql == null) {
+						followType = 1;
 						m.appendReplacement(buffer, " ");
 					} else {
+						followType = 2;
 						m.appendReplacement(buffer, " where " + fsql);
 					}
 					break;
 				case AND_CLAUSE:
+					followType = 2;
 					if (fsql == null) {
 						m.appendReplacement(buffer, " ");
 					} else {
@@ -268,7 +273,17 @@ public class Query extends SqlEntity {
 					break;
 				case SQL_PART:
 					SqlPart sqlPart = sql.getSqlPartList().get(sqlPartIndex++);
-					m.appendReplacement(buffer, Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName)));
+					String partValue = Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName));
+
+					if(sqlPart.isAutoCompletion() && followType != 0 && DataUtil.isNotNull(partValue)){
+						if(followType == 1 ){
+							partValue = "where " + partValue;
+							followType = 2;
+						}else {
+							partValue = "and " + partValue;
+						}
+					}
+					m.appendReplacement(buffer, partValue);
 					break;
 			}
 		}
