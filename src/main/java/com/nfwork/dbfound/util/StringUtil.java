@@ -64,9 +64,9 @@ public class StringUtil {
 
         StringBuilder buffer = new StringBuilder();
         if(chars[0] == '\''){
-            dyh++;
+            dyh = dyh ^ 1;
         }else if(chars[0] == '\"'){
-            syh++;
+            syh = syh ^ 1;
         }
         buffer.append(chars[0]);
 
@@ -91,21 +91,19 @@ public class StringUtil {
                 continue;
             }
 
-            if (chars[i] == '\'' && chars[i-1] != '\\' && syh % 2==0) {
-                dyh++;
-            }else if (chars[i] == '\"' && chars[i-1] != '\\' && dyh % 2==0) {
-                syh++;
-            }else if (dyh % 2 == 0 && syh % 2 ==0) {
+            if (chars[i] == '\'' && chars[i-1] != '\\' && syh==0) {
+                dyh = dyh ^ 1;
+            }else if (chars[i] == '\"' && chars[i-1] != '\\' && dyh==0) {
+                syh = syh ^ 1;
+            }else if (dyh == 0 && syh ==0) {
 
                 // 注释处理
-                if(i < noteMaxIndex ) {
-                    if (chars[i] == '-' && chars[i + 1] == '-') {
-                        noteBasic = true;
-                        continue;
-                    } else if (chars[i] == '/' && chars[i + 1] == '*') {
-                        noteMulti = true;
-                        continue;
-                    }
+                if (chars[i] == '-' && i < noteMaxIndex && chars[i + 1] == '-') {
+                    noteBasic = true;
+                    continue;
+                } else if (chars[i] == '/' && i < noteMaxIndex && chars[i + 1] == '*') {
+                    noteMulti = true;
+                    continue;
                 }
 
                 if (chars[i] == ' ' || chars[i] == '\t' || chars[i] == '\n') {

@@ -287,17 +287,17 @@ public class Query extends SqlEntity {
 
 		// 寻找from的位置
 		for (int i = 6; i < sqlChars.length - 6; i++) {
-			if (sqlChars[i] == '(' && dyh % 2 == 0  && syh % 2 ==0) {
+			if (sqlChars[i] == '(' && dyh == 0  && syh ==0) {
 				kh++;
-			} else if (sqlChars[i] == ')' && dyh % 2 == 0 && syh % 2 ==0) {
+			} else if (sqlChars[i] == ')' && dyh == 0 && syh == 0) {
 				kh--;
-			} else if (sqlChars[i] == '\'' && sqlChars[i-1] != '\\' && syh % 2==0) {
-				dyh++;
-			} else if (sqlChars[i] == '\"' && sqlChars[i-1] != '\\' && dyh % 2==0) {
-				syh++;
+			} else if (sqlChars[i] == '\'' && sqlChars[i-1] != '\\' && syh == 0) {
+				dyh = dyh ^ 1;
+			} else if (sqlChars[i] == '\"' && sqlChars[i-1] != '\\' && dyh == 0) {
+				syh = syh ^ 1;
 			}
 			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
-				if (kh == 0 && dyh % 2 == 0 && syh % 2 ==0) {
+				if (kh == 0 && dyh == 0 && syh == 0) {
 					int index = i + 1;
 					if(from_hold == 0 && sqlMatch(sqlChars, index , FROM)){
 						from_hold = index;
