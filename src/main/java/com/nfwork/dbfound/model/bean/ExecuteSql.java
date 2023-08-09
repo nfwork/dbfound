@@ -18,7 +18,7 @@ import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 
-public class ExecuteSql extends SqlEntity {
+public class ExecuteSql extends Sql {
 
 	private static final long serialVersionUID = 7525842037480200449L;
 

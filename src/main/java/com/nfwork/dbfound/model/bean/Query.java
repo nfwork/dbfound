@@ -21,6 +21,7 @@ import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.base.CountType;
+import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.resolver.TypeResolverTool;
 import com.nfwork.dbfound.util.*;
@@ -58,6 +59,7 @@ public class Query extends SqlEntity {
 	private String entity;
 	private Class entityClass;
 	private String currentPath;
+	private Sql sql;
 
 	@Override
 	public void init(Element element) {
@@ -99,11 +101,12 @@ public class Query extends SqlEntity {
 			} else {
 				model.putQuery(name, this);
 			}
-			if(DataUtil.isNotNull(sql)) {
-				autoCreateParam(sql, params);
+			if(DataUtil.isNull(sql)) {
+				throw new DBFoundRuntimeException("query entity must have a sql");
 			}
-			if(sqlPartList!=null && !sqlPartList.isEmpty()){
-				String tmp = sqlPartList.stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+			autoCreateParam(sql.getSql(), params);
+			if( !sql.getSqlPartList().isEmpty()){
+				String tmp = sql.getSqlPartList().stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
 				autoCreateParam(tmp,params);
 			}
 		} else {
@@ -128,7 +131,7 @@ public class Query extends SqlEntity {
 	}
 
 	public String getQuerySql(Context context,Map<String, Param> params, String provideName){
-		String querySql = initFilterAndSqlPart(sql, params, context, provideName);
+		String querySql = initFilterAndSqlPart(sql.getSql(), params, context, provideName);
 		querySql = staticParamParse(querySql, params, context);
 		return querySql.trim();
 	}
@@ -262,7 +265,7 @@ public class Query extends SqlEntity {
 					}
 					break;
 				case SQL_PART:
-					SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
+					SqlPart sqlPart = sql.getSqlPartList().get(sqlPartIndex++);
 					m.appendReplacement(buffer, Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName)));
 					break;
 			}
@@ -432,14 +435,6 @@ public class Query extends SqlEntity {
 		this.filters = filters;
 	}
 
-	public String getSql() {
-		return sql;
-	}
-
-	public void setSql(String sql) {
-		this.sql = sql;
-	}
-
 	public String getRootPath() {
 		return rootPath;
 	}
@@ -524,12 +519,8 @@ public class Query extends SqlEntity {
 		this.connectionProvide = connectionProvide;
 	}
 
-	public List<SqlPart> getSqlPartList() {
-		return sqlPartList;
-	}
-
-	public void setSqlPartList(List<SqlPart> sqlPartList) {
-		this.sqlPartList = sqlPartList;
+	public void setSql(Sql sql) {
+		this.sql = sql;
 	}
 
 	@Override

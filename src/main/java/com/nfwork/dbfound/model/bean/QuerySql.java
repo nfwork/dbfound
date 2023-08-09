@@ -21,7 +21,7 @@ import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 
-public class QuerySql extends SqlEntity {
+public class QuerySql extends Sql {
 
 	private static final long serialVersionUID = -8182147424516469176L;
 	private String initError;
