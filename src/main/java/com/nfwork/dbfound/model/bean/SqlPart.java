@@ -6,6 +6,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.model.base.SqlPartType;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.StringUtil;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -34,7 +35,7 @@ public class SqlPart extends SqlEntity {
     @Override
     public void init(Element element) {
         super.init(element);
-        part = element.getTextTrim();
+        part = StringUtil.fullTrim(element.getTextTrim());
         if(type == SqlPartType.FOR){
             paramNameSet = new HashSet<>();
             partTmp = initPartSql(part, paramNameSet);
