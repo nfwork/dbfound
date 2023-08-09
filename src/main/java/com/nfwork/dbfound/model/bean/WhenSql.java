@@ -18,7 +18,7 @@ import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
 
-public class WhenSql extends SqlEntity {
+public class WhenSql extends Sqls {
 
 	private static final long serialVersionUID = 1781803860305201223L;
 

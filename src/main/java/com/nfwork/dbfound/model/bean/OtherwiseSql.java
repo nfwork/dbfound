@@ -5,7 +5,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.Entity;
 import java.util.Map;
 
-public class OtherwiseSql extends SqlEntity {
+public class OtherwiseSql extends Sqls {
 
     @Override
     public void run() {
