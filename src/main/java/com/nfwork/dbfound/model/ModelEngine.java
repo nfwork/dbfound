@@ -116,6 +116,10 @@ public class ModelEngine {
 			if (queryName == null || "".equals(queryName))
 				queryName = "_default";
 
+			if(DataUtil.isNull(currentPath)){
+				currentPath = defaultPath;
+			}
+
 			Model model = context.getModel(modelName);
 
 			// 把model、currentPath对象放入到 当前线程里
@@ -319,6 +323,10 @@ public class ModelEngine {
 
 			if (executeName == null || "".equals(executeName))
 				executeName = "_default";
+
+			if(DataUtil.isNull(currentPath)){
+				currentPath = defaultPath;
+			}
 
 			Map<String, Object> elCache = new HashMap<>();
 			params = executeRun(context, modelName, executeName, currentPath, elCache);

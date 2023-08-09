@@ -225,7 +225,7 @@ public class ExcelWriter {
 			throw new DBFoundRuntimeException("can not found param columns");
 		}
 
-		List result = ModelEngine.query(context, modelName, queryName, null,false).getDatas();
+		List result = ModelEngine.query(context, modelName, queryName,false).getDatas();
 		excelExport(context, result);
 	}
 
