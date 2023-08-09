@@ -101,13 +101,12 @@ public class Query extends SqlEntity {
 			} else {
 				model.putQuery(name, this);
 			}
-			if(DataUtil.isNull(sql)) {
-				throw new DBFoundRuntimeException("query entity must have a sql");
-			}
-			autoCreateParam(sql.getSql(), params);
-			if( !sql.getSqlPartList().isEmpty()){
-				String tmp = sql.getSqlPartList().stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
-				autoCreateParam(tmp,params);
+			if(DataUtil.isNotNull(sql)) {
+				autoCreateParam(sql.getSql(), params);
+				if(!sql.getSqlPartList().isEmpty()){
+					String tmp = sql.getSqlPartList().stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+					autoCreateParam(tmp,params);
+				}
 			}
 		} else {
 			super.run();
@@ -131,6 +130,9 @@ public class Query extends SqlEntity {
 	}
 
 	public String getQuerySql(Context context,Map<String, Param> params, String provideName){
+		if(sql == null) {
+			throw new DBFoundRuntimeException("query entity must have a sql");
+		}
 		String querySql = initFilterAndSqlPart(sql.getSql(), params, context, provideName);
 		querySql = staticParamParse(querySql, params, context);
 		return querySql.trim();
