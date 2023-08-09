@@ -10,13 +10,9 @@ public enum CountType implements BaseEnum<CountType,String> {
         this.value = value;
     }
 
-    String value;
+    final String value;
 
     public String getValue() {
         return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 }
