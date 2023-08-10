@@ -58,25 +58,24 @@ public class StringUtil {
         int dyh = 0;
         int syh = 0;
 
-        boolean noteBasic = false;
-        boolean noteMulti = false;
-        int noteMaxIndex = chars.length - 1;
+        boolean commentBasic = false;
+        boolean commentMulti = false;
 
         StringBuilder buffer = new StringBuilder();
 
         for(int i=0; i< chars.length; i++){
 
             // 注释处理
-            if(noteBasic){
+            if(commentBasic){
                 if(chars[i] == '\n'){
-                    noteBasic = false;
+                    commentBasic = false;
                 }else{
                     continue;
                 }
             }
-            if(noteMulti){
+            if(commentMulti){
                 if(chars[i] == '/' && chars[i-1] == '*'){
-                    noteMulti = false;
+                    commentMulti = false;
                     if(!lastIsBlank){
                         buffer.append(" ");
                         lastIsBlank = true;
@@ -92,11 +91,11 @@ public class StringUtil {
             }else if (dyh == 0 && syh ==0) {
 
                 // 注释处理
-                if (chars[i] == '-' && i < noteMaxIndex && chars[i + 1] == '-') {
-                    noteBasic = true;
+                if (chars[i] == '-' && i < chars.length - 2 && chars[i + 1] == '-' && chars[i + 2] == ' ') {
+                    commentBasic = true;
                     continue;
-                } else if (chars[i] == '/' && i < noteMaxIndex && chars[i + 1] == '*') {
-                    noteMulti = true;
+                } else if (chars[i] == '/' && i < chars.length -1 && chars[i + 1] == '*') {
+                    commentMulti = true;
                     continue;
                 }
 
