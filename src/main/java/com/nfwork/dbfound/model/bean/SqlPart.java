@@ -38,6 +38,9 @@ public class SqlPart extends SqlEntity {
     public void init(Element element) {
         super.init(element);
         part = StringUtil.fullTrim(element.getTextTrim());
+        if(condition != null){
+            condition = StringUtil.fullTrim(condition);
+        }
         if(type == SqlPartType.FOR){
             paramNameSet = new HashSet<>();
             partTmp = initPartSql(part, paramNameSet);
