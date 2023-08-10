@@ -48,13 +48,12 @@ public class StringUtil {
         if(value == null){
             return null;
         }
-        value = value.trim();
         char [] chars = value.toCharArray();
         if(chars.length == 0){
             return value;
         }
 
-        boolean lastIsBlank = false;
+        boolean lastIsBlank = true;
         int dyh = 0;
         int syh = 0;
 
@@ -109,6 +108,9 @@ public class StringUtil {
             }
             buffer.append(chars[i]);
             lastIsBlank = false;
+        }
+        if(lastIsBlank && buffer.length() > 0){
+            buffer.deleteCharAt(buffer.length()-1);
         }
         return buffer.toString();
     }
