@@ -278,7 +278,7 @@ public class Query extends SqlEntity {
 					SqlPart sqlPart = sql.getSqlPartList().get(sqlPartIndex++);
 					String partValue = Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName));
 
-					if(sqlPart.isClauseCompletion() && followType != 0 && DataUtil.isNotNull(partValue)){
+					if(sqlPart.isClauseAutoFill() && followType != 0 && DataUtil.isNotNull(partValue)){
 						if(followType == 1 ){
 							partValue = "where " + partValue;
 							followType = 2;
