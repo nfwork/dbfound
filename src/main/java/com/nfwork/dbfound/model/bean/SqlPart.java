@@ -30,7 +30,7 @@ public class SqlPart extends SqlEntity {
 
     String end = "";
 
-    boolean clauseCompletion;
+    boolean clauseAutoFill;
 
     private Set<String> paramNameSet;
 
@@ -198,11 +198,11 @@ public class SqlPart extends SqlEntity {
         this.end = end;
     }
 
-    public boolean isClauseCompletion() {
-        return clauseCompletion;
+    public boolean isClauseAutoFill() {
+        return clauseAutoFill;
     }
 
-    public void setClauseCompletion(boolean clauseCompletion) {
-        this.clauseCompletion = clauseCompletion;
+    public void setClauseAutoFill(boolean clauseAutoFill) {
+        this.clauseAutoFill = clauseAutoFill;
     }
 }
