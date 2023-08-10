@@ -135,7 +135,7 @@ public class Query extends SqlEntity {
 		}
 		String querySql = initFilterAndSqlPart(sql.getSql(), params, context, provideName);
 		querySql = staticParamParse(querySql, params, context);
-		return querySql.trim();
+		return querySql;
 	}
 
 	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> clazz, boolean autoPaging) {
@@ -246,18 +246,20 @@ public class Query extends SqlEntity {
 		}
 
 		int sqlPartIndex = 0;
-
+		int findCount = 0;
 		int followType = 0;
 
 		Matcher m = SQL_PART_PATTERN.matcher(ssql);
 		StringBuffer buffer = new StringBuffer();
 		while (m.find()) {
 			String text = m.group();
+			findCount++;
 			switch (text) {
 				case WHERE_CLAUSE:
 					if (fsql == null) {
 						followType = 1;
 						m.appendReplacement(buffer, " ");
+						reduceBlank(buffer,1);
 					} else {
 						followType = 2;
 						m.appendReplacement(buffer, " where " + fsql);
@@ -267,6 +269,7 @@ public class Query extends SqlEntity {
 					followType = 2;
 					if (fsql == null) {
 						m.appendReplacement(buffer, " ");
+						reduceBlank(buffer,1);
 					} else {
 						m.appendReplacement(buffer, " and " + fsql);
 					}
@@ -275,7 +278,7 @@ public class Query extends SqlEntity {
 					SqlPart sqlPart = sql.getSqlPartList().get(sqlPartIndex++);
 					String partValue = Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName));
 
-					if(sqlPart.isAutoCompletion() && followType != 0 && DataUtil.isNotNull(partValue)){
+					if(sqlPart.isClauseCompletion() && followType != 0 && DataUtil.isNotNull(partValue)){
 						if(followType == 1 ){
 							partValue = "where " + partValue;
 							followType = 2;
@@ -287,8 +290,13 @@ public class Query extends SqlEntity {
 					break;
 			}
 		}
-		m.appendTail(buffer);
-		return buffer.toString();
+		if(findCount == 0){
+			return ssql;
+		}else {
+			m.appendTail(buffer);
+			reduceBlank(buffer,0);
+			return buffer.toString();
+		}
 	}
 
 	public Count getCount(String querySql){

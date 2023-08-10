@@ -213,9 +213,12 @@ public abstract class SqlEntity extends Entity {
 		if (sql == null || "".equals(sql)) {
 			return "";
 		}
+		int findCount = 0;
 		Matcher m = staticPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
+
 		while (m.find()) {
+			findCount++;
 			String paramValue;
 
 			String param = m.group();
@@ -268,9 +271,31 @@ public abstract class SqlEntity extends Entity {
 				paramValue = paramValue.replace("$", "\\$");
 			}
 			m.appendReplacement(buf, paramValue);
+			reduceBlank(buf,1);
 		}
-		m.appendTail(buf);
-		return buf.toString();
+		if(findCount == 0){
+			return sql;
+		}else {
+			m.appendTail(buf);
+			reduceBlank(buf, 0);
+			return buf.toString();
+		}
+	}
+
+	protected void reduceBlank(StringBuffer buffer, int retain){
+		if(buffer.length() == 0){
+			return;
+		}
+		int blankCount = 0;
+		int index = buffer.length() - 1;
+		while(index >=0 && buffer.charAt(index)==' '){
+			blankCount ++;
+			index--;
+		}
+		int deleteSize = blankCount - retain;
+		if(deleteSize > 0){
+			buffer.delete(buffer.length()- deleteSize, buffer.length());
+		}
 	}
 
 	/**
