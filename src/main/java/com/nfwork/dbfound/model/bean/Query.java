@@ -21,7 +21,6 @@ import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.base.CountType;
-import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.resolver.TypeResolverTool;
 import com.nfwork.dbfound.util.*;
@@ -240,7 +239,7 @@ public class Query extends SqlEntity {
 				bfsql.append(nfFilter.getExpress()).append(" and ");
 			}
 		}
-		String fsql = bfsql.length() > 4 ? bfsql.substring(0, bfsql.length() - 4) : null;
+		String fsql = bfsql.length() > 5 ? bfsql.substring(0, bfsql.length() - 5) : null;
 		if (fsql != null) {
 			fsql = Matcher.quoteReplacement(fsql);
 		}
@@ -258,20 +257,20 @@ public class Query extends SqlEntity {
 				case WHERE_CLAUSE:
 					if (fsql == null) {
 						followType = 1;
-						m.appendReplacement(buffer, " ");
-						reduceBlank(buffer,1);
+						m.appendReplacement(buffer, "");
+						reduceBlank(buffer);
 					} else {
 						followType = 2;
-						m.appendReplacement(buffer, " where " + fsql);
+						m.appendReplacement(buffer, "where " + fsql);
 					}
 					break;
 				case AND_CLAUSE:
 					followType = 2;
 					if (fsql == null) {
-						m.appendReplacement(buffer, " ");
-						reduceBlank(buffer,1);
+						m.appendReplacement(buffer, "");
+						reduceBlank(buffer);
 					} else {
-						m.appendReplacement(buffer, " and " + fsql);
+						m.appendReplacement(buffer, "and " + fsql);
 					}
 					break;
 				case SQL_PART:
@@ -287,7 +286,7 @@ public class Query extends SqlEntity {
 						}
 					}
 					m.appendReplacement(buffer, partValue);
-					reduceBlank(buffer,0);
+					reduceBlank(buffer);
 					break;
 			}
 		}
@@ -295,7 +294,6 @@ public class Query extends SqlEntity {
 			return ssql;
 		}else {
 			m.appendTail(buffer);
-			reduceBlank(buffer,0);
 			return buffer.toString();
 		}
 	}

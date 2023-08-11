@@ -76,6 +76,7 @@ public class Sql extends SqlEntity {
 			if (SQL_PART.equals(text)) {
 				SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
 				m.appendReplacement(buffer, Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName)));
+				reduceBlank(buffer);
 			}
 		}
 		m.appendTail(buffer);
