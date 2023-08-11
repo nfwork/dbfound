@@ -271,18 +271,17 @@ public abstract class SqlEntity extends Entity {
 				paramValue = paramValue.replace("$", "\\$");
 			}
 			m.appendReplacement(buf, paramValue);
-			reduceBlank(buf,1);
+			reduceBlank(buf);
 		}
 		if(findCount == 0){
 			return sql;
 		}else {
 			m.appendTail(buf);
-			reduceBlank(buf, 0);
 			return buf.toString();
 		}
 	}
 
-	protected void reduceBlank(StringBuffer buffer, int retain){
+	protected void reduceBlank(StringBuffer buffer){
 		if(buffer.length() == 0){
 			return;
 		}
@@ -292,9 +291,8 @@ public abstract class SqlEntity extends Entity {
 			blankCount ++;
 			index--;
 		}
-		int deleteSize = blankCount - retain;
-		if(deleteSize > 0){
-			buffer.delete(buffer.length()- deleteSize, buffer.length());
+		if(blankCount > 0){
+			buffer.delete(buffer.length()- blankCount, buffer.length());
 		}
 	}
 
