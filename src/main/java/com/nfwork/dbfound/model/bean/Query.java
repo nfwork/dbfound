@@ -287,6 +287,7 @@ public class Query extends SqlEntity {
 						}
 					}
 					m.appendReplacement(buffer, partValue);
+					reduceBlank(buffer,0);
 					break;
 			}
 		}
