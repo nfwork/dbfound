@@ -10,6 +10,7 @@ import java.util.*;
 import javax.sql.DataSource;
 
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
+import com.nfwork.dbfound.util.CollectionUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
 import org.dom4j.Document;
@@ -49,12 +50,8 @@ public class DBFoundConfig {
 	private static boolean camelCaseToUnderscore = false;
 	private static boolean modelModifyCheck = false;
 	private static boolean jsonStringAutoCover = true;
-	private final static Set<String> jsonStringForceCoverSet = new HashSet<>();
-	static {
-		jsonStringForceCoverSet.add("GridData");
-		jsonStringForceCoverSet.add("parameters");
-		jsonStringForceCoverSet.add("columns");
-	}
+	private final static Set<String> jsonStringForceCoverSet = CollectionUtil.asSet("GridData","parameters","columns");
+	private final static Set<String> sensitiveParamSet = CollectionUtil.asSet("password","api_key","secret_key");
 	private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd";
 	private static String timeFormat = "HH:mm:ss";
@@ -588,6 +585,10 @@ public class DBFoundConfig {
 
 	public static Set<String> getJsonStringForceCoverSet() {
 		return jsonStringForceCoverSet;
+	}
+
+	public static Set<String> getSensitiveParamSet() {
+		return sensitiveParamSet;
 	}
 
 	public static boolean isCamelCaseToUnderscore() {

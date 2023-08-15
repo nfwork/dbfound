@@ -24,9 +24,17 @@ public class LogUtil {
 			log.info("Execute " + sqlName + ": "+sql);
 			params.stream().filter(Param::isRequireLog).sorted(Comparator.comparing(Param::getName)).forEach(param -> {
 				param.setRequireLog(false);
-				log.info("  paramName: "+ param.getName() +", value: "+ param.getStringValue() +
+				log.info("  paramName: "+ param.getName() +", value: "+ getValue(param) +
 						", dataType: "+ param.getDataType().getValue() +", sourcePath: " + param.getSourcePathHistory());
 			});
+		}
+	}
+
+	private static String getValue(Param param){
+		if(DBFoundConfig.getSensitiveParamSet().contains(param.getName())){
+			return "********";
+		}else{
+			return  param.getStringValue();
 		}
 	}
 
