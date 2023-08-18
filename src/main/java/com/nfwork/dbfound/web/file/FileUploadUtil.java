@@ -47,7 +47,7 @@ public class FileUploadUtil {
 			items.forEach(item ->{
 				try { item.delete(); } catch (Exception ignore) {}
 			});
-			fileItemsLocal.remove();
 		}
+		fileItemsLocal.remove();
 	}
 }
