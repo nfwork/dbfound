@@ -17,7 +17,7 @@ import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StreamUtils;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 
@@ -110,7 +110,7 @@ public class Execute extends SqlEntity {
 				}
 				try {
 					if (param.getValue() instanceof FileItem) {
-						InputStream inputStream = ((FileItem) param.getValue()).getInputStream();
+						InputStream inputStream = ((FileItem<?>) param.getValue()).getInputStream();
 						param.setValue(inputStream);
 						list.add(inputStream);
 					} else if (param.getValue() instanceof File) {

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 
 import jxl.*;

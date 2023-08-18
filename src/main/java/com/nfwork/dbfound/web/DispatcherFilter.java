@@ -140,6 +140,7 @@ public class DispatcherFilter implements Filter {
 				if (transaction != null) {
 					transaction.end();
 				}
+				FileUploadUtil.clearFileItemLocal();
 			}
 
 		} else {

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,8 +24,8 @@ public class FileManager extends JavaSupport {
 
 	Log log = LogFactory.getLog(this.getClass());
 
-	
-	
+
+
 	@Override
 	public void execute() throws Exception {
 		FileItem fileItem = (FileItem) params.get("file").getValue();
@@ -39,7 +39,7 @@ public class FileManager extends JavaSupport {
 			fold.mkdir();
 		}
 		File newFile = new File(path + fileName);
-		fileItem.write(newFile);
+		//fileItem.write( path + fileName);
 	}
 
 	public void delete() throws Exception {

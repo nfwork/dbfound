@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.jsp.JspException;
 import jakarta.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
@@ -21,7 +21,6 @@ public class ExcelReader extends TagSupport {
 	private String sourceName;
 	private String rootPath;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public int doEndTag() throws JspException {
 
@@ -33,7 +32,7 @@ public class ExcelReader extends TagSupport {
 		try {
 			Object ofile = request.getAttribute(sourceName);
 			if (ofile != null) {
-				FileItem item = (FileItem) ofile;
+				FileItem<?> item = (FileItem<?>) ofile;
 				List<List<Map>> datas = com.nfwork.dbfound.excel.ExcelReader
 						.readExcel(item);
 				context.setData(rootPath, datas);
