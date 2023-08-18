@@ -6,7 +6,7 @@ import com.nfwork.dbfound.model.base.Entity;
 
 import java.util.Map;
 
-public class CaseSql extends SqlEntity {
+public class CaseSql extends Sqls {
 
     @Override
     public void run() {

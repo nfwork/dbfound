@@ -12,7 +12,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
 
-public class BatchExecuteSql extends SqlEntity {
+public class BatchExecuteSql extends Sql {
 
 	private static final long serialVersionUID = 7525842037480200449L;
 

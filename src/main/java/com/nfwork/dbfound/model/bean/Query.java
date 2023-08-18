@@ -58,6 +58,7 @@ public class Query extends SqlEntity {
 	private String entity;
 	private Class entityClass;
 	private String currentPath;
+	private Sql sql;
 
 	@Override
 	public void init(Element element) {
@@ -100,11 +101,11 @@ public class Query extends SqlEntity {
 				model.putQuery(name, this);
 			}
 			if(DataUtil.isNotNull(sql)) {
-				autoCreateParam(sql, params);
-			}
-			if(sqlPartList!=null && !sqlPartList.isEmpty()){
-				String tmp = sqlPartList.stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
-				autoCreateParam(tmp,params);
+				autoCreateParam(sql.getSql(), params);
+				if(!sql.getSqlPartList().isEmpty()){
+					String tmp = sql.getSqlPartList().stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+					autoCreateParam(tmp,params);
+				}
 			}
 		} else {
 			super.run();
@@ -128,9 +129,12 @@ public class Query extends SqlEntity {
 	}
 
 	public String getQuerySql(Context context,Map<String, Param> params, String provideName){
-		String querySql = initFilterAndSqlPart(sql, params, context, provideName);
+		if(sql == null) {
+			throw new DBFoundRuntimeException("query entity must have a sql");
+		}
+		String querySql = initFilterAndSqlPart(sql.getSql(), params, context, provideName);
 		querySql = staticParamParse(querySql, params, context);
-		return querySql.trim();
+		return querySql;
 	}
 
 	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> clazz, boolean autoPaging) {
@@ -235,40 +239,63 @@ public class Query extends SqlEntity {
 				bfsql.append(nfFilter.getExpress()).append(" and ");
 			}
 		}
-		String fsql = bfsql.length() > 4 ? bfsql.substring(0, bfsql.length() - 4) : null;
+		String fsql = bfsql.length() > 5 ? bfsql.substring(0, bfsql.length() - 5) : null;
 		if (fsql != null) {
 			fsql = Matcher.quoteReplacement(fsql);
 		}
 
 		int sqlPartIndex = 0;
+		int findCount = 0;
+		int followType = 0;
 
 		Matcher m = SQL_PART_PATTERN.matcher(ssql);
 		StringBuffer buffer = new StringBuffer();
 		while (m.find()) {
 			String text = m.group();
+			findCount++;
 			switch (text) {
 				case WHERE_CLAUSE:
 					if (fsql == null) {
-						m.appendReplacement(buffer, " ");
+						followType = 1;
+						m.appendReplacement(buffer, "");
+						reduceBlank(buffer);
 					} else {
-						m.appendReplacement(buffer, " where " + fsql);
+						followType = 2;
+						m.appendReplacement(buffer, "where " + fsql);
 					}
 					break;
 				case AND_CLAUSE:
+					followType = 2;
 					if (fsql == null) {
-						m.appendReplacement(buffer, " ");
+						m.appendReplacement(buffer, "");
+						reduceBlank(buffer);
 					} else {
-						m.appendReplacement(buffer, " and " + fsql);
+						m.appendReplacement(buffer, "and " + fsql);
 					}
 					break;
 				case SQL_PART:
-					SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
-					m.appendReplacement(buffer, Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName)));
+					SqlPart sqlPart = sql.getSqlPartList().get(sqlPartIndex++);
+					String partValue = Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName));
+
+					if(sqlPart.isAutoCompletion() && followType != 0 && DataUtil.isNotNull(partValue)){
+						if(followType == 1 ){
+							partValue = "where " + partValue;
+							followType = 2;
+						}else {
+							partValue = "and " + partValue;
+						}
+					}
+					m.appendReplacement(buffer, partValue);
+					reduceBlank(buffer);
 					break;
 			}
 		}
-		m.appendTail(buffer);
-		return buffer.toString();
+		if(findCount == 0){
+			return ssql;
+		}else {
+			m.appendTail(buffer);
+			return buffer.toString();
+		}
 	}
 
 	public Count getCount(String querySql){
@@ -287,17 +314,17 @@ public class Query extends SqlEntity {
 
 		// 寻找from的位置
 		for (int i = 6; i < sqlChars.length - 6; i++) {
-			if (sqlChars[i] == '(' && dyh % 2 == 0  && syh % 2 ==0) {
+			if (sqlChars[i] == '(' && dyh == 0  && syh ==0) {
 				kh++;
-			} else if (sqlChars[i] == ')' && dyh % 2 == 0 && syh % 2 ==0) {
+			} else if (sqlChars[i] == ')' && dyh == 0 && syh == 0) {
 				kh--;
-			} else if (sqlChars[i] == '\'' && sqlChars[i-1] != '\\' && syh % 2==0) {
-				dyh++;
-			} else if (sqlChars[i] == '\"' && sqlChars[i-1] != '\\' && dyh % 2==0) {
-				syh++;
+			} else if (sqlChars[i] == '\'' && sqlChars[i-1] != '\\' && syh == 0) {
+				dyh = dyh ^ 1;
+			} else if (sqlChars[i] == '\"' && sqlChars[i-1] != '\\' && dyh == 0) {
+				syh = syh ^ 1;
 			}
 			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
-				if (kh == 0 && dyh % 2 == 0 && syh % 2 ==0) {
+				if (kh == 0 && dyh == 0 && syh == 0) {
 					int index = i + 1;
 					if(from_hold == 0 && sqlMatch(sqlChars, index , FROM)){
 						from_hold = index;
@@ -328,13 +355,13 @@ public class Query extends SqlEntity {
 			}
 		}else if (order_hold == 0) {
 			if (group_hold > 0) {
-				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold) + " ) v";
+				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold) + ") v";
 			} else {
 				cSql = "select count(1) " + querySql.substring(from_hold);
 			}
 		} else if(order_hold > 0){
 			if (group_hold > 0) {
-				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold, order_hold) + " ) v";
+				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold, order_hold) + ") v";
 			} else {
 				cSql = "select count(1) " + querySql.substring(from_hold, order_hold);
 			}
@@ -432,14 +459,6 @@ public class Query extends SqlEntity {
 		this.filters = filters;
 	}
 
-	public String getSql() {
-		return sql;
-	}
-
-	public void setSql(String sql) {
-		this.sql = sql;
-	}
-
 	public String getRootPath() {
 		return rootPath;
 	}
@@ -524,12 +543,8 @@ public class Query extends SqlEntity {
 		this.connectionProvide = connectionProvide;
 	}
 
-	public List<SqlPart> getSqlPartList() {
-		return sqlPartList;
-	}
-
-	public void setSqlPartList(List<SqlPart> sqlPartList) {
-		this.sqlPartList = sqlPartList;
+	public void setSql(Sql sql) {
+		this.sql = sql;
 	}
 
 	@Override

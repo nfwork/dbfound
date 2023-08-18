@@ -48,30 +48,56 @@ public class StringUtil {
         if(value == null){
             return null;
         }
-        value = value.trim();
         char [] chars = value.toCharArray();
         if(chars.length == 0){
             return value;
         }
 
-        boolean lastIsBlank = false;
+        boolean lastIsBlank = true;
         int dyh = 0;
         int syh = 0;
 
-        StringBuilder buffer = new StringBuilder();
-        if(chars[0] == '\''){
-            dyh++;
-        }else if(chars[0] == '\"'){
-            syh++;
-        }
-        buffer.append(chars[0]);
+        boolean commentBasic = false;
+        boolean commentMulti = false;
 
-        for(int i=1; i< chars.length; i++){
-            if (chars[i] == '\'' && chars[i-1] != '\\' && syh % 2==0) {
-                dyh++;
-            }else if (chars[i] == '\"' && chars[i-1] != '\\' && dyh % 2==0) {
-                syh++;
-            }else if (dyh % 2 == 0 && syh % 2 ==0) {
+        StringBuilder buffer = new StringBuilder();
+
+        for(int i=0; i< chars.length; i++){
+
+            // 注释处理
+            if(commentBasic){
+                if(chars[i] == '\n'){
+                    commentBasic = false;
+                }else{
+                    continue;
+                }
+            }
+            if(commentMulti){
+                if(chars[i] == '/' && chars[i-1] == '*'){
+                    commentMulti = false;
+                    if(!lastIsBlank){
+                        buffer.append(" ");
+                        lastIsBlank = true;
+                    }
+                }
+                continue;
+            }
+
+            if (chars[i] == '\'' && (i==0 || chars[i-1] != '\\') && syh==0) {
+                dyh = dyh ^ 1;
+            }else if (chars[i] == '\"' && (i==0 || chars[i-1] != '\\') && dyh==0) {
+                syh = syh ^ 1;
+            }else if (dyh == 0 && syh ==0) {
+
+                // 注释处理
+                if (chars[i] == '-' && i < chars.length - 2 && chars[i + 1] == '-' && chars[i + 2] == ' ') {
+                    commentBasic = true;
+                    continue;
+                } else if (chars[i] == '/' && i < chars.length -1 && chars[i + 1] == '*') {
+                    commentMulti = true;
+                    continue;
+                }
+
                 if (chars[i] == ' ' || chars[i] == '\t' || chars[i] == '\n') {
                     if (!lastIsBlank) {
                         buffer.append(' ');
@@ -82,6 +108,9 @@ public class StringUtil {
             }
             buffer.append(chars[i]);
             lastIsBlank = false;
+        }
+        if(lastIsBlank && buffer.length() > 0){
+            buffer.deleteCharAt(buffer.length()-1);
         }
         return buffer.toString();
     }

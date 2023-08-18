@@ -1,24 +1,23 @@
 package com.nfwork.dbfound.model.bean;
 
+import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.util.StringUtil;
+import org.dom4j.Comment;
 import org.dom4j.Element;
 
-import com.nfwork.dbfound.model.base.Entity;
 import org.dom4j.Node;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.regex.Matcher;
 
-public class Sql extends Entity {
+public class Sql extends SqlEntity {
 
 	private static final long serialVersionUID = -6802842084359033490L;
 
-	protected static final String SQL_PART = "#SQL_PART#";
-
-	protected List<SqlPart> sqlPartList;
-
-	protected final static Pattern SQL_PART_PATTERN  = Pattern.compile("#[A-Z_]+#");
+	protected List<SqlPart> sqlPartList  = new ArrayList<>();
 
 	protected String sql;
 
@@ -26,21 +25,32 @@ public class Sql extends Entity {
 	public void init(Element element) {
 		super.init(element);
 
-		Class<?> className = getClass();
-		if(className.equals(Sql.class) || className.equals(ExecuteSql.class)
-				|| className.equals(BatchExecuteSql.class) || className.equals(QuerySql.class)) {
-			sqlPartList = new ArrayList<>();
-			List<Node> nodes = element.content();
-			StringBuilder builder = new StringBuilder();
-			for (Node node : nodes) {
-				if (node instanceof Element) {
-					builder.append(" ").append(SQL_PART).append(" ");
-				} else {
-					String text = node.getText();
-					builder.append(text);
-				}
+		List<Node> nodes = element.content();
+		StringBuilder builder = new StringBuilder();
+		for (Node node : nodes) {
+			if(node instanceof Comment){
+				builder.append(" ");
+				continue;
 			}
-			sql = StringUtil.fullTrim(builder.toString());
+			if (node instanceof Element) {
+				builder.append(" ").append(SQL_PART).append(" ");
+			} else {
+				String text = node.getText();
+				builder.append(text);
+			}
+		}
+		sql = StringUtil.fullTrim(builder.toString());
+	}
+
+	@Override
+	public void run() {
+		Entity entity = getParent();
+		if (entity instanceof Sqls) {
+			Sqls sqls = (Sqls) entity;
+			sqls.sqlList.add(this);
+		} else if(entity instanceof Query){
+			Query query = (Query) entity;
+			query.setSql(this);
 		}
 	}
 
@@ -56,12 +66,25 @@ public class Sql extends Entity {
 		return sqlPartList;
 	}
 
-	@Override
-	public void run() {
-		if (getParent() instanceof Query) {
-			Query query = (Query) getParent();
-			query.setSql(sql);
-			query.setSqlPartList(sqlPartList);
+	protected String initSqlPart(String sql, Map<String, Param> params, Context context, String provideName) {
+		int sqlPartIndex = 0;
+
+		Matcher m = SQL_PART_PATTERN.matcher(sql);
+		StringBuffer buffer = new StringBuffer();
+		while (m.find()) {
+			String text = m.group();
+			if (SQL_PART.equals(text)) {
+				SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
+				m.appendReplacement(buffer, Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName)));
+				reduceBlank(buffer);
+			}
 		}
+		m.appendTail(buffer);
+		return buffer.toString();
+	}
+
+	@Override
+	public void execute(Context context, Map<String, Param> params, String provideName) {
+
 	}
 }

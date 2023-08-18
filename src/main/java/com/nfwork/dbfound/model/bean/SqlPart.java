@@ -4,15 +4,15 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
-import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.model.base.SqlPartType;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.StringUtil;
 import org.dom4j.Element;
 
 import java.util.*;
 import java.util.regex.Matcher;
 
-public class SqlPart extends Entity {
+public class SqlPart extends SqlEntity {
 
     String part;
 
@@ -30,12 +30,17 @@ public class SqlPart extends Entity {
 
     String end = "";
 
+    boolean autoCompletion;
+
     private Set<String> paramNameSet;
 
     @Override
     public void init(Element element) {
         super.init(element);
-        part = element.getTextTrim();
+        part = StringUtil.fullTrim(element.getTextTrim());
+        if(condition != null){
+            condition = StringUtil.fullTrim(condition);
+        }
         if(type == SqlPartType.FOR){
             paramNameSet = new HashSet<>();
             partTmp = initPartSql(part, paramNameSet);
@@ -48,6 +53,11 @@ public class SqlPart extends Entity {
             Sql sql = (Sql) getParent();
             sql.getSqlPartList().add(this);
         }
+    }
+
+    @Override
+    public void execute(Context context, Map<String, Param> params, String provideName) {
+
     }
 
     public String getPart(Context context, Map<String, Param> params) {
@@ -122,7 +132,7 @@ public class SqlPart extends Entity {
     }
 
     private String initPartSql(String sql, Set<String> batchParamNameSet ) {
-        Matcher m = SqlEntity.paramPattern.matcher(sql);
+        Matcher m = paramPattern.matcher(sql);
         StringBuffer buf = new StringBuffer();
         while (m.find()) {
             String param = m.group();
@@ -189,5 +199,13 @@ public class SqlPart extends Entity {
 
     public void setEnd(String end) {
         this.end = end;
+    }
+
+    public boolean isAutoCompletion() {
+        return autoCompletion;
+    }
+
+    public void setAutoCompletion(boolean autoCompletion) {
+        this.autoCompletion = autoCompletion;
     }
 }

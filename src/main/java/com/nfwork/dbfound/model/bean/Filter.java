@@ -15,6 +15,9 @@ public class Filter extends Param {
 		if(express != null){
 			express = StringUtil.fullTrim(express);
 		}
+		if(condition != null){
+			condition = StringUtil.fullTrim(condition);
+		}
 		if (getParent() instanceof Query) {
 			Query query = (Query) getParent();
 			query.getFilters().put(getName(), this);

@@ -21,7 +21,7 @@ import com.nfwork.dbfound.util.StringUtil;
  * @author John
  * 
  */
-public class BatchSql extends SqlEntity {
+public class BatchSql extends Sqls {
 
 	private static final long serialVersionUID = 5145846152572625196L;
 

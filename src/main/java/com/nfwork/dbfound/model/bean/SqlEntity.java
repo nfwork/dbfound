@@ -27,7 +27,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.model.base.Entity;
 
-public abstract class SqlEntity extends Sqls {
+public abstract class SqlEntity extends Entity {
 
 	private static final long serialVersionUID = 3035666882993092230L;
 
@@ -37,7 +37,10 @@ public abstract class SqlEntity extends Sqls {
 
 	protected final static Pattern staticPattern = Pattern.compile("#" + paramReplace);
 
-	final static Pattern paramPattern = Pattern.compile(paramReplace);
+	protected final static Pattern paramPattern = Pattern.compile(paramReplace);
+
+	protected final static Pattern SQL_PART_PATTERN  = Pattern.compile("#[A-Z_]+#");
+	protected static final String SQL_PART = "#SQL_PART#";
 
 	protected final static Pattern timeMillisPattern = Pattern.compile("[0123456789]*");
 
@@ -210,9 +213,12 @@ public abstract class SqlEntity extends Sqls {
 		if (sql == null || "".equals(sql)) {
 			return "";
 		}
+		int findCount = 0;
 		Matcher m = staticPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
+
 		while (m.find()) {
+			findCount++;
 			String paramValue;
 
 			String param = m.group();
@@ -265,9 +271,29 @@ public abstract class SqlEntity extends Sqls {
 				paramValue = paramValue.replace("$", "\\$");
 			}
 			m.appendReplacement(buf, paramValue);
+			reduceBlank(buf);
 		}
-		m.appendTail(buf);
-		return buf.toString();
+		if(findCount == 0){
+			return sql;
+		}else {
+			m.appendTail(buf);
+			return buf.toString();
+		}
+	}
+
+	protected void reduceBlank(StringBuffer buffer){
+		if(buffer.length() == 0){
+			return;
+		}
+		int blankCount = 0;
+		int index = buffer.length() - 1;
+		while(index >=0 && buffer.charAt(index)==' '){
+			blankCount ++;
+			index--;
+		}
+		if(blankCount > 0){
+			buffer.delete(buffer.length()- blankCount, buffer.length());
+		}
 	}
 
 	/**
@@ -506,22 +532,6 @@ public abstract class SqlEntity extends Sqls {
 		return result;
 	}
 
-	protected String initSqlPart(String sql, Map<String, Param> params, Context context, String provideName) {
-		int sqlPartIndex = 0;
-
-		Matcher m = SQL_PART_PATTERN.matcher(sql);
-		StringBuffer buffer = new StringBuffer();
-		while (m.find()) {
-			String text = m.group();
-			if (SQL_PART.equals(text)) {
-				SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
-				m.appendReplacement(buffer, Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName)));
-			}
-		}
-		m.appendTail(buffer);
-		return buffer.toString();
-	}
-
 	protected String getPartSql(SqlPart sqlPart, Context context,Map<String, Param> params,String provideName ){
 		if(sqlPart.type == SqlPartType.FOR) {
 			if(DataUtil.isNull(sqlPart.getSourcePath())){
@@ -543,14 +553,6 @@ public abstract class SqlEntity extends Sqls {
 
 	public void log(String sqlName, String sql, Map<String, Param> params) {
 		LogUtil.log(sqlName, sql, params.values());
-	}
-
-	public List<SqlEntity> getSqlList() {
-		return sqlList;
-	}
-
-	public void setSqlList(List<SqlEntity> sqlList) {
-		this.sqlList = sqlList;
 	}
 
 }
