@@ -3,10 +3,11 @@ package com.nfwork.dbfound.web.file;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import org.apache.commons.fileupload2.core.DiskFileItem;
-import org.apache.commons.fileupload2.core.FileUploadException;
 import org.apache.commons.fileupload2.jakarta.JakartaServletDiskFileUpload;
 import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 public class FileUploadUtil {
@@ -17,7 +18,7 @@ public class FileUploadUtil {
 		return JakartaServletFileUpload.isMultipartContent(context.request);
 	}
 
-	public static void initFileUpload(Context context) throws FileUploadException {
+	public static void initFileUpload(Context context) throws IOException {
 
 		JakartaServletDiskFileUpload upload = new JakartaServletDiskFileUpload();
 
@@ -31,7 +32,7 @@ public class FileUploadUtil {
 		for (DiskFileItem fileItem : items) {
 			String filedName = fileItem.getFieldName();
 			if (fileItem.isFormField()) {
-				context.setParamData(filedName, fileItem.getString());
+				context.setParamData(filedName, fileItem.getString(Charset.forName(context.request.getCharacterEncoding())));
 			} else {
 				context.setParamData(filedName, fileItem);
 				context.setParamData(filedName + "_name", fileItem.getName().substring(
