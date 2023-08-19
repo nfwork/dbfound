@@ -9,10 +9,20 @@ import java.util.Map;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 
+import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.web.file.FilePart;
 import jxl.*;
 import jxl.read.biff.BiffException;
 
 public class ExcelReader {
+
+	public static List<List<Map>> readExcel(FilePart filePart) {
+		try (InputStream stream = filePart.inputStream()) {
+			return readExcel(stream);
+		} catch (Exception e) {
+			throw new DBFoundPackageException("excel reader exception:" + e.getMessage(),e);
+		}
+	}
 
 	public static List<List<Map>> readExcel(InputStream input) throws BiffException, IOException {
 		List<List<Map>> excelData = new ArrayList<List<Map>>();
