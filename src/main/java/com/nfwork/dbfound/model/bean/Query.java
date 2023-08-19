@@ -100,12 +100,18 @@ public class Query extends SqlEntity {
 			} else {
 				model.putQuery(name, this);
 			}
+			params.putAll(filters);
+
 			if(DataUtil.isNotNull(sql)) {
 				autoCreateParam(sql.getSql(), params);
 				if(!sql.getSqlPartList().isEmpty()){
 					String tmp = sql.getSqlPartList().stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
 					autoCreateParam(tmp,params);
 				}
+			}
+			if(!filters.isEmpty()){
+				String tmp = filters.values().stream().map(v->v.getCondition()+","+v.getExpress()).collect(Collectors.joining(","));
+				autoCreateParam(tmp,params);
 			}
 		} else {
 			super.run();
@@ -118,14 +124,6 @@ public class Query extends SqlEntity {
 			params.put(entry.getKey(), (Param) entry.getValue().cloneEntity());
 		}
 		return params;
-	}
-
-	public HashMap<String, Filter> cloneFilters() {
-		HashMap<String, Filter> filters = new HashMap<>();
-		for(Map.Entry<String,Filter> entry : this.filters.entrySet()){
-			filters.put(entry.getKey(), (Filter) entry.getValue().cloneEntity());
-		}
-		return filters;
 	}
 
 	public String getQuerySql(Context context,Map<String, Param> params, String provideName){
@@ -225,21 +223,22 @@ public class Query extends SqlEntity {
 	}
 
 	private String initFilterAndSqlPart(String ssql, Map<String, Param> params, Context context, String provideName) {
-		StringBuilder bfsql = new StringBuilder();
+		StringBuilder builder = new StringBuilder();
 		for (Param param : params.values()) {
 			if (param instanceof Filter){
 				Filter nfFilter = (Filter) param;
-
-				//condition 逻辑判断；
-				if (DataUtil.isNotNull(nfFilter.getCondition())) {
-					if(!checkCondition(nfFilter.getCondition(),params,context,provideName)){
-						continue;
+				if(nfFilter.isActive()) {
+					builder.append(nfFilter.getExpress()).append(" and ");
+				}else if(DataUtil.isNotNull(nfFilter.getCondition())) {
+					if(checkCondition(nfFilter.getCondition(),params,context,provideName)){
+						builder.append(nfFilter.getExpress()).append(" and ");
 					}
+				}else if(DataUtil.isNotNull(nfFilter.getValue())){
+					builder.append(nfFilter.getExpress()).append(" and ");
 				}
-				bfsql.append(nfFilter.getExpress()).append(" and ");
 			}
 		}
-		String fsql = bfsql.length() > 5 ? bfsql.substring(0, bfsql.length() - 5) : null;
+		String fsql = builder.length() > 5 ? builder.substring(0, builder.length() - 5) : null;
 		if (fsql != null) {
 			fsql = Matcher.quoteReplacement(fsql);
 		}
@@ -447,16 +446,8 @@ public class Query extends SqlEntity {
 		return params;
 	}
 
-	public void setParams(Map<String, Param> params) {
-		this.params = params;
-	}
-
 	public Map<String, Filter> getFilters() {
 		return filters;
-	}
-
-	public void setFilters(Map<String, Filter> filters) {
-		this.filters = filters;
 	}
 
 	public String getRootPath() {

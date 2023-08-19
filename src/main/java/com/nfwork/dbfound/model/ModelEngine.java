@@ -16,7 +16,6 @@ import com.nfwork.dbfound.exception.ExecuteNotFoundException;
 import com.nfwork.dbfound.exception.FileDownLoadInterrupt;
 import com.nfwork.dbfound.exception.QueryNotFoundException;
 import com.nfwork.dbfound.model.bean.Execute;
-import com.nfwork.dbfound.model.bean.Filter;
 import com.nfwork.dbfound.model.bean.Model;
 import com.nfwork.dbfound.model.bean.Param;
 import com.nfwork.dbfound.model.bean.Query;
@@ -136,25 +135,6 @@ public class ModelEngine {
 			Map<String, Param> params = query.cloneParams();
 			for (Param nfParam : params.values()) {
 				setParam(nfParam, context, currentPath, elCache);
-			}
-
-			// 初始化查询过滤参数filter
-			Map<String, Filter> filters = query.cloneFilters();
-			for (Filter filter : filters.values()) {
-				setParam(filter, context, currentPath, elCache);
-
-				if(DataUtil.isNotNull(filter.getCondition())) {
-					filter.setActive(true);
-				}else{
-					Object value = filter.getValue();
-					if (DataUtil.isNotNull(value)) {
-						filter.setActive(true);
-					}
-				}
-
-				if(filter.isActive()) {
-					params.put(filter.getName(), filter);
-				}
 			}
 
 			// 设想分页参数
