@@ -11,6 +11,8 @@ public interface FilePart {
 
     InputStream inputStream() throws IOException;
 
+    Object targetObject();
+
     byte[] getContent() throws IOException;
 
     String getSize();
