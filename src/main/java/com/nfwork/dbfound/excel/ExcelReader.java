@@ -24,6 +24,14 @@ public class ExcelReader {
 		}
 	}
 
+	public static List<List<Map>> readExcel(byte[] bytes) {
+		try (InputStream stream = new ByteArrayInputStream(bytes)) {
+			return readExcel(stream);
+		} catch (Exception e) {
+			throw new DBFoundPackageException("excel reader exception:" + e.getMessage(),e);
+		}
+	}
+
 	public static List<List<Map>> readExcel(InputStream input) throws BiffException, IOException {
 		List<List<Map>> excelData = new ArrayList<List<Map>>();
 
