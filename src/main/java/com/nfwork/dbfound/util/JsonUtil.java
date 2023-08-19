@@ -21,7 +21,6 @@ import com.nfwork.dbfound.json.JSONObject;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
 import com.nfwork.dbfound.model.reflector.Reflector;
-import org.apache.commons.fileupload.FileItem;
 
 /**
  * Json数据处理
@@ -249,8 +248,6 @@ public class JsonUtil extends PropertyTransfer {
 			json.append(objectToJson(value));
 		} else if (obj instanceof InputStream) {
 			json.append("\"InputStream\"");
-		} else if (obj instanceof FileItem) {
-			json.append("\"FileItem\"");
 		} else {
 			json.append(beanToJson(obj));
 		}
