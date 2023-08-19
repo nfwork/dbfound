@@ -13,6 +13,7 @@ import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StreamUtils;
+import com.nfwork.dbfound.web.file.FilePart;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 
@@ -99,11 +100,22 @@ public class Execute extends SqlEntity {
 	private List<InputStream> initFileParam(Map<String, Param> params){
 		List<InputStream> list = null;
 		for (Param param : params.values()) {
-			if (param.getValue() instanceof InputStream) {
-				if (list == null) {
-					list = new ArrayList<>();
+			try {
+				Object value = param.getValue();
+				if (value instanceof InputStream) {
+					if (list == null) {
+						list = new ArrayList<>();
+					}
+					list.add((InputStream)value);
+				} else if (value instanceof FilePart) {
+					if (list == null) {
+						list = new ArrayList<>();
+					}
+					list.add(((FilePart) value).inputStream());
 				}
-				list.add((InputStream) param.getValue());
+			}catch (Exception exception){
+				closeFileParam(list);
+				throw new DBFoundRuntimeException("init file param failed, "+exception.getMessage(), exception);
 			}
 		}
 		return list;
