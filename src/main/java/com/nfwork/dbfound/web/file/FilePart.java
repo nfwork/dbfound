@@ -9,7 +9,9 @@ public interface FilePart {
 
     String getContentType();
 
-    InputStream getContent() throws IOException;
+    InputStream inputStream() throws IOException;
+
+    byte[] getContent() throws IOException;
 
     String getSize();
 
