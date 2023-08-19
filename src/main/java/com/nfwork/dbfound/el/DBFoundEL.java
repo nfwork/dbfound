@@ -137,7 +137,7 @@ public class DBFoundEL extends PropertyTransfer{
 		if (object instanceof List) {
 			List<?> l = (List<?>) object;
 			if (index < l.size()) {
-				object = l.get(index);
+				return l.get(index);
 			}
 		} else if (DataUtil.isArray(object)) {
 			return DataUtil.getArrayDataByIndex(object,index);
@@ -147,14 +147,13 @@ public class DBFoundEL extends PropertyTransfer{
 			if (index < s.size()) {
 				for (Object o : s) {
 					if (index == 0) {
-						object = o;
-						break;
+						return o;
 					}
 					index--;
 				}
 			}
 		}
-		return object;
+		return null;
 	}
 
 	public static Object getDataByProperty(String property,Object object){
