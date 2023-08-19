@@ -1,15 +1,15 @@
 package com.nfwork.dbfound.web.file;
 
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.DiskFileItem;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class CommonFilePart implements FilePart{
 
-    private final FileItem fileItem;
+    private final DiskFileItem fileItem;
 
-    public CommonFilePart(FileItem fileItem){
+    public CommonFilePart(DiskFileItem fileItem){
         this.fileItem = fileItem;
     }
 
