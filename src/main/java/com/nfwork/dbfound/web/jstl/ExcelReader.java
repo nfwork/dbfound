@@ -10,7 +10,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.nfwork.dbfound.web.file.FilePart;
-import org.apache.commons.fileupload.FileItem;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
@@ -34,7 +33,7 @@ public class ExcelReader extends TagSupport {
 		try {
 			Object object = request.getAttribute(sourceName);
 			if (object instanceof FilePart) {
-				try(InputStream inputStream = ((FilePart) object).getContent()) {
+				try(InputStream inputStream = ((FilePart) object).inputStream()) {
 					List<List<Map>> datas = com.nfwork.dbfound.excel.ExcelReader.readExcel(inputStream);
 					context.setData(rootPath, datas);
 				}

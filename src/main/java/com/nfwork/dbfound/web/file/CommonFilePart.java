@@ -24,8 +24,18 @@ public class CommonFilePart implements FilePart{
     }
 
     @Override
-    public InputStream getContent() throws IOException {
+    public InputStream inputStream() throws IOException {
         return fileItem.getInputStream();
+    }
+
+    @Override
+    public Object targetObject() {
+        return fileItem;
+    }
+
+    @Override
+    public byte[] getContent() throws IOException{
+        return fileItem.get();
     }
 
     @Override
