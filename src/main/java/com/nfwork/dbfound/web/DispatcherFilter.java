@@ -45,6 +45,7 @@ public class DispatcherFilter implements Filter {
 		// 得到客服端请求的uri地址
 		String requestUrl = request.getServletPath();
 		int actionType = analysisActionType(requestUrl);
+		boolean isFileUpload = false;
 
 		if (actionType > 0 && !"OPTIONS".equalsIgnoreCase(request.getMethod())) {
 			Transaction transaction = null;
@@ -55,7 +56,10 @@ public class DispatcherFilter implements Filter {
 				Context context = Context.getCurrentContext(request, response);
 
 				// 初始化文件上传组件
-				FileUploadUtil.initFileUpload(context);
+				isFileUpload = FileUploadUtil.isUploadRequest(context);
+				if(isFileUpload) {
+					FileUploadUtil.initFileUpload(context);
+				}
 
 				// 开启事务
 				transaction = context.getTransaction();
@@ -139,6 +143,9 @@ public class DispatcherFilter implements Filter {
 			} finally {
 				if (transaction != null) {
 					transaction.end();
+				}
+				if(isFileUpload) {
+					FileUploadUtil.clearFileItemLocal();
 				}
 			}
 
