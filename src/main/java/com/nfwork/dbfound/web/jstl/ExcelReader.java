@@ -1,6 +1,5 @@
 package com.nfwork.dbfound.web.jstl;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -33,10 +32,8 @@ public class ExcelReader extends TagSupport {
 		try {
 			Object object = request.getAttribute(sourceName);
 			if (object instanceof FilePart) {
-				try(InputStream inputStream = ((FilePart) object).inputStream()) {
-					List<List<Map>> datas = com.nfwork.dbfound.excel.ExcelReader.readExcel(inputStream);
-					context.setData(rootPath, datas);
-				}
+				List<List<Map>> datas = com.nfwork.dbfound.excel.ExcelReader.readExcel((FilePart) object);
+				context.setData(rootPath, datas);
 			}
 		} catch (Exception e) {
 			Transaction transaction = context.getTransaction();
