@@ -29,19 +29,24 @@ public class ExcelReader extends SqlEntity {
 		if(DataUtil.isNull(rootPath)){
 			throw new DBFoundRuntimeException("rootPath can not be null");
 		}
+		String setPath = rootPath;
+		if(!ELEngine.isAbsolutePath(setPath)){
+			setPath = context.getCurrentPath() + "." + setPath;
+		}
+
 		Object ofile = param.getValue();
 		if(ofile instanceof InputStream){
 			try {
 				InputStream inputStream = (InputStream) ofile;
 				List<List<Map>> dataList = com.nfwork.dbfound.excel.ExcelReader.readExcel(inputStream);
-				String setPath = rootPath;
-				if(!ELEngine.isAbsolutePath(setPath)){
-					setPath = context.getCurrentPath() + "." + setPath;
-				}
 				context.setData(setPath, dataList);
 			}catch (Exception exception){
 				throw new DBFoundPackageException("excel reader failed, "+ exception.getMessage(),exception);
 			}
+		}else if(ofile instanceof byte[]){
+			byte[] bytes = (byte[]) ofile;
+			List<List<Map>> dataList = com.nfwork.dbfound.excel.ExcelReader.readExcel(bytes);
+			context.setData(setPath, dataList);
 		}
 	}
 
