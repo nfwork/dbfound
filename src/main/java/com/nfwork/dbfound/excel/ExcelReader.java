@@ -8,29 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
-import org.apache.commons.fileupload2.core.FileItem;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 
 import jxl.*;
 import jxl.read.biff.BiffException;
 
 public class ExcelReader {
-
-	public static List<List<Map>> readExcel(FileItem item) {
-		try (InputStream stream = item.getInputStream()) {
-			return readExcel(stream);
-		} catch (Exception e) {
-			throw new DBFoundPackageException("excel reader exception:" + e.getMessage(),e);
-		}
-	}
-
-	public static List<List<Map>> readExcel(File file) {
-		try (InputStream stream = new FileInputStream(file)) {
-			return readExcel(stream);
-		} catch (Exception e) {
-			throw new DBFoundPackageException("excel reader exception:" + e.getMessage(),e);
-		}
-	}
 
 	public static List<List<Map>> readExcel(InputStream input) throws BiffException, IOException {
 		List<List<Map>> excelData = new ArrayList<List<Map>>();

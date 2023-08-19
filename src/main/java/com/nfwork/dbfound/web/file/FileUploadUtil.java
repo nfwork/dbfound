@@ -34,11 +34,8 @@ public class FileUploadUtil {
 			if (fileItem.isFormField()) {
 				context.setParamData(filedName, fileItem.getString(Charset.forName(context.request.getCharacterEncoding())));
 			} else {
-				context.setParamData(filedName, fileItem);
-				context.setParamData(filedName + "_name", fileItem.getName().substring(
-						fileItem.getName().lastIndexOf("\\") + 1));
-				context.setParamData(filedName + "_type", fileItem.getContentType());
-				context.setParamData(filedName + "_size", FileSizeCalculator.getFileSize(fileItem.getSize()));
+				FilePart filePart = new CommonFilePart(fileItem);
+				context.setParamData(filedName, filePart);
 			}
 		}
 	}

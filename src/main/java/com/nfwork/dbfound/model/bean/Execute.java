@@ -1,7 +1,5 @@
 package com.nfwork.dbfound.model.bean;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,15 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.nfwork.dbfound.el.ELEngine;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
-import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StreamUtils;
-import org.apache.commons.fileupload2.core.FileItem;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 
@@ -104,26 +99,11 @@ public class Execute extends SqlEntity {
 	private List<InputStream> initFileParam(Map<String, Param> params){
 		List<InputStream> list = null;
 		for (Param param : params.values()) {
-			if (param.getDataType() == DataType.FILE) {
+			if (param.getValue() instanceof InputStream) {
 				if (list == null) {
 					list = new ArrayList<>();
 				}
-				try {
-					if (param.getValue() instanceof FileItem) {
-						InputStream inputStream = ((FileItem<?>) param.getValue()).getInputStream();
-						param.setValue(inputStream);
-						list.add(inputStream);
-					} else if (param.getValue() instanceof File) {
-						InputStream inputStream = new FileInputStream((File) param.getValue());
-						param.setValue(inputStream);
-						list.add(inputStream);
-					} else if (param.getValue() instanceof InputStream) {
-						list.add((InputStream) param.getValue());
-					}
-				} catch (Exception e) {
-					closeFileParam(list);
-					throw new DBFoundPackageException(e);
-				}
+				list.add((InputStream) param.getValue());
 			}
 		}
 		return list;
