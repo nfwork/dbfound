@@ -29,6 +29,11 @@ public class CommonFilePart implements FilePart{
     }
 
     @Override
+    public Object targetObject() {
+        return fileItem;
+    }
+
+    @Override
     public byte[] getContent() throws IOException{
         return fileItem.get();
     }

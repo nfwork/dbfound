@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.util;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.temporal.Temporal;
@@ -98,12 +99,12 @@ public class JsonUtil extends PropertyTransfer {
 	 *            需要进行转换的数组对象
 	 * @return 转换后的Json数据格式字符串
 	 */
-	public static String arrayToJson(Object[] array) {
+	public static String arrayToJson(Object array) {
 		StringBuilder json = new StringBuilder();
 		json.append("[");
-		if (array != null && array.length > 0) {
-			for (Object obj : array) {
-				json.append(objectToJson(obj));
+		if (array != null) {
+			for (int i =0; i < Array.getLength(array); i++) {
+				json.append(objectToJson(Array.get(array,i)));
 				json.append(",");
 			}
 			json.setCharAt(json.length() - 1, ']');
@@ -240,8 +241,10 @@ public class JsonUtil extends PropertyTransfer {
 			json.append(mapToJson((Map<?, ?>) obj));
 		} else if (obj instanceof Set) {
 			json.append(setToJson((Set<?>) obj));
-		} else if (obj instanceof Object[]) {
-			json.append(arrayToJson((Object[]) obj));
+		} else if (obj instanceof byte[]) {
+			json.append("\"").append(obj).append("\"");
+		} else if (obj.getClass().isArray()) {
+			json.append(arrayToJson(obj));
 		} else if (obj instanceof Enum) {
 			EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(obj.getClass());
 			Object value = handler.getEnumValue(obj);
