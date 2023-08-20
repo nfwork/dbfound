@@ -43,9 +43,9 @@ public class JsonUtil extends PropertyTransfer {
 		json.append("{");
 
 		Reflector reflector = Reflector.forClass(bean.getClass());
-		String[] properties = reflector.getGetablePropertyNames();
+		List<String> properties = reflector.getSerializableFieldList();
 
-		if(properties != null && properties.length > 0){
+		if(properties != null && properties.size() > 0){
 			for (String property : properties){
 				try {
 					String name;
