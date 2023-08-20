@@ -56,10 +56,10 @@ public class ExecuteSql extends Sql {
 		}
 
 		Connection conn = context.getConn(provideName);
-		executeSql = staticParamParse(executeSql, params, context);
+		executeSql = staticParamParse(executeSql, params);
 
 		List<Object> exeParam = new ArrayList<>();
-		String esql = getExecuteSql(executeSql, params, exeParam, context);
+		String esql = getExecuteSql(executeSql, params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet rs = null;

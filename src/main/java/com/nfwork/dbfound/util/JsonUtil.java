@@ -5,13 +5,7 @@ import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.temporal.Temporal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.dto.ResponseObject;
@@ -78,10 +72,25 @@ public class JsonUtil extends PropertyTransfer {
 	 * @return 转换后的Json数据格式字符串
 	 */
 	public static String listToJson(List<?> list) {
+		return collectionToJson(list);
+	}
+
+	/**
+	 * 将一个Set对象转换成Json数据格式返回
+	 *
+	 * @param set
+	 *            需要进行转换的Set对象
+	 * @return 转换后的Json数据格式字符串
+	 */
+	public static String setToJson(Set<?> set) {
+		return collectionToJson(set);
+	}
+
+	public static String collectionToJson(Collection<?> collection){
 		StringBuilder json = new StringBuilder();
 		json.append("[");
-		if (list != null && list.size() > 0) {
-			for (Object obj : list) {
+		if (collection != null && collection.size() > 0) {
+			for (Object obj : collection) {
 				json.append(objectToJson(obj));
 				json.append(",");
 			}
@@ -100,6 +109,9 @@ public class JsonUtil extends PropertyTransfer {
 	 * @return 转换后的Json数据格式字符串
 	 */
 	public static String arrayToJson(Object array) {
+		if(array instanceof byte[]){
+			return "[]";
+		}
 		StringBuilder json = new StringBuilder();
 		json.append("[");
 		if (array != null) {
@@ -134,28 +146,6 @@ public class JsonUtil extends PropertyTransfer {
 			json.setCharAt(json.length() - 1, '}');
 		} else {
 			json.append("}");
-		}
-		return json.toString();
-	}
-
-	/**
-	 * 将一个Set对象转换成Json数据格式返回
-	 * 
-	 * @param set
-	 *            需要进行转换的Set对象
-	 * @return 转换后的Json数据格式字符串
-	 */
-	public static String setToJson(Set<?> set) {
-		StringBuilder json = new StringBuilder();
-		json.append("[");
-		if (set != null && set.size() > 0) {
-			for (Object obj : set) {
-				json.append(objectToJson(obj));
-				json.append(",");
-			}
-			json.setCharAt(json.length() - 1, ']');
-		} else {
-			json.append("]");
 		}
 		return json.toString();
 	}
@@ -246,14 +236,10 @@ public class JsonUtil extends PropertyTransfer {
 		} else if(obj instanceof Temporal) {
 			String value = LocalDateUtil.formatTemporal((Temporal) obj);
 			json.append("\"").append(value).append("\"");
-		} else if (obj instanceof List) {
-			json.append(listToJson((List<?>) obj));
+		} else if (obj instanceof Collection) {
+			json.append(collectionToJson((Collection<?>) obj));
 		} else if (obj instanceof Map) {
 			json.append(mapToJson((Map<?, ?>) obj));
-		} else if (obj instanceof Set) {
-			json.append(setToJson((Set<?>) obj));
-		} else if (obj instanceof byte[]) {
-			json.append("\"").append(obj).append("\"");
 		} else if (obj.getClass().isArray()) {
 			json.append(arrayToJson(obj));
 		} else if (obj instanceof Enum) {
