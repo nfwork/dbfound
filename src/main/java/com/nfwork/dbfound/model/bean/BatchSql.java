@@ -131,9 +131,9 @@ public class BatchSql extends Sqls {
 	public void executeCursor(Context context, Map<String, Param> params,String provideName, List<Map> cursorValues) throws SQLException {
 		Connection conn = context.getConn(provideName);
 
-		String cursorSql = staticParamParse(cursor, params, context);
+		String cursorSql = staticParamParse(cursor, params);
 		List<Object> exeParam = new ArrayList<>();
-		String esql = getExecuteSql(cursorSql, params, exeParam, context);
+		String esql = getExecuteSql(cursorSql, params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
