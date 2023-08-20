@@ -7,6 +7,7 @@ import org.apache.commons.fileupload2.jakarta.JakartaServletDiskFileUpload;
 import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.nio.charset.Charset;
 import java.util.List;
 
@@ -35,7 +36,17 @@ public class FileUploadUtil {
 				context.setParamData(filedName, fileItem.getString(Charset.forName(context.request.getCharacterEncoding())));
 			} else {
 				FilePart filePart = new CommonFilePart(fileItem);
-				context.setParamData(filedName, filePart);
+				Object object = context.getData("param."+filedName);
+				if(object == null) {
+					context.setParamData(filedName, filePart);
+				}else if(object instanceof FilePart){
+					List<FilePart> list = new ArrayList<>();
+					list.add((FilePart) object);
+					list.add(filePart);
+					context.setParamData(filedName, list);
+				}else if(object instanceof List){
+					((List) object).add(filePart);
+				}
 			}
 		}
 	}
