@@ -162,8 +162,8 @@ public class JsonUtil extends PropertyTransfer {
 
 	private static String numberToJson(Number number) {
 		String s = number.toString();
-		int index = s.length()-1;
 		if (s.indexOf('.') > 0 && s.indexOf('e') < 0 && s.indexOf('E') < 0) {
+			int index = s.length()-1;
 			while (s.charAt(index) == '0') {
 				index--;
 			}
