@@ -53,16 +53,16 @@ public class CollisionSql extends SqlEntity {
 			throw new DBFoundRuntimeException(initError);
 		}
 
-		String whereSql = staticParamParse(where, params, context);
+		String whereSql = staticParamParse(where, params);
 		List<Object> exeParam = new ArrayList<>();
-		String eSql = getExecuteSql(whereSql, params, exeParam, context);
+		String eSql = getExecuteSql(whereSql, params, exeParam);
 
 		if( DSqlConfig.isOpenDSql() && useDSql){
 			Boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
 			if(result != null){
 				log("collision dSql","select "+eSql, params);
 				if(result) {
-					throw new CollisionException(staticParamParse(message, params, context),code);
+					throw new CollisionException(staticParamParse(message, params),code);
 				}else{
 					return;
 				}
@@ -83,7 +83,7 @@ public class CollisionSql extends SqlEntity {
 			if (set.next()) {
 				int flag = set.getInt(1);
 				if (flag != 0) {
-					throw new CollisionException(staticParamParse(message, params, context),code);
+					throw new CollisionException(staticParamParse(message, params),code);
 				}
 			}
 		}catch (SQLException e) {

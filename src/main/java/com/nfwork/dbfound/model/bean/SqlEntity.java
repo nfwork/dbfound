@@ -60,7 +60,7 @@ public abstract class SqlEntity extends Entity {
 	 * 
 	 * @return string
 	 */
-	public String getExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam, Context context) {
+	public String getExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam) {
 
 		Matcher m = dynamicPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
@@ -77,7 +77,7 @@ public abstract class SqlEntity extends Entity {
 			}
 
 			nfParam.setRequireLog(true);
-			initParamValue(nfParam, context);
+			initParamValue(nfParam);
 			initParamType(nfParam);
 
 			if(nfParam.getDataType() == DataType.COLLECTION){
@@ -209,7 +209,7 @@ public abstract class SqlEntity extends Entity {
 	 * @param params params
 	 * @return string
 	 */
-	public String staticParamParse(String sql, Map<String, Param> params, Context context) {
+	public String staticParamParse(String sql, Map<String, Param> params) {
 		if (sql == null || "".equals(sql)) {
 			return "";
 		}
@@ -230,7 +230,7 @@ public abstract class SqlEntity extends Entity {
 			}
 
 			nfParam.setRequireLog(true);
-			initParamValue(nfParam, context);
+			initParamValue(nfParam);
 			initParamType(nfParam);
 
 			if(nfParam.getDataType() == DataType.COLLECTION){
@@ -300,14 +300,14 @@ public abstract class SqlEntity extends Entity {
 	 * 枚举类型 boolean类型支持 2022年07月08日17:26:06
 	 * @param nfParam param
 	 */
-	private void initParamValue(Param nfParam, Context context){
+	private void initParamValue(Param nfParam){
 
 		if(nfParam.getDataType() == null){
 			throw new DBFoundRuntimeException("dataType can not be null, it only can be one of varchar, number, boolean, date, file or collection");
 		}
 
 		if(nfParam.getValue() instanceof Enum){
-			Object value = getEnumValue((Enum) nfParam.getValue());
+			Object value = getEnumValue((Enum<?>) nfParam.getValue());
 			nfParam.setValue(value);
 		}
 
@@ -353,13 +353,10 @@ public abstract class SqlEntity extends Entity {
 		}else if (nfParam.getDataType() == DataType.VARCHAR) {
 			if(!(nfParam.getValue() instanceof String)) {
 				if (nfParam.getValue() instanceof Map) {
-					String paramValue = JsonUtil.mapToJson((Map) nfParam.getValue());
+					String paramValue = JsonUtil.mapToJson((Map<?,?>) nfParam.getValue());
 					nfParam.setValue(paramValue);
-				} else if (nfParam.getValue() instanceof Set) {
-					String paramValue = JsonUtil.setToJson((Set) nfParam.getValue());
-					nfParam.setValue(paramValue);
-				} else if (nfParam.getValue() instanceof List) {
-					String paramValue = JsonUtil.listToJson((List) nfParam.getValue());
+				} else if (nfParam.getValue() instanceof Collection) {
+					String paramValue = JsonUtil.collectionToJson((Collection<?>) nfParam.getValue());
 					nfParam.setValue(paramValue);
 				} else if (nfParam.getValue().getClass().isArray()) {
 					String paramValue = JsonUtil.arrayToJson(nfParam.getValue());
@@ -446,7 +443,7 @@ public abstract class SqlEntity extends Entity {
 				}
 
 				if (pValue instanceof Enum) {
-					pValue = getEnumValue((Enum) pValue);
+					pValue = getEnumValue((Enum<?>) pValue);
 				}
 				itemList.add(pValue);
 			}
@@ -454,10 +451,9 @@ public abstract class SqlEntity extends Entity {
 		}
 	}
 
-	private Object getEnumValue(Enum object){
+	private Object getEnumValue(Enum<?> object){
 		EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(object.getClass());
-		Object value = handler.getEnumValue(object);
-		return value;
+		return handler.getEnumValue(object);
 	}
 
 	public String[] getColNames(ResultSetMetaData metaset) throws SQLException {
@@ -522,9 +518,9 @@ public abstract class SqlEntity extends Entity {
 	}
 
 	protected Boolean checkCondition(String condition,  Map<String, Param> params, Context context, String provideName){
-		String conditionSql = staticParamParse(condition, params, context);
+		String conditionSql = staticParamParse(condition, params);
 		List<Object> exeParam = new ArrayList<>();
-		conditionSql = getExecuteSql(conditionSql, params, exeParam, context);
+		conditionSql = getExecuteSql(conditionSql, params, exeParam);
 		Boolean result = DSqlEngine.checkWhenSql(conditionSql, exeParam, provideName, context);
 		if (result == null) {
 			throw new DBFoundRuntimeException("condition express is not support, condition:" + condition);

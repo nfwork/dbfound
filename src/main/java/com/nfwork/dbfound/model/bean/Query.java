@@ -131,7 +131,7 @@ public class Query extends SqlEntity {
 			throw new DBFoundRuntimeException("query entity must have a sql");
 		}
 		String querySql = initFilterAndSqlPart(sql.getSql(), params, context, provideName);
-		querySql = staticParamParse(querySql, params, context);
+		querySql = staticParamParse(querySql, params);
 		return querySql;
 	}
 
@@ -167,7 +167,7 @@ public class Query extends SqlEntity {
 				}
 			}
 		}
-		String eSql = getExecuteSql(querySql,params, exeParam, context);
+		String eSql = getExecuteSql(querySql,params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
@@ -380,7 +380,7 @@ public class Query extends SqlEntity {
 		Connection conn = context.getConn(provideName);
 
 		List<Object> exeParam = new ArrayList<>();
-		String ceSql = getExecuteSql(cSql,params, exeParam, context);
+		String ceSql = getExecuteSql(cSql,params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;

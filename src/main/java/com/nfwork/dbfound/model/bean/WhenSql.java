@@ -60,9 +60,9 @@ public class WhenSql extends Sqls {
 	// 判定条件是否成立
 	private boolean fitWhen(Context context, Map<String, Param> params,String provideName) {
 
-		String whenSql = staticParamParse(when, params, context);
+		String whenSql = staticParamParse(when, params);
 		List<Object> exeParam = new ArrayList<>();
-		String eSql = getExecuteSql(whenSql, params, exeParam, context);
+		String eSql = getExecuteSql(whenSql, params, exeParam);
 
 		if(DSqlConfig.isOpenDSql() && useDSql){
 			Boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
