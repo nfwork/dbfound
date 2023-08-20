@@ -161,7 +161,18 @@ public class JsonUtil extends PropertyTransfer {
 	}
 
 	private static String numberToJson(Number number) {
-		return number.toString();
+		String s = number.toString();
+		int index = s.length()-1;
+		if (s.indexOf('.') > 0 && s.indexOf('e') < 0 && s.indexOf('E') < 0) {
+			while (s.charAt(index) == '0') {
+				index--;
+			}
+			if (s.charAt(index) == '.') {
+				index--;
+			}
+			s = s.substring(0, index+1);
+		}
+		return s;
 	}
 
 	private static String booleanToJson(Boolean bool) {
