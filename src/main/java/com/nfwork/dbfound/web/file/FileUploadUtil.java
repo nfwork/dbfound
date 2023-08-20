@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.web.file;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
@@ -45,7 +46,17 @@ public class FileUploadUtil {
 				context.setParamData(filedName, fileItem.getString(encoding));
 			} else {
 				FilePart filePart = new CommonFilePart(fileItem);
-				context.setParamData(filedName, filePart);
+				Object object = context.getData("param."+filedName);
+				if(object == null) {
+					context.setParamData(filedName, filePart);
+				}else if(object instanceof FilePart){
+					List<FilePart> list = new ArrayList<>();
+					list.add((FilePart) object);
+					list.add(filePart);
+					context.setParamData(filedName, list);
+				}else if(object instanceof List){
+					((List) object).add(filePart);
+				}
 			}
 		}
 	}
