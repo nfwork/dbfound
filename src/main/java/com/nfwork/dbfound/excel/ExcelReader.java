@@ -2,10 +2,7 @@ package com.nfwork.dbfound.excel;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 
@@ -81,6 +78,14 @@ public class ExcelReader {
 				metaData[j] = metaCells[j].getContents().trim();
 			}
 
+			SimpleDateFormat dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+			dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			SimpleDateFormat datetimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+			datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			SimpleDateFormat timeFormat = new SimpleDateFormat(DBFoundConfig.getTimeFormat());
+			timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
 			for (int i = 1; i < rowSize; i++) {
 				Map<String, Object> data = new HashMap<>();
 				Cell[] dataCell = sheet.getRow(i);
@@ -88,9 +93,25 @@ public class ExcelReader {
 				for (int j = 0; j < colSize; j++) {
 					if (j >= rowColSize) {
 						data.put(metaData[j], null);
-					} else if (dataCell[j].getType() == CellType.DATE) {
-						DateCell dateCell = (DateCell) dataCell[j];
-						data.put(metaData[j], new SimpleDateFormat(DBFoundConfig.getDateFormat()).format(dateCell.getDate()));
+					}else if(dataCell[j] == null){
+						data.put(metaData[j], null);
+					}else if (dataCell[j].getType() == CellType.DATE) {
+						DateCell dateCell = ((DateCell) dataCell[j]);
+						Date date = dateCell.getDate();
+						if(date == null){
+							data.put(metaData[j], null);
+							continue;
+						}
+						if(dateCell.isTime()){
+							data.put(metaData[j], timeFormat.format(date));
+							continue;
+						}
+						calendar.setTime(date);
+						if(calendar.get(Calendar.HOUR_OF_DAY) ==0 && calendar.get(Calendar.MINUTE) ==0 && calendar.get(Calendar.SECOND) ==0){
+							data.put(metaData[j], dateFormat.format(date));
+						}else{
+							data.put(metaData[j], datetimeFormat.format(date));
+						}
 					} else if (dataCell[j].getType() == CellType.NUMBER) {
 						NumberCell numberCell = (NumberCell) dataCell[j];
 						data.put(metaData[j], numberCell.getValue());
