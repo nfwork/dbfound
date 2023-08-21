@@ -111,7 +111,9 @@ public class Execute extends SqlEntity {
 					if (list == null) {
 						list = new ArrayList<>();
 					}
-					list.add(((FilePart) value).inputStream());
+					InputStream inputStream = ((FilePart) value).inputStream();
+					param.setValue(inputStream);
+					list.add(inputStream);
 				}
 			}catch (Exception exception){
 				closeFileParam(list);

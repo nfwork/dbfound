@@ -32,7 +32,7 @@ public class ExcelReader extends TagSupport {
 		try {
 			Object object = request.getAttribute(sourceName);
 			if (object instanceof FilePart) {
-				List<List<Map>> datas = com.nfwork.dbfound.excel.ExcelReader.readExcel((FilePart) object);
+				List<List<Map<String,Object>>> datas = com.nfwork.dbfound.excel.ExcelReader.readExcel((FilePart) object);
 				context.setData(rootPath, datas);
 			}
 		} catch (Exception e) {
