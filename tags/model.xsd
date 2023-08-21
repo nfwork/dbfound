@@ -222,6 +222,14 @@
 				<xsd:complexType>
 					<xsd:attribute name="sourceParam" />
 					<xsd:attribute name="rootPath" />
+					<xsd:attribute name="requiredDataType">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:NMTOKEN">
+								<xsd:enumeration value="list" />
+								<xsd:enumeration value="map" />
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="setContextData" type="setContextData_type"/>
