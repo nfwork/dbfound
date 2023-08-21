@@ -1,7 +1,6 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 import com.nfwork.dbfound.el.ELEngine;
@@ -18,6 +17,7 @@ public class ExcelReader extends SqlEntity {
 
 	private String sourceParam;
 	private String rootPath;
+	private String requiredDataType;
 
 	@Override
 	public void execute(Context context, Map<String, Param> params,
@@ -37,16 +37,24 @@ public class ExcelReader extends SqlEntity {
 		Object ofile = param.getValue();
 		if(ofile instanceof InputStream){
 			try {
-				InputStream inputStream = (InputStream) ofile;
-				List<List<Map>> dataList = com.nfwork.dbfound.excel.ExcelReader.readExcel(inputStream);
-				context.setData(setPath, dataList);
+				Object object;
+				if("map".equals(requiredDataType)){
+					object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((InputStream) ofile);
+				} else {
+					object = com.nfwork.dbfound.excel.ExcelReader.readExcel((InputStream) ofile);
+				}
+				context.setData(setPath, object);
 			}catch (Exception exception){
 				throw new DBFoundPackageException("excel reader failed, "+ exception.getMessage(),exception);
 			}
 		}else if(ofile instanceof byte[]){
-			byte[] bytes = (byte[]) ofile;
-			List<List<Map>> dataList = com.nfwork.dbfound.excel.ExcelReader.readExcel(bytes);
-			context.setData(setPath, dataList);
+			Object object;
+			if("map".equals(requiredDataType)){
+				object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((byte[]) ofile);
+			}else {
+				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((byte[]) ofile);
+			}
+			context.setData(setPath, object);
 		}
 	}
 
@@ -66,4 +74,11 @@ public class ExcelReader extends SqlEntity {
 		this.rootPath = rootPath;
 	}
 
+	public String getRequiredDataType() {
+		return requiredDataType;
+	}
+
+	public void setRequiredDataType(String requiredDataType) {
+		this.requiredDataType = requiredDataType;
+	}
 }
