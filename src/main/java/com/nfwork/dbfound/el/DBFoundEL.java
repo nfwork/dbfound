@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.el;
 
+import java.lang.reflect.Array;
 import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -74,13 +75,13 @@ public class DBFoundEL extends PropertyTransfer{
 			if (currentObject == null) {
 				return null;
 			}
-			String currentExpree = d[i].trim();
-			int index = findIndex(currentExpree);
+			String currentExpress = d[i].trim();
+			int index = findIndex(currentExpress);
 			if (index != -1) {
-				currentExpree = currentExpree.substring(0, currentExpree.indexOf("["));
+				currentExpress = currentExpress.substring(0, currentExpress.indexOf("["));
 			}
 			// 计算当前对象
-			Object nextObject = getNextObject(currentObject, currentExpree);
+			Object nextObject = getNextObject(currentObject, currentExpress);
 
 			if (index != -1 && nextObject != null) {
 				nextObject = getDataByIndex(index, nextObject);
@@ -113,36 +114,83 @@ public class DBFoundEL extends PropertyTransfer{
 				exp = exp.substring(0, exp.indexOf("["));
 			}
 
-			if( i== expArray.length -1){
-				setNextObject(currentObj,exp,value);
+			if (i == expArray.length - 1) {
+				if (index == -1) {
+					setNextObject(currentObj, exp, value);
+				} else {
+					nextObj = getNextObject(currentObj, exp);
+					if (nextObj == null) {
+						nextObj = new ArrayList<>();
+						setNextObject(currentObj, exp, nextObj);
+					}
+					if (nextObj instanceof ArrayList) {
+						List<Object> list = (List) nextObj;
+						if (list.size() > index) {
+							list.set(index, value);
+						} else {
+							for (int j = list.size(); j < index; j++) {
+								list.add(null);
+							}
+							list.add(value);
+						}
+					} else if (DataUtil.isArray(nextObj)) {
+						Array.set(nextObj, index, value);
+					} else {
+						throw new RuntimeException("can not set array data into " + nextObj.getClass());
+					}
+				}
 				return;
 			}
 
 			nextObj = getNextObject(currentObj,exp);
 
-			if (index != -1 && nextObj != null) {
-				nextObj = getDataByIndex(index, nextObj);
+			if (index > -1) {
+				if(nextObj == null){
+					nextObj = new ArrayList<>();
+					setNextObject(currentObj, exp, nextObj);
+				}
+				if (nextObj instanceof ArrayList) {
+					List<Object> list = (List) nextObj;
+					if (list.size() > index) {
+						currentObj = list.get(index);
+						if (currentObj == null) {
+							currentObj = new HashMap<>();
+							list.set(index, currentObj);
+						}
+					} else {
+						for (int j = list.size(); j < index; j++) {
+							list.add(null);
+						}
+						currentObj = new HashMap<>();
+						list.add(currentObj);
+					}
+				} else if (DataUtil.isArray(nextObj)) {
+					currentObj = Array.get(nextObj, index);
+				} else {
+					throw new RuntimeException("can not set array data into " + nextObj.getClass());
+				}
+			} else {
+				if(nextObj == null) {
+					nextObj = new HashMap<String, Object>();
+					setNextObject(currentObj, exp, nextObj);
+				}
+				currentObj = nextObj;
 			}
-
-			if(nextObj == null){
-				nextObj = new HashMap<String, Object>();
-				setNextObject(currentObj,exp,nextObj);
-			}
-
-			currentObj = nextObj;
 		}
 	}
 
 	public static Object getDataByIndex(int index,Object object){
-		if (object instanceof List) {
+		if (object instanceof ArrayList) {
 			List<?> l = (List<?>) object;
 			if (index < l.size()) {
 				return l.get(index);
 			}
 		} else if (DataUtil.isArray(object)) {
-			return DataUtil.getArrayDataByIndex(object,index);
+			if(index < Array.getLength(object)) {
+				return Array.get(object, index);
+			}
 		} else if (object instanceof Collection) {
-			LogUtil.warn("dbfound el in handling " + object.getClass() + " is relatively poor, recommend change to List or Array");
+			LogUtil.warn("dbfound el in handling " + object.getClass() + " is relatively poor, recommend change to ArrayList or Array");
 			Collection<?> s = (Collection<?>) object;
 			if (index < s.size()) {
 				for (Object o : s) {
