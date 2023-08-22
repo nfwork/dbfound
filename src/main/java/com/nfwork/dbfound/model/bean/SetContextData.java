@@ -51,6 +51,10 @@ public class SetContextData extends SqlEntity{
             if(!ELEngine.isAbsolutePath(exePath)){
                 exePath = context.getCurrentPath() + "." +exePath;
             }
+            if(exePath.contains("[index]")){
+                String index = getIndex(context.getCurrentPath());
+                exePath = exePath.replace("[index]",index);
+            }
             valueObj = context.getData(exePath);
         }
 
@@ -58,7 +62,23 @@ public class SetContextData extends SqlEntity{
             valueObj = valueTemplate.replace("#{@"+name+"}",valueObj==null?"":valueObj.toString());
         }
 
-        context.setData(setPath+"."+name,valueObj);
+        if(name.contains("[index]")){
+            String index = getIndex(context.getCurrentPath());
+            setPath = setPath+"." + name.replace("[index]",index);
+        }else{
+            setPath = setPath + "." + name;
+        }
+        context.setData(setPath,valueObj);
+    }
+
+    private String getIndex(String currentPath){
+        if(currentPath.endsWith("]")){
+            int index = currentPath.lastIndexOf("[");
+            if(index != -1) {
+                return currentPath.substring(index);
+            }
+        }
+        throw new DBFoundRuntimeException("SetContextData cant not found index in currentPath");
     }
 
     public String getValue() {
