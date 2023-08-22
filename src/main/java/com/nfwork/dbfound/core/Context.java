@@ -307,7 +307,7 @@ public class Context {
 	 * @param value value
 	 */
 	public void setParamData(String name, Object value) {
-		if (name.contains(".")) {
+		if (name.contains(".") || name.contains("[")) {
 			DBFoundEL.setData(name,getParamDatas(),value);
 		}else{
 			getParamDatas().put(name, value);
@@ -321,7 +321,7 @@ public class Context {
 	 * @param value value
 	 */
 	public void setOutParamData(String name, Object value) {
-		if (name.contains(".")) {
+		if (name.contains(".") || name.contains("[")) {
 			DBFoundEL.setData(name,getOutParamDatas(),value);
 		}else{
 			getOutParamDatas().put(name, value);
@@ -335,8 +335,8 @@ public class Context {
 	 * @param value value
 	 */
 	public void setRequestData(String name, Object value) {
-		if (name.contains(".")) {
-			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
+		if (name.contains(".") || name.contains("[")) {
+			throw new DBFoundRuntimeException("on request scope, the name can not be contain '.' or '[' :" + name);
 		}
 		if (request != null) {
 			request.setAttribute(name, value);
@@ -354,8 +354,8 @@ public class Context {
 		if (!DBFoundConfig.isOpenSession()) {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
 		}
-		if (name.contains(".")) {
-			throw new DBFoundRuntimeException("param name can not be contain '.' :" + name);
+		if (name.contains(".") || name.contains("[")) {
+			throw new DBFoundRuntimeException("on session scope, the name can not be contain '.' or '[' :" + name);
 		}
 		if (request != null) {
 			request.getSession().setAttribute(name, value);
