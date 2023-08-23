@@ -11,8 +11,8 @@ import java.util.Map;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.CollisionException;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.util.DBUtil;
@@ -87,7 +87,7 @@ public class CollisionSql extends SqlEntity {
 				}
 			}
 		}catch (SQLException e) {
-			throw new DBFoundPackageException("CollisionSql execute exception:" + e.getMessage(), e);
+			throw new SqlExecuteException(provideName,"CollisionSql", eSql, e.getMessage(), e);
 		}finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);
