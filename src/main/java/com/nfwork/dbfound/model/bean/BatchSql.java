@@ -9,8 +9,8 @@ import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.el.ELEngine;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
@@ -57,12 +57,8 @@ public class BatchSql extends Sqls {
 
 		// 执行游标得到相应的值
 		if (cursor != null) {
-			List<Map> cursorValues = new ArrayList<Map>();
-			try {
-				executeCursor(context, params, provideName, cursorValues);
-			} catch (SQLException e) {
-				throw new DBFoundPackageException("cursor sql execute exception:" + e.getMessage(), e);
-			}
+			List<Map<String,Object>> cursorValues = new ArrayList<>();
+			executeCursor(context, params, provideName, cursorValues);
 			if(DataUtil.isNull(cursorRootPath)){
 				throw new DBFoundRuntimeException("cursorRootPath can not be null");
 			}
@@ -84,7 +80,7 @@ public class BatchSql extends Sqls {
 			return;
 		}
 
-		List<Param> paramList = new ArrayList<Param>();
+		List<Param> paramList = new ArrayList<>();
 		for (Param param : params.values()){
 			if(!param.isBatchAssign()){
 				continue;
@@ -128,7 +124,7 @@ public class BatchSql extends Sqls {
 	}
 
 
-	public void executeCursor(Context context, Map<String, Param> params,String provideName, List<Map> cursorValues) throws SQLException {
+	public void executeCursor(Context context, Map<String, Param> params,String provideName, List<Map<String,Object>> cursorValues){
 		Connection conn = context.getConn(provideName);
 
 		String cursorSql = staticParamParse(cursor, params);
@@ -145,12 +141,12 @@ public class BatchSql extends Sqls {
 			ResultSetMetaData metaset = dataset.getMetaData();
 
 			// 得到元数据
-			String colNames[] = getColNames(metaset);
+			String[] colNames = getColNames(metaset);
 
 			Calendar defaultCalendar = Calendar.getInstance();
 
 			while (dataset.next()) {
-				Map<String, Object> mapdata = new HashMap<String, Object>();
+				Map<String, Object> mapdata = new HashMap<>();
 				for (int i = 1; i <= colNames.length; i++) {
 					String columnName = colNames[i-1];
 					if (dataset.getObject(i) == null) {
@@ -162,7 +158,9 @@ public class BatchSql extends Sqls {
 				}
 				cursorValues.add(mapdata);
 			}
-		} finally {
+		}catch (SQLException e){
+			throw new SqlExecuteException(provideName,"BatchSql", esql, e.getMessage(), e);
+		}finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
 			log("batchCursorSql",esql, params);

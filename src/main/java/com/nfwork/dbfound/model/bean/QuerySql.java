@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
@@ -114,7 +115,7 @@ public class QuerySql extends Sql {
 				}
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("querySql execute exception:" + e.getMessage(), e);
+			throw new SqlExecuteException(provideName,"QuerySql", esql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
