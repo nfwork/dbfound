@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import com.nfwork.dbfound.db.dialect.AbstractSqlDialect;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
@@ -213,7 +214,7 @@ public class Query extends SqlEntity {
 				data.add(mapdata);
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("Query execute failed, " + e.getMessage(), e);
+			throw new SqlExecuteException(provideName,"Query", eSql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
@@ -395,7 +396,7 @@ public class Query extends SqlEntity {
 			dataset.next();
 			count.setTotalCounts( dataset.getLong(1));
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("Query execute count exception:" + e.getMessage(), e);
+			throw new SqlExecuteException(provideName,"QueryCount", ceSql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);

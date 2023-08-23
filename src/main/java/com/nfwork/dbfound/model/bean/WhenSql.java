@@ -10,8 +10,8 @@ import java.util.Map;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.util.DBUtil;
@@ -88,7 +88,7 @@ public class WhenSql extends Sqls {
 				flag = set.getInt(1);
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("whenSql execute exception:" + e.getMessage(), e);
+			throw new SqlExecuteException(provideName,"WhenSql", eSql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);

@@ -2,9 +2,9 @@ package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.el.ELEngine;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
+import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 
@@ -189,7 +189,7 @@ public class BatchExecuteSql extends Sql {
 			}
 			return updateCount;
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("BatchExecuteSql execute exception:" + e.getMessage(), e);
+			throw new SqlExecuteException(provideName,"BatchExecuteSql", sql, e.getMessage(), e);
 		}finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);

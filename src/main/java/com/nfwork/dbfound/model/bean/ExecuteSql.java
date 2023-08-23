@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
+import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 
@@ -110,7 +110,7 @@ public class ExecuteSql extends Sql {
 				}
 			}
 		}catch (SQLException e) {
-			throw new DBFoundPackageException("ExecuteSql execute exception:" + e.getMessage(), e);
+			throw new SqlExecuteException(provideName,"ExecuteSql", esql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
