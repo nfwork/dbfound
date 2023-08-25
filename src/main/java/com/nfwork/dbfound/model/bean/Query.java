@@ -355,13 +355,13 @@ public class Query extends SqlEntity {
 			}
 		}else if (order_hold == 0) {
 			if (group_hold > 0) {
-				cSql = "select count(1) from (" + querySql + ") v";
+				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold) + ") v";
 			} else {
 				cSql = "select count(1) " + querySql.substring(from_hold);
 			}
 		} else if(order_hold > 0){
 			if (group_hold > 0) {
-				cSql = "select count(1) from (" + querySql.substring(0, order_hold) + ") v";
+				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold, order_hold) + ") v";
 			} else {
 				cSql = "select count(1) " + querySql.substring(from_hold, order_hold);
 			}
