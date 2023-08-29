@@ -100,7 +100,7 @@ public class SqlPart extends SqlEntity {
                 }
                 if (param.isBatchAssign()){
                     String newParamName = param.getName()+"_"+i;
-                    String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
+                    String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
                     String sph = exeSourcePath +"[" + i +"]."+ sp;
 
                     Param existsParam = params.get(newParamName);

@@ -137,7 +137,7 @@ public class BatchExecuteSql extends Sql {
 				if (param.isBatchAssign()){
 					Param newParam = (Param) param.cloneEntity();
 					newParam.setName(newParam.getName()+"_"+i);
-					String sp = param.getSourcePath()==null?param.getName():param.getSourcePath();
+					String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
 					newParam.setSourcePathHistory(exeSourcePath +"[" + i +"]."+ sp);
 
 					if(exeParams.containsKey(newParam.getName())){
