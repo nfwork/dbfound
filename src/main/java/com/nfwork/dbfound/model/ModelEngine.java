@@ -228,10 +228,12 @@ public class ModelEngine {
 				executeName = "addOrUpdate";
 
 			// 批量执行查找客户端数据的路径
-			String batchExecutePath = defaultBatchPath;
+			String batchExecutePath;
 
 			// 查询数据，返回结果
-			if (sourcePath != null && !"".equals(sourcePath)) {
+			if (DataUtil.isNull(sourcePath)) {
+				batchExecutePath = defaultBatchPath;
+			}else{
 				batchExecutePath = sourcePath;
 			}
 
@@ -433,10 +435,8 @@ public class ModelEngine {
 		String currentPath;
 		if (DataUtil.isNotNull(scope)) {
 			currentPath = scope;
-		} else if (DataUtil.isNotNull(cp)) {
-			currentPath = cp;
 		} else {
-			currentPath = defaultPath;
+			currentPath = cp;
 		}
 
 		String realPath ;// 绝对路径
