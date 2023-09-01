@@ -90,7 +90,7 @@ public class StringUtil {
             }else if (dyh == 0 && syh ==0) {
 
                 // 注释处理
-                if (chars[i] == '-' && i < chars.length - 2 && chars[i + 1] == '-' && chars[i + 2] == ' ') {
+                if (chars[i] == '-' && i < chars.length - 2 && chars[i + 1] == '-' && (chars[i + 2] == ' ' || chars[i+2] == '\t' || chars[i+2] == '\n')) {
                     commentBasic = true;
                     continue;
                 } else if (chars[i] == '/' && i < chars.length -1 && chars[i + 1] == '*') {
