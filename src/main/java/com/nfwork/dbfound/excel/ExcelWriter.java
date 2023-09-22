@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.excel;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
@@ -8,6 +9,8 @@ import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.csv.CSVFormat;
+import com.nfwork.dbfound.csv.CSVPrinter;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
@@ -55,19 +58,7 @@ public class ExcelWriter {
 			}
 
 			//mappers处理
-			Map<String,Map<String,Object>> mappers = new HashMap<String, Map<String,Object>>();
-			for (Map col : cls){
-				Object object =col.get("mapper");
-				if (DataUtil.isNotNull(object)){
-					Map mapper = (Map)object;
-					Map<String,Object> newMapper  = new HashMap();
-
-					for (Object key: mapper.keySet()){
-						newMapper.put(key.toString(),mapper.get(key));
-					}
-					mappers.put(col.get("name").toString(),newMapper);
-				}
-			}
+			Map<String,Map<String,Object>> mappers = initMapper(cls);
 
 			do {
 				int end = sheetSize;
@@ -101,21 +92,11 @@ public class ExcelWriter {
 						if (o == null) {
 							continue;
 						}
-
 						//mapper映射处理
 						Map<String,Object> mapper = mappers.get(property);
 						if(mapper != null){
-							Object values;
-							if(o instanceof Collection){
-								values = ((Collection<?>)o).toArray();
-							}else if(o instanceof String && ((String) o).contains(",")){
-								values = o.toString().split(",");
-							}else{
-								values = o;
-							}
-							o = getMapperValue(values,mapper);
+							o = getMapperValue(o,mapper);
 						}
-
 						if (o instanceof String) {
 							String content = o.toString();
 							Label label = new Label(i, index, content);
@@ -186,7 +167,66 @@ public class ExcelWriter {
 		}
 	}
 
+	private static void writerCsv(File file, List datas,  Context context) throws Exception {
+		// columns处理
+		List<Map> cls = (List) context.getData("param.columns");
+		if(cls == null){
+			throw new DBFoundRuntimeException("can not found param columns");
+		}
+		String[] names = new String[cls.size()];
+		String[] headers = new String[cls.size()];
+		int colIndex = 0;
+		for (Map map : cls) {
+			headers[colIndex]= map.get("content").toString();
+			names[colIndex] = map.get("name").toString();
+			colIndex++;
+		}
+		//mappers处理
+		Map<String,Map<String,Object>> mappers = initMapper(cls);
+
+		CSVFormat format = CSVFormat.Builder.create().setHeader(headers).build();
+
+		try (FileWriter fileWriter = new FileWriter(file, Charset.forName(DBFoundConfig.getEncoding()));
+			 CSVPrinter printer = new CSVPrinter(fileWriter,format)){
+			for(Object data : datas) {
+				List<Object> line = new ArrayList<>(headers.length);
+				for (String name : names) {
+					Object value = DBFoundEL.getDataByProperty(name,data);
+					Map<String,Object> mapper = mappers.get(name);
+					if(mapper != null){
+						value = getMapperValue(value,mapper);
+					}
+					line.add(value);
+				}
+				printer.printRecord(line);
+			}
+			printer.flush();
+		}
+	}
+
+	private static Map<String,Map<String,Object>> initMapper(List<Map> cls ){
+		Map<String,Map<String,Object>> mappers = new HashMap<>();
+		for (Map col : cls){
+			Object object =col.get("mapper");
+			if (DataUtil.isNotNull(object)){
+				Map mapper = (Map)object;
+				Map<String,Object> newMapper  = new HashMap();
+
+				for (Object key: mapper.keySet()){
+					newMapper.put(key.toString(),mapper.get(key));
+				}
+				mappers.put(col.get("name").toString(),newMapper);
+			}
+		}
+		return mappers;
+	}
+
 	private static Object getMapperValue(Object values, Map<String,Object> mapper){
+		if(values instanceof Collection){
+			values = ((Collection<?>)values).toArray();
+		}else if(values instanceof String && ((String) values).contains(",")){
+			values = values.toString().split(",");
+		}
 		if(!DataUtil.isArray(values)){
 			Object valItem = mapper.get(values.toString().trim());
 			return valItem == null ? values: valItem;
@@ -231,9 +271,18 @@ public class ExcelWriter {
 
 	public static void excelExport(Context context, List result)throws Exception {
 
-		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + ".xls");
+		String exportType = context.getString("param.export_type");
+		if(!"csv".equals(exportType)){
+			exportType = "xls";
+		}
+
+		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + "."+exportType);
 		try {
-			writeExcel(file, result, context);
+			if("csv".equals(exportType)){
+				writerCsv(file, result, context);
+			}else {
+				writeExcel(file, result, context);
+			}
 
 			try (InputStream in = new FileInputStream(file);
 				 OutputStream out = context.response.getOutputStream()) {
@@ -242,7 +291,7 @@ public class ExcelWriter {
 				context.response.setContentLength((int)file.length());
 				context.response.setContentType("application/x-download");
 				context.response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-				context.response.setHeader("Content-Disposition", "attachment;filename=export.xls");
+				context.response.setHeader("Content-Disposition", "attachment;filename=export."+exportType);
 
 				byte[] b ;
 				if(result.size() > 10000){

@@ -10,6 +10,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.web.file.FilePart;
 
 public class ExcelReader extends SqlEntity {
 
@@ -33,12 +34,26 @@ public class ExcelReader extends SqlEntity {
 		if(!ELEngine.isAbsolutePath(setPath)){
 			setPath = context.getCurrentPath() + "." + setPath;
 		}
+		boolean isCsv = false;
+		String sourcePath = param.getSourcePathHistory();
+		if(sourcePath.endsWith(".content") && !sourcePath.equals("param.content")){
+			sourcePath  = sourcePath.substring(0,sourcePath.length()-8) ;
+		}
+		Object obj = context.getData(sourcePath);
+		if(obj instanceof FilePart){
+			FilePart filePart = (FilePart) obj;
+			if(filePart.getName().endsWith(".csv")){
+				isCsv = true;
+			}
+		}
 
 		Object ofile = param.getValue();
 		if(ofile instanceof InputStream){
 			try {
 				Object object;
-				if("map".equals(requiredDataType)){
+				if(isCsv){
+					object = com.nfwork.dbfound.excel.ExcelReader.readCsv((InputStream) ofile);
+				}else if("map".equals(requiredDataType)){
 					object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((InputStream) ofile);
 				} else {
 					object = com.nfwork.dbfound.excel.ExcelReader.readExcel((InputStream) ofile);
@@ -49,7 +64,9 @@ public class ExcelReader extends SqlEntity {
 			}
 		}else if(ofile instanceof byte[]){
 			Object object;
-			if("map".equals(requiredDataType)){
+			if(isCsv){
+				object = com.nfwork.dbfound.excel.ExcelReader.readCsv((byte[]) ofile);
+			}else if("map".equals(requiredDataType)){
 				object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((byte[]) ofile);
 			}else {
 				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((byte[]) ofile);
