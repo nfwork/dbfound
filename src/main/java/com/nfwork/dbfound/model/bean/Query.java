@@ -247,6 +247,7 @@ public class Query extends SqlEntity {
 		int sqlPartIndex = 0;
 		int findCount = 0;
 		int followType = 0;
+		int commaIndex = 0;
 
 		Matcher m = SQL_PART_PATTERN.matcher(ssql);
 		StringBuffer buffer = new StringBuffer();
@@ -287,12 +288,19 @@ public class Query extends SqlEntity {
 					}
 					m.appendReplacement(buffer, partValue);
 					reduceBlank(buffer);
+
+					if(sqlPart.isAutoClearComma() && DataUtil.isNotNull(partValue)){
+						commaIndex = buffer.length() - 1;
+					}
 					break;
 			}
 		}
 		if(findCount == 0){
 			return ssql;
 		}else {
+			if(commaIndex > 0 && buffer.charAt(commaIndex) == ',') {
+				buffer.deleteCharAt(commaIndex);
+			}
 			m.appendTail(buffer);
 			return buffer.toString();
 		}

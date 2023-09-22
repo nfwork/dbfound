@@ -32,6 +32,8 @@ public class SqlPart extends SqlEntity {
 
     boolean autoCompletion;
 
+    boolean autoClearComma;
+
     private Set<String> paramNameSet;
 
     @Override
@@ -207,5 +209,13 @@ public class SqlPart extends SqlEntity {
 
     public void setAutoCompletion(boolean autoCompletion) {
         this.autoCompletion = autoCompletion;
+    }
+
+    public boolean isAutoClearComma() {
+        return autoClearComma;
+    }
+
+    public void setAutoClearComma(boolean autoClearComma) {
+        this.autoClearComma = autoClearComma;
     }
 }

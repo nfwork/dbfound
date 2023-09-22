@@ -1,11 +1,15 @@
 package com.nfwork.dbfound.excel;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 
+import com.nfwork.dbfound.csv.CSVFormat;
+import com.nfwork.dbfound.csv.CSVParser;
+import com.nfwork.dbfound.csv.CSVRecord;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.web.file.FilePart;
 import jxl.*;
@@ -123,5 +127,34 @@ public class ExcelReader {
 			}
 		}
 		return datas;
+	}
+
+	public static List<List<Map<String,Object>>> readCsv(byte[] bytes) {
+		try (InputStream stream = new ByteArrayInputStream(bytes)) {
+			return readCsv(stream);
+		} catch (Exception e) {
+			throw new DBFoundPackageException("csv reader exception:" + e.getMessage(),e);
+		}
+	}
+
+	public static List<List<Map<String,Object>>> readCsv(InputStream input) throws IOException {
+		CSVFormat format = CSVFormat.Builder.create().setHeader().setSkipHeaderRecord(true).build();
+		try(CSVParser parse = format.parse(new InputStreamReader(input, Charset.forName(DBFoundConfig.getEncoding())));) {
+			Iterator<CSVRecord> csvRecordIterator = parse.iterator();
+			List<Map<String, Object>> list = new ArrayList<>();
+			List<String> headers = parse.getHeaderNames();
+
+			while (csvRecordIterator.hasNext()) {
+				CSVRecord record = csvRecordIterator.next();
+				Map<String, Object> map = new HashMap<>();
+				for (String header : headers) {
+					map.put(header, record.get(header));
+				}
+				list.add(map);
+			}
+			List<List<Map<String,Object>>> result = new ArrayList<>(1);
+			result.add(list);
+			return result;
+		}
 	}
 }

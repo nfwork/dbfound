@@ -2,6 +2,7 @@ package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.base.Entity;
+import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
 import org.dom4j.Comment;
 import org.dom4j.Element;
@@ -68,6 +69,7 @@ public class Sql extends SqlEntity {
 
 	protected String initSqlPart(String sql, Map<String, Param> params, Context context, String provideName) {
 		int sqlPartIndex = 0;
+		int commaIndex = 0;
 
 		Matcher m = SQL_PART_PATTERN.matcher(sql);
 		StringBuffer buffer = new StringBuffer();
@@ -75,9 +77,17 @@ public class Sql extends SqlEntity {
 			String text = m.group();
 			if (SQL_PART.equals(text)) {
 				SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
-				m.appendReplacement(buffer, Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName)));
+				String partValue =  Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName));
+				m.appendReplacement(buffer, partValue);
 				reduceBlank(buffer);
+
+				if(sqlPart.isAutoClearComma() && DataUtil.isNotNull(partValue)){
+					commaIndex = buffer.length() - 1;
+				}
 			}
+		}
+		if(commaIndex > 0 && buffer.charAt(commaIndex) == ',') {
+			buffer.deleteCharAt(commaIndex);
 		}
 		m.appendTail(buffer);
 		return buffer.toString();
