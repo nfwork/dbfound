@@ -186,7 +186,7 @@ public class ExcelWriter {
 
 		CSVFormat format = CSVFormat.Builder.create().setHeader(headers).build();
 
-		try (FileWriter fileWriter = new FileWriter(file, Charset.forName(DBFoundConfig.getEncoding()));
+		try (OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(file),Charset.forName(DBFoundConfig.getEncoding()));
 			 CSVPrinter printer = new CSVPrinter(fileWriter,format)){
 			for(Object data : datas) {
 				List<Object> line = new ArrayList<>(headers.length);
