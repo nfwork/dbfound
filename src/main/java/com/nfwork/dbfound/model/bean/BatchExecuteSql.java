@@ -7,10 +7,12 @@ import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.LogUtil;
 
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 public class BatchExecuteSql extends Sql {
 
@@ -158,10 +160,10 @@ public class BatchExecuteSql extends Sql {
 			}
 		}
 		eSql.append(afterTmpSql);
-		return execute(context,exeParams,provideName, eSql.toString());
+		return execute(context,exeParams,provideName, eSql.toString(), begin);
 	}
 
-	private int execute(Context context, Map<String, Param> params, String provideName,String sql) {
+	private int execute(Context context, Map<String, Param> params, String provideName,String sql, int begin) {
 		Connection conn = context.getConn(provideName);
 
 		sql = staticParamParse(sql, params);
@@ -190,10 +192,10 @@ public class BatchExecuteSql extends Sql {
 			return updateCount;
 		} catch (SQLException e) {
 			throw new SqlExecuteException(provideName,"BatchExecuteSql", sql, e.getMessage(), e);
-		}finally {
+		} finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
-			log("batchExecuteSql", esql, params);
+			LogUtil.log("batchExecuteSql", esql, params.values().stream().filter(p->p.getName().endsWith("_"+begin)).collect(Collectors.toList()));
 		}
 	}
 
