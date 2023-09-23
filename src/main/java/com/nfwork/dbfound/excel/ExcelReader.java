@@ -139,7 +139,7 @@ public class ExcelReader {
 
 	public static List<List<Map<String,Object>>> readCsv(InputStream input) throws IOException {
 		CSVFormat format = CSVFormat.Builder.create().setHeader().setSkipHeaderRecord(true).build();
-		try(CSVParser parse = format.parse(new InputStreamReader(input, Charset.forName(DBFoundConfig.getEncoding())));) {
+		try(CSVParser parse = format.parse(new InputStreamReader(input, Charset.forName(DBFoundConfig.getEncoding())))) {
 			Iterator<CSVRecord> csvRecordIterator = parse.iterator();
 			List<Map<String, Object>> list = new ArrayList<>();
 			List<String> headers = parse.getHeaderNames();
@@ -147,8 +147,8 @@ public class ExcelReader {
 			while (csvRecordIterator.hasNext()) {
 				CSVRecord record = csvRecordIterator.next();
 				Map<String, Object> map = new HashMap<>();
-				for (String header : headers) {
-					map.put(header, record.get(header));
+				for (int i=0; i < headers.size();i++) {
+					map.put(headers.get(i), record.get(i));
 				}
 				list.add(map);
 			}
