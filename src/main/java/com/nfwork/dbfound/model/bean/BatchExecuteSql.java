@@ -195,7 +195,11 @@ public class BatchExecuteSql extends Sql {
 		} finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
-			LogUtil.log("batchExecuteSql", esql, params.values().stream().filter(p->p.getName().endsWith("_"+begin)).collect(Collectors.toList()));
+			Collection<Param> collection = params.values();
+			if(begin>0){
+				collection = collection.stream().filter(p->p.getName().endsWith("_"+begin)).collect(Collectors.toList());
+			}
+			LogUtil.log("batchExecuteSql", esql, collection);
 		}
 	}
 
