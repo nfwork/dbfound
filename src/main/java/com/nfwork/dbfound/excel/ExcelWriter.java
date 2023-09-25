@@ -28,7 +28,7 @@ import jxl.write.Number;
 
 public class ExcelWriter {
 
-	private static void writeExcel(File file, List dataList, Context context) throws Exception {
+	private static void writeExcel(File file, List dataList, List<Map> cls) throws Exception {
 
 		WorkbookSettings wbSetting = new WorkbookSettings();
 		if(dataList.size()> 50000) {
@@ -44,11 +44,6 @@ public class ExcelWriter {
 			int sheet = 0;
 			int sheetSize = 50000;
 
-			// columns处理
-			List<Map> cls = (List) context.getData("param.columns");
-			if(cls == null){
-				throw new DBFoundRuntimeException("can not found param columns");
-			}
 			ExcelCellMeta[] columns = new ExcelCellMeta[cls.size()];
 			int colIndex = 0;
 			for (Map map : cls) {
@@ -167,12 +162,8 @@ public class ExcelWriter {
 		}
 	}
 
-	private static void writerCsv(File file, List datas,  Context context) throws Exception {
+	private static void writerCsv(File file, List datas,  List<Map> cls) throws Exception {
 		// columns处理
-		List<Map> cls = (List) context.getData("param.columns");
-		if(cls == null){
-			throw new DBFoundRuntimeException("can not found param columns");
-		}
 		String[] names = new String[cls.size()];
 		String[] headers = new String[cls.size()];
 		int colIndex = 0;
@@ -260,28 +251,41 @@ public class ExcelWriter {
 			}
 		}
 
-		Object columns = context.getData("param.columns");
+		List<Map> columns = context.getData("param.columns",List.class);
 		if(columns == null){
 			throw new DBFoundRuntimeException("can not found param columns");
 		}
 
 		List result = ModelEngine.query(context, modelName, queryName,false).getDatas();
-		excelExport(context, result);
-	}
-
-	public static void excelExport(Context context, List result)throws Exception {
 
 		String exportType = context.getString("param.export_type");
 		if(!"csv".equals(exportType)){
 			exportType = "xls";
 		}
 
+		doExport(context, result, columns, exportType);
+	}
+
+	public static void excelExport(Context context, List result)throws Exception {
+		List<Map> columns = context.getData("param.columns",List.class);
+		if(columns == null){
+			throw new DBFoundRuntimeException("can not found param columns");
+		}
+		String exportType = context.getString("param.export_type");
+		if(!"csv".equals(exportType)){
+			exportType = "xls";
+		}
+		doExport(context, result, columns, exportType);
+	}
+
+	private static void doExport(Context context, List result, List<Map> columns, String exportType)throws Exception {
+
 		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + "."+exportType);
 		try {
 			if("csv".equals(exportType)){
-				writerCsv(file, result, context);
+				writerCsv(file, result, columns);
 			}else {
-				writeExcel(file, result, context);
+				writeExcel(file, result, columns);
 			}
 
 			try (InputStream in = new FileInputStream(file);
