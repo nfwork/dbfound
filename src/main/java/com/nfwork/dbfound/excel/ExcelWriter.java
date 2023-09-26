@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
+import java.time.temporal.Temporal;
 import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
@@ -186,6 +187,11 @@ public class ExcelWriter {
 					Map<String,Object> mapper = mappers.get(name);
 					if(mapper != null){
 						value = getMapperValue(value,mapper);
+					}
+					if(value instanceof Temporal){
+						value = LocalDateUtil.formatTemporal((Temporal) value);
+					}else if(value instanceof Date){
+						value = LocalDateUtil.formatDate((Date)value);
 					}
 					line.add(value);
 				}
