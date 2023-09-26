@@ -184,6 +184,10 @@ public class ExcelWriter {
 				List<Object> line = new ArrayList<>(headers.length);
 				for (String name : names) {
 					Object value = DBFoundEL.getDataByProperty(name,data);
+					if(value == null){
+						line.add(null);
+						continue;
+					}
 					Map<String,Object> mapper = mappers.get(name);
 					if(mapper != null){
 						value = getMapperValue(value,mapper);
