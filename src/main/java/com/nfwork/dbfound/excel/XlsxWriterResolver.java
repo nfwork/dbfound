@@ -164,7 +164,7 @@ public class XlsxWriterResolver extends WriterResolver {
                 short format = datetimeFormat.getFormat(DBFoundConfig.getDateTimeFormat());
                 dateTimeStyle = workbook.createCellStyle();
                 dateTimeStyle.setDataFormat(format);
-                dateStyle.setFont(cellFont);
+                dateTimeStyle.setFont(cellFont);
             }
             return dateTimeStyle;
         }
@@ -175,7 +175,7 @@ public class XlsxWriterResolver extends WriterResolver {
                 short format = timeFormat.getFormat(DBFoundConfig.getTimeFormat());
                 timeStyle = workbook.createCellStyle();
                 timeStyle.setDataFormat(format);
-                dateStyle.setFont(cellFont);
+                timeStyle.setFont(cellFont);
             }
             return timeStyle;
         }
