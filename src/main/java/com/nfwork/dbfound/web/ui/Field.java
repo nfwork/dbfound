@@ -203,7 +203,11 @@ public class Field extends EventTag {
 	}
 
 	public void setValue(String value) {
-		this.value = JsonUtil.stringToJson(value);
+		String json = JsonUtil.toJson(value);
+		if(json.startsWith("\"")){
+			json = json.substring(1,json.length()-1);
+		}
+		this.value = json;
 	}
 
 	public String getColumnWidth() {

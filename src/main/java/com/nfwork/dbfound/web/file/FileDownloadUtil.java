@@ -36,7 +36,7 @@ public class FileDownloadUtil {
 			ResponseObject responseObject = new ResponseObject();
 			responseObject.setMessage(message);
 			responseObject.setSuccess(false);
-			WebWriter.jsonWriter(response, JsonUtil.beanToJson(responseObject));
+			WebWriter.jsonWriter(response, JsonUtil.toJson(responseObject));
 			LogUtil.warn(message);
 		    return;
 		}
@@ -80,7 +80,7 @@ public class FileDownloadUtil {
 			ResponseObject responseObject = new ResponseObject();
 			responseObject.setMessage(message);
 			responseObject.setSuccess(false);
-			WebWriter.jsonWriter(response, JsonUtil.beanToJson(responseObject));
+			WebWriter.jsonWriter(response, JsonUtil.toJson(responseObject));
 			LogUtil.warn(message);
 		}
 	}

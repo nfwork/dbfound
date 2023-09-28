@@ -35,7 +35,7 @@ public class Forward extends TagSupport implements Cloneable {
 				transaction.end();
 			}
 			WebWriter.jsonWriter((HttpServletResponse) pageContext
-					.getResponse(), JsonUtil.beanToJson(ro));
+					.getResponse(), JsonUtil.toJson(ro));
 		} catch (Exception e) {
 			LogUtil.error(e.getMessage(), e);
 		}

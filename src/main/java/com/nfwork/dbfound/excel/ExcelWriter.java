@@ -21,6 +21,7 @@ public class ExcelWriter {
 	static {
 		new XlsWriterResolver().register("xls", false);
 		new CsvWriterResolver().register("csv", false);
+		new XlsxWriterResolver().register("xlsx",true);
 	}
 
 	public static void excelExport(Context context, String modelName, String queryName) throws Exception {

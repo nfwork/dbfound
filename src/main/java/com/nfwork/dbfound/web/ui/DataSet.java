@@ -76,7 +76,7 @@ public class DataSet extends TagSupport {
 						LogUtil.warn("数据返回格式不是list<map>,自动转化field失败");
 					}
 				}
-				root.put("qro", JsonUtil.beanToJson(ro));
+				root.put("qro", JsonUtil.toJson(ro));
 			}
 
 			if (fields != null) {
