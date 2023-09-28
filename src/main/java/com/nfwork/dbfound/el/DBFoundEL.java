@@ -11,7 +11,6 @@ import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
-import org.apache.commons.beanutils.BeanUtils;
 
 public class DBFoundEL extends PropertyTransfer{
 
@@ -267,7 +266,7 @@ public class DBFoundEL extends PropertyTransfer{
 					if (nextObj!=null && Enum.class.isAssignableFrom(fieldType) && !(nextObj instanceof Enum)) {
 						nextObj = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(nextObj.toString());
 					}
-					BeanUtils.setProperty(currentObj, name, nextObj);
+					reflector.setProperty(currentObj, name, nextObj);
 				}
 			} catch (Exception e) {
 				throw new DBFoundRuntimeException("set context data failed, " + e.getMessage(), e);

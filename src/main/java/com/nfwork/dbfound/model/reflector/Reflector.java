@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.reflector;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -11,6 +12,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.util.DataUtil;
 
 /**
  * This class represents a cached set of class definition information that
@@ -21,6 +23,7 @@ public class Reflector {
 	private final Class<?> type;
 	private final String[] readablePropertyNames;
 	private final String[] writeablePropertyNames;
+	private final Map<String, Invoker> methods = new HashMap<>();
 	private final Map<String, Invoker> setMethods = new HashMap<>();
 	private final Map<String, Invoker> getMethods = new HashMap<>();
 	private final Map<String, Class<?>> setTypes = new HashMap<>();
@@ -30,6 +33,9 @@ public class Reflector {
 	private Reflector(Class<?> clazz) {
 		type = clazz;
 		Method[] methods = getClassMethods(clazz);
+		for(Method method : methods){
+			this.methods.put(method.getName(),new MethodInvoker(method));
+		}
 		addGetMethods(methods);
 		addSetMethods(methods);
 		addFields(clazz);
@@ -410,5 +416,52 @@ public class Reflector {
 		} else {
 			return column;
 		}
+	}
+
+	public Invoker getMethodInvoker(String method){
+		return methods.get(method);
+	}
+
+	public void setProperty(Object target, String name, Object value) throws InvocationTargetException, IllegalAccessException {
+		Invoker invoker = this.getSetInvoker(name);
+		Class<?> clazz = this.getSetterType(name);
+
+		if(value != null) {
+			if (clazz == String.class) {
+				value = value.toString();
+			} if (clazz == int.class || clazz == Integer.class) {
+				if("".equals(value)){
+					value = null;
+				}else {
+					value = DataUtil.intValue(value);
+				}
+			} else if (clazz == long.class || clazz == Long.class) {
+				if("".equals(value)){
+					value = null;
+				}else {
+					value = DataUtil.longValue(value);
+				}
+			} else if (clazz == double.class || clazz == Double.class) {
+				if("".equals(value)){
+					value = null;
+				}else {
+					value = DataUtil.doubleValue(value);
+				}
+			} else if (clazz == float.class || clazz == Float.class) {
+				if("".equals(value)){
+					value = null;
+				}else {
+					value = DataUtil.floatValue(value);
+				}
+			} else if (clazz == boolean.class || clazz == Boolean.class) {
+				if("".equals(value)){
+					value = null;
+				}else {
+					value = Boolean.valueOf(value.toString());
+				}
+			}
+		}
+
+		invoker.invoke(target, new Object[] {value});
 	}
 }
