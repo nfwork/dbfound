@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.web;
 
 import com.nfwork.dbfound.exception.DBFoundPackageException;
-import org.apache.commons.beanutils.MethodUtils;
+import com.nfwork.dbfound.model.reflector.Reflector;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
@@ -25,7 +25,8 @@ public class ActionReflect {
 
 		try {
 			BaseControl baseControl = ActionBeanFactory.getControl(className, singleton);
-			Object result = MethodUtils.invokeMethod(baseControl, method, new Object[]{context});
+			Reflector reflector = Reflector.forClass(baseControl.getClass());
+			Object result = reflector.getMethodInvoker(method).invoke(baseControl, new Object[] {context});
 
 			if (result != null) {
 				if (result instanceof ResponseObject) {

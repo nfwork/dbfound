@@ -10,7 +10,7 @@ import jakarta.servlet.jsp.JspException;
 import jakarta.servlet.jsp.JspWriter;
 import jakarta.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.beanutils.MethodUtils;
+import com.nfwork.dbfound.model.reflector.Reflector;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
@@ -81,8 +81,8 @@ public class DataStore extends TagSupport {
 		}
 		Object object = Class.forName(dataProvideClass).newInstance();
 		if (object instanceof StoreDataProvide) {
-			Object ro = MethodUtils.invokeMethod(object, dataProvideMethod,
-					new Object[] { context });
+			Reflector reflector = Reflector.forClass(object.getClass());
+			Object ro = reflector.getMethodInvoker(dataProvideMethod).invoke(object, new Object[] {context});
 			if (ro instanceof QueryResponseObject) {
 				QueryResponseObject qro = (QueryResponseObject) ro;
 				return JsonUtil.toJson(qro);
