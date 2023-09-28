@@ -10,8 +10,8 @@ import javax.sql.DataSource;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.DBUtil;
-import org.apache.commons.beanutils.MethodUtils;
 
 public class DataSourceConnectionProvide extends ConnectionProvide {
 
@@ -98,7 +98,8 @@ public class DataSourceConnectionProvide extends ConnectionProvide {
 		if(dataSource != null){
 			DBFoundConfig.getDsp().remove(this);
 			try {
-				MethodUtils.invokeMethod(dataSource, "close", new Object[]{});
+				Reflector reflector = Reflector.forClass(dataSource.getClass());
+				reflector.getMethodInvoker("close").invoke(dataSource, new Object[] {});
 			}catch (Exception ignore){}
 		}
 	}

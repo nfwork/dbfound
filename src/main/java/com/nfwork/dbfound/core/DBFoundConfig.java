@@ -10,9 +10,8 @@ import java.util.*;
 import javax.sql.DataSource;
 
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
+import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.CollectionUtil;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.MethodUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -67,7 +66,8 @@ public class DBFoundConfig {
 			if (dataSource != null) {
 				try {
 					System.out.println(simpleDateFormat.format(new Date()) + " dbfound close dataSource :" + provide.getProvideName());
-					MethodUtils.invokeMethod(dataSource, "close", new Object[] {});
+					Reflector reflector = Reflector.forClass(dataSource.getClass());
+					reflector.getMethodInvoker("close").invoke(dataSource, new Object[] {});
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -219,8 +219,10 @@ public class DBFoundConfig {
 			} else if (dialect != null && className != null && !"".equals(dialect) && !"".equals(className)) {
 				DataSource ds = (DataSource) Class.forName(className).newInstance();
 				List<Element> properties = element.element("properties").elements("property");
+
+				Reflector reflector = Reflector.forClass(ds.getClass());
 				for (Element property : properties) {
-					BeanUtils.setProperty(ds, property.attributeValue("name"), property.attributeValue("value"));
+					reflector.setProperty(ds, property.attributeValue("name"), property.attributeValue("value"));
 				}
 				DataSourceConnectionProvide provide = new DataSourceConnectionProvide(provideName, ds, dialect);
 				provide.regist();

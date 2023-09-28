@@ -1,7 +1,8 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.util.Map;
-import org.apache.commons.beanutils.MethodUtils;
+
+import com.nfwork.dbfound.model.reflector.Reflector;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
@@ -35,29 +36,25 @@ public class Java extends SqlEntity {
 		try {
 			Class executeClass = Class.forName(className);
 			Object object = executeClass.newInstance();
-			
+
+			Reflector reflector = Reflector.forClass(executeClass);
+
 			if (object instanceof JavaSupport) {
-				MethodUtils.invokeMethod(object, "setParams",
-						new Object[] { params });
-				MethodUtils.invokeMethod(object, "setContext",
-						new Object[] { context });
-				MethodUtils.invokeMethod(object, "setProvideName",
-						new Object[] { provideName });
+				reflector.setProperty(object,"params", params);
+				reflector.setProperty(object,"context", context);
+				reflector.setProperty(object,"provideName", provideName);
 			} else if (executeClass.getInterfaces().length > 0) {
 				if (object instanceof ParamsAware) {
-					MethodUtils.invokeMethod(object, "setParams",
-							new Object[] { params });
+					reflector.setProperty(object,"params", params);
 				}
 				if (object instanceof ContextAware) {
-					MethodUtils.invokeMethod(object, "setContext",
-							new Object[] { context });
+					reflector.setProperty(object,"context", context);
 				}
 				if (object instanceof ProvideNameAware) {
-					MethodUtils.invokeMethod(object, "setProvideName",
-							new Object[] { provideName });
+					reflector.setProperty(object,"provideName", provideName);
 				}
 			}
-			MethodUtils.invokeMethod(object, method, new Object[] {});
+			reflector.getMethodInvoker(method).invoke(object, new Object[] {});
 		} catch (ClassNotFoundException e) {
 			throw new DBFoundRuntimeException("class:" + className + " not found");
 		} catch (Exception ee) {

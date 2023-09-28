@@ -7,7 +7,6 @@ import com.nfwork.dbfound.el.PropertyTransfer;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.LogUtil;
-import org.apache.commons.beanutils.BeanUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
@@ -34,7 +33,7 @@ public abstract class Entity extends PropertyTransfer implements Serializable, C
 					value = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(value.toString());
 				}
 				try {
-					BeanUtils.setProperty(this, name, value);
+					reflector.setProperty(this, name, value);
 				} catch (Exception e) {
 					LogUtil.error(e.getMessage(), e);
 				}

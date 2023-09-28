@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.beanutils.MethodUtils;
+import com.nfwork.dbfound.model.reflector.Reflector;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
@@ -60,9 +60,8 @@ public class Query extends TagSupport implements Cloneable {
 		Object object = Class.forName(dataProvideClass).newInstance();
 
 		if (object instanceof QueryDataProvide) {
-			Object ro = MethodUtils.invokeMethod(object, dataProvideMethod,
-					new Object[] { context });
-			return ro;
+			Reflector reflector = Reflector.forClass(object.getClass());
+			return reflector.getMethodInvoker(dataProvideMethod).invoke(object, new Object[] {context});
 		} else {
 			throw new DBFoundRuntimeException("Provide必须实现QueryDataProvide接口");
 		}
