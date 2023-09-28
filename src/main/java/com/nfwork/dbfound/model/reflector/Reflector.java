@@ -424,7 +424,7 @@ public class Reflector {
 
 	public void setProperty(Object target, String name, Object value) throws InvocationTargetException, IllegalAccessException {
 		Invoker invoker = this.getSetInvoker(name);
-		Class<?> clazz = this.getSetterType(name);
+		Class<?> clazz = invoker.getType();
 
 		if(value != null) {
 			if (clazz == String.class) {
