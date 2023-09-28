@@ -41,7 +41,7 @@ public class ELTest {
         System.out.println(DBFoundEL.getData("param.list[1]",data,elCache));
         System.out.println(DBFoundEL.getData("param.users[0].user_name",data,elCache));
         System.out.println(DBFoundEL.getData("param.users[1].user_name",data,elCache));
-        System.out.println(JsonUtil.mapToJson(elCache));
+        System.out.println(JsonUtil.toJson(elCache));
     }
 
     @Test

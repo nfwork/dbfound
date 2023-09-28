@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 
@@ -27,8 +26,6 @@ public class Reflector {
 	private final Map<String, Class<?>> setTypes = new HashMap<>();
 	private final Map<String, Class<?>> getTypes = new HashMap<>();
 	private final Map<String, String> alias_name = new HashMap<>(); // 字段的别名-字段名
-	private final Set<String> transientFieldSet = new HashSet<>();
-	private final List<String> serializableFieldList;
 
 	private Reflector(Class<?> clazz) {
 		type = clazz;
@@ -40,7 +37,6 @@ public class Reflector {
 		readablePropertyNames = getMethods.keySet().toArray(new String[rSize]);
 		int wSize = setMethods.size();
 		writeablePropertyNames = setMethods.keySet().toArray(new String[wSize]);
-		serializableFieldList = getMethods.keySet().stream().filter(v -> !transientFieldSet.contains(v)).collect(Collectors.toList());
 	}
 
 	private void addGetMethods(Method[] methods) {
@@ -192,9 +188,6 @@ public class Reflector {
 			Column alias = field.getAnnotation(Column.class);
 			if (alias != null) {
 				alias_name.put(alias.name(), field.getName());
-			}
-			if(Modifier.isTransient(field.getModifiers())){
-				transientFieldSet.add(field.getName());
 			}
 		}
 		if (clazz.getSuperclass() != null) {
@@ -348,15 +341,6 @@ public class Reflector {
 	public String[] getGetablePropertyNames() {
 		return readablePropertyNames;
 	}
-
-	public List<String> getSerializableFieldList() {
-		return serializableFieldList;
-	}
-
-	public Set<String> getTransientFieldSet() {
-		return transientFieldSet;
-	}
-
 	/**
 	 * Gets an array of the writeable properties for an object
 	 *

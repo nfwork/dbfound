@@ -13,7 +13,7 @@ class WebAction {
 	static void query(Context context, String modelName, String queryName) {
 		ResponseObject ro = ModelEngine.query(context, modelName,
 				queryName, null, true);
-		WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(ro));
+		WebWriter.jsonWriter(context.response, JsonUtil.toJson(ro));
 	}
 
 	static void execute(Context context, String modelName, String executeName) {
@@ -36,7 +36,7 @@ class WebAction {
 		transaction.end();
 		
 		if (context.isOutMessage()) {
-			WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(ro));
+			WebWriter.jsonWriter(context.response, JsonUtil.toJson(ro));
 		}
 	}
 

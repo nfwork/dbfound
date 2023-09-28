@@ -18,9 +18,9 @@ public class Out extends TagSupport {
 	@SuppressWarnings("unchecked")
 	public int doEndTag() throws JspException {
 		if (value instanceof List) {
-			value = JsonUtil.listToJson((List) value);
+			value = JsonUtil.toJson((List) value);
 		} else if (value instanceof Map) {
-			value = JsonUtil.mapToJson((Map) value);
+			value = JsonUtil.toJson((Map) value);
 		}
 		WebWriter.jsonWriter((HttpServletResponse) pageContext.getResponse(),
 				value.toString());

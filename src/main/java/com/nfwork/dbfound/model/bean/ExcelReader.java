@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.Map;
 
 import com.nfwork.dbfound.el.ELEngine;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
@@ -34,7 +33,7 @@ public class ExcelReader extends SqlEntity {
 		if(!ELEngine.isAbsolutePath(setPath)){
 			setPath = context.getCurrentPath() + "." + setPath;
 		}
-		boolean isCsv = false;
+		String type = "xls";
 		String sourcePath = param.getSourcePathHistory();
 		if(sourcePath.endsWith(".content") && !sourcePath.equals("param.content")){
 			sourcePath  = sourcePath.substring(0,sourcePath.length()-8) ;
@@ -42,34 +41,24 @@ public class ExcelReader extends SqlEntity {
 		Object obj = context.getData(sourcePath);
 		if(obj instanceof FilePart){
 			FilePart filePart = (FilePart) obj;
-			if(filePart.getName().endsWith(".csv")){
-				isCsv = true;
-			}
+			type = com.nfwork.dbfound.excel.ExcelReader.getType(filePart);
 		}
 
 		Object ofile = param.getValue();
 		if(ofile instanceof InputStream){
-			try {
-				Object object;
-				if(isCsv){
-					object = com.nfwork.dbfound.excel.ExcelReader.readCsv((InputStream) ofile);
-				}else if("map".equals(requiredDataType)){
-					object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((InputStream) ofile);
-				} else {
-					object = com.nfwork.dbfound.excel.ExcelReader.readExcel((InputStream) ofile);
-				}
-				context.setData(setPath, object);
-			}catch (Exception exception){
-				throw new DBFoundPackageException("excel reader failed, "+ exception.getMessage(),exception);
+			Object object;
+			if("map".equals(requiredDataType)){
+				object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((InputStream) ofile, type);
+			} else {
+				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((InputStream) ofile, type);
 			}
+			context.setData(setPath, object);
 		}else if(ofile instanceof byte[]){
 			Object object;
-			if(isCsv){
-				object = com.nfwork.dbfound.excel.ExcelReader.readCsv((byte[]) ofile);
-			}else if("map".equals(requiredDataType)){
-				object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((byte[]) ofile);
+			if("map".equals(requiredDataType)){
+				object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((byte[]) ofile, type);
 			}else {
-				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((byte[]) ofile);
+				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((byte[]) ofile, type);
 			}
 			context.setData(setPath, object);
 		}
