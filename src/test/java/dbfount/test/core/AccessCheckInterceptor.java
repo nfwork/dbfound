@@ -46,7 +46,7 @@ public class AccessCheckInterceptor implements Interceptor {
 				map.put("timeout", true);
 				map.put("message", "session超时或未登录");
 				map.put("success", false);
-				WebWriter.jsonWriter(context.response, JsonUtil.mapToJson(map));
+				WebWriter.jsonWriter(context.response, JsonUtil.toJson(map));
 				return false;
 			}
 		} else {

@@ -67,6 +67,6 @@ public class ResponseDataTest {
         data2.getDatas().add(map2);
 
         data1.join(data2,"role_id");
-        System.out.println(JsonUtil.beanToJson(data1));
+        System.out.println(JsonUtil.toJson(data1));
     }
 }

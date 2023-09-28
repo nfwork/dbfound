@@ -34,7 +34,7 @@ public class WebExceptionHandle {
 			ro.setSuccess(false);
 			ro.setCode(code);
 			ro.setMessage(em);
-			WebWriter.jsonWriter(response, JsonUtil.beanToJson(ro));
+			WebWriter.jsonWriter(response, JsonUtil.toJson(ro));
 		} catch (Exception e) {
 			LogUtil.error(e.getMessage(), e);
 		}

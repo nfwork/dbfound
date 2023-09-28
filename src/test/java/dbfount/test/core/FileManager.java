@@ -106,7 +106,7 @@ public class FileManager extends JavaSupport {
 
 		object.setDatas(datas);
 		object.setSuccess(true);
-		WebWriter.jsonWriter(context.response, JsonUtil.beanToJson(object));
+		WebWriter.jsonWriter(context.response, JsonUtil.toJson(object));
 		context.setOutMessage(false);
 	}
 
