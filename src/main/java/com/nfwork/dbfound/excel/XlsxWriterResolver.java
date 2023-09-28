@@ -135,6 +135,7 @@ public class XlsxWriterResolver extends WriterResolver {
     }
 
     private static class DateStyles{
+        Font cellFont;
         Workbook workbook;
         CellStyle dateStyle;
         CellStyle dateTimeStyle;
@@ -142,8 +143,9 @@ public class XlsxWriterResolver extends WriterResolver {
 
         DateStyles( Workbook workbook){
             this.workbook = workbook;
+            cellFont = workbook.createFont();
+            cellFont.setFontName("Arial");
         }
-
 
         public CellStyle getDateStyle() {
             if(dateStyle == null){
@@ -151,6 +153,7 @@ public class XlsxWriterResolver extends WriterResolver {
                 short format = dateFormat.getFormat(DBFoundConfig.getDateFormat());
                 dateStyle = workbook.createCellStyle();
                 dateStyle.setDataFormat(format);
+                dateStyle.setFont(cellFont);
             }
             return dateStyle;
         }
@@ -161,6 +164,7 @@ public class XlsxWriterResolver extends WriterResolver {
                 short format = datetimeFormat.getFormat(DBFoundConfig.getDateTimeFormat());
                 dateTimeStyle = workbook.createCellStyle();
                 dateTimeStyle.setDataFormat(format);
+                dateStyle.setFont(cellFont);
             }
             return dateTimeStyle;
         }
@@ -171,6 +175,7 @@ public class XlsxWriterResolver extends WriterResolver {
                 short format = timeFormat.getFormat(DBFoundConfig.getTimeFormat());
                 timeStyle = workbook.createCellStyle();
                 timeStyle.setDataFormat(format);
+                dateStyle.setFont(cellFont);
             }
             return timeStyle;
         }
