@@ -14,6 +14,7 @@ public class ExcelReader {
 
 	static {
 		new XlsReaderResolver().register("xls");
+		new XlsxReaderResolver().register("xlsx");
 		new CsvReaderResolver().register("csv");
 	}
 
