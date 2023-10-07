@@ -418,8 +418,13 @@ public class Reflector {
 		}
 	}
 
-	public Invoker getMethodInvoker(String method){
-		return methods.get(method);
+	public Invoker getMethodInvoker(String methodName){
+		Invoker method = methods.get(methodName);
+		if (method == null) {
+			throw new ReflectionException("There is no method is not public named '" + methodName + "' in '" + type
+					+ "'");
+		}
+		return method;
 	}
 
 	public void setProperty(Object target, String name, Object value) throws InvocationTargetException, IllegalAccessException {
