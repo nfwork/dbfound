@@ -1,0 +1,130 @@
+package com.nfwork.dbfound.excel;
+
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.exception.DBFoundPackageException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+public class XlsxReaderResolver extends ReaderResolver{
+
+    @Override
+    protected List<List<Map<String, Object>>> read(InputStream input){
+        List<List<Map<String, Object>>> result = new ArrayList<>();
+        try {
+            Workbook workbook = new XSSFWorkbook(input);
+            int num = workbook.getNumberOfSheets();
+            for(int i=0; i< num; i++){
+                Sheet sheet = workbook.getSheetAt(i);
+                List<Map<String,Object>> data = readSheet(sheet);
+                result.add(data);
+            }
+        } catch (IOException e) {
+            throw new DBFoundPackageException("xlsx reader failed, "+ e.getMessage(),e);
+        }
+        return result;
+    }
+
+    @Override
+    protected Map<String, List<Map<String, Object>>> readForMap(InputStream input){
+        Map<String, List<Map<String, Object>>> result = new HashMap<>();
+        try {
+            Workbook workbook = new XSSFWorkbook(input);
+            int num = workbook.getNumberOfSheets();
+            for(int i=0; i< num; i++){
+                Sheet sheet = workbook.getSheetAt(i);
+                List<Map<String,Object>> data = readSheet(sheet);
+                result.put(sheet.getSheetName(),data);
+            }
+        } catch (IOException e) {
+            throw new DBFoundPackageException("xlsx reader failed, "+ e.getMessage(),e);
+        }
+        return result;
+    }
+
+    private List<Map<String,Object>> readSheet(Sheet sheet){
+        int rowSize = sheet.getLastRowNum();
+        if(rowSize==-1){
+            return null;
+        }
+        Row header = sheet.getRow(0);
+        int colSize = header.getLastCellNum();
+
+        String[] metaData = new String[colSize];
+        for (int j = 0; j < colSize; j++) {
+            metaData[j] = header.getCell(j).getStringCellValue().trim();
+        }
+        List<Map<String,Object>> result = new ArrayList<>();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
+        SimpleDateFormat datetimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
+        SimpleDateFormat timeFormat = new SimpleDateFormat(DBFoundConfig.getTimeFormat());
+
+        for (int i = 1; i < rowSize; i++) {
+            Map<String, Object> data = new HashMap<>();
+            result.add(data);
+
+            Row line = sheet.getRow(i);
+
+            for (int j = 0; j < colSize; j++) {
+                Cell cell = line.getCell(j);
+                if(cell == null){
+                    continue;
+                }
+                CellType cellType = cell.getCellType();
+                Object cellValue = null;
+
+                switch (cellType){
+                    case NUMERIC:
+                        short dataFormat = cell.getCellStyle().getDataFormat();
+                        if (DateUtil.isCellDateFormatted(cell)) {
+                            Date date = cell.getDateCellValue();
+                            if(date == null){
+                                break;
+                            }
+                            switch (dataFormat) {
+                                case 14:
+                                case 15:
+                                case 16:
+                                case 17:
+                                    cellValue = dateFormat.format(date);
+                                    break;
+                                case 18:
+                                case 19:
+                                case 20:
+                                case 21:
+                                    cellValue = timeFormat.format(date);
+                                    break;
+                                default:
+                                    cellValue = datetimeFormat.format(date);
+                                    break;
+                            }
+                        } else {
+                            double numericCellValue = cell.getNumericCellValue();
+                            if(isInteger(numericCellValue)){
+                                cellValue = (long)numericCellValue;
+                            }else{
+                                cellValue = numericCellValue;
+                            }
+                        }
+                        break;
+                    case BLANK:
+                        break;
+                    default:
+                        cellValue = cell.getStringCellValue();
+                }
+                data.put(metaData[j], cellValue);
+            }
+        }
+        return result;
+    }
+
+    private static boolean isInteger(double value) {
+        double decimalPart = value % 1;
+        return decimalPart == 0;
+    }
+}

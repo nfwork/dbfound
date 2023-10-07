@@ -69,6 +69,9 @@ public class DBUtil {
 			if(transaction.isReadOnly()) {
 				con.setReadOnly(false);
 			}
+			if(!con.getAutoCommit()){
+				con.setAutoCommit(true);
+			}
 		} catch (Throwable e) {
 			LogUtil.error("resetTransaction failed:"+ e.getMessage(), e);
 		}
