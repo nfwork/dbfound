@@ -16,6 +16,7 @@ public class ExcelReader {
 		new XlsReaderResolver().register("xls");
 		new XlsxReaderResolver().register("xlsx");
 		new CsvReaderResolver().register("csv");
+		new DefaultReaderResolver().register("default");
 	}
 
 	public static ReaderResolver getReaderResolver(String type){
@@ -29,7 +30,11 @@ public class ExcelReader {
 	public static String getType(FilePart filePart){
 		String name = filePart.getName();
 		int index = name.lastIndexOf(".");
-		return name.substring(index+1);
+		if(index > -1) {
+			return name.substring(index + 1);
+		}else{
+			return "default";
+		}
 	}
 
 	public static List<List<Map<String,Object>>> readExcel(FilePart filePart) {

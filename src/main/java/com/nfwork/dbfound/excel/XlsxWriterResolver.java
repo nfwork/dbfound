@@ -4,8 +4,6 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFCell;
-import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
@@ -27,42 +25,46 @@ public class XlsxWriterResolver extends WriterResolver {
     protected void writer(File file, List<Object> dataList, List<Map<String, Object>> cls) {
         Map<String,Map<String,Object>> mappers = getMappers(cls);
 
-        SXSSFWorkbook workbook = new SXSSFWorkbook(500);
-        SXSSFSheet sheet = workbook.createSheet("sheet1");
+        try(SXSSFWorkbook workbook = new SXSSFWorkbook(500)) {
+            SXSSFSheet sheet = workbook.createSheet("sheet1");
 
-        SXSSFRow headerRow = sheet.createRow(0);
-        CellStyle headerStyle = getHeaderStyle(workbook);
-        CellStyle lineStyle = getLineStyle(workbook);
+            CellStyle headerStyle = getHeaderStyle(workbook);
+            CellStyle lineStyle = getLineStyle(workbook);
+            DateStyles dateStyles = new DateStyles(workbook);
 
+            writerSheet(sheet, dataList, cls, mappers, headerStyle, lineStyle, dateStyles);
+
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                workbook.write(fos);
+            } catch (IOException exception) {
+                throw new DBFoundPackageException("xlsx writer failed, " + exception.getMessage(), exception);
+            } finally {
+                workbook.dispose();
+            }
+        } catch (IOException ignore) {}
+    }
+
+    protected void writerSheet(Sheet sheet, List<Object> dataList, List<Map<String, Object>> cls, Map<String,Map<String,Object>> mappers, CellStyle headerStyle, CellStyle lineStyle, DateStyles dateStyles){
+        Row headerRow = sheet.createRow(0);
         for (int i = 0; i< cls.size(); i++) {
-            SXSSFCell cell = headerRow.createCell(i);
+            Cell cell = headerRow.createCell(i);
             cell.setCellValue(cls.get(i).get("content").toString());
             cell.setCellStyle(headerStyle);
             sheet.setColumnWidth(i,  Integer.parseInt(cls.get(i).get("width").toString()) * 39);
         }
-
         //写入数据
-        DateStyles dateStyles = new DateStyles(workbook);
         for (int i = 0; i < dataList.size();i++){
             Object data = dataList.get(i);
-            SXSSFRow row = sheet.createRow(i+1);
+            Row row = sheet.createRow(i+1);
             for (int j = 0; j<cls.size(); j++){
-                SXSSFCell cell = row.createCell(j);
+                Cell cell = row.createCell(j);
                 cell.setCellStyle(lineStyle);
                 setCellValue(cell, dateStyles,data, cls.get(j),mappers);
             }
         }
-
-        try(FileOutputStream fos = new FileOutputStream(file)) {
-            workbook.write(fos);
-        }catch (IOException exception){
-            throw new DBFoundPackageException("xlsx writer failed, "+exception.getMessage(),exception);
-        }finally {
-            workbook.dispose();
-        }
     }
 
-    private void setCellValue(CellBase cell, DateStyles dateStyles, Object data, Map<String, Object> column, Map<String,Map<String,Object>> mappers ){
+    protected void setCellValue(Cell cell, DateStyles dateStyles, Object data, Map<String, Object> column, Map<String,Map<String,Object>> mappers ){
         String name = column.get("name").toString();
         Object o = DBFoundEL.getDataByProperty(name, data);
         if (o == null) {
@@ -111,7 +113,7 @@ public class XlsxWriterResolver extends WriterResolver {
         }
     }
 
-    private static CellStyle getHeaderStyle(Workbook workbook){
+    protected static CellStyle getHeaderStyle(Workbook workbook){
         Font headerFont = workbook.createFont();
         headerFont.setFontName("Arial");
         headerFont.setBold(true); // 加粗
@@ -125,7 +127,7 @@ public class XlsxWriterResolver extends WriterResolver {
         return headerStyle;
     }
 
-    private static CellStyle getLineStyle(Workbook workbook){
+    protected static CellStyle getLineStyle(Workbook workbook){
         Font cellFont = workbook.createFont();
         cellFont.setFontName("Arial");
 
@@ -134,7 +136,7 @@ public class XlsxWriterResolver extends WriterResolver {
         return cellStyle;
     }
 
-    private static class DateStyles{
+    protected static class DateStyles{
         Font cellFont;
         Workbook workbook;
         CellStyle dateStyle;
