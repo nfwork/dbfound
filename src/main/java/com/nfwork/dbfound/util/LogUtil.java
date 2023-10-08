@@ -22,7 +22,7 @@ public class LogUtil {
 	public static void log(String sqlName, String sql, Collection<Param> params) {
 		if (DBFoundConfig.isOpenLog()) {
 			log.info("Execute " + sqlName + ": "+sql);
-			params.stream().filter(Param::isRequireLog).sorted(Comparator.comparing(Param::getName)).forEach(param -> {
+			params.stream().filter(Param::isRequireLog).forEach(param -> {
 				param.setRequireLog(false);
 				log.info("  paramName: "+ param.getName() +", value: "+ getValue(param) +
 						", dataType: "+ param.getDataType().getValue() +", sourcePath: " + param.getSourcePathHistory());

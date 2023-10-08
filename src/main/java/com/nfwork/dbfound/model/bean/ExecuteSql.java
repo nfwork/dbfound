@@ -5,10 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.Context;
@@ -49,7 +46,7 @@ public class ExecuteSql extends Sql {
 
 		String executeSql;
 		if(sqlPartList != null && !sqlPartList.isEmpty()){
-			params = new HashMap<>(params);
+			params = new LinkedHashMap<>(params);
 			executeSql = initSqlPart(sql,params,context,provideName);
 		}else{
 			executeSql = sql;

@@ -63,6 +63,7 @@ public class XlsxReaderResolver extends ReaderResolver{
         SimpleDateFormat dateFormat = new SimpleDateFormat(DBFoundConfig.getDateFormat());
         SimpleDateFormat datetimeFormat = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
         SimpleDateFormat timeFormat = new SimpleDateFormat(DBFoundConfig.getTimeFormat());
+        Calendar calendar = Calendar.getInstance();
 
         for (int i = 1; i < rowSize; i++) {
             Map<String, Object> data = new HashMap<>();
@@ -80,32 +81,22 @@ public class XlsxReaderResolver extends ReaderResolver{
 
                 switch (cellType){
                     case NUMERIC:
-                        short dataFormat = cell.getCellStyle().getDataFormat();
                         if (DateUtil.isCellDateFormatted(cell)) {
                             Date date = cell.getDateCellValue();
                             if(date == null){
                                 break;
                             }
-                            switch (dataFormat) {
-                                case 14:
-                                case 15:
-                                case 16:
-                                case 17:
-                                    cellValue = dateFormat.format(date);
-                                    break;
-                                case 18:
-                                case 19:
-                                case 20:
-                                case 21:
-                                    cellValue = timeFormat.format(date);
-                                    break;
-                                default:
-                                    cellValue = datetimeFormat.format(date);
-                                    break;
+                            calendar.setTime(date);
+                            if(calendar.get(Calendar.HOUR_OF_DAY) ==0 && calendar.get(Calendar.MINUTE) ==0 && calendar.get(Calendar.SECOND) ==0) {
+                                cellValue = dateFormat.format(date);
+                            }else if(calendar.get(Calendar.YEAR) == 1899 && calendar.get(Calendar.MONTH)==Calendar.DECEMBER && calendar.get(Calendar.DAY_OF_MONTH)==31){
+                                cellValue = timeFormat.format(date);
+                            }else{
+                                cellValue = datetimeFormat.format(date);
                             }
                         } else {
                             double numericCellValue = cell.getNumericCellValue();
-                            if(isInteger(numericCellValue)){
+                            if(isLong(numericCellValue)){
                                 cellValue = (long)numericCellValue;
                             }else{
                                 cellValue = numericCellValue;
@@ -121,10 +112,5 @@ public class XlsxReaderResolver extends ReaderResolver{
             }
         }
         return result;
-    }
-
-    private static boolean isInteger(double value) {
-        double decimalPart = value % 1;
-        return decimalPart == 0;
     }
 }

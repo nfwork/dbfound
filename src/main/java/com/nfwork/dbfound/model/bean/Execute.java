@@ -1,10 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
@@ -33,7 +30,7 @@ public class Execute extends SqlEntity {
 
 	@Override
 	public void init(Element element) {
-		params = new HashMap<>();
+		params = new LinkedHashMap<>();
 		super.init(element);
 	}
 
@@ -56,7 +53,7 @@ public class Execute extends SqlEntity {
 	}
 
 	public Map<String, Param> cloneParams() {
-		HashMap<String, Param> params = new HashMap<>();
+		HashMap<String, Param> params = new LinkedHashMap<>();
 		for(Map.Entry<String,Param> entry : this.params.entrySet()){
 			params.put(entry.getKey(), (Param) entry.getValue().cloneEntity());
 		}
