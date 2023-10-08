@@ -44,7 +44,7 @@ public class SqlPart extends SqlEntity {
             condition = StringUtil.fullTrim(condition);
         }
         if(type == SqlPartType.FOR){
-            paramNameSet = new HashSet<>();
+            paramNameSet = new LinkedHashSet<>();
             partTmp = initPartSql(part, paramNameSet);
         }
     }
