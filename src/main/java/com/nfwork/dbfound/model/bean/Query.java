@@ -5,11 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
@@ -63,8 +59,8 @@ public class Query extends SqlEntity {
 
 	@Override
 	public void init(Element element) {
-		params = new HashMap<>();
-		filters = new HashMap<>();
+		params = new LinkedHashMap<>();
+		filters = new LinkedHashMap<>();
 		super.init(element);
 	}
 
@@ -120,7 +116,7 @@ public class Query extends SqlEntity {
 	}
 
 	public Map<String, Param> cloneParams() {
-		HashMap<String, Param> params = new HashMap<>();
+		HashMap<String, Param> params = new LinkedHashMap<>();
 		for(Map.Entry<String,Param> entry : this.params.entrySet()){
 			params.put(entry.getKey(), (Param) entry.getValue().cloneEntity());
 		}

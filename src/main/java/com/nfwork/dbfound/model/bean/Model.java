@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.nfwork.dbfound.el.ELEngine;
@@ -27,7 +28,7 @@ public class Model extends Entity {
 	public void init(Element element) {
 		querys = new HashMap<>();
 		executes = new HashMap<>();
-		params = new HashMap<>();
+		params = new LinkedHashMap<>();
 		super.init(element);
 	}
 

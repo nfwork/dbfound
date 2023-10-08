@@ -123,7 +123,7 @@ public class BatchExecuteSql extends Sql {
 	}
 
 	private int execute(Context context, String realTmpSql, Map<String, Param> params, String exeSourcePath,String provideName, int begin ,int end){
-		Map<String, Param> exeParams = new HashMap<>(params);
+		Map<String, Param> exeParams = new LinkedHashMap<>(params);
 
 		StringBuilder eSql = new StringBuilder(beforeTmpSql);
 
