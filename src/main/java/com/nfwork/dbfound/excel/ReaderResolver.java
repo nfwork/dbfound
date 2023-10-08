@@ -10,6 +10,11 @@ public abstract class ReaderResolver {
         ExcelReader.readerResolverMap.put(type,this);
     }
 
+    protected static boolean isLong(double value) {
+        double decimalPart = value % 1;
+        return decimalPart == 0;
+    }
+
     protected abstract List<List<Map<String,Object>>> read(InputStream input);
 
     protected abstract Map<String, List<Map<String,Object>>> readForMap(InputStream input);

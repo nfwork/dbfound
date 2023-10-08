@@ -421,7 +421,7 @@ public class Reflector {
 	public Invoker getMethodInvoker(String methodName){
 		Invoker method = methods.get(methodName);
 		if (method == null) {
-			throw new ReflectionException("There is no method is not public named '" + methodName + "' in '" + type
+			throw new ReflectionException("There is no method or method is not public named '" + methodName + "' in '" + type
 					+ "'");
 		}
 		return method;

@@ -47,7 +47,7 @@ public class QuerySql extends Sql {
 		}
 		String querySql;
 		if(sqlPartList != null && !sqlPartList.isEmpty()){
-			params = new HashMap<>(params);
+			params = new LinkedHashMap<>(params);
 			querySql = initSqlPart(sql,params,context,provideName);
 		}else{
 			querySql = sql;

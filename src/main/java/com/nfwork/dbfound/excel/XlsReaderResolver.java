@@ -101,7 +101,12 @@ public class XlsReaderResolver extends ReaderResolver{
                         }
                     } else if (dataCell[j].getType() == CellType.NUMBER) {
                         NumberCell numberCell = (NumberCell) dataCell[j];
-                        data.put(metaData[j], numberCell.getValue());
+                        double numericCellValue = numberCell.getValue();
+                        if(isLong(numericCellValue)) {
+                            data.put(metaData[j], (long)numberCell.getValue());
+                        }else{
+                            data.put(metaData[j], numberCell.getValue());
+                        }
                     } else {
                         data.put(metaData[j], dataCell[j].getContents());
                     }
