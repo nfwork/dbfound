@@ -33,7 +33,7 @@ public class ExcelReader extends SqlEntity {
 		if(!ELEngine.isAbsolutePath(setPath)){
 			setPath = context.getCurrentPath() + "." + setPath;
 		}
-		String type = "xls";
+		String type = "default";
 		String sourcePath = param.getSourcePathHistory();
 		if(sourcePath.endsWith(".content") && !sourcePath.equals("param.content")){
 			sourcePath  = sourcePath.substring(0,sourcePath.length()-8) ;

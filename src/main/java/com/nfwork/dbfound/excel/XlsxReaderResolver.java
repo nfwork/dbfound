@@ -12,11 +12,14 @@ import java.util.*;
 
 public class XlsxReaderResolver extends ReaderResolver{
 
+    protected Workbook getWorkBook(InputStream input) throws IOException {
+        return new XSSFWorkbook(input);
+    }
+
     @Override
     protected List<List<Map<String, Object>>> read(InputStream input){
         List<List<Map<String, Object>>> result = new ArrayList<>();
-        try {
-            Workbook workbook = new XSSFWorkbook(input);
+        try (Workbook workbook = getWorkBook(input)){
             int num = workbook.getNumberOfSheets();
             for(int i=0; i< num; i++){
                 Sheet sheet = workbook.getSheetAt(i);
@@ -24,7 +27,7 @@ public class XlsxReaderResolver extends ReaderResolver{
                 result.add(data);
             }
         } catch (IOException e) {
-            throw new DBFoundPackageException("xlsx reader failed, "+ e.getMessage(),e);
+            throw new DBFoundPackageException("workbook reader failed, "+ e.getMessage(),e);
         }
         return result;
     }
@@ -32,8 +35,7 @@ public class XlsxReaderResolver extends ReaderResolver{
     @Override
     protected Map<String, List<Map<String, Object>>> readForMap(InputStream input){
         Map<String, List<Map<String, Object>>> result = new HashMap<>();
-        try {
-            Workbook workbook = new XSSFWorkbook(input);
+        try (Workbook workbook = getWorkBook(input)){
             int num = workbook.getNumberOfSheets();
             for(int i=0; i< num; i++){
                 Sheet sheet = workbook.getSheetAt(i);
@@ -41,7 +43,7 @@ public class XlsxReaderResolver extends ReaderResolver{
                 result.put(sheet.getSheetName(),data);
             }
         } catch (IOException e) {
-            throw new DBFoundPackageException("xlsx reader failed, "+ e.getMessage(),e);
+            throw new DBFoundPackageException("workbook reader failed, "+ e.getMessage(),e);
         }
         return result;
     }
