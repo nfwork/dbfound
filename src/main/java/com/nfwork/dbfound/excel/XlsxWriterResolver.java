@@ -36,6 +36,7 @@ public class XlsxWriterResolver extends WriterResolver {
 
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 workbook.write(fos);
+                fos.flush();
             } catch (IOException exception) {
                 throw new DBFoundPackageException("xlsx writer failed, " + exception.getMessage(), exception);
             } finally {
@@ -50,7 +51,7 @@ public class XlsxWriterResolver extends WriterResolver {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(cls.get(i).get("content").toString());
             cell.setCellStyle(headerStyle);
-            sheet.setColumnWidth(i,  Integer.parseInt(cls.get(i).get("width").toString()) * 39);
+            sheet.setColumnWidth(i,  Integer.parseInt(cls.get(i).get("width").toString()) * 36);
         }
         //写入数据
         for (int i = 0; i < dataList.size();i++){
@@ -116,6 +117,7 @@ public class XlsxWriterResolver extends WriterResolver {
     protected static CellStyle getHeaderStyle(Workbook workbook){
         Font headerFont = workbook.createFont();
         headerFont.setFontName("Arial");
+        headerFont.setFontHeightInPoints((short) 11);
         headerFont.setBold(true); // 加粗
         headerFont.setColor(IndexedColors.GREEN.index);
 
@@ -130,6 +132,7 @@ public class XlsxWriterResolver extends WriterResolver {
     protected static CellStyle getLineStyle(Workbook workbook){
         Font cellFont = workbook.createFont();
         cellFont.setFontName("Arial");
+        cellFont.setFontHeightInPoints((short) 10);
 
         CellStyle cellStyle = workbook.createCellStyle();
         cellStyle.setFont(cellFont);
@@ -147,6 +150,7 @@ public class XlsxWriterResolver extends WriterResolver {
             this.workbook = workbook;
             cellFont = workbook.createFont();
             cellFont.setFontName("Arial");
+            cellFont.setFontHeightInPoints((short) 10);
         }
 
         public CellStyle getDateStyle() {
