@@ -12,14 +12,17 @@ public class ExcelReader {
 
 	static Map<String,ReaderResolver> readerResolverMap = new ConcurrentHashMap<>();
 
+	public static final String DEFAULT_TYPE = "_default";
+
 	static {
 		new XlsReaderResolver().register("xls");
 		new XlsxReaderResolver().register("xlsx");
 		new CsvReaderResolver().register("csv");
-		new DefaultReaderResolver().register("default");
+		new DefaultReaderResolver().register(DEFAULT_TYPE);
 	}
 
 	public static ReaderResolver getReaderResolver(String type){
+		type = type.toLowerCase();
 		ReaderResolver readerResolver = readerResolverMap.get(type);
 		if (readerResolver == null){
 			throw new DBFoundRuntimeException("type '"+ type+"' is not support");
@@ -33,7 +36,7 @@ public class ExcelReader {
 		if(index > -1) {
 			return name.substring(index + 1);
 		}else{
-			return "default";
+			return DEFAULT_TYPE;
 		}
 	}
 

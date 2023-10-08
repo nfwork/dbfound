@@ -3,6 +3,7 @@ package com.nfwork.dbfound.excel;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
@@ -67,6 +68,8 @@ public class XlsxReaderResolver extends ReaderResolver{
         SimpleDateFormat timeFormat = new SimpleDateFormat(DBFoundConfig.getTimeFormat());
         Calendar calendar = Calendar.getInstance();
 
+        int margeNum =  sheet.getNumMergedRegions();
+
         for (int i = 1; i < rowSize; i++) {
             Map<String, Object> data = new HashMap<>();
             result.add(data);
@@ -74,10 +77,17 @@ public class XlsxReaderResolver extends ReaderResolver{
             Row line = sheet.getRow(i);
 
             for (int j = 0; j < colSize; j++) {
-                Cell cell = line.getCell(j);
+                Cell cell = null;
+                if(margeNum > 0) {
+                    cell = getMergedRegionCell(sheet,margeNum ,i, j);
+                }
+                if(cell == null){
+                    cell = line.getCell(j);
+                }
                 if(cell == null){
                     continue;
                 }
+
                 CellType cellType = cell.getCellType();
                 Object cellValue = null;
 
@@ -115,4 +125,22 @@ public class XlsxReaderResolver extends ReaderResolver{
         }
         return result;
     }
+
+    public Cell getMergedRegionCell(Sheet sheet, int mergeNum, int row , int column){
+        for(int i = 0 ; i < mergeNum ; i++){
+            CellRangeAddress ca = sheet.getMergedRegion(i);
+            int firstColumn = ca.getFirstColumn();
+            int lastColumn = ca.getLastColumn();
+            int firstRow = ca.getFirstRow();
+            int lastRow = ca.getLastRow();
+            if(row >= firstRow && row <= lastRow){
+                if(column >= firstColumn && column <= lastColumn){
+                    Row fRow = sheet.getRow(firstRow);
+                    return fRow.getCell(firstColumn);
+                }
+            }
+        }
+        return null ;
+    }
+
 }

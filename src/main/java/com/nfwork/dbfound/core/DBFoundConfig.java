@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.sql.DataSource;
@@ -33,7 +32,6 @@ public class DBFoundConfig {
 	public static final String VERSION = "3.3.12" ;
 
 	private static String listenerClass;
-	private final static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 	private final static List<DataSourceConnectionProvide> dsp = new ArrayList<>();
 
 	public static final String CLASSPATH = "${@classpath}";
@@ -65,11 +63,11 @@ public class DBFoundConfig {
 			DataSource dataSource = provide.getDataSource();
 			if (dataSource != null) {
 				try {
-					System.out.println(simpleDateFormat.format(new Date()) + " dbfound close dataSource :" + provide.getProvideName());
+					LogUtil.info("dbfound close dataSource :" + provide.getProvideName());
 					Reflector reflector = Reflector.forClass(dataSource.getClass());
 					reflector.getMethodInvoker("close").invoke(dataSource, new Object[] {});
 				} catch (Exception e) {
-					e.printStackTrace();
+					LogUtil.error("dbfound destroy error, "+ e.getMessage(),e);
 				}
 			}
 		}
@@ -95,14 +93,13 @@ public class DBFoundConfig {
 			}
 		}
 		try {
-			System.out.println("**************************************************************************");
-			System.out.println(simpleDateFormat.format(new Date()) + " NFWork dbfound "+VERSION+" service init begin");
+			LogUtil.info("**************************************************************************");
+			LogUtil.info("NFWork dbfound "+VERSION+" service init begin");
 			SAXReader reader = new SAXReader();
 			File file = new File(getRealPath(confFile));
 			Document doc = null;
 			if (file.exists()) {
-				System.out.println(simpleDateFormat.format(new Date()) + " user config file: "
-						+ PathFormat.format(file.getAbsolutePath()));
+				LogUtil.info("user config file: "+ PathFormat.format(file.getAbsolutePath()));
 				doc = reader.read(file);
 			} else if (confFile.startsWith(CLASSPATH)) {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -114,12 +111,10 @@ public class DBFoundConfig {
 							file = new File(url.getFile());
 						}
 						if (file.exists()) {
-							System.out.println(simpleDateFormat.format(new Date()) + " user config file: "
-									+ PathFormat.format(file.getAbsolutePath()));
+							LogUtil.info("user config file: "+ PathFormat.format(file.getAbsolutePath()));
 							doc = reader.read(file);
 						} else {
-							System.out.println(simpleDateFormat.format(new Date()) + " user config file: "
-									+ PathFormat.format(url.getFile()));
+							LogUtil.info("user config file: " + PathFormat.format(url.getFile()));
 							inputStream = url.openStream();
 							doc = reader.read(inputStream);
 						}
@@ -156,17 +151,16 @@ public class DBFoundConfig {
 					try {
 						StartListener listener = (StartListener) Class.forName(listenerClass).newInstance();
 						listener.execute();
-						System.out.println(simpleDateFormat.format(new Date()) + " invoke listenerClass success");
+						LogUtil.info("invoke listenerClass success");
 					} catch (Exception e) {
-						LogUtil.error("invoke listenerClass faild", e);
+						LogUtil.error("invoke listenerClass failed", e);
 					}
 				}
 			} else {
-				System.out.println(simpleDateFormat.format(new Date())
-						+ " config file init skiped, because file not found. filePath:" + file.getAbsolutePath());
+				LogUtil.info("config file init skiped, because file not found. filePath:" + file.getAbsolutePath());
 			}
-			System.out.println(simpleDateFormat.format(new Date()) + " NFWork dbfound service init success");
-			System.out.println("**************************************************************************");
+			LogUtil.info("NFWork dbfound service init success");
+			LogUtil.info("**************************************************************************");
 		} catch (Exception e) {
 			LogUtil.error("dbfound init faild，please check config", e);
 			if (e instanceof RuntimeException) {
@@ -195,8 +189,7 @@ public class DBFoundConfig {
 				ConnectionProvide provide = new JdbcConnectionProvide(provideName, url, driverClass, dialect, username,
 						password);
 				provide.regist();
-				System.out.println(
-						simpleDateFormat.format(new Date()) + " regist jdbcConnProvide success, provideName:" + provideName);
+				LogUtil.info( "register jdbcConnProvide success, provideName:" + provideName);
 			} else {
 				throw new DBFoundRuntimeException("user jdbc type，url driverClass username dialect can not be null");
 			}
@@ -214,8 +207,7 @@ public class DBFoundConfig {
 			if (dialect != null && dataSource != null && !"".equals(dialect) && !"".equals(dataSource)) {
 				ConnectionProvide provide = new DataSourceConnectionProvide(provideName, dataSource, dialect);
 				provide.regist();
-				System.out.println(simpleDateFormat.format(new Date()) + " regist dataSourceConnProvide success, provideName:"
-						+ provideName);
+				LogUtil.info("register dataSourceConnProvide success, provideName:"+ provideName);
 			} else if (dialect != null && className != null && !"".equals(dialect) && !"".equals(className)) {
 				DataSource ds = (DataSource) Class.forName(className).newInstance();
 				List<Element> properties = element.element("properties").elements("property");
@@ -226,8 +218,7 @@ public class DBFoundConfig {
 				}
 				DataSourceConnectionProvide provide = new DataSourceConnectionProvide(provideName, ds, dialect);
 				provide.regist();
-				System.out.println(simpleDateFormat.format(new Date()) + " regist dataSourceConnProvide success, provideName:"
-						+ provideName);
+				LogUtil.info("register dataSourceConnProvide success, provideName:"+ provideName);
 			} else {
 				throw new DBFoundRuntimeException("user dataSource type，dataSource dialect can not null");
 			}
@@ -236,7 +227,7 @@ public class DBFoundConfig {
 
 	private static void initWeb(Element web) {
 		StringBuilder info = new StringBuilder();
-		info.append(simpleDateFormat.format(new Date())).append(" set web Param:");
+		info.append("set web Param:");
 
 		// i18n 初始化
 		Element provide = web.element("i18nProvide");
@@ -324,7 +315,7 @@ public class DBFoundConfig {
 			}
 		}
 
-		System.out.println(info);
+		LogUtil.info(info.toString());
 
 		// 初始化dbfound mvc
 		Element mvc = web.element("mvcConfigFile");
@@ -345,18 +336,16 @@ public class DBFoundConfig {
 			}
 		}
 		if (file.exists()) {
-			System.out.println(simpleDateFormat.format(new Date()) + " init mvc success, config file: "
-					+ PathFormat.format(file.getAbsolutePath()) + ")");
+			LogUtil.info("init mvc success, config file: "+ PathFormat.format(file.getAbsolutePath()));
 			ActionEngine.init(file);
 		} else {
-			System.out.println(simpleDateFormat.format(new Date()) + " init mvc cancel, because file: "
-					+ PathFormat.format(getRealPath(mvcFile)) + ") not found");
+			LogUtil.info( "init mvc cancel, because file: " + PathFormat.format(getRealPath(mvcFile)) + " not found");
 		}
 	}
 
 	private static void initSystem(Element system) {
 		StringBuilder info = new StringBuilder();
-		info.append(simpleDateFormat.format(new Date())).append(" set system Param:");
+		info.append("set system Param:");
 
 		// 设置日志开关
 		Element log = system.element("openLog");
@@ -462,7 +451,7 @@ public class DBFoundConfig {
 			info.append("(openDSql = ").append(DSqlConfig.isOpenDSql()).append(")");
 		}
 
-		System.out.println(info);
+		LogUtil.info(info.toString());
 	}
 
 	public static String getRealPath(String value) {

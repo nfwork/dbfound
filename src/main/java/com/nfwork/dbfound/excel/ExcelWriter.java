@@ -65,6 +65,8 @@ public class ExcelWriter {
 		try {
 			if(DataUtil.isNull(exportType)){
 				exportType = defaultType;
+			}else{
+				exportType = exportType.toLowerCase();
 			}
 			WriterResolver writerResolver = writerResolverMap.get(exportType);
 			if(writerResolver == null){
