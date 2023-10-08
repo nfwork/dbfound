@@ -1,8 +1,6 @@
 package com.nfwork.dbfound.web;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -18,6 +16,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.excel.ExcelWriter;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.URLUtil;
 import com.nfwork.dbfound.web.file.FileUploadUtil;
 
@@ -281,10 +280,9 @@ public class DispatcherFilter implements Filter {
 	 * 容器销毁
 	 */
 	public void destroy() {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-		System.out.println(format.format(new Date()) + " NFWork dbfound " + DBFoundConfig.VERSION +", closing dbfound service");
+		LogUtil.info("NFWork dbfound " + DBFoundConfig.VERSION +", closing dbfound service");
 		DBFoundConfig.destroy();
-		System.out.println(format.format(new Date()) + " NFWork dbfound " + DBFoundConfig.VERSION +", dbfound service closed");
+		LogUtil.info("NFWork dbfound " + DBFoundConfig.VERSION +", dbfound service closed");
 	}
 
 	/**
