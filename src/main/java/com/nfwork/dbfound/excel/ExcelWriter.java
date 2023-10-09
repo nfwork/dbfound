@@ -3,6 +3,7 @@ package com.nfwork.dbfound.excel;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
@@ -38,28 +39,28 @@ public class ExcelWriter {
 			}
 		}
 
-		List<Map> columns = context.getData("param.columns",List.class);
-		if(columns == null){
-			throw new DBFoundRuntimeException("can not found param columns");
-		}
-
+		List<ExcelColumn> columns = getColumns(context);
 		List result = ModelEngine.query(context, modelName, queryName,false).getDatas();
-
 		String exportType = context.getString("param.export_type");
 
 		doExport(context, result, columns, exportType);
 	}
 
 	public static void excelExport(Context context, List result)throws Exception {
-		List<Map> columns = context.getData("param.columns",List.class);
-		if(columns == null){
-			throw new DBFoundRuntimeException("can not found param columns");
-		}
+		List<ExcelColumn> columns = getColumns(context);
 		String exportType = context.getString("param.export_type");
 		doExport(context, result, columns, exportType);
 	}
 
-	private static void doExport(Context context, List result, List columns, String exportType)throws Exception {
+	private static List<ExcelColumn> getColumns(Context context){
+		List<Map> columns = context.getData("param.columns",List.class);
+		if(columns == null){
+			throw new DBFoundRuntimeException("can not found param columns");
+		}
+		return columns.stream().map(ExcelColumn::new).collect(Collectors.toList());
+	}
+
+	private static void doExport(Context context, List result, List<ExcelColumn> columns, String exportType)throws Exception {
 
 		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + "."+exportType);
 		try {

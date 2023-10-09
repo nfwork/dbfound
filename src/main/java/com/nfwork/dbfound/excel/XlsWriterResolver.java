@@ -10,18 +10,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class XlsWriterResolver extends XlsxWriterResolver{
 
     @Override
-    protected void writer(File file, List<Object> dataList, List<Map<String,Object>> cls) {
-        Map<String,Map<String,Object>> mappers = getMappers(cls);
+    protected void writer(File file, List<Object> dataList, List<ExcelColumn> cls) {
 
         try(Workbook workbook = new HSSFWorkbook()) {
             CellStyle headerStyle = getHeaderStyle(workbook);
-            CellStyle lineStyle = getLineStyle(workbook);
-            DateStyles dateStyles = new DateStyles(workbook);
+            DataStyles dataStyles = new DataStyles(workbook);
 
             int length = dataList.size();
             int sheetIndex = 0;
@@ -38,7 +35,7 @@ public class XlsWriterResolver extends XlsxWriterResolver{
                 sheetIndex++;
                 Sheet sheet = workbook.createSheet("sheet" + (sheetIndex));
 
-                writerSheet(sheet, datas, cls, mappers, headerStyle, lineStyle, dateStyles);
+                writerSheet(sheet, datas, cls, headerStyle, dataStyles);
 
                 datas.clear();
             } while (length > sheetIndex * sheetSize);
