@@ -21,18 +21,13 @@ import java.util.Map;
 public class CsvWriterResolver extends WriterResolver{
 
     @Override
-    protected void writer(File file, List<Object> dataList, List<Map<String,Object>> cls){
-        // columns处理
-        String[] names = new String[cls.size()];
+    protected void writer(File file, List<Object> dataList, List<ExcelColumn> cls){
         String[] headers = new String[cls.size()];
         int colIndex = 0;
-        for (Map<String,Object> map : cls) {
-            headers[colIndex]= map.get("content").toString();
-            names[colIndex] = map.get("name").toString();
+        for (ExcelColumn column : cls) {
+            headers[colIndex]= column.getTitle();
             colIndex++;
         }
-        //mappers处理
-        Map<String,Map<String,Object>> mappers = getMappers(cls);
 
         CSVFormat format = CSVFormat.Builder.create().setHeader(headers).build();
 
@@ -40,13 +35,13 @@ public class CsvWriterResolver extends WriterResolver{
              CSVPrinter printer = new CSVPrinter(fileWriter,format)){
             for(Object data : dataList) {
                 List<Object> line = new ArrayList<>(headers.length);
-                for (String name : names) {
-                    Object value = DBFoundEL.getDataByProperty(name,data);
+                for (ExcelColumn column : cls) {
+                    Object value = DBFoundEL.getDataByProperty(column.getName(),data);
                     if(value == null){
                         line.add(null);
                         continue;
                     }
-                    Map<String,Object> mapper = mappers.get(name);
+                    Map<String,Object> mapper = column.getMapper();
                     if(mapper != null){
                         value = getMapperValue(value,mapper);
                     }

@@ -4,36 +4,18 @@ import com.nfwork.dbfound.util.DataUtil;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public abstract class WriterResolver {
 
-    protected abstract void writer(File file, List<Object> dataList,List<Map<String,Object>> cls);
+    protected abstract void writer(File file, List<Object> dataList,List<ExcelColumn> columns);
 
     public void register(String type, boolean asDefault){
         if(asDefault){
             ExcelWriter.defaultType = type;
         }
         ExcelWriter.writerResolverMap.put(type,this);
-    }
-
-    protected Map<String, Map<String,Object>> getMappers(List<Map<String,Object>> cls ){
-        Map<String,Map<String,Object>> mappers = new HashMap<>();
-        for (Map<String,Object> col : cls){
-            Object object =col.get("mapper");
-            if (DataUtil.isNotNull(object)){
-                Map<String,Object> mapper = (Map)object;
-                Map<String,Object> newMapper  = new HashMap<>();
-
-                for (String key: mapper.keySet()){
-                    newMapper.put(key,mapper.get(key));
-                }
-                mappers.put(col.get("name").toString(),newMapper);
-            }
-        }
-        return mappers;
     }
 
     protected Object getMapperValue(Object values, Map<String,Object> mapper){

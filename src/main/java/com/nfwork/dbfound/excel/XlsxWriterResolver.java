@@ -3,6 +3,7 @@ package com.nfwork.dbfound.excel;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.util.DataUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -16,23 +17,21 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.Temporal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class XlsxWriterResolver extends WriterResolver {
 
     @Override
-    protected void writer(File file, List<Object> dataList, List<Map<String, Object>> cls) {
-        Map<String,Map<String,Object>> mappers = getMappers(cls);
-
+    protected void writer(File file, List<Object> dataList, List<ExcelColumn> cls) {
         try(SXSSFWorkbook workbook = new SXSSFWorkbook(500)) {
             SXSSFSheet sheet = workbook.createSheet("sheet1");
 
             CellStyle headerStyle = getHeaderStyle(workbook);
-            CellStyle lineStyle = getLineStyle(workbook);
-            DateStyles dateStyles = new DateStyles(workbook);
+            DataStyles dataStyles = new DataStyles(workbook);
 
-            writerSheet(sheet, dataList, cls, mappers, headerStyle, lineStyle, dateStyles);
+            writerSheet(sheet, dataList, cls, headerStyle, dataStyles);
 
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 workbook.write(fos);
@@ -45,13 +44,13 @@ public class XlsxWriterResolver extends WriterResolver {
         } catch (IOException ignore) {}
     }
 
-    protected void writerSheet(Sheet sheet, List<Object> dataList, List<Map<String, Object>> cls, Map<String,Map<String,Object>> mappers, CellStyle headerStyle, CellStyle lineStyle, DateStyles dateStyles){
+    protected void writerSheet(Sheet sheet, List<Object> dataList, List<ExcelColumn> cls, CellStyle headerStyle, DataStyles dataStyles){
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i< cls.size(); i++) {
             Cell cell = headerRow.createCell(i);
-            cell.setCellValue(cls.get(i).get("content").toString());
+            cell.setCellValue(cls.get(i).getTitle());
             cell.setCellStyle(headerStyle);
-            sheet.setColumnWidth(i,  Integer.parseInt(cls.get(i).get("width").toString()) * 36);
+            sheet.setColumnWidth(i,  cls.get(i).getWidth() * 38);
         }
         //写入数据
         for (int i = 0; i < dataList.size();i++){
@@ -59,58 +58,69 @@ public class XlsxWriterResolver extends WriterResolver {
             Row row = sheet.createRow(i+1);
             for (int j = 0; j<cls.size(); j++){
                 Cell cell = row.createCell(j);
-                cell.setCellStyle(lineStyle);
-                setCellValue(cell, dateStyles,data, cls.get(j),mappers);
+                setCellValue(cell, dataStyles,data, cls.get(j));
             }
         }
     }
 
-    protected void setCellValue(Cell cell, DateStyles dateStyles, Object data, Map<String, Object> column, Map<String,Map<String,Object>> mappers ){
-        String name = column.get("name").toString();
+    protected void setCellValue(Cell cell, DataStyles dataStyles, Object data, ExcelColumn column){
+        CellStyle userStyle = null;
+        if(DataUtil.isNotNull(column.getFormat())){
+            userStyle = dataStyles.getUserStyle(column.getName(),column.getFormat());
+        }
+
+        String name = column.getName();
         Object o = DBFoundEL.getDataByProperty(name, data);
         if (o == null) {
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
             cell.setBlank();
             return;
         }
-        Map<String,Object> mapper = mappers.get(name);
+        Map<String,Object> mapper = column.getMapper();
         if(mapper != null){
             o = getMapperValue(o,mapper);
         }
         if (o instanceof String) {
             String content = o.toString();
             cell.setCellValue(content);
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Integer) {
             cell.setCellValue((Integer)o);
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Double) {
             cell.setCellValue((Double) o);
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Long) {
             cell.setCellValue((Long)o);
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Float) {
             cell.setCellValue((Float)o);
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Temporal) {
             if(o instanceof LocalDate){
                 cell.setCellValue((LocalDate) o);
-                cell.setCellStyle(dateStyles.getDateStyle());
+                cell.setCellStyle(userStyle==null?dataStyles.getDateStyle():userStyle);
             }else if(o instanceof LocalTime){
                 cell.setCellValue(Time.valueOf((LocalTime)o));
-                cell.setCellStyle(dateStyles.getTimeStyle());
+                cell.setCellStyle(userStyle==null?dataStyles.getTimeStyle():userStyle);
             }else{
                 cell.setCellValue((LocalDateTime) o);
-                cell.setCellStyle(dateStyles.getDateTimeStyle());
+                cell.setCellStyle(userStyle==null?dataStyles.getDateTimeStyle():userStyle);
             }
         } else if (o instanceof Date) {
             if(o instanceof java.sql.Date){
                 cell.setCellValue((java.sql.Date)o);
-                cell.setCellStyle(dateStyles.getDateStyle());
+                cell.setCellStyle(userStyle==null?dataStyles.getDateStyle():userStyle);
             }else if(o instanceof Time){
                 cell.setCellValue((Time)o);
-                cell.setCellStyle(dateStyles.getTimeStyle());
+                cell.setCellStyle(userStyle==null?dataStyles.getTimeStyle():userStyle);
             }else{
                 cell.setCellValue((Date)o);
-                cell.setCellStyle(dateStyles.getDateTimeStyle());
+                cell.setCellStyle(userStyle==null?dataStyles.getDateTimeStyle():userStyle);
             }
         } else {
             cell.setCellValue(o.toString());
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         }
     }
 
@@ -129,28 +139,43 @@ public class XlsxWriterResolver extends WriterResolver {
         return headerStyle;
     }
 
-    protected static CellStyle getLineStyle(Workbook workbook){
-        Font cellFont = workbook.createFont();
-        cellFont.setFontName("Arial");
-        cellFont.setFontHeightInPoints((short) 10);
-
-        CellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setFont(cellFont);
-        return cellStyle;
-    }
-
-    protected static class DateStyles{
+    protected static class DataStyles{
         Font cellFont;
         Workbook workbook;
         CellStyle dateStyle;
         CellStyle dateTimeStyle;
         CellStyle timeStyle;
+        CellStyle defaultStyle;
+        Map<String, CellStyle> styleMap = new HashMap<>();
 
-        DateStyles( Workbook workbook){
+        DataStyles( Workbook workbook){
             this.workbook = workbook;
             cellFont = workbook.createFont();
             cellFont.setFontName("Arial");
             cellFont.setFontHeightInPoints((short) 10);
+        }
+
+        public CellStyle getUserStyle(String name, String format){
+            CellStyle cellStyle = styleMap.get(name);
+            if(cellStyle == null){
+                DataFormat dateFormat  = workbook.createDataFormat();
+                short formatValue = dateFormat.getFormat(format);
+                cellStyle = workbook.createCellStyle();
+                cellStyle.setDataFormat(formatValue);
+                cellStyle.setFont(cellFont);
+
+                styleMap.put(name,cellStyle);
+            }
+            return cellStyle;
+        }
+
+        public CellStyle getDefaultStyle(){
+            if(defaultStyle == null) {
+                CellStyle cellStyle = workbook.createCellStyle();
+                cellStyle.setFont(cellFont);
+                defaultStyle = cellStyle;
+            }
+            return defaultStyle;
         }
 
         public CellStyle getDateStyle() {
