@@ -1,13 +1,12 @@
 package com.nfwork.dbfound.util;
 
 import java.util.Collection;
-import java.util.Comparator;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.nfwork.dbfound.model.bean.Param;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 日志处理
@@ -17,7 +16,7 @@ import com.nfwork.dbfound.model.bean.Param;
  */
 public class LogUtil {
 
-	private static final Log log = LogFactory.getLog("dbfound");
+	private static final Logger log = LoggerFactory.getLogger("dbfound");
 
 	public static void log(String sqlName, String sql, Collection<Param> params) {
 		if (DBFoundConfig.isOpenLog()) {
