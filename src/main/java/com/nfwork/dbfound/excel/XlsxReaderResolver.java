@@ -77,12 +77,9 @@ public class XlsxReaderResolver extends ReaderResolver{
             Row line = sheet.getRow(i);
 
             for (int j = 0; j < colSize; j++) {
-                Cell cell = null;
-                if(margeNum > 0) {
+                Cell cell  = line.getCell(j);
+                if(margeNum > 0 && (cell == null || cell.getCellType() == CellType.BLANK)) {
                     cell = getMergedRegionCell(sheet,margeNum ,i, j);
-                }
-                if(cell == null){
-                    cell = line.getCell(j);
                 }
                 if(cell == null){
                     continue;
