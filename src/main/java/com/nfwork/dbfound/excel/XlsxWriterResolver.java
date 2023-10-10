@@ -57,6 +57,7 @@ public class XlsxWriterResolver extends WriterResolver {
         for (int i = 0; i < dataList.size();i++){
             Object data = dataList.get(i);
             Row row = sheet.createRow(i+1);
+            row.setHeightInPoints(16);
             for (int j = 0; j<cls.size(); j++){
                 Cell cell = row.createCell(j);
                 setCellValue(cell, dataStyles,data, cls.get(j));
@@ -68,13 +69,12 @@ public class XlsxWriterResolver extends WriterResolver {
         CellStyle userStyle = null;
         if(DataUtil.isNotNull(column.getFormat())){
             userStyle = dataStyles.getUserStyle(column.getName(),column.getFormat());
-            cell.setCellStyle(userStyle);
         }
-
         String name = column.getName();
         Object o = DBFoundEL.getDataByProperty(name, data);
         if (o == null) {
             cell.setBlank();
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
             return;
         }
         Map<String,Object> mapper = column.getMapper();
@@ -84,56 +84,51 @@ public class XlsxWriterResolver extends WriterResolver {
         if (o instanceof String) {
             String content = o.toString();
             cell.setCellValue(content);
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Integer) {
             cell.setCellValue((Integer)o);
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Double) {
             cell.setCellValue((Double) o);
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Long) {
             cell.setCellValue((Long)o);
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Float) {
             cell.setCellValue((Float)o);
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Temporal) {
             if(o instanceof LocalDate){
                 cell.setCellValue((LocalDate) o);
-                if(userStyle == null) {
-                    cell.setCellStyle(dataStyles.getDateStyle());
-                }
+                cell.setCellStyle(userStyle==null?dataStyles.getDateStyle():userStyle);
             }else if(o instanceof LocalTime){
                 cell.setCellValue(Time.valueOf((LocalTime)o));
-                if(userStyle == null) {
-                    cell.setCellStyle(dataStyles.getTimeStyle());
-                }
+                cell.setCellStyle(userStyle==null?dataStyles.getTimeStyle():userStyle);
             }else{
                 cell.setCellValue((LocalDateTime) o);
-                if(userStyle == null) {
-                    cell.setCellStyle(dataStyles.getDateTimeStyle());
-                }
+                cell.setCellStyle(userStyle==null?dataStyles.getDateTimeStyle():userStyle);
             }
         } else if (o instanceof Date) {
             if(o instanceof java.sql.Date){
                 cell.setCellValue((java.sql.Date)o);
-                if(userStyle == null) {
-                    cell.setCellStyle(dataStyles.getDateStyle());
-                }
+                cell.setCellStyle(userStyle==null?dataStyles.getDateStyle():userStyle);
             }else if(o instanceof Time){
                 cell.setCellValue((Time)o);
-                if(userStyle == null) {
-                    cell.setCellStyle(dataStyles.getTimeStyle());
-                }
+                cell.setCellStyle(userStyle==null?dataStyles.getTimeStyle():userStyle);
             }else{
                 cell.setCellValue((Date)o);
-                if(userStyle == null) {
-                    cell.setCellStyle(dataStyles.getDateTimeStyle());
-                }
+                cell.setCellStyle(userStyle==null?dataStyles.getDateTimeStyle():userStyle);
             }
         } else {
             cell.setCellValue(o.toString());
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         }
     }
 
     protected static CellStyle getHeaderStyle(Workbook workbook){
         Font headerFont = workbook.createFont();
         headerFont.setFontHeightInPoints((short) 12);
+        headerFont.setFontName("Calibri");
         headerFont.setBold(true); // 加粗
         headerFont.setColor(IndexedColors.BLACK.index);
 
@@ -153,9 +148,14 @@ public class XlsxWriterResolver extends WriterResolver {
         CellStyle dateTimeStyle;
         CellStyle timeStyle;
         Map<String, CellStyle> styleMap = new HashMap<>();
+        CellStyle defaultStyle;
+        Font cellFont;
 
         DataStyles( Workbook workbook){
             this.workbook = workbook;
+            cellFont = workbook.createFont();
+            cellFont.setFontName("Calibri");
+            cellFont.setFontHeightInPoints((short) 11);
         }
 
         public CellStyle getUserStyle(String name, String format){
@@ -165,9 +165,21 @@ public class XlsxWriterResolver extends WriterResolver {
                 short formatValue = dateFormat.getFormat(format);
                 cellStyle = workbook.createCellStyle();
                 cellStyle.setDataFormat(formatValue);
+                cellStyle.setFont(cellFont);
+                cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                 styleMap.put(name,cellStyle);
             }
             return cellStyle;
+        }
+
+        public CellStyle getDefaultStyle(){
+            if(defaultStyle == null) {
+                CellStyle cellStyle = workbook.createCellStyle();
+                cellStyle.setFont(cellFont);
+                cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                defaultStyle = cellStyle;
+            }
+            return defaultStyle;
         }
 
         public CellStyle getDateStyle() {
@@ -176,6 +188,8 @@ public class XlsxWriterResolver extends WriterResolver {
                 short format = dateFormat.getFormat(DBFoundConfig.getDateFormat());
                 dateStyle = workbook.createCellStyle();
                 dateStyle.setDataFormat(format);
+                dateStyle.setFont(cellFont);
+                dateStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             }
             return dateStyle;
         }
@@ -186,6 +200,8 @@ public class XlsxWriterResolver extends WriterResolver {
                 short format = datetimeFormat.getFormat(DBFoundConfig.getDateTimeFormat());
                 dateTimeStyle = workbook.createCellStyle();
                 dateTimeStyle.setDataFormat(format);
+                dateTimeStyle.setFont(cellFont);
+                dateTimeStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             }
             return dateTimeStyle;
         }
@@ -196,6 +212,8 @@ public class XlsxWriterResolver extends WriterResolver {
                 short format = timeFormat.getFormat(DBFoundConfig.getTimeFormat());
                 timeStyle = workbook.createCellStyle();
                 timeStyle.setDataFormat(format);
+                timeStyle.setFont(cellFont);
+                timeStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             }
             return timeStyle;
         }
