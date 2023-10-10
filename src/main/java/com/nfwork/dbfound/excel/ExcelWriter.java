@@ -30,13 +30,11 @@ public class ExcelWriter {
 		context.setExport(true);
 
 		// 将parameters中的参数转移到param中
-		Map param = (Map) context.getData("param");
-		if(param!=null) {
-			Object parameters = param.get("parameters");
-			if (parameters instanceof Map) {
-				param.putAll((Map) parameters);
-				param.remove("parameters");
-			}
+		Map<String,Object> param = context.getParamDatas();
+		Object parameters = param.get("parameters");
+		if (parameters instanceof Map) {
+			param.putAll((Map) parameters);
+			param.remove("parameters");
 		}
 
 		List<ExcelColumn> columns = getColumns(context);
