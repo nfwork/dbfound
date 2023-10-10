@@ -48,8 +48,8 @@ public class Query extends SqlEntity {
 	private static final char[] GROUP = "group".toCharArray();
 
 	private Integer pagerSize;
-	private Integer maxPagerSize;
-	private Integer exportSize;
+	private Integer maxPagerSize = 10000;
+	private Integer exportSize = 50 * 10000;
 	private String adapter;
 	private QueryAdapter queryAdapter;
 	private String entity;
