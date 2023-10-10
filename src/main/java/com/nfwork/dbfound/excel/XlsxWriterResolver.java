@@ -190,6 +190,7 @@ public class XlsxWriterResolver extends WriterResolver {
                 dateStyle.setDataFormat(format);
                 dateStyle.setFont(cellFont);
                 dateStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                dateStyle.setAlignment(HorizontalAlignment.CENTER);
             }
             return dateStyle;
         }
@@ -202,6 +203,7 @@ public class XlsxWriterResolver extends WriterResolver {
                 dateTimeStyle.setDataFormat(format);
                 dateTimeStyle.setFont(cellFont);
                 dateTimeStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                dateTimeStyle.setAlignment(HorizontalAlignment.CENTER);
             }
             return dateTimeStyle;
         }
@@ -214,6 +216,7 @@ public class XlsxWriterResolver extends WriterResolver {
                 timeStyle.setDataFormat(format);
                 timeStyle.setFont(cellFont);
                 timeStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                timeStyle.setAlignment(HorizontalAlignment.CENTER);
             }
             return timeStyle;
         }
