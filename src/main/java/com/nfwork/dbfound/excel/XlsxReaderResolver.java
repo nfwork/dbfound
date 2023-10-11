@@ -104,12 +104,7 @@ public class XlsxReaderResolver extends ReaderResolver{
                                 cellValue = datetimeFormat.format(date);
                             }
                         } else {
-                            double numericCellValue = cell.getNumericCellValue();
-                            if(isLong(numericCellValue)){
-                                cellValue = (long)numericCellValue;
-                            }else{
-                                cellValue = numericCellValue;
-                            }
+                            cellValue = cell.getNumericCellValue();
                         }
                         break;
                     case BLANK:
