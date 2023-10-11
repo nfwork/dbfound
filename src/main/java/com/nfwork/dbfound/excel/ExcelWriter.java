@@ -55,7 +55,11 @@ public class ExcelWriter {
 		if(columns == null){
 			throw new DBFoundRuntimeException("can not found param columns");
 		}
-		return columns.stream().map(ExcelColumn::new).collect(Collectors.toList());
+		List<ExcelColumn> excelColumns = new ArrayList<>(columns.size());
+		columns.forEach(map -> {
+			excelColumns.add(new ExcelColumn(map));
+		});
+		return excelColumns;
 	}
 
 	private static void doExport(Context context, List result, List<ExcelColumn> columns, String exportType)throws Exception {
