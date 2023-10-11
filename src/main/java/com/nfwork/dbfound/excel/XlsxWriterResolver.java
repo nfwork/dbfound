@@ -3,14 +3,18 @@ package com.nfwork.dbfound.excel;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,15 +29,16 @@ public class XlsxWriterResolver extends WriterResolver {
 
     @Override
     protected void writer(File file, List<Object> dataList, List<ExcelColumn> cls) {
-        try(SXSSFWorkbook workbook = new SXSSFWorkbook(500)) {
-            SXSSFSheet sheet = workbook.createSheet("sheet1");
-
-            CellStyle headerStyle = getHeaderStyle(workbook);
-            DataStyles dataStyles = new DataStyles(workbook);
-
-            writerSheet(sheet, dataList, cls, headerStyle, dataStyles);
-
+        try(InputStream inputStream = getTemplateInputStream();
+            SXSSFWorkbook workbook = new SXSSFWorkbook(new XSSFWorkbook(inputStream),500)) {
             try (FileOutputStream fos = new FileOutputStream(file)) {
+                SXSSFSheet sheet = workbook.getSheet("sheet1");
+
+                CellStyle headerStyle = getHeaderStyle(workbook);
+                DataStyles dataStyles = new DataStyles(workbook);
+
+                writerSheet(sheet, dataList, cls, headerStyle, dataStyles);
+
                 workbook.write(fos);
                 fos.flush();
             } catch (IOException exception) {
@@ -51,7 +56,7 @@ public class XlsxWriterResolver extends WriterResolver {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(cls.get(i).getTitle());
             cell.setCellStyle(headerStyle);
-            sheet.setColumnWidth(i,  cls.get(i).getWidth() * 38);
+            sheet.setColumnWidth(i,  cls.get(i).getWidth() * 39);
         }
         //写入数据
         for (int i = 0; i < dataList.size();i++){
@@ -140,6 +145,15 @@ public class XlsxWriterResolver extends WriterResolver {
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         headerStyle.setAlignment(HorizontalAlignment.CENTER);
         return headerStyle;
+    }
+
+    private InputStream getTemplateInputStream() throws IOException {
+        ClassLoader loader = XlsxWriterResolver.class.getClassLoader();
+        URL url = loader.getResource("templates/dbfound_export.xlsx");
+        if(url == null){
+            throw new DBFoundRuntimeException("cant not found xlsx templates 'templates/dbfound_export.xlsx'");
+        }
+        return url.openStream();
     }
 
     protected static class DataStyles{
