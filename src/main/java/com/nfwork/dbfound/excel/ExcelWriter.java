@@ -3,7 +3,6 @@ package com.nfwork.dbfound.excel;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
@@ -11,7 +10,6 @@ import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
-
 
 public class ExcelWriter {
 
@@ -44,10 +42,19 @@ public class ExcelWriter {
 		doExport(context, result, columns, exportType);
 	}
 
-	public static void excelExport(Context context, List result)throws Exception {
+	public static void excelExport(Context context, List dataList)throws Exception {
 		List<ExcelColumn> columns = getColumns(context);
 		String exportType = context.getString("param.export_type");
-		doExport(context, result, columns, exportType);
+		doExport(context, dataList, columns, exportType);
+	}
+
+	public static void excelExport(Context context, List dataList, List<ExcelColumn> columns)throws Exception {
+		String exportType = context.getString("param.export_type");
+		doExport(context, dataList, columns, exportType);
+	}
+
+	public static void excelExport(Context context, List dataList, List<ExcelColumn> columns, String exportType)throws Exception {
+		doExport(context, dataList, columns, exportType);
 	}
 
 	private static List<ExcelColumn> getColumns(Context context){

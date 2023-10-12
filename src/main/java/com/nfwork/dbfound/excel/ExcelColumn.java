@@ -5,15 +5,18 @@ import java.util.Map;
 
 public class ExcelColumn {
 
-    private final String name;
+    private String name;
 
-    private final String title;
+    private String title;
 
-    private final Integer width;
+    private Integer width = 100;
 
     private Map<String,Object> mapper;
 
     private String format;
+
+    public ExcelColumn(){
+    }
 
     public ExcelColumn(Map<String,Object> data){
         Object name = data.get("name");
@@ -23,8 +26,6 @@ public class ExcelColumn {
         Object width = data.get("width");
         if(DataUtil.isNotNull(width)){
             this.width = DataUtil.intValue(width);
-        }else{
-            this.width = 100;
         }
 
         Object title = data.get("title");
@@ -63,5 +64,25 @@ public class ExcelColumn {
 
     public String getFormat() {
         return format;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
+    public void setMapper(Map<String, Object> mapper) {
+        this.mapper = mapper;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 }
