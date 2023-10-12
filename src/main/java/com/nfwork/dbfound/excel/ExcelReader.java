@@ -21,7 +21,7 @@ public class ExcelReader {
 		new DefaultReaderResolver().register(DEFAULT_TYPE);
 	}
 
-	public static ReaderResolver getReaderResolver(String type){
+	private static ReaderResolver getReaderResolver(String type){
 		type = type.toLowerCase();
 		ReaderResolver readerResolver = readerResolverMap.get(type);
 		if (readerResolver == null){
