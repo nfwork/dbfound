@@ -7,10 +7,8 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
-import com.nfwork.dbfound.model.reflector.DefaultObjectFactory;
-import com.nfwork.dbfound.model.reflector.ObjectFactory;
-import com.nfwork.dbfound.model.reflector.Reflector;
 
 /**
  * 数据转化工具类
@@ -27,45 +25,17 @@ public class DataUtil {
 		return !isNull(value);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T convertMapToBean(Map map, Class<T> clazz) {
+	public static <T> T convertMapToBean(Map map, Class<T> clazz){
 		if (map != null) {
-			Set<Entry> columns = map.entrySet();
-			Reflector reflector = Reflector.forClass(clazz);
-
-			ObjectFactory objectFactory = new DefaultObjectFactory();
-			T obj = objectFactory.create(clazz);
-			for (Entry entry : columns) {
-				String name = DataUtil.stringValue(entry.getKey());
-				String propertyname = reflector.getFieldName(name);
-				if (reflector.hasSetter(propertyname)) {
-					Object columnvalue = entry.getValue();
-					if (columnvalue != null) {
-						Class<?> fieldtype = reflector.getSetterType(propertyname);
-						if (fieldtype.equals(Integer.class) || fieldtype.equals(int.class)) {
-							columnvalue = DataUtil.intValue(columnvalue);
-						} else if (fieldtype.equals(Long.class) || fieldtype.equals(long.class)) {
-							columnvalue = DataUtil.longValue(columnvalue);
-						} else if (fieldtype.equals(Float.class) || fieldtype.equals(float.class)) {
-							columnvalue = DataUtil.floatValue(columnvalue);
-						} else if (fieldtype.equals(Double.class) || fieldtype.equals(double.class)) {
-							columnvalue = DataUtil.doubleValue(columnvalue);
-						} else if (fieldtype.equals(Date.class) || fieldtype.equals(java.sql.Date.class)) {
-							columnvalue = DataUtil.dateValue(columnvalue);
-						} else if (fieldtype.equals(String.class)) {
-							columnvalue = DataUtil.stringValue(columnvalue);
-						} else if (fieldtype.equals(Short.class) || fieldtype.equals(short.class)) {
-							columnvalue = DataUtil.shortValue(columnvalue);
-						} else if (fieldtype.equals(Byte.class) || fieldtype.equals(byte.class)) {
-							columnvalue = DataUtil.byteValue(columnvalue);
-						}
-						try {
-							reflector.getSetInvoker(propertyname).invoke(obj, new Object[] { columnvalue });
-						} catch (Exception e) {
-							throw new RuntimeException(e);
-						}
-					}
-				}
+			Set<Entry<String,Object>> columns = map.entrySet();
+			T obj;
+			try {
+				obj = clazz.getDeclaredConstructor().newInstance();
+			} catch (Exception e) {
+				throw new DBFoundPackageException(e.getMessage(),e);
+			}
+			for (Entry<String,Object> entry : columns) {
+				DBFoundEL.setDataByProperty(obj,entry.getKey(),entry.getValue());
 			}
 			return obj;
 		}
