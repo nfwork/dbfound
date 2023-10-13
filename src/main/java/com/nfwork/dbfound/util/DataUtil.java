@@ -35,7 +35,9 @@ public class DataUtil {
 				throw new DBFoundPackageException(e.getMessage(),e);
 			}
 			for (Entry<String,Object> entry : columns) {
-				DBFoundEL.setDataByProperty(obj,entry.getKey(),entry.getValue());
+				if(entry.getValue() != null) {
+					DBFoundEL.setDataByProperty(obj, entry.getKey(), entry.getValue());
+				}
 			}
 			return obj;
 		}
