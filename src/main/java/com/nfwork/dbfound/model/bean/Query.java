@@ -138,7 +138,17 @@ public class Query extends SqlEntity {
 		List<Map> data = new ArrayList<>();
 		List<Object> exeParam = new ArrayList<>();
 
-		if(autoPaging) {
+		if(context.isExport()){
+			if(exportSize != null && exportSize > -1){
+				SqlDialect dialect = context.getConnDialect(provideName);
+				if(dialect instanceof AbstractSqlDialect){
+					AbstractSqlDialect sqlDialect = (AbstractSqlDialect) dialect;
+					querySql = sqlDialect.getPagerSql(querySql, exportSize, 0,params);
+				}else{
+					querySql = dialect.getPagerSql(querySql, exportSize, 0);
+				}
+			}
+		}else if(autoPaging) {
 			if (context.getPagerSize() > 0 || pagerSize != null) {
 				int ps = context.getPagerSize() > 0 ? context.getPagerSize() : pagerSize;
 				if(maxPagerSize != null && ps > maxPagerSize){
@@ -150,17 +160,6 @@ public class Query extends SqlEntity {
 					querySql = sqlDialect.getPagerSql(querySql, ps, context.getStartWith(),params);
 				}else{
 					querySql = dialect.getPagerSql(querySql, ps, context.getStartWith());
-				}
-			}
-		}else{
-			//对于非autoPaging查询，设置导出exportSize
-			if(context.isExport()  && exportSize != null){
-				SqlDialect dialect = context.getConnDialect(provideName);
-				if(dialect instanceof AbstractSqlDialect){
-					AbstractSqlDialect sqlDialect = (AbstractSqlDialect) dialect;
-					querySql = sqlDialect.getPagerSql(querySql, exportSize, 0,params);
-				}else{
-					querySql = dialect.getPagerSql(querySql, exportSize, 0);
 				}
 			}
 		}

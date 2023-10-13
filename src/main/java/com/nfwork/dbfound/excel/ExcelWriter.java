@@ -1,10 +1,12 @@
 package com.nfwork.dbfound.excel;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.DataUtil;
@@ -23,41 +25,17 @@ public class ExcelWriter {
 		new XlsxWriterResolver().register("xlsx",true);
 	}
 
-	public static void excelExport(Context context, String modelName, String queryName) throws Exception {
-
+	public static void prepareContext(Context context){
 		context.setExport(true);
-
-		// 将parameters中的参数转移到param中
 		Map<String,Object> param = context.getParamDatas();
 		Object parameters = param.get("parameters");
 		if (parameters instanceof Map) {
 			param.putAll((Map) parameters);
 			param.remove("parameters");
 		}
-
-		List<ExcelColumn> columns = getColumns(context);
-		List result = ModelEngine.query(context, modelName, queryName,false).getDatas();
-		String exportType = context.getString("param.export_type");
-
-		doExport(context, result, columns, exportType);
 	}
 
-	public static void excelExport(Context context, List dataList)throws Exception {
-		List<ExcelColumn> columns = getColumns(context);
-		String exportType = context.getString("param.export_type");
-		doExport(context, dataList, columns, exportType);
-	}
-
-	public static void excelExport(Context context, List dataList, List<ExcelColumn> columns)throws Exception {
-		String exportType = context.getString("param.export_type");
-		doExport(context, dataList, columns, exportType);
-	}
-
-	public static void excelExport(Context context, List dataList, List<ExcelColumn> columns, String exportType)throws Exception {
-		doExport(context, dataList, columns, exportType);
-	}
-
-	private static List<ExcelColumn> getColumns(Context context){
+	public static List<ExcelColumn> getColumns(Context context){
 		List<Map> columns = context.getData("param.columns",List.class);
 		if(columns == null){
 			throw new DBFoundRuntimeException("can not found param columns");
@@ -69,15 +47,59 @@ public class ExcelWriter {
 		return excelColumns;
 	}
 
-	private static void doExport(Context context, List result, List<ExcelColumn> columns, String exportType)throws Exception {
+	public static String getExportType(Context context){
+		return context.getString("param.export_type");
+	}
 
-		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + "."+exportType);
+	public static void setExportType(Context context,String type){
+		context.setParamData("export_type",type);
+	}
+
+	public static String getExportFilename(Context context){
+		return context.getString("param.export_filename");
+	}
+
+	public static void setExportFilename(Context context, String filename){
+		context.setParamData("export_filename",filename);
+	}
+
+	public static void excelExport(Context context, String modelName, String queryName) throws Exception {
+		prepareContext(context);
+		List<ExcelColumn> columns = getColumns(context);
+		List result = ModelEngine.query(context, modelName, queryName,false).getDatas();
+		doExport(context, result, columns);
+	}
+
+	public static void excelExport(Context context, List dataList)throws Exception {
+		List<ExcelColumn> columns = getColumns(context);
+		doExport(context, dataList, columns);
+	}
+
+	public static void excelExport(Context context, List dataList, List<ExcelColumn> columns)throws Exception {
+		doExport(context, dataList, columns);
+	}
+
+	private static void doExport(Context context, List result, List<ExcelColumn> columns)throws Exception {
+
+		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + ".export");
 		try {
+			String exportType = getExportType(context);
 			if(DataUtil.isNull(exportType)){
 				exportType = defaultType;
 			}else{
 				exportType = exportType.toLowerCase();
 			}
+
+			String exportFilename = getExportFilename(context);
+			if(DataUtil.isNull(exportFilename)){
+				exportFilename = "export."+exportType;
+			}else{
+				if(!exportFilename.endsWith(exportType)){
+					throw new DBFoundRuntimeException("excel export, the export_filename '"+exportFilename+"' must end with the export_type '"+exportType+"'");
+				}
+				exportFilename = URLEncoder.encode(exportFilename, DBFoundConfig.getEncoding()).replaceAll("\\+", "%20");
+			}
+
 			WriterResolver writerResolver = writerResolverMap.get(exportType);
 			if(writerResolver == null){
 				throw new DBFoundRuntimeException("excel export type '" + exportType +"' is not support");
@@ -91,7 +113,7 @@ public class ExcelWriter {
 				context.response.setContentLength((int)file.length());
 				context.response.setContentType("application/x-download");
 				context.response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-				context.response.setHeader("Content-Disposition", "attachment;filename=export."+exportType);
+				context.response.setHeader("Content-Disposition", "attachment;filename="+exportFilename);
 
 				byte[] b ;
 				if(result.size() > 10000){
