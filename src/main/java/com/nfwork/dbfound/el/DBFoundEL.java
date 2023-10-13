@@ -248,6 +248,10 @@ public class DBFoundEL extends PropertyTransfer{
 		}
 	}
 
+	public static void setDataByProperty(Object object, String property, Object value){
+		setNextObject(object, property, value);
+	}
+
 	private static void setNextObject(Object currentObj,String name,Object nextObj){
 		if(currentObj instanceof Map){
 			Map currentMap = (Map) currentObj;

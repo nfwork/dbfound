@@ -47,6 +47,10 @@ public class ExcelWriter {
 		return excelColumns;
 	}
 
+	public static void setDefaultType(String type){
+		defaultType = type;
+	}
+
 	public static String getExportType(Context context){
 		return context.getString("param.export_type");
 	}
