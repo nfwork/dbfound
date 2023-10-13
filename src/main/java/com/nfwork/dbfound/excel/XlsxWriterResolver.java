@@ -51,6 +51,7 @@ public class XlsxWriterResolver extends WriterResolver {
 
     protected void writerSheet(Sheet sheet, List<Object> dataList, List<ExcelColumn> cls, CellStyle headerStyle, DataStyles dataStyles){
         Row headerRow = sheet.createRow(0);
+        sheet.createFreezePane(0,1);
         headerRow.setHeightInPoints(20);
         for (int i = 0; i< cls.size(); i++) {
             Cell cell = headerRow.createCell(i);
