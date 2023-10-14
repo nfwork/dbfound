@@ -45,7 +45,7 @@ public class DBFoundEL extends PropertyTransfer{
 			value = elCache.get(cacheName);
 
 			if(value == null){
-				value = getNextObject(currentObject,name);
+				value = getDataByProperty(currentObject, name);
 				if(value instanceof Collection){
 					if(!(value instanceof ArrayList)){
 						value = ((Collection<?>)value).toArray();
@@ -55,7 +55,7 @@ public class DBFoundEL extends PropertyTransfer{
 			}
 			value = getDataByIndex(index,value);
 		} else {
-			value = getNextObject(currentObject,name);
+			value = getDataByProperty(currentObject, name);
 		}
 
 		return value;
@@ -79,7 +79,7 @@ public class DBFoundEL extends PropertyTransfer{
 				currentExpress = currentExpress.substring(0, currentExpress.indexOf("["));
 			}
 			// 计算当前对象
-			Object nextObject = getNextObject(currentObject, currentExpress);
+			Object nextObject = getDataByProperty(currentObject, currentExpress);
 
 			if (index != -1 && nextObject != null) {
 				nextObject = getDataByIndex(index, nextObject);
@@ -114,12 +114,12 @@ public class DBFoundEL extends PropertyTransfer{
 
 			if (i == expArray.length - 1) {
 				if (index == -1) {
-					setNextObject(currentObj, exp, value);
+					setDataByProperty(currentObj, exp, value);
 				} else {
-					nextObj = getNextObject(currentObj, exp);
+					nextObj = getDataByProperty(currentObj, exp);
 					if (nextObj == null) {
 						nextObj = new ArrayList<>();
-						setNextObject(currentObj, exp, nextObj);
+						setDataByProperty(currentObj, exp, nextObj);
 					}
 					if (nextObj instanceof ArrayList) {
 						List<Object> list = (List) nextObj;
@@ -140,12 +140,12 @@ public class DBFoundEL extends PropertyTransfer{
 				return;
 			}
 
-			nextObj = getNextObject(currentObj,exp);
+			nextObj = getDataByProperty(currentObj, exp);
 
 			if (index > -1) {
 				if(nextObj == null){
 					nextObj = new ArrayList<>();
-					setNextObject(currentObj, exp, nextObj);
+					setDataByProperty(currentObj, exp, nextObj);
 				}
 				if (nextObj instanceof ArrayList) {
 					List<Object> list = (List) nextObj;
@@ -170,7 +170,7 @@ public class DBFoundEL extends PropertyTransfer{
 			} else {
 				if(nextObj == null) {
 					nextObj = new HashMap<String, Object>();
-					setNextObject(currentObj, exp, nextObj);
+					setDataByProperty(currentObj, exp, nextObj);
 				}
 				currentObj = nextObj;
 			}
@@ -202,42 +202,39 @@ public class DBFoundEL extends PropertyTransfer{
 		return null;
 	}
 
-	public static Object getDataByProperty(String property,Object object){
-		return getNextObject(object,property);
-	}
+	public static Object getDataByProperty(Object currentObj, String property){
 
-	private static Object getNextObject(Object currentObj,String name){
 		if(currentObj instanceof Map){
 			Map<?,?> currentMap = (Map<?,?>) currentObj;
-			return currentMap.get(name);
+			return currentMap.get(property);
 		} else{
-			if("value".equals(name)){
+			if("value".equals(property)){
 				if(isSampleObject(currentObj)){
 					return currentObj;
 				}
 				if(DataUtil.getDataLength(currentObj) != -1){
 					return currentObj;
 				}
-			}else if("size".equals(name)){
+			}else if("size".equals(property)){
 				int size = DataUtil.getDataLength(currentObj);
 				if(size != -1){
 					return size;
 				}
-			}else if("length".equals(name)){
+			}else if("length".equals(property)){
 				if(currentObj instanceof String){
 					return ((String) currentObj).length();
 				}
 			}
 			try {
 				Reflector reflector = Reflector.forClass(currentObj.getClass());
-				name = reflector.getFieldName(name);
-				if (reflector.hasGetter(name)) {
-					return reflector.getGetInvoker(name).invoke(currentObj, null);
+				property = reflector.getFieldName(property);
+				if (reflector.hasGetter(property)) {
+					return reflector.getGetInvoker(property).invoke(currentObj, null);
 				}
-				if (name.contains("_")) {
-					name = underscoreToCamelCase(name);
-					if (reflector.hasGetter(name)) {
-						return reflector.getGetInvoker(name).invoke(currentObj, null);
+				if (property.contains("_")) {
+					property = underscoreToCamelCase(property);
+					if (reflector.hasGetter(property)) {
+						return reflector.getGetInvoker(property).invoke(currentObj, null);
 					}
 				}
 				return null;
@@ -248,27 +245,25 @@ public class DBFoundEL extends PropertyTransfer{
 	}
 
 	public static void setDataByProperty(Object object, String property, Object value){
-		setNextObject(object, property, value);
+		if(object instanceof Map){
+			Map currentMap = (Map) object;
+			currentMap.put(property, value);
+		}else{
+			setBeanProperty(object,property,value);
+		}
 	}
 
-	private static void setNextObject(Object currentObj,String name,Object nextObj){
-		if(currentObj instanceof Map){
-			Map currentMap = (Map) currentObj;
-			currentMap.put(name, nextObj);
+	public static void setBeanProperty(Object object, String property, Object value){
+		Reflector reflector = Reflector.forClass(object.getClass());
+		property = reflector.getFieldName(property);
+		if(reflector.hasSetter(property)) {
+			reflector.setProperty(object, property, value);
 		}else{
-			Reflector reflector = Reflector.forClass(currentObj.getClass());
-			name = reflector.getFieldName(name);
-			if(!reflector.hasSetter(name)) {
-				if(name.contains("_")){
-					name = underscoreToCamelCase(name);
+			if(property.contains("_")){
+				property = underscoreToCamelCase(property);
+				if(reflector.hasSetter(property)) {
+					reflector.setProperty(object, property, value);
 				}
-			}
-			if(reflector.hasSetter(name)) {
-				Class<?> fieldType = reflector.getSetterType(name);
-				if (nextObj!=null && Enum.class.isAssignableFrom(fieldType) && !(nextObj instanceof Enum)) {
-					nextObj = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(nextObj.toString());
-				}
-				reflector.setProperty(currentObj, name, nextObj);
 			}
 		}
 	}
