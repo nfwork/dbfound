@@ -27,11 +27,7 @@ public abstract class Entity extends PropertyTransfer implements Serializable, C
 			Reflector reflector = Reflector.forClass(getClass());
 
 			if(reflector.hasSetter(name)) {
-				Class<?> fieldType = reflector.getSetterType(attribute.getName());
 				Object value = attribute.getValue();
-				if (Enum.class.isAssignableFrom(fieldType) && value != null) {
-					value = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(value.toString());
-				}
 				try {
 					reflector.setProperty(this, name, value);
 				} catch (Exception e) {

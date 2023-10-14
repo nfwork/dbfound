@@ -37,7 +37,7 @@ public class DataUtil {
 			}
 			for (Entry<String,Object> entry : columns) {
 				if(entry.getValue() != null) {
-					DBFoundEL.setDataByProperty(obj, entry.getKey(), entry.getValue());
+					DBFoundEL.setBeanProperty(obj, entry.getKey(), entry.getValue());
 				}
 			}
 			return obj;

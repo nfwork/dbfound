@@ -77,7 +77,7 @@ public class XlsxWriterResolver extends WriterResolver {
             userStyle = dataStyles.getUserStyle(column.getName(),column.getFormat());
         }
         String name = column.getName();
-        Object o = DBFoundEL.getDataByProperty(name, data);
+        Object o = DBFoundEL.getDataByProperty(data, name);
         if (o == null) {
             cell.setBlank();
             cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
