@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 
 /**
@@ -427,46 +428,30 @@ public class Reflector {
 		return method;
 	}
 
-	public void setProperty(Object target, String name, Object value) throws InvocationTargetException, IllegalAccessException {
+	public void setProperty(Object target, String name, Object value) {
 		Invoker invoker = this.getSetInvoker(name);
 		Class<?> clazz = invoker.getType();
 
-		if(value != null) {
+		if(value != null && !clazz.isAssignableFrom(value.getClass())) {
 			if (clazz == String.class) {
-				value = value.toString();
-			} if (clazz == int.class || clazz == Integer.class) {
-				if("".equals(value)){
-					value = null;
-				}else {
-					value = DataUtil.intValue(value);
-				}
+				value = DataUtil.stringValue(value);
+			} else if (clazz == int.class || clazz == Integer.class) {
+				value = DataUtil.intValue(value);
 			} else if (clazz == long.class || clazz == Long.class) {
-				if("".equals(value)){
-					value = null;
-				}else {
-					value = DataUtil.longValue(value);
-				}
-			} else if (clazz == double.class || clazz == Double.class) {
-				if("".equals(value)){
-					value = null;
-				}else {
-					value = DataUtil.doubleValue(value);
-				}
-			} else if (clazz == float.class || clazz == Float.class) {
-				if("".equals(value)){
-					value = null;
-				}else {
-					value = DataUtil.floatValue(value);
-				}
+				value = DataUtil.longValue(value);
 			} else if (clazz == boolean.class || clazz == Boolean.class) {
-				if("".equals(value)){
-					value = null;
-				}else {
-					value = Boolean.valueOf(value.toString());
-				}
+				value = DataUtil.booleanValue(value);
+			} else if (clazz == double.class || clazz == Double.class) {
+				value = DataUtil.doubleValue(value);
+			} else if (clazz == float.class || clazz == Float.class) {
+				value = DataUtil.floatValue(value);
 			}
 		}
 
-		invoker.invoke(target, new Object[] {value});
+		try {
+			invoker.invoke(target, new Object[] {value});
+		} catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
+			throw new DBFoundRuntimeException("reflector set property failed, class:"+ target.getClass().getName() +" property:" + name + ", " + e.getMessage(), e);
+		}
 	}
 }

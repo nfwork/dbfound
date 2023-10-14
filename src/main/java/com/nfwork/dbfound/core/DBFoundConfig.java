@@ -2,7 +2,6 @@ package com.nfwork.dbfound.core;
 
 import java.io.File;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.*;
 
@@ -171,7 +170,7 @@ public class DBFoundConfig {
 	}
 
 	private static void initDB(Element database)
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 
 		List<Element> jdbcProvides = database.elements("jdbcConnectionProvide");
 		for (Element element : jdbcProvides) {
