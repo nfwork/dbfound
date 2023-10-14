@@ -244,25 +244,26 @@ public class Context {
 	 */
 	public <T> T getData(String express, Class<T> class1) {
 		Object object = getData(express);
-		if (object == null) {
-			return null;
-		} else if (object.getClass().equals(class1)) {
-		} else if (class1.equals(Integer.class) || class1.equals(int.class)) {
-			object = DataUtil.intValue(object);
-		} else if (class1.equals(Long.class) || class1.equals(long.class)) {
-			object = DataUtil.longValue(object);
-		} else if (class1.equals(Float.class) || class1.equals(float.class)) {
-			object = DataUtil.floatValue(object);
-		} else if (class1.equals(Double.class) || class1.equals(double.class)) {
-			object = DataUtil.doubleValue(object);
-		} else if (class1.equals(Date.class)) {
-			object = DataUtil.dateValue(object);
-		} else if (class1.equals(String.class)) {
-			object = DataUtil.stringValue(object);
-		} else if (class1.equals(Short.class) || class1.equals(short.class)) {
-			object = DataUtil.shortValue(object);
-		} else if (class1.equals(Byte.class) || class1.equals(byte.class)) {
-			object = DataUtil.byteValue(object);
+		if (object != null && !class1.isAssignableFrom(object.getClass())) {
+			if (class1.equals(String.class)) {
+				object = DataUtil.stringValue(object);
+			} else if (class1.equals(Integer.class) || class1.equals(int.class)) {
+				object = DataUtil.intValue(object);
+			} else if (class1.equals(Long.class) || class1.equals(long.class)) {
+				object = DataUtil.longValue(object);
+			} else if (class1.equals(Float.class) || class1.equals(float.class)) {
+				object = DataUtil.floatValue(object);
+			} else if (class1.equals(Double.class) || class1.equals(double.class)) {
+				object = DataUtil.doubleValue(object);
+			} else if (class1.equals(Boolean.class) || class1.equals(boolean.class)) {
+				object = DataUtil.booleanValue(object);
+			} else if (class1.equals(Date.class)) {
+				object = DataUtil.dateValue(object);
+			} else if (class1.equals(Short.class) || class1.equals(short.class)) {
+				object = DataUtil.shortValue(object);
+			} else if (class1.equals(Byte.class) || class1.equals(byte.class)) {
+				object = DataUtil.byteValue(object);
+			}
 		}
 		return (T) object;
 	}
@@ -277,6 +278,14 @@ public class Context {
 			return object.toString();
 		}
 		return null;
+	}
+
+	public <K,V> Map<K,V> getMap(String express){
+		return (Map<K, V>) getData(express);
+	}
+
+	public <T> List<T> getList(String express){
+		return (List<T>) getData(express);
 	}
 
 	public void setData(String name, Object object) {

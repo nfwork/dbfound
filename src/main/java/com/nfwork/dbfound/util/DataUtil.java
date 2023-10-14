@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.util;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -31,7 +32,7 @@ public class DataUtil {
 			T obj;
 			try {
 				obj = clazz.getDeclaredConstructor().newInstance();
-			} catch (Exception e) {
+			} catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
 				throw new DBFoundPackageException(e.getMessage(),e);
 			}
 			for (Entry<String,Object> entry : columns) {
@@ -72,7 +73,7 @@ public class DataUtil {
 		} else {
 			String value = o.toString().trim();
 			SimpleDateFormat format;
-			if (value.length() == 10) {
+			if (value.length() == DBFoundConfig.getDateFormat().length()) {
 				format = new SimpleDateFormat(DBFoundConfig.getDateFormat());
 			} else {
 				format = new SimpleDateFormat(DBFoundConfig.getDateTimeFormat());
@@ -112,6 +113,16 @@ public class DataUtil {
 			return (Double) o;
 		} else {
 			return Double.parseDouble(o.toString());
+		}
+	}
+
+	public static Boolean booleanValue(Object o){
+		if (isNull(o)) {
+			return null;
+		} else if (o instanceof Boolean) {
+			return (Boolean) o;
+		} else {
+			return Boolean.valueOf(o.toString());
 		}
 	}
 
