@@ -13,6 +13,7 @@ import java.util.concurrent.FutureTask;
 
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.util.DataUtil;
 
 /**
@@ -445,6 +446,8 @@ public class Reflector {
 				value = DataUtil.doubleValue(value);
 			} else if (clazz == float.class || clazz == Float.class) {
 				value = DataUtil.floatValue(value);
+			} else if (Enum.class.isAssignableFrom(clazz)) {
+				value = EnumHandlerFactory.getEnumHandler(clazz).locateEnum(value.toString());
 			}
 		}
 

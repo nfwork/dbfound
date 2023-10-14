@@ -36,7 +36,7 @@ public class CsvWriterResolver extends WriterResolver{
             for(Object data : dataList) {
                 List<Object> line = new ArrayList<>(headers.length);
                 for (ExcelColumn column : cls) {
-                    Object value = DBFoundEL.getDataByProperty(column.getName(),data);
+                    Object value = DBFoundEL.getDataByProperty(data, column.getName());
                     if(value == null){
                         line.add(null);
                         continue;
