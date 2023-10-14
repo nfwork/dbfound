@@ -100,7 +100,7 @@ public class Param extends Entity {
 		} else {
 			if(value instanceof String) {
 				return (String) value;
-			} if (value instanceof Date) {
+			} else if (value instanceof Date) {
 				return LocalDateUtil.formatDate((Date) value);
 			} else if (value instanceof Temporal) {
 				return LocalDateUtil.formatTemporal((Temporal) value);
