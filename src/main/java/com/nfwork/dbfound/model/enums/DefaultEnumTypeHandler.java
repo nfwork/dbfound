@@ -4,7 +4,7 @@ import com.nfwork.dbfound.model.reflector.Reflector;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultEnumTypeHandler<E extends Enum<E> >  implements EnumTypeHandler<E>{
+public class DefaultEnumTypeHandler<E extends Enum<?>> implements EnumTypeHandler<E>{
 
     private final Map<String,E>  cache = new ConcurrentHashMap<>();
 
@@ -19,7 +19,7 @@ public class DefaultEnumTypeHandler<E extends Enum<E> >  implements EnumTypeHand
             return null;
         }
         if(param instanceof BaseEnum) {
-            return ((BaseEnum)param).getValue();
+            return ((BaseEnum<?,?>)param).getValue();
         }else{
             try {
                 Reflector reflector = Reflector.forClass(param.getClass());
