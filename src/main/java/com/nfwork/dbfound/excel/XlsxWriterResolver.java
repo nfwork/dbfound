@@ -28,7 +28,7 @@ import java.util.Map;
 public class XlsxWriterResolver extends WriterResolver {
 
     @Override
-    protected void writer(File file, List<Object> dataList, List<ExcelColumn> cls) {
+    protected void writer(File file, List<?> dataList, List<ExcelColumn> cls) {
         try(InputStream inputStream = getTemplateInputStream();
             SXSSFWorkbook workbook = new SXSSFWorkbook(new XSSFWorkbook(inputStream),500)) {
             try (FileOutputStream fos = new FileOutputStream(file)) {
@@ -49,7 +49,7 @@ public class XlsxWriterResolver extends WriterResolver {
         } catch (IOException ignore) {}
     }
 
-    protected void writerSheet(Sheet sheet, List<Object> dataList, List<ExcelColumn> cls, CellStyle headerStyle, DataStyles dataStyles){
+    protected void writerSheet(Sheet sheet, List<?> dataList, List<ExcelColumn> cls, CellStyle headerStyle, DataStyles dataStyles){
         Row headerRow = sheet.createRow(0);
         sheet.createFreezePane(0,1);
         headerRow.setHeightInPoints(20);

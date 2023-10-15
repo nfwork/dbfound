@@ -21,7 +21,7 @@ import java.util.Map;
 public class CsvWriterResolver extends WriterResolver{
 
     @Override
-    protected void writer(File file, List<Object> dataList, List<ExcelColumn> cls){
+    protected void writer(File file, List<?> dataList, List<ExcelColumn> cls){
         String[] headers = new String[cls.size()];
         int colIndex = 0;
         for (ExcelColumn column : cls) {

@@ -10,6 +10,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 
@@ -36,14 +37,12 @@ public class ExcelWriter {
 	}
 
 	public static List<ExcelColumn> getColumns(Context context){
-		List<Map> columns = context.getData("param.columns",List.class);
+		List<Map<String,Object>> columns = context.getList("param.columns");
 		if(columns == null){
 			throw new DBFoundRuntimeException("can not found param columns");
 		}
 		List<ExcelColumn> excelColumns = new ArrayList<>(columns.size());
-		columns.forEach(map -> {
-			excelColumns.add(new ExcelColumn(map));
-		});
+		columns.forEach(map -> excelColumns.add(new ExcelColumn(map)));
 		return excelColumns;
 	}
 
@@ -70,20 +69,20 @@ public class ExcelWriter {
 	public static void excelExport(Context context, String modelName, String queryName) throws Exception {
 		prepareContext(context);
 		List<ExcelColumn> columns = getColumns(context);
-		List result = ModelEngine.query(context, modelName, queryName,false).getDatas();
+		List<?> result = ModelEngine.query(context, modelName, queryName,false).getDatas();
 		doExport(context, result, columns);
 	}
 
-	public static void excelExport(Context context, List dataList)throws Exception {
+	public static void excelExport(Context context, List<?> dataList)throws Exception {
 		List<ExcelColumn> columns = getColumns(context);
 		doExport(context, dataList, columns);
 	}
 
-	public static void excelExport(Context context, List dataList, List<ExcelColumn> columns)throws Exception {
+	public static void excelExport(Context context, List<?> dataList, List<ExcelColumn> columns)throws Exception {
 		doExport(context, dataList, columns);
 	}
 
-	private static void doExport(Context context, List result, List<ExcelColumn> columns)throws Exception {
+	private static void doExport(Context context, List<?> result, List<ExcelColumn> columns)throws Exception {
 
 		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + ".export");
 		try {
@@ -125,7 +124,7 @@ public class ExcelWriter {
 				}else{
 					b = new byte[4096];
 				}
-				int i = -1;
+				int i;
 				while ( (i = in.read(b)) != -1) {
 					out.write(b, 0, i);
 				}
@@ -133,7 +132,10 @@ public class ExcelWriter {
 			}
 		}finally {
 			if (file.exists()) {
-				file.delete();
+				boolean success = file.delete();
+				if(!success){
+					LogUtil.warn("file delete failed, file:"+file);
+				}
 			}
 		}
 	}

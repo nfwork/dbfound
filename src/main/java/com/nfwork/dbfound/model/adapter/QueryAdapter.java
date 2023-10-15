@@ -23,7 +23,7 @@ public interface QueryAdapter<T> {
 
     }
 
-    default Class<T> getEntityClass() {
+    default Class<?> getEntityClass() {
         Class<?> class1 = getClass();
         Type[] interfacesList = class1.getGenericInterfaces();
         for ( Type interfaces : interfacesList) {
@@ -34,7 +34,7 @@ public interface QueryAdapter<T> {
                 if(className.equals(rawTypeName)) {
                     Type clazz = pType.getActualTypeArguments()[0];
                     if (clazz instanceof Class<?>) {
-                        return (Class<T>) clazz;
+                        return (Class<?>) clazz;
                     }
                 }
             }
