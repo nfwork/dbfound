@@ -49,7 +49,7 @@ public class ModelEngine {
 	 * @param queryName query name
 	 * @return QueryResponseObject
 	 */
-	public static QueryResponseObject query(Context context, String modelName, String queryName) {
+	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName) {
 		return query(context, modelName, queryName, defaultPath, true, null);
 	}
 
@@ -62,7 +62,7 @@ public class ModelEngine {
 	 * @param autoPaging 是否分页
 	 * @return QueryResponseObject
 	 */
-	public static QueryResponseObject query(Context context, String modelName, String queryName, boolean autoPaging) {
+	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, boolean autoPaging) {
 		return query(context, modelName, queryName, defaultPath, autoPaging, null);
 	}
 
@@ -90,7 +90,7 @@ public class ModelEngine {
 	 * @param autoPaging auto paging
 	 * @return QueryResponseObject
 	 */
-	public static QueryResponseObject query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging) {
+	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging) {
 		return query(context, modelName, queryName, currentPath, autoPaging, null);
 	}
 

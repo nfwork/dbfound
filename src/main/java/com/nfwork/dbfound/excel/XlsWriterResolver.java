@@ -14,7 +14,7 @@ import java.util.List;
 public class XlsWriterResolver extends XlsxWriterResolver{
 
     @Override
-    protected void writer(File file, List<Object> dataList, List<ExcelColumn> cls) {
+    protected void writer(File file, List<?> dataList, List<ExcelColumn> cls) {
 
         try(Workbook workbook = new HSSFWorkbook()) {
             CellStyle headerStyle = getHeaderStyle(workbook);
@@ -30,7 +30,7 @@ public class XlsWriterResolver extends XlsxWriterResolver{
                     end = dataList.size();
                 }
 
-                List<Object> datas = dataList.subList(0, end);
+                List<?> datas = dataList.subList(0, end);
 
                 sheetIndex++;
                 Sheet sheet = workbook.createSheet("sheet" + (sheetIndex));

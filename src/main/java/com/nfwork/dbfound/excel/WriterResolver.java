@@ -9,7 +9,7 @@ import java.util.Map;
 
 public abstract class WriterResolver {
 
-    protected abstract void writer(File file, List<Object> dataList,List<ExcelColumn> columns);
+    protected abstract void writer(File file, List<?> dataList,List<ExcelColumn> columns);
 
     public void register(String type, boolean asDefault){
         if(asDefault){

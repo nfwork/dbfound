@@ -15,6 +15,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
+import com.nfwork.dbfound.model.adapter.ObjectQueryAdapter;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.base.CountType;
@@ -83,7 +84,7 @@ public class Query extends SqlEntity {
 			}
 		}
 
-		if(queryAdapter !=null) {
+		if(queryAdapter !=null && !(queryAdapter instanceof ObjectQueryAdapter)) {
 			Class qClass = queryAdapter.getEntityClass();
 			if (qClass != null) {
 				entityClass = qClass;
