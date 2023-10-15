@@ -110,7 +110,7 @@ public class JsonUtil{
 	public static class EnumDeserializer extends JsonSerializer<Enum> {
 		@Override
 		public void serialize(Enum object, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-			EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(object.getClass());
+			EnumTypeHandler<Enum<?>> handler = EnumHandlerFactory.getEnumHandler(object.getClass());
 			jsonGenerator.writeObject(handler.getEnumValue(object));
 		}
 	}

@@ -5,24 +5,24 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class EnumHandlerFactory {
 
-    static final ConcurrentHashMap<Class,EnumTypeHandler> cache = new ConcurrentHashMap<>();
+    static final ConcurrentHashMap<Class<?>,EnumTypeHandler<Enum<?>>> cache = new ConcurrentHashMap<>();
 
-    public static EnumTypeHandler getEnumHandler(Class class1){
+    public static <T extends Enum<?>> EnumTypeHandler<T> getEnumHandler(Class<?> clazz){
         try {
-            EnumTypeHandler result = cache.get(class1);
+            EnumTypeHandler<Enum<?>> result = cache.get(clazz);
             if (result == null) {
                 synchronized (cache) {
-                    result = cache.get(class1);
+                    result =  cache.get(clazz);
                     if (result == null) {
-                        result = new DefaultEnumTypeHandler();
-                        result.initType(class1);
-                        cache.put(class1, result);
+                        result = new DefaultEnumTypeHandler<>();
+                        result.initType((Class<Enum<?>>)clazz);
+                        cache.put(clazz, result);
                     }
                 }
             }
-            return result;
+            return (EnumTypeHandler<T>) result;
         }catch (Exception e){
-            throw new DBFoundRuntimeException("EnumTypeHandler create failed",e);
+            throw new DBFoundRuntimeException("EnumTypeHandler create failed, " + e.getMessage(),e);
         }
     }
 }

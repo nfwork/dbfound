@@ -452,7 +452,7 @@ public abstract class SqlEntity extends Entity {
 	}
 
 	private Object getEnumValue(Enum<?> object){
-		EnumTypeHandler handler = EnumHandlerFactory.getEnumHandler(object.getClass());
+		EnumTypeHandler<Enum<?>> handler = EnumHandlerFactory.getEnumHandler(object.getClass());
 		return handler.getEnumValue(object);
 	}
 
