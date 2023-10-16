@@ -165,10 +165,10 @@ public class Context {
 			String paramName = enumeration.nextElement();
 			String value = request.getParameter(paramName);
 			Object object =value;
-			if(DBFoundConfig.isJsonStringAutoCover() || DBFoundConfig.getJsonStringForceCoverSet().contains(paramName)){
-				if (value.startsWith("{") && value.endsWith("}")) {
+			if(DataUtil.isNotNull(value) && ( DBFoundConfig.isJsonStringAutoCover() || DBFoundConfig.getJsonStringForceCoverSet().contains(paramName))){
+				if (value.charAt(0)=='{' && value.charAt(value.length()-1)=='}') {
 					object = JsonUtil.jsonToMap(value);
-				} else if (value.startsWith("[") && value.endsWith("]")) {
+				} else if (value.charAt(0)=='[' && value.charAt(value.length()-1)==']') {
 					object = JsonUtil.jsonToList(value);
 				}
 			}
@@ -202,12 +202,15 @@ public class Context {
 			if (contentType != null && contentType.contains("application/json")) {
 				try (InputStream inputStream = request.getInputStream()){
 					String payload = StreamUtils.copyToString(inputStream, Charset.forName(DBFoundConfig.getEncoding())).trim();
-					if (payload.startsWith("{")) {
+					if(DataUtil.isNull(payload)){
+						return;
+					}
+					if (payload.charAt(0)=='{') {
 						Map<String, Object> map = JsonUtil.jsonToMap(payload);
 						for (Map.Entry<String, Object> entry : map.entrySet()) {
 							setParamData(entry.getKey(), entry.getValue());
 						}
-					} else if (payload.startsWith("[")) {
+					} else if (payload.charAt(0)=='[') {
 						List list = JsonUtil.jsonToList(payload);
 						setParamData("dataList", list);
 					}
