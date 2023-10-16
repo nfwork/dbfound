@@ -19,7 +19,7 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 public class DataUtil {
 
 	public static boolean isNull(Object value) {
-		return value == null || value.equals("");
+		return value == null || "".equals(value);
 	}
 
 	public static boolean isNotNull(Object value) {
