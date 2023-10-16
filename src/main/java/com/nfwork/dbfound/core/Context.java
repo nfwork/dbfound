@@ -274,10 +274,32 @@ public class Context {
 
 	public String getString(String express) {
 		Object object = getData(express);
-		if (object != null) {
-			return object.toString();
-		}
-		return null;
+		return DataUtil.stringValue(object);
+	}
+
+	public Integer getInt(String express){
+		Object object = getData(express);
+		return DataUtil.intValue(object);
+	}
+
+	public Long getLong(String express){
+		Object object = getData(express);
+		return DataUtil.longValue(object);
+	}
+
+	public Float getFloat(String express){
+		Object object = getData(express);
+		return DataUtil.floatValue(object);
+	}
+
+	public Double getDouble(String express){
+		Object object = getData(express);
+		return DataUtil.doubleValue(object);
+	}
+
+	public Boolean getBoolean(String express){
+		Object object = getData(express);
+		return DataUtil.booleanValue(object);
 	}
 
 	public <K,V> Map<K,V> getMap(String express){
