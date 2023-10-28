@@ -1,9 +1,16 @@
 package com.nfwork.dbfound.util;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.temporal.Temporal;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -77,7 +84,9 @@ public class JsonUtil{
 					value = reflector.getGetInvoker(property).invoke(responseObject,null);
 				} catch (Exception ignored) {
 				}
-				jsonGenerator.writeObjectField(property,value);
+				//jsonGenerator.writeObjectField(property,value);
+				jsonGenerator.writeFieldName(property);
+				writeObject(jsonGenerator, serializerProvider, value);
 			}
 			jsonGenerator.writeEndObject();
 		}
@@ -111,8 +120,58 @@ public class JsonUtil{
 		@Override
 		public void serialize(Enum object, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 			EnumTypeHandler<Enum<?>> handler = EnumHandlerFactory.getEnumHandler(object.getClass());
-			jsonGenerator.writeObject(handler.getEnumValue(object));
+			//jsonGenerator.writeObject(handler.getEnumValue(object));
+			writeObject(jsonGenerator, serializerProvider, handler.getEnumValue(object));
 		}
+	}
+
+	private static void writeObject(JsonGenerator jsonGenerator, SerializerProvider serializerProvider, Object value) throws IOException
+	{
+		if (value == null) {
+			jsonGenerator.writeNull();
+			return;
+		}
+		if (value instanceof String) {
+			jsonGenerator.writeString((String) value);
+			return;
+		}
+		if (value instanceof Number) {
+			Number n = (Number) value;
+			if (n instanceof Integer) {
+				jsonGenerator.writeNumber(n.intValue());
+				return;
+			} else if (n instanceof Long) {
+				jsonGenerator.writeNumber(n.longValue());
+				return;
+			} else if (n instanceof Double) {
+				jsonGenerator.writeNumber(n.doubleValue());
+				return;
+			} else if (n instanceof Float) {
+				jsonGenerator.writeNumber(n.floatValue());
+				return;
+			} else if (n instanceof Short) {
+				jsonGenerator.writeNumber(n.shortValue());
+				return;
+			} else if (n instanceof Byte) {
+				jsonGenerator.writeNumber(n.byteValue());
+				return;
+			} else if (n instanceof BigInteger) {
+				jsonGenerator.writeNumber((BigInteger) n);
+				return;
+			} else if (n instanceof BigDecimal) {
+				jsonGenerator.writeNumber((BigDecimal) n);
+				return;
+			} else if (n instanceof AtomicInteger) {
+				jsonGenerator.writeNumber(((AtomicInteger) n).get());
+				return;
+			} else if (n instanceof AtomicLong) {
+				jsonGenerator.writeNumber(((AtomicLong) n).get());
+				return;
+			}
+		}
+
+		JsonSerializer<Object> jsonSerializer = serializerProvider.findValueSerializer(value.getClass());
+		jsonSerializer.serialize(value, jsonGenerator,serializerProvider);
 	}
 
 }
