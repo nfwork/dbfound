@@ -169,8 +169,12 @@ public class JsonUtil{
 				return;
 			}
 		}
+		if (value instanceof Boolean) {
+			jsonGenerator.writeBoolean((Boolean) value);
+			return;
+		}
 
-		JsonSerializer<Object> jsonSerializer = serializerProvider.findValueSerializer(value.getClass());
+		JsonSerializer<Object> jsonSerializer = serializerProvider.findTypedValueSerializer(value.getClass(),true,null);
 		jsonSerializer.serialize(value, jsonGenerator,serializerProvider);
 	}
 
