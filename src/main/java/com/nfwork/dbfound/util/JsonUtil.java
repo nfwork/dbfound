@@ -29,15 +29,16 @@ public class JsonUtil{
 
 	static {
 		SimpleModule module = new SimpleModule();
-		module.addSerializer(ResponseObject.class, new ResponseObjectDeserializer());
-		module.addSerializer(Date.class, new DateDeserializer());
-		module.addSerializer(Temporal.class, new TemporalDeserializer());
-		module.addSerializer(Enum.class, new EnumDeserializer());
+		module.addSerializer(ResponseObject.class, new ResponseObjectSerializer());
+		module.addSerializer(Date.class, new DateSerializer());
+		module.addSerializer(Temporal.class, new TemporalSerializer());
+		module.addSerializer(Enum.class, new EnumSerializer());
 
 		objectMapper.registerModule(module);
 		objectMapper.setDateFormat(new SimpleDateFormat(DBFoundConfig.getDateTimeFormat()));
 		objectMapper.setTimeZone(TimeZone.getTimeZone("UTC+8"));
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		if(DBFoundConfig.isCamelCaseToUnderscore()) {
 			objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 		}
@@ -72,7 +73,7 @@ public class JsonUtil{
 	}
 
 
-	public static class ResponseObjectDeserializer extends JsonSerializer<ResponseObject> {
+	public static class ResponseObjectSerializer extends JsonSerializer<ResponseObject> {
 		@Override
 		public void serialize(ResponseObject responseObject, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 			jsonGenerator.writeStartObject();
@@ -92,7 +93,7 @@ public class JsonUtil{
 		}
 	}
 
-	public static class DateDeserializer extends JsonSerializer<Date> {
+	public static class DateSerializer extends JsonSerializer<Date> {
 		@Override
 		public void serialize(Date date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 			if(date != null) {
@@ -104,7 +105,7 @@ public class JsonUtil{
 		}
 	}
 
-	public static class TemporalDeserializer extends JsonSerializer<Temporal> {
+	public static class TemporalSerializer extends JsonSerializer<Temporal> {
 		@Override
 		public void serialize(Temporal temporal, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 			if(temporal != null) {
@@ -116,7 +117,7 @@ public class JsonUtil{
 		}
 	}
 
-	public static class EnumDeserializer extends JsonSerializer<Enum> {
+	public static class EnumSerializer extends JsonSerializer<Enum> {
 		@Override
 		public void serialize(Enum object, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 			EnumTypeHandler<Enum<?>> handler = EnumHandlerFactory.getEnumHandler(object.getClass());
