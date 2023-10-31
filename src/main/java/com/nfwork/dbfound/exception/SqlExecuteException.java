@@ -1,6 +1,6 @@
 package com.nfwork.dbfound.exception;
 
-public class SqlExecuteException extends DBFoundPackageException{
+public class SqlExecuteException extends DBFoundRuntimeException{
 
     private final String provideName;
 
@@ -13,6 +13,11 @@ public class SqlExecuteException extends DBFoundPackageException{
         this.provideName = provideName;
         this.task = task;
         this.sql = sql;
+    }
+
+    @Override
+    public String getMessage() {
+       return this.getTask() +"; " + super.getMessage() +"; [ " + this.getSql() +" ]";
     }
 
     public String getTask() {

@@ -25,9 +25,9 @@ public class WebExceptionHandle {
 			String code = null;
 			if(exception instanceof CollisionException){
 				code = ((CollisionException) exception).getCode();
-				LogUtil.info(exception.getClass().getName() + ":" + em);
+				LogUtil.info(exception.getClass().getName() + ": " + em);
 			} else {
-				em = exception.getClass().getName() + ":" + em;
+				em = exception.getClass().getName() + ": " + em;
 				LogUtil.error(em, exception);
 			}
 			ResponseObject ro = new ResponseObject();

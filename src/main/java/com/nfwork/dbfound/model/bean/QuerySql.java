@@ -115,7 +115,7 @@ public class QuerySql extends Sql {
 				}
 			}
 		} catch (SQLException e) {
-			throw new SqlExecuteException(provideName,"QuerySql", esql, e.getMessage(), e);
+			throw new SqlExecuteException(provideName, getSqlTask(context,"QuerySql"), esql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
