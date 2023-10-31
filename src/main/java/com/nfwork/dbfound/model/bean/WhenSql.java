@@ -88,7 +88,7 @@ public class WhenSql extends Sqls {
 				flag = set.getInt(1);
 			}
 		} catch (SQLException e) {
-			throw new SqlExecuteException(provideName,"WhenSql", eSql, e.getMessage(), e);
+			throw new SqlExecuteException(provideName, getSqlTask(context,"WhenSql"), eSql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);

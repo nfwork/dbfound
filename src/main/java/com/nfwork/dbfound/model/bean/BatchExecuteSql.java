@@ -191,7 +191,7 @@ public class BatchExecuteSql extends Sql {
 			}
 			return updateCount;
 		} catch (SQLException e) {
-			throw new SqlExecuteException(provideName,"BatchExecuteSql", sql, e.getMessage(), e);
+			throw new SqlExecuteException(provideName, getSqlTask(context,"BatchExecuteSql"), sql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);

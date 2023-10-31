@@ -87,7 +87,7 @@ public class CollisionSql extends SqlEntity {
 				}
 			}
 		}catch (SQLException e) {
-			throw new SqlExecuteException(provideName,"CollisionSql", eSql, e.getMessage(), e);
+			throw new SqlExecuteException(provideName, getSqlTask(context,"CollisionSql"), eSql, e.getMessage(), e);
 		}finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);

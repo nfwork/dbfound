@@ -546,6 +546,24 @@ public abstract class SqlEntity extends Entity {
 		}
 	}
 
+	protected String getSqlTask(Context context, String name){
+		Entity parent = this;
+		String entityName = null;
+
+		while (parent != null) {
+			if (parent instanceof Query) {
+				entityName = ((Query) parent).getName();
+				break;
+			}
+			if (parent instanceof Execute) {
+				entityName = ((Execute) parent).getName();
+				break;
+			}
+			parent = parent.getParent();
+		}
+
+		return context.getCurrentModel() + "#" + entityName +"#"+name;
+	}
 
 	public void log(String sqlName, String sql, Map<String, Param> params) {
 		LogUtil.log(sqlName, sql, params.values());
