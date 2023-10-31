@@ -107,7 +107,7 @@ public class ExecuteSql extends Sql {
 				}
 			}
 		}catch (SQLException e) {
-			throw new SqlExecuteException(provideName,"ExecuteSql", esql, e.getMessage(), e);
+			throw new SqlExecuteException(provideName, getSqlTask(context,"ExecuteSql"), esql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);

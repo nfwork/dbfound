@@ -159,7 +159,7 @@ public class BatchSql extends Sqls {
 				cursorValues.add(mapdata);
 			}
 		}catch (SQLException e){
-			throw new SqlExecuteException(provideName,"BatchSql", esql, e.getMessage(), e);
+			throw new SqlExecuteException(provideName, getSqlTask(context,"BatchSql"), esql, e.getMessage(), e);
 		}finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
