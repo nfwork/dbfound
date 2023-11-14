@@ -52,7 +52,7 @@ public class XlsxReaderResolver extends ReaderResolver{
     private List<Map<String,Object>> readSheet(Sheet sheet){
         int rowSize = sheet.getLastRowNum() + 1;
         if(rowSize <= 1){
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         Row header = sheet.getRow(0);
         int colSize = header.getLastCellNum();
