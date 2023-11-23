@@ -28,7 +28,7 @@ public class WebWriter {
 		try (Writer writer = response.getWriter();
 			 StringReader reader = new StringReader(message)){
 
-			response.setContentType("text/html;charset=" + DBFoundConfig.getEncoding());
+			response.setContentType("application/json;charset=" + DBFoundConfig.getEncoding());
 			response.setHeader("Cache-Control", "no-cache, must-revalidate");
 
 			char[] data = new char[1024];
