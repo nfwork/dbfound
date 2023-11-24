@@ -61,7 +61,7 @@ public class Query extends TagSupport implements Cloneable {
 
 		if (object instanceof QueryDataProvide) {
 			Reflector reflector = Reflector.forClass(object.getClass());
-			return reflector.getMethodInvoker(dataProvideMethod).invoke(object, new Object[] {context});
+			return reflector.getMethodInvoker(dataProvideMethod, Context.class).invoke(object, new Object[] {context});
 		} else {
 			throw new DBFoundRuntimeException("Provide必须实现QueryDataProvide接口");
 		}

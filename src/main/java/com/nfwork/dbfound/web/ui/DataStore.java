@@ -82,7 +82,7 @@ public class DataStore extends TagSupport {
 		Object object = Class.forName(dataProvideClass).newInstance();
 		if (object instanceof StoreDataProvide) {
 			Reflector reflector = Reflector.forClass(object.getClass());
-			Object ro = reflector.getMethodInvoker(dataProvideMethod).invoke(object, new Object[] {context});
+			Object ro = reflector.getMethodInvoker(dataProvideMethod, Context.class).invoke(object, new Object[] {context});
 			if (ro instanceof QueryResponseObject) {
 				QueryResponseObject qro = (QueryResponseObject) ro;
 				return JsonUtil.toJson(qro);
