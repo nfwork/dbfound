@@ -26,7 +26,7 @@ public class ActionReflect {
 		try {
 			BaseControl baseControl = ActionBeanFactory.getControl(className, singleton);
 			Reflector reflector = Reflector.forClass(baseControl.getClass());
-			Object result = reflector.getMethodInvoker(method).invoke(baseControl, new Object[] {context});
+			Object result = reflector.getMethodInvoker(method, Context.class).invoke(baseControl, new Object[] {context});
 
 			if (result != null) {
 				if (result instanceof ResponseObject) {

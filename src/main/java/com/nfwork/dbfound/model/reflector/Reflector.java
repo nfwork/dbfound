@@ -36,7 +36,7 @@ public class Reflector {
 		type = clazz;
 		Method[] methods = getClassMethods(clazz);
 		for(Method method : methods){
-			this.methods.put(method.getName(),new MethodInvoker(method));
+			this.methods.put(unionMethodName(method.getName(),method.getParameterTypes()),new MethodInvoker(method));
 		}
 		addGetMethods(methods);
 		addSetMethods(methods);
@@ -420,13 +420,22 @@ public class Reflector {
 		}
 	}
 
-	public Invoker getMethodInvoker(String methodName){
-		Invoker method = methods.get(methodName);
+	public Invoker getMethodInvoker(String methodName,Class<?> ...clazz){
+		Invoker method = methods.get(unionMethodName(methodName, clazz));
 		if (method == null) {
 			throw new ReflectionException("There is no method or method is not public named '" + methodName + "' in '" + type
 					+ "'");
 		}
 		return method;
+	}
+
+	private String unionMethodName(String methodName,Class<?> ... clazz){
+		StringBuilder methodNameBuilder = new StringBuilder(methodName);
+		for (Class<?> cla : clazz){
+			methodNameBuilder.append("_").append(cla.getName());
+		}
+		methodName = methodNameBuilder.toString();
+		return methodName;
 	}
 
 	public void setProperty(Object target, String name, Object value) {
