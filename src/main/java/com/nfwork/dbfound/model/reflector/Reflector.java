@@ -430,6 +430,9 @@ public class Reflector {
 	}
 
 	private String unionMethodName(String methodName,Class<?> ... clazz){
+		if(clazz == null || clazz.length == 0){
+			return methodName;
+		}
 		StringBuilder methodNameBuilder = new StringBuilder(methodName);
 		for (Class<?> cla : clazz){
 			methodNameBuilder.append("_").append(cla.getName());
