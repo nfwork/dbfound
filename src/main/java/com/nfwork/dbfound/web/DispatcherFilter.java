@@ -15,6 +15,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.excel.ExcelWriter;
+import com.nfwork.dbfound.exception.DBFoundErrorException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.URLUtil;
@@ -78,7 +79,7 @@ public class DispatcherFilter implements Filter {
 					// query请求
 					if (actionType == 2) {
 						String name = requestUrl.substring(indexPlace + 6);
-						if ("".equals(name)) {
+						if (name.isEmpty()) {
 							name = "_default";
 						} else {
 							name = name.substring(1);
@@ -91,7 +92,7 @@ public class DispatcherFilter implements Filter {
 					// execute请求
 					else if (actionType == 3) {
 						String name = requestUrl.substring(indexPlace + 8);
-						if ("".equals(name)) {
+						if (name.isEmpty()) {
 							name = "_default";
 						} else {
 							name = name.substring(1);
@@ -104,7 +105,7 @@ public class DispatcherFilter implements Filter {
 					// export导出请求
 					else if (actionType == 4) {
 						String name = requestUrl.substring(indexPlace + 7);
-						if ("".equals(name)) {
+						if (name.isEmpty()) {
 							name = "_default";
 						} else {
 							name = name.substring(1);
@@ -117,7 +118,7 @@ public class DispatcherFilter implements Filter {
 					// do Java请求
 					else if (actionType == 5) {
 						String method = requestUrl.substring(indexPlace + 3);
-						if ("".equals(method)) {
+						if (method.isEmpty()) {
 							method = "execute";
 						} else {
 							method = method.substring(1);
@@ -134,12 +135,19 @@ public class DispatcherFilter implements Filter {
 					}
 				}
 				transaction.commit();
-			} catch (Exception e) {
+			} catch (Throwable throwable) {
 				if (transaction != null) {
 					transaction.rollback();
 				}
-				WebExceptionHandle.handle(e, request, response);
-			} finally {
+				Exception exception;
+				if(throwable instanceof Exception){
+					exception = (Exception) throwable;
+				}else{
+					exception = new DBFoundErrorException("dbfound execute error, cause by "+ throwable.getMessage(), throwable);
+				}
+				WebExceptionHandle.handle(exception, request, response);
+			}
+			finally {
 				if (transaction != null) {
 					transaction.end();
 				}
@@ -269,7 +277,7 @@ public class DispatcherFilter implements Filter {
 		// DBFoundConfig.setClasspath(cf.getServletContext().getRealPath("/WEB-INF/classes"));
 		DBFoundConfig.setProjectRoot(cf.getServletContext().getRealPath(""));
 
-		if (configFilePath != null && !configFilePath.equals("")) {
+		if (configFilePath != null && !configFilePath.isEmpty()) {
 			DBFoundConfig.setConfigFilePath(configFilePath);
 		}
 

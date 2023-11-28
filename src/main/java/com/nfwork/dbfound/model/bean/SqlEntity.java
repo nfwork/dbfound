@@ -210,7 +210,7 @@ public abstract class SqlEntity extends Entity {
 	 * @return string
 	 */
 	public String staticParamParse(String sql, Map<String, Param> params) {
-		if (sql == null || "".equals(sql)) {
+		if (sql == null || sql.isEmpty()) {
 			return "";
 		}
 		int findCount = 0;
