@@ -77,7 +77,7 @@ public class Sql extends SqlEntity {
 			String text = m.group();
 			if (SQL_PART.equals(text)) {
 				SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
-				String partValue =  Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName));
+				String partValue =  Matcher.quoteReplacement(sqlPart.getPartSql(context,params,provideName));
 				m.appendReplacement(buffer, partValue);
 				reduceBlank(buffer);
 
