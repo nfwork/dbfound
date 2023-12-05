@@ -272,7 +272,7 @@ public class Query extends SqlEntity {
 					break;
 				case SQL_PART:
 					SqlPart sqlPart = sql.getSqlPartList().get(sqlPartIndex++);
-					String partValue = Matcher.quoteReplacement(getPartSql(sqlPart,context,params,provideName));
+					String partValue = Matcher.quoteReplacement(sqlPart.getPartSql(context,params,provideName));
 
 					if(sqlPart.isAutoCompletion() && followType != 0 && DataUtil.isNotNull(partValue)){
 						if(followType == 1 ){

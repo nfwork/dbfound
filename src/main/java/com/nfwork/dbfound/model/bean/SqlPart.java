@@ -54,6 +54,9 @@ public class SqlPart extends SqlEntity {
         if (getParent() instanceof Sql) {
             Sql sql = (Sql) getParent();
             sql.getSqlPartList().add(this);
+        }else if(getParent() instanceof SqlTrim){
+            SqlTrim trim = (SqlTrim) getParent();
+            trim.getSqlPartList().add(this);
         }
     }
 
@@ -62,7 +65,25 @@ public class SqlPart extends SqlEntity {
 
     }
 
-    public String getPart(Context context, Map<String, Param> params) {
+    protected String getPartSql(Context context,Map<String, Param> params,String provideName ){
+        if(this.type == SqlPartType.FOR) {
+            if(DataUtil.isNull(this.getSourcePath())){
+                throw new DBFoundRuntimeException("SqlPart the sourcePath can not be null when the type is FOR");
+            }
+            return this.getPart(context, params);
+        }else{
+            if(DataUtil.isNull(this.getCondition())){
+                throw new DBFoundRuntimeException("SqlPart the condition can not be null when the type is IF");
+            }
+            if (checkCondition(this.getCondition(), params, context, provideName)) {
+                return this.getPart();
+            } else {
+                return "";
+            }
+        }
+    }
+
+    private String getPart(Context context, Map<String, Param> params) {
         String exeSourcePath = sourcePath;
 
         if(!ELEngine.isAbsolutePath(exeSourcePath)){
