@@ -162,6 +162,13 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="sql_type" mixed="true">
+		<xsd:choice maxOccurs="unbounded" minOccurs="0">
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="sqlTrim_type" />
+		</xsd:choice>
+	</xsd:complexType>
+
+	<xsd:complexType name="sqlTrim_type">
 		<xsd:sequence>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
 		</xsd:sequence>
@@ -371,17 +378,19 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="executeSql_type" mixed="true">
-		<xsd:sequence>
+		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
-		</xsd:sequence>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="sqlTrim_type" />
+		</xsd:choice>
 		<xsd:attribute name="generatedKeyParam" />
 		<xsd:attribute name="affectedCountParam" />
 	</xsd:complexType>
 
 	<xsd:complexType name="querySql_type" mixed="true">
-		<xsd:sequence>
+		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
-		</xsd:sequence>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="sqlTrim_type" />
+		</xsd:choice>
 	</xsd:complexType>
 
 	<xsd:complexType name="setContextData_type">

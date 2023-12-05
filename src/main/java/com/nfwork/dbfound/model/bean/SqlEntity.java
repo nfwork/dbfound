@@ -17,7 +17,6 @@ import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.SimpleItemList;
-import com.nfwork.dbfound.model.base.SqlPartType;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
@@ -526,24 +525,6 @@ public abstract class SqlEntity extends Entity {
 			throw new DBFoundRuntimeException("condition express is not support, condition:" + condition);
 		}
 		return result;
-	}
-
-	protected String getPartSql(SqlPart sqlPart, Context context,Map<String, Param> params,String provideName ){
-		if(sqlPart.type == SqlPartType.FOR) {
-			if(DataUtil.isNull(sqlPart.getSourcePath())){
-				throw new DBFoundRuntimeException("SqlPart the sourcePath can not be null when the type is FOR");
-			}
-			return sqlPart.getPart(context, params);
-		}else{
-			if(DataUtil.isNull(sqlPart.getCondition())){
-				throw new DBFoundRuntimeException("SqlPart the condition can not be null when the type is IF");
-			}
-			if (checkCondition(sqlPart.getCondition(), params, context, provideName)) {
-				return sqlPart.getPart();
-			} else {
-				return "";
-			}
-		}
 	}
 
 	protected String getSqlTask(Context context, String name){
