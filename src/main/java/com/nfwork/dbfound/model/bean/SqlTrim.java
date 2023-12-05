@@ -5,6 +5,7 @@ import com.nfwork.dbfound.core.Context;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SqlTrim extends SqlPart{
 
@@ -28,11 +29,7 @@ public class SqlTrim extends SqlPart{
 
     @Override
     public String getPart() {
-        StringBuilder builder = new StringBuilder();
-        for(SqlPart sqlPart : sqlPartList){
-            builder.append(sqlPart.getPart()).append(",");
-        }
-        return builder.toString();
+        return getSqlPartList().stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
     }
 
     public List<SqlPart> getSqlPartList() {
