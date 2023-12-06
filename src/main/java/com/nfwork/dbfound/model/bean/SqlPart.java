@@ -139,7 +139,7 @@ public class SqlPart extends SqlEntity {
                     newParam.setName(newParamName);
                     newParam.setSourcePathHistory(sph);
                     Object value = context.getData(newParam.getSourcePathHistory(), elCache);
-                    if ("".equals(value)) {
+                    if("".equals(value) && param.isEmptyAsNull()){
                         value = null;
                     }
                     newParam.setValue(value);

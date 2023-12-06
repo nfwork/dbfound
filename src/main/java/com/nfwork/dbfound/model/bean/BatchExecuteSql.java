@@ -147,7 +147,7 @@ public class BatchExecuteSql extends Sql {
 					}
 
 					Object value = context.getData(newParam.getSourcePathHistory(), elCache);
-					if("".equals(value)){
+					if("".equals(value) && param.isEmptyAsNull()){
 						value = null;
 					}
 					newParam.setValue(value);
