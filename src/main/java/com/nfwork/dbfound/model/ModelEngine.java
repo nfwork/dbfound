@@ -465,8 +465,14 @@ public class ModelEngine {
 			}
 		}
 
-		if (DataUtil.isNotNull(paramValue)) {
-			nfParam.setValue(paramValue);
+		if(paramValue != null) {
+			if ("".equals(paramValue)) {
+				if(!nfParam.isEmptyAsNull()) {
+					nfParam.setValue("");
+				}
+			} else{
+				nfParam.setValue(paramValue);
+			}
 		}
 		nfParam.setSourcePathHistory(realPath);
 	}

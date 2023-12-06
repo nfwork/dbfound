@@ -28,6 +28,8 @@ public class Param extends Entity {
 	private boolean batchAssign = true;
 	private boolean requireLog = false;
 
+	private boolean emptyAsNull = true;
+
 	@Override
 	public void run() {
 		if (getParent() instanceof Model) {
@@ -192,5 +194,17 @@ public class Param extends Entity {
 
 	public void setRequireLog(boolean requireLog) {
 		this.requireLog = requireLog;
+	}
+
+	public boolean isEmptyAsNull() {
+		if(this.dataType == DataType.VARCHAR) {
+			return emptyAsNull;
+		}else{
+			return true;
+		}
+	}
+
+	public void setEmptyAsNull(boolean emptyAsNull) {
+		this.emptyAsNull = emptyAsNull;
 	}
 }

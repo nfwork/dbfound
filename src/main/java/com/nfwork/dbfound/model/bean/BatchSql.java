@@ -108,7 +108,7 @@ public class BatchSql extends Sqls {
 				String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
 				param.setSourcePathHistory(currentPath +"."+sp);
 				Object value = context.getData(param.getSourcePathHistory(), elCache);
-				if("".equals(value)){
+				if("".equals(value) && param.isEmptyAsNull()){
 					value = null;
 				}
 				param.setValue(value);
