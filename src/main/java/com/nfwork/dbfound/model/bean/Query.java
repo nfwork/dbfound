@@ -93,7 +93,7 @@ public class Query extends SqlEntity {
 
 		if (getParent() instanceof Model) {
 			Model model = (Model) getParent();
-			if (name == null || "".equals(name)) {
+			if (name == null || name.isEmpty()) {
 				model.putQuery("_default", this);
 			} else {
 				model.putQuery(name, this);
@@ -274,14 +274,20 @@ public class Query extends SqlEntity {
 					SqlPart sqlPart = sql.getSqlPartList().get(sqlPartIndex++);
 					String partValue = Matcher.quoteReplacement(sqlPart.getPartSql(context,params,provideName));
 
-					if(sqlPart.isAutoCompletion() && followType != 0 && DataUtil.isNotNull(partValue)){
-						if(followType == 1 ){
-							partValue = "where " + partValue;
-							followType = 2;
+					if(DataUtil.isNotNull(partValue)) {
+						if(sqlPart.isAutoCompletion() && followType != 0 ){
+							if(followType == 1 ){
+								partValue = "where " + partValue;
+								followType = 2;
+							}else {
+								partValue = "and " + partValue;
+							}
 						}else {
-							partValue = "and " + partValue;
+							partValue = partValue.replace(WHERE_CLAUSE, fsql == null ? "" : "where " + fsql)
+									.replace(AND_CLAUSE, fsql == null ? "" : "and " + fsql);
 						}
 					}
+
 					m.appendReplacement(buffer, partValue);
 					reduceBlank(buffer);
 
