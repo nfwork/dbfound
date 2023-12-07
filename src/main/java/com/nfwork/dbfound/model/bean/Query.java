@@ -239,6 +239,8 @@ public class Query extends SqlEntity {
 		if (fsql != null) {
 			fsql = Matcher.quoteReplacement(fsql);
 		}
+		String whereSql = fsql == null ? "" : "where " + fsql;
+		String andSql =  fsql == null ? "" : "and " + fsql;
 
 		int sqlPartIndex = 0;
 		int findCount = 0;
@@ -252,22 +254,19 @@ public class Query extends SqlEntity {
 			findCount++;
 			switch (text) {
 				case WHERE_CLAUSE:
+					m.appendReplacement(buffer, whereSql);
 					if (fsql == null) {
 						followType = 1;
-						m.appendReplacement(buffer, "");
 						reduceBlank(buffer);
 					} else {
 						followType = 2;
-						m.appendReplacement(buffer, "where " + fsql);
 					}
 					break;
 				case AND_CLAUSE:
+					m.appendReplacement(buffer, andSql);
 					followType = 2;
 					if (fsql == null) {
-						m.appendReplacement(buffer, "");
 						reduceBlank(buffer);
-					} else {
-						m.appendReplacement(buffer, "and " + fsql);
 					}
 					break;
 				case SQL_PART:
@@ -283,8 +282,8 @@ public class Query extends SqlEntity {
 								partValue = "and " + partValue;
 							}
 						}else {
-							partValue = partValue.replace(WHERE_CLAUSE, fsql == null ? "" : "where " + fsql)
-									.replace(AND_CLAUSE, fsql == null ? "" : "and " + fsql);
+							partValue = partValue.replace(WHERE_CLAUSE, whereSql)
+									.replace(AND_CLAUSE, andSql);
 						}
 					}
 
