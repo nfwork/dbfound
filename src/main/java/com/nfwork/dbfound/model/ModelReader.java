@@ -41,7 +41,7 @@ public class ModelReader {
 			try (FileInputStream inputStream = new FileInputStream(file)){
 				doc = reader.read(inputStream);
 			} catch (Exception e) {
-				String message = "modelReader exception，file:" + fileLocation;
+				String message = "modelReader exception，file: " + fileLocation;
 				throw new DBFoundPackageException(message, e);
 			}
 		} else {
@@ -60,7 +60,7 @@ public class ModelReader {
 						try (FileInputStream inputStream = new FileInputStream(file)){
 							doc = reader.read(inputStream);
 						} catch (Exception e) {
-							String message = "modelReader exception, file:" + fileLocation;
+							String message = "modelReader exception, file: " + fileLocation;
 							throw new DBFoundPackageException(message, e);
 						}
 					} else {
@@ -69,16 +69,16 @@ public class ModelReader {
 						try (InputStream inputStream = url.openStream()){
 							doc = reader.read(inputStream);
 						} catch (Exception e) {
-							String message = "modelReader exception, url:" + fileLocation;
+							String message = "modelReader exception, url: " + fileLocation;
 							throw new DBFoundPackageException(message, e);
 						}
 					}
 				} else {
-					throw new DBFoundRuntimeException("ModelReader not found file：" + modelName + ".xml, please check config");
+					throw new DBFoundRuntimeException("ModelReader can not found the file: " + modelName + ".xml, please check config");
 				}
 
 			} else {
-				throw new DBFoundRuntimeException("ModelReader not found file：" + DBFoundConfig.getModelLoadRoot() + "/" + modelName + ".xml , please check config");
+				throw new DBFoundRuntimeException("ModelReader can not found the file: " + DBFoundConfig.getModelLoadRoot() + "/" + modelName + ".xml , please check config");
 			}
 		}
 
