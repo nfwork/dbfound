@@ -1,12 +1,13 @@
 package com.nfwork.dbfound.web.file;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+import com.nfwork.dbfound.model.base.FileSaveType;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.dto.ResponseObject;
@@ -28,7 +29,7 @@ public class FileDownloadUtil {
 			throw new ParamNotFoundException("nameParam: " + nameParamName + " not defined");
 		}
 		String filename = nameParam.getStringValue();
-		if (filename == null || "".equals(filename)) {
+		if (filename == null || filename.isEmpty()) {
 			filename = "download.data";
 		}
 		if (p.getValue() == null) {
@@ -51,8 +52,8 @@ public class FileDownloadUtil {
 		}
 		
 		if (file.exists()) {
-			try (InputStream in = new FileInputStream(file);
-				 OutputStream out = response.getOutputStream()) {
+			try (InputStream in = Files.newInputStream(file.toPath());
+                 OutputStream out = response.getOutputStream()) {
 
 				filename = URLEncoder.encode(filename, DBFoundConfig.getEncoding()).replaceAll("\\+", "%20");
 				response.setContentLength((int)file.length());
@@ -71,7 +72,7 @@ public class FileDownloadUtil {
 			} catch (Exception e) {
 				LogUtil.error(e.getMessage(), e);
 			} finally {
-				if ("db".equals(p.getFileSaveType()) && p.getStringValue().endsWith(".dbf")) {
+				if (p.getFileSaveType()== FileSaveType.DB && p.getStringValue().endsWith(".dbf")) {
 					file.delete();
 				}
 			}
