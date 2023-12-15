@@ -1,9 +1,9 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -134,7 +134,7 @@ public class QuerySql extends Sql {
 					File file = new File(FileUtil.getUploadFolder(null), fileName);
 
 					try (InputStream in = dataset.getBinaryStream(index);
-						 OutputStream out = new FileOutputStream(file)) {
+						 OutputStream out = Files.newOutputStream(file.toPath())) {
 						if (in != null) {
 							byte[] b = new byte[4096];
 							int i = in.read(b);
