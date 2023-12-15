@@ -2,6 +2,7 @@ package com.nfwork.dbfound.model;
 
 import java.util.*;
 import jakarta.servlet.http.Cookie;
+import com.nfwork.dbfound.model.base.IOType;
 
 import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.base.CountType;
@@ -376,11 +377,11 @@ public class ModelEngine {
 		for (Param p : params.values()) {
 			if (context.isInWebContainer()) {
 				// 设定session参数
-				if ("true".equals(p.getAutoSession())) {
+				if (p.isAutoSession()) {
 					context.setSessionData(p.getName(), p.getValue());
 				}
 				// 设定cookie参数
-				if ("true".equals(p.getAutoCookie())) {
+				if (p.isAutoCookie()) {
 					Cookie cookie = new Cookie(p.getName(), p.getStringValue());
 					String path = context.request.getContextPath();
 					if (!path.endsWith("/")) {
@@ -391,7 +392,7 @@ public class ModelEngine {
 					context.response.addCookie(cookie);
 				}
 				// 将out参数输出
-				if (!"in".equals(p.getIoType())) {
+				if (p.getIoType() != IOType.IN) {
 					if (p.getDataType() == DataType.FILE) {
 						Transaction transaction = context.getTransaction();
 						if (transaction.isOpen()) {
@@ -406,7 +407,7 @@ public class ModelEngine {
 				}
 			} else {
 				// 将out参数输出
-				if (!"in".equals(p.getIoType())) {
+				if (p.getIoType() != IOType.IN) {
 					context.setOutParamData(p.getName(), p.getValue());
 				}
 			}
@@ -424,7 +425,7 @@ public class ModelEngine {
 		}
 		// end 修改
 
-		if ("out".equals(nfParam.getIoType())) {
+		if (nfParam.getIoType() == IOType.OUT) {
 			return; // out参数直接返回
 		}
 

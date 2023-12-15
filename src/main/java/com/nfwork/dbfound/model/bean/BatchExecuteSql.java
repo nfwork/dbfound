@@ -5,6 +5,7 @@ import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
+import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
@@ -116,7 +117,7 @@ public class BatchExecuteSql extends Sql {
 			}
 			param.setValue(updateCount);
 
-			if(!"in".equals(param.getIoType())){
+			if(param.getIoType() != IOType.IN){
 				context.setOutParamData(param.getName(),param.getValue());
 			}
 		}

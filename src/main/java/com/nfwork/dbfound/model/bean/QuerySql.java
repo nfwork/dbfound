@@ -17,6 +17,8 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.base.DataType;
+import com.nfwork.dbfound.model.base.FileSaveType;
+import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
@@ -109,7 +111,7 @@ public class QuerySql extends Sql {
 					param.setSourcePathHistory("set_by_querySql");
 					param.setRequireLog(true);
 
-					if(!"in".equals(param.getIoType())){
+					if(param.getIoType() != IOType.IN){
 						context.setOutParamData(param.getName(),param.getValue());
 					}
 				}
@@ -125,8 +127,8 @@ public class QuerySql extends Sql {
 
 	private void blobExecute(ResultSet dataset, Param param, int index) {
 		try {
-			if ("out".equals(param.getIoType())) {
-				if ("db".equals(param.getFileSaveType())) {
+			if (param.getIoType() == IOType.OUT) {
+				if (param.getFileSaveType() == FileSaveType.DB) {
 
 					String fileName = UUIDUtil.getUUID() + ".dbf";
 					File file = new File(FileUtil.getUploadFolder(null), fileName);
