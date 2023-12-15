@@ -28,8 +28,8 @@ public class Context {
 
 	private boolean outMessage = true;
 	private boolean isExport = false;
-	public HttpServletRequest request;
-	public HttpServletResponse response;
+	public final HttpServletRequest request;
+	public final HttpServletResponse response;
 
 	private int pagerSize = 0;
 	private long startWith = 0;
@@ -77,6 +77,8 @@ public class Context {
 
 	public Context() {
 		rootDatas = new HashMap<>();
+		response = null;
+		request = null;
 	}
 
 	/**
@@ -89,6 +91,8 @@ public class Context {
 			datas = new HashMap<>();
 		}
 		rootDatas = datas;
+		response = null;
+		request = null;
 	}
 
 	private Context(HttpServletRequest request, HttpServletResponse response) {
