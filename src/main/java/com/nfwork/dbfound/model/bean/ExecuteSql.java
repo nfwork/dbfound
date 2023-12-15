@@ -12,6 +12,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
+import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
 
@@ -84,7 +85,7 @@ public class ExecuteSql extends Sql {
 					param.setValue(rs.getLong(1));
 					param.setSourcePathHistory("set_by_generatedKey");
 
-					if(!"in".equals(param.getIoType())){
+					if(param.getIoType() != IOType.IN){
 						context.setOutParamData(param.getName(),param.getValue());
 					}
 				}
@@ -102,7 +103,7 @@ public class ExecuteSql extends Sql {
 				param.setValue(fetchSize);
 				param.setSourcePathHistory("set_by_affectedCount");
 
-				if(!"in".equals(param.getIoType())){
+				if(param.getIoType() != IOType.IN){
 					context.setOutParamData(param.getName(),param.getValue());
 				}
 			}

@@ -5,6 +5,8 @@ import java.util.Date;
 
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.Entity;
+import com.nfwork.dbfound.model.base.FileSaveType;
+import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LocalDateUtil;
 
@@ -14,14 +16,14 @@ public class Param extends Entity {
 
 	private String name = "";
 	private DataType dataType = DataType.VARCHAR;
-	private String ioType = "in";
-	private String autoSession;
-	private String autoCookie;
+	private IOType ioType = IOType.IN;
+	private boolean autoSession = false;
+	private boolean autoCookie = false;
 	private Object value;
 	private String sourcePath;
 	private String sourcePathHistory;
 	private String scope;
-	private String fileSaveType = "db"; // disk ,db
+	private FileSaveType fileSaveType = FileSaveType.DB;
 	private String innerPath;
 	private String fileNameParam;
 	private boolean UUID = false;
@@ -60,11 +62,11 @@ public class Param extends Entity {
 		this.dataType = dataType;
 	}
 
-	public String getIoType() {
+	public IOType getIoType() {
 		return ioType;
 	}
 
-	public void setIoType(String ioType) {
+	public void setIoType(IOType ioType) {
 		this.ioType = ioType;
 	}
 
@@ -116,11 +118,11 @@ public class Param extends Entity {
 		this.value = value;
 	}
 
-	public String getAutoSession() {
+	public boolean isAutoSession() {
 		return autoSession;
 	}
 
-	public void setAutoSession(String autoSession) {
+	public void setAutoSession(boolean autoSession) {
 		this.autoSession = autoSession;
 	}
 
@@ -140,11 +142,11 @@ public class Param extends Entity {
 		this.sourcePathHistory = sourcePathHistory;
 	}
 
-	public String getFileSaveType() {
+	public FileSaveType getFileSaveType() {
 		return fileSaveType;
 	}
 
-	public void setFileSaveType(String fileSaveType) {
+	public void setFileSaveType(FileSaveType fileSaveType) {
 		this.fileSaveType = fileSaveType;
 	}
 
@@ -164,11 +166,11 @@ public class Param extends Entity {
 		this.fileNameParam = fileNameParam;
 	}
 
-	public String getAutoCookie() {
+	public boolean isAutoCookie() {
 		return autoCookie;
 	}
 
-	public void setAutoCookie(String autoCookie) {
+	public void setAutoCookie(boolean autoCookie) {
 		this.autoCookie = autoCookie;
 	}
 
