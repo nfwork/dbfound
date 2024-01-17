@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.nfwork</groupId>
 	<artifactId>dbfound</artifactId>
-	<version>3.4.6</version>
+	<version>3.4.7</version>
 	<packaging>jar</packaging>
 
 	<properties>
