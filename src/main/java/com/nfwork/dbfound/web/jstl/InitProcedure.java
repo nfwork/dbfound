@@ -17,8 +17,11 @@ public class InitProcedure extends TagSupport implements TryCatchFinally {
 	public int doStartTag() throws JspTagException {
 		// 开启事务
 		Transaction transaction = getContext().getTransaction();
-		transaction.begin();
 
+		/*
+		 * 兼容spring事务管理，initProcedure不再开启事务；
+		 */
+		//transaction.begin();
 		return EVAL_BODY_INCLUDE;
 	}
 
