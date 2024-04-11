@@ -4,7 +4,7 @@ import com.nfwork.dbfound.model.bean.Param;
 
 import java.util.Map;
 
-public class FileDownloadResponseObject extends QueryResponseObject<Object>{
+public class FileDownloadResponseObject extends ResponseObject{
 
     final Param file;
 
