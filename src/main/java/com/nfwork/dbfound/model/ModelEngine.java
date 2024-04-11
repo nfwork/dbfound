@@ -2,6 +2,8 @@ package com.nfwork.dbfound.model;
 
 import java.util.*;
 import javax.servlet.http.Cookie;
+
+import com.nfwork.dbfound.dto.FileDownloadResponseObject;
 import com.nfwork.dbfound.model.base.IOType;
 
 import com.nfwork.dbfound.model.base.Count;
@@ -9,19 +11,16 @@ import com.nfwork.dbfound.model.base.CountType;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.ExecuteNotFoundException;
-import com.nfwork.dbfound.exception.FileDownLoadInterrupt;
 import com.nfwork.dbfound.exception.QueryNotFoundException;
 import com.nfwork.dbfound.model.bean.Execute;
 import com.nfwork.dbfound.model.bean.Model;
 import com.nfwork.dbfound.model.bean.Param;
 import com.nfwork.dbfound.model.bean.Query;
 import com.nfwork.dbfound.util.LogUtil;
-import com.nfwork.dbfound.web.file.FileDownloadUtil;
 
 public class ModelEngine {
 
@@ -187,7 +186,7 @@ public class ModelEngine {
 
 			ro.setSuccess(true);
 			ro.setMessage("success");
-			ro.setOutParam(getOutParams(context, params));
+			ro = (QueryResponseObject<T>) initOutParams(context, params, ro);
 
 			if(query.getQueryAdapter() != null){
 				query.getQueryAdapter().afterQuery(context,params,ro);
@@ -268,7 +267,7 @@ public class ModelEngine {
 					}
 					params = executeRun(context, modelName, en, currentPath, elCache);
 				}
-				ro.setOutParam(getOutParams(context, params));
+				ro = initOutParams(context, params, ro);
 			}
 			return ro;
 		} finally {
@@ -318,7 +317,7 @@ public class ModelEngine {
 			ResponseObject ro = new ResponseObject();
 			ro.setSuccess(true);
 			ro.setMessage("success");
-			ro.setOutParam(getOutParams(context, params));
+			ro = initOutParams(context, params, ro);
 			return ro;
 		} finally {
 			context.modelDeepReduce();
@@ -373,7 +372,7 @@ public class ModelEngine {
 	 * @param params params
 	 * @return Map
 	 */
-	protected static Map<String, Object> getOutParams(Context context, Map<String, Param> params) {
+	protected static ResponseObject initOutParams(Context context, Map<String, Param> params, ResponseObject responseObject) {
 		for (Param p : params.values()) {
 			if (context.isInWebContainer()) {
 				// 设定session参数
@@ -394,13 +393,9 @@ public class ModelEngine {
 				// 将out参数输出
 				if (p.getIoType() != IOType.IN) {
 					if (p.getDataType() == DataType.FILE) {
-						Transaction transaction = context.getTransaction();
-						if (transaction.isOpen()) {
-							transaction.commit();
-							transaction.end();
+						if(!context.isExport()) {
+							return new FileDownloadResponseObject(p, params);
 						}
-						FileDownloadUtil.download(p, params, context.response);
-						throw new FileDownLoadInterrupt("file download: " + p.getValue());
 					} else {
 						context.setOutParamData(p.getName(), p.getValue());
 					}
@@ -412,7 +407,8 @@ public class ModelEngine {
 				}
 			}
 		}
-		return context.getOutParamDatas();
+		responseObject.setOutParam(context.getOutParamDatas());
+		return responseObject;
 	}
 
 	private static void setParam(Param nfParam, Context context, String cp, Map<String, Object> elCache) {
