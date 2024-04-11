@@ -8,18 +8,12 @@ import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
-import com.nfwork.dbfound.exception.FileDownLoadInterrupt;
 
 public class WebExceptionHandle {
 
 	public static void handle(Exception exception, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			exception = getException(exception);
-
-			if (exception instanceof FileDownLoadInterrupt) {
-				LogUtil.warn(exception.getMessage());
-				return;
-			}
 
 			String em = exception.getMessage();
 			String code = null;
