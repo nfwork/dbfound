@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.model.bean;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
 
@@ -8,6 +9,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
+import com.nfwork.dbfound.model.base.FileSaveType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StreamUtils;
 import com.nfwork.dbfound.web.file.FilePart;
@@ -110,6 +112,14 @@ public class Execute extends SqlEntity {
 					}
 					InputStream inputStream = ((FilePart) value).inputStream();
 					param.setValue(inputStream);
+					list.add(inputStream);
+				} else if (param.getFileSaveType() == FileSaveType.DISK && value instanceof String ){
+					if (list == null) {
+						list = new ArrayList<>();
+					}
+					InputStream inputStream = new FileInputStream((String) value);
+					param.setValue(inputStream);
+					param.setSourcePathHistory((String) value);
 					list.add(inputStream);
 				}
 			}catch (Exception exception){
