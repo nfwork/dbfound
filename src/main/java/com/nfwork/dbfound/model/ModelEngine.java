@@ -112,8 +112,9 @@ public class ModelEngine {
 		try {
 			context.modelDeepIncrease();
 
-			if (queryName == null || "".equals(queryName))
+			if (DataUtil.isNull(queryName)) {
 				queryName = "_default";
+			}
 
 			if(DataUtil.isNull(currentPath)){
 				currentPath = defaultPath;
@@ -186,7 +187,7 @@ public class ModelEngine {
 
 			ro.setSuccess(true);
 			ro.setMessage("success");
-			ro = (QueryResponseObject<T>) initOutParams(context, params, ro);
+			initOutParams(context, params, ro);
 
 			if(query.getQueryAdapter() != null){
 				query.getQueryAdapter().afterQuery(context,params,ro);
@@ -224,8 +225,9 @@ public class ModelEngine {
 		try {
 			context.modelDeepIncrease();
 
-			if (executeName == null || "".equals(executeName))
+			if (DataUtil.isNull(executeName)) {
 				executeName = "addOrUpdate";
+			}
 
 			// 批量执行查找客户端数据的路径
 			String batchExecutePath;
@@ -303,8 +305,9 @@ public class ModelEngine {
 
 			Map<String, Param> params;
 
-			if (executeName == null || "".equals(executeName))
+			if (DataUtil.isNull(executeName)) {
 				executeName = "_default";
+			}
 
 			if(DataUtil.isNull(currentPath)){
 				currentPath = defaultPath;
@@ -393,7 +396,7 @@ public class ModelEngine {
 				// 将out参数输出
 				if (p.getIoType() != IOType.IN) {
 					if (p.getDataType() == DataType.FILE) {
-						if(!context.isExport()) {
+						if(!context.isExport() && ! (responseObject instanceof QueryResponseObject)) {
 							return new FileDownloadResponseObject(p, params);
 						}
 					} else {

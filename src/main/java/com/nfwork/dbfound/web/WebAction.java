@@ -15,12 +15,7 @@ class WebAction {
 	static void query(Context context, String modelName, String queryName) {
 		ResponseObject ro = ModelEngine.query(context, modelName,
 				queryName, null, true);
-		if(ro instanceof FileDownloadResponseObject){
-			FileDownloadResponseObject fd = (FileDownloadResponseObject) ro;
-			FileDownloadUtil.download(fd.getFile(),fd.getParams(),context.response);
-		}else {
-			WebWriter.jsonWriter(context.response, JsonUtil.toJson(ro));
-		}
+		WebWriter.jsonWriter(context.response, JsonUtil.toJson(ro));
 	}
 
 	static void execute(Context context, String modelName, String executeName) {
