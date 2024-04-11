@@ -9,6 +9,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.web.file.FilePart;
 
 public class ExcelReader extends SqlEntity {
@@ -33,7 +34,7 @@ public class ExcelReader extends SqlEntity {
 		if(!ELEngine.isAbsolutePath(setPath)){
 			setPath = context.getCurrentPath() + "." + setPath;
 		}
-		String type = "default";
+		String type = "_default";
 		String sourcePath = param.getSourcePathHistory();
 		if(sourcePath.endsWith(".content") && !sourcePath.equals("param.content")){
 			sourcePath  = sourcePath.substring(0,sourcePath.length()-8) ;
@@ -42,6 +43,8 @@ public class ExcelReader extends SqlEntity {
 		if(obj instanceof FilePart){
 			FilePart filePart = (FilePart) obj;
 			type = com.nfwork.dbfound.excel.ExcelReader.getType(filePart);
+		}else if(sourcePath.toLowerCase().endsWith(".csv")){
+			type = "csv";
 		}
 
 		Object ofile = param.getValue();
@@ -53,6 +56,7 @@ public class ExcelReader extends SqlEntity {
 				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((InputStream) ofile, type);
 			}
 			context.setData(setPath, object);
+			LogUtil.info("ExcelReader execute success, sourcePath: " + param.getSourcePathHistory());
 		}else if(ofile instanceof byte[]){
 			Object object;
 			if("map".equals(requiredDataType)){
@@ -61,6 +65,7 @@ public class ExcelReader extends SqlEntity {
 				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((byte[]) ofile, type);
 			}
 			context.setData(setPath, object);
+			LogUtil.info("ExcelReader execute success, sourcePath: " + param.getSourcePathHistory());
 		}
 	}
 
