@@ -71,6 +71,7 @@ public class QuerySql extends Sql {
 			dataset = statement.executeQuery();
 			ResultSetMetaData metaset = dataset.getMetaData();
 			Calendar defaultCalendar = Calendar.getInstance();
+			int fileSize = 0;
 
 			if (dataset.next()) {
 				for (int i = 1; i <= metaset.getColumnCount(); i++) {
@@ -99,7 +100,11 @@ public class QuerySql extends Sql {
 
 					DataType paramType = param.getDataType();
 					if (paramType == DataType.FILE) {
-						blobExecute(dataset, param, i);
+						//querySQL outParam下载文件，仅支持一个File
+						if (param.getIoType() == IOType.OUT && fileSize == 0) {
+							blobExecute(dataset, param, i);
+							fileSize = 1;
+						}
 					}else{
 						int columnType = metaset.getColumnType(i);
 						if (dataset.getObject(i) == null) {
@@ -127,28 +132,25 @@ public class QuerySql extends Sql {
 
 	private void blobExecute(ResultSet dataset, Param param, int index) {
 		try {
-			if (param.getIoType() == IOType.OUT) {
-				if (param.getFileSaveType() == FileSaveType.DB) {
+			if (param.getFileSaveType() == FileSaveType.DB) {
+				String fileName = UUIDUtil.getUUID() + ".dbf";
+				File file = new File(FileUtil.getUploadFolder(null), fileName);
 
-					String fileName = UUIDUtil.getUUID() + ".dbf";
-					File file = new File(FileUtil.getUploadFolder(null), fileName);
-
-					try (InputStream in = dataset.getBinaryStream(index);
-						 OutputStream out = Files.newOutputStream(file.toPath())) {
-						if (in != null) {
-							byte[] b = new byte[4096];
-							int i = in.read(b);
-							while (i != -1) {
-								out.write(b, 0, i);
-								i = in.read(b);
-							}
-							param.setValue(file);
-							out.flush();
+				try (InputStream in = dataset.getBinaryStream(index);
+					 OutputStream out = Files.newOutputStream(file.toPath())) {
+					if (in != null) {
+						byte[] b = new byte[4096];
+						int i = in.read(b);
+						while (i != -1) {
+							out.write(b, 0, i);
+							i = in.read(b);
 						}
+						param.setValue(file);
+						out.flush();
 					}
-				} else {
-					param.setValue(dataset.getString(index));
 				}
+			} else {
+				param.setValue(dataset.getString(index));
 			}
 		} catch (Exception e) {
 			throw new DBFoundPackageException("lob field execute exception:" + e.getMessage(), e);
