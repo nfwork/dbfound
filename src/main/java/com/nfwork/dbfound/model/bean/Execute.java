@@ -1,8 +1,5 @@
 package com.nfwork.dbfound.model.bean;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 import com.nfwork.dbfound.el.ELEngine;
@@ -10,11 +7,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
-import com.nfwork.dbfound.model.base.FileSaveType;
-import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.StreamUtils;
-import com.nfwork.dbfound.web.file.FilePart;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 
@@ -65,16 +58,11 @@ public class Execute extends SqlEntity {
 	}
 
 	public void executeRun(Context context,Map<String, Param> params, String provideName){
-		List<InputStream> list = initFileParam(params);
-		try {
-			if (sqls != null) {
-				for (int i = 0; i < sqls.sqlList.size(); i++) {
-					SqlEntity sql = sqls.sqlList.get(i);
-					sql.execute(context, params, provideName);
-				}
+		if (sqls != null) {
+			for (int i = 0; i < sqls.sqlList.size(); i++) {
+				SqlEntity sql = sqls.sqlList.get(i);
+				sql.execute(context, params, provideName);
 			}
-		}finally {
-			closeFileParam(list);
 		}
 	}
 
@@ -96,48 +84,6 @@ public class Execute extends SqlEntity {
 		ModelEngine.execute(context, mName, name, exePath);
 		context.setCurrentPath(currentPath);
 		context.setCurrentModel(currentModel);
-	}
-
-	private List<InputStream> initFileParam(Map<String, Param> params){
-		List<InputStream> list = null;
-		for (Param param : params.values()) {
-			try {
-				Object value = param.getValue();
-				if (value instanceof InputStream) {
-					if (list == null) {
-						list = new ArrayList<>();
-					}
-					list.add((InputStream)value);
-				} else if (value instanceof FilePart) {
-					if (list == null) {
-						list = new ArrayList<>();
-					}
-					InputStream inputStream = ((FilePart) value).inputStream();
-					param.setValue(inputStream);
-					list.add(inputStream);
-				} else if (param.getFileSaveType() == FileSaveType.DISK && value instanceof String && param.getIoType() == IOType.IN ){
-					if (list == null) {
-						list = new ArrayList<>();
-					}
-					InputStream inputStream = Files.newInputStream(Paths.get((String) value));
-					param.setValue(inputStream);
-					param.setSourcePathHistory((String) value);
-					list.add(inputStream);
-				}
-			}catch (Exception exception){
-				closeFileParam(list);
-				throw new DBFoundRuntimeException("init file param failed, "+exception.getMessage(), exception);
-			}
-		}
-		return list;
-	}
-
-	private void closeFileParam(List<InputStream> list){
-		if(list != null) {
-			for (InputStream inputStream : list) {
-				StreamUtils.closeInputStream(inputStream);
-			}
-		}
 	}
 
 	public String getName() {

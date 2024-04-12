@@ -1,5 +1,8 @@
 package com.nfwork.dbfound.model.bean;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -14,9 +17,9 @@ import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
+import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.model.base.DataType;
-import com.nfwork.dbfound.model.base.SimpleItemList;
+import com.nfwork.dbfound.model.base.*;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
@@ -24,7 +27,7 @@ import com.nfwork.dbfound.util.*;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
-import com.nfwork.dbfound.model.base.Entity;
+import com.nfwork.dbfound.web.file.FilePart;
 
 public abstract class SqlEntity extends Entity {
 
@@ -59,7 +62,7 @@ public abstract class SqlEntity extends Entity {
 	 * 
 	 * @return string
 	 */
-	public String getExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam) {
+	protected String getExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam) {
 
 		Matcher m = dynamicPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
@@ -133,13 +136,21 @@ public abstract class SqlEntity extends Entity {
 		}
 	}
 
-	/**
-	 * 参数设定 sql为原生sql语句，用来寻找参数的位置
-	 * 
-	 * @throws SQLException sql exception
-	 * @throws NumberFormatException Number Format Exception
-	 */
-	public void initParam(PreparedStatement statement, List<Object> exeParam)throws SQLException {
+	protected void initParam(PreparedStatement statement, List<Object> exeParam) throws SQLException {
+		try {
+			initParam(statement, exeParam, null);
+		}catch (IOException exception){
+			throw new DBFoundPackageException("init param failed", exception);
+		}
+	}
+
+		/**
+         * 参数设定 sql为原生sql语句，用来寻找参数的位置
+         *
+         * @throws SQLException sql exception
+         * @throws NumberFormatException Number Format Exception
+         */
+	protected void initParam(PreparedStatement statement, List<Object> exeParam, List<InputStream> files) throws SQLException, IOException {
 		Calendar defaultCalendar = Calendar.getInstance();
 		int cursor = 1;
 		for (Object value : exeParam){
@@ -191,8 +202,30 @@ public abstract class SqlEntity extends Entity {
 				}else {
 					statement.setString(cursor, value.toString());
 				}
+			} else if (value instanceof FilePart) {
+				if(files != null){
+					InputStream inputStream = ((FilePart) value).inputStream();
+					statement.setBinaryStream(cursor, inputStream);
+					files.add(inputStream);
+				}else{
+					throw new DBFoundRuntimeException("the file param can be only used in ExecuteSql");
+				}
+			} else if (value instanceof File) {
+				if(files != null){
+					File file = (File)value;
+					InputStream inputStream = new FileInputStream(file);
+					statement.setBinaryStream(cursor, inputStream);
+					files.add(inputStream);
+				}else{
+					throw new DBFoundRuntimeException("the file param can be only used in ExecuteSql");
+				}
 			} else if (value instanceof InputStream) {
-				statement.setBinaryStream(cursor, (InputStream) value);
+				if(files != null){
+					statement.setBinaryStream(cursor, (InputStream) value);
+					files.add((InputStream) value);
+				}else{
+					throw new DBFoundRuntimeException("the file param only can be only used in ExecuteSql");
+				}
 			} else if (value instanceof byte[]) {
 				statement.setBytes(cursor, (byte[]) value);
 			} else{
@@ -299,7 +332,7 @@ public abstract class SqlEntity extends Entity {
 	 * 枚举类型 boolean类型支持 2022年07月08日17:26:06
 	 * @param nfParam param
 	 */
-	private void initParamValue(Param nfParam){
+	protected void initParamValue(Param nfParam){
 
 		if(nfParam.getDataType() == null){
 			throw new DBFoundRuntimeException("dataType can not be null, it only can be one of varchar, number, boolean, date, file or collection");
@@ -395,10 +428,15 @@ public abstract class SqlEntity extends Entity {
 					throw new DBFoundRuntimeException("can not cost "+ nfParam.getValue().getClass() +" to date");
 				}
 			}
+		}else if (nfParam.getDataType() == DataType.FILE)  {
+			if (nfParam.getFileSaveType() == FileSaveType.DISK && nfParam.getValue() instanceof String ) {
+				File file = new File((String) nfParam.getValue());
+				nfParam.setValue(file);
+			}
 		}
 	}
 
-	private void initParamType(Param nfParam){
+	protected void initParamType(Param nfParam){
 		if (nfParam.getDataType() == DataType.UNKNOWN){
 			Object value = nfParam.getValue();
 			if (value != null){
@@ -410,7 +448,7 @@ public abstract class SqlEntity extends Entity {
 					nfParam.setDataType(DataType.DATE);
 				} else if (value instanceof Boolean){
 					nfParam.setDataType(DataType.BOOLEAN);
-				} else if (value instanceof InputStream || value instanceof byte[]){
+				} else if (value instanceof FilePart || value instanceof File || value instanceof InputStream || value instanceof byte[]){
 					nfParam.setDataType(DataType.FILE);
 				} else if (value instanceof Collection || DataUtil.isArray(value)) {
 					nfParam.setDataType(DataType.COLLECTION);
