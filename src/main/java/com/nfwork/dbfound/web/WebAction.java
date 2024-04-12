@@ -40,7 +40,7 @@ class WebAction {
 		if (context.isOutMessage()) {
 			if(ro instanceof FileDownloadResponseObject){
 				FileDownloadResponseObject fd = (FileDownloadResponseObject) ro;
-				FileDownloadUtil.download(fd.getFile(),fd.getParams(),context.response);
+				FileDownloadUtil.download(fd.getFileParam(),fd.getParams(),context.response);
 			}else {
 				WebWriter.jsonWriter(context.response, JsonUtil.toJson(ro));
 			}

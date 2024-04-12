@@ -6,17 +6,18 @@ import java.util.Map;
 
 public class FileDownloadResponseObject extends ResponseObject{
 
-    final Param file;
+    final Param fileParam;
 
     final Map<String, Param> params;
 
-    public FileDownloadResponseObject(Param file, Map<String, Param> params){
-        this.file = file;
+    public FileDownloadResponseObject(Param fileParam, Map<String, Param> params){
+        this.fileParam = fileParam;
         this.params = params;
+        this.setSuccess(true);
     }
 
-    public Param getFile() {
-        return file;
+    public Param getFileParam() {
+        return fileParam;
     }
 
     public Map<String, Param> getParams() {
