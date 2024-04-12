@@ -4,11 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,7 +13,6 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.base.DataType;
-import com.nfwork.dbfound.model.base.FileSaveType;
 import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
@@ -99,14 +94,15 @@ public class QuerySql extends Sql {
 					}
 
 					DataType paramType = param.getDataType();
-					if (paramType == DataType.FILE) {
+					int columnType = metaset.getColumnType(i);
+
+					if (paramType == DataType.FILE && (columnType != Types.CHAR && columnType !=Types.VARCHAR)) {
 						//querySQL outParam下载文件，仅支持一个File
 						if (param.getIoType() == IOType.OUT && fileSize == 0) {
 							blobExecute(dataset, param, i);
 							fileSize = 1;
 						}
 					}else{
-						int columnType = metaset.getColumnType(i);
 						if (dataset.getObject(i) == null) {
 							param.setValue(null);
 						}else{
@@ -132,25 +128,21 @@ public class QuerySql extends Sql {
 
 	private void blobExecute(ResultSet dataset, Param param, int index) {
 		try {
-			if (param.getFileSaveType() == FileSaveType.DB) {
-				String fileName = UUIDUtil.getUUID() + ".dbf";
-				File file = new File(FileUtil.getUploadFolder(null), fileName);
+			String fileName = UUIDUtil.getUUID() + ".lob.dbf";
+			File file = new File(FileUtil.getUploadFolder(null), fileName);
 
-				try (InputStream in = dataset.getBinaryStream(index);
-					 OutputStream out = Files.newOutputStream(file.toPath())) {
-					if (in != null) {
-						byte[] b = new byte[4096];
-						int i = in.read(b);
-						while (i != -1) {
-							out.write(b, 0, i);
-							i = in.read(b);
-						}
-						param.setValue(file);
-						out.flush();
+			try (InputStream in = dataset.getBinaryStream(index);
+				 OutputStream out = Files.newOutputStream(file.toPath())) {
+				if (in != null) {
+					byte[] b = new byte[4096];
+					int i = in.read(b);
+					while (i != -1) {
+						out.write(b, 0, i);
+						i = in.read(b);
 					}
+					param.setValue(file);
+					out.flush();
 				}
-			} else {
-				param.setValue(dataset.getString(index));
 			}
 		} catch (Exception e) {
 			throw new DBFoundPackageException("lob field execute exception:" + e.getMessage(), e);
