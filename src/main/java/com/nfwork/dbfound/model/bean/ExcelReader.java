@@ -1,9 +1,9 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Map;
 
 import com.nfwork.dbfound.el.ELEngine;
@@ -69,7 +69,7 @@ public class ExcelReader extends SqlEntity {
 			InputStream inputStream = null;
 			try {
 				if (ofile instanceof File) {
-					inputStream = new FileInputStream((File) ofile);
+					inputStream = Files.newInputStream(((File) ofile).toPath());
 				} else if (ofile instanceof FilePart) {
 					inputStream = ((FilePart) ofile).inputStream();
 				} else if (ofile instanceof InputStream) {
@@ -87,7 +87,7 @@ public class ExcelReader extends SqlEntity {
 					LogUtil.info("ExcelReader execute success, param value: " + param.getValue() + ", sourcePath: " +param.getSourcePathHistory());
 				}
 			}catch (IOException exception){
-				throw new DBFoundRuntimeException("ExcelReader execute failed, cause by : " + exception.getMessage(),exception);
+				throw new DBFoundRuntimeException("ExcelReader execute failed, caused by : " + exception.getMessage(),exception);
 			}finally {
 				StreamUtils.closeInputStream(inputStream);
 			}

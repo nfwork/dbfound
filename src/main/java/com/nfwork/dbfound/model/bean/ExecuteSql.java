@@ -115,7 +115,7 @@ public class ExecuteSql extends Sql {
 		} catch (SQLException e) {
 			throw new SqlExecuteException(provideName, getSqlTask(context,"ExecuteSql"), esql, e.getMessage(), e);
 		} catch (IOException exception){
-			throw new DBFoundRuntimeException("init file param failed, cause by "+ exception.getMessage(), exception);
+			throw new DBFoundRuntimeException("ExecuteSql init file param failed, caused by "+ exception.getMessage(), exception);
 		} finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
