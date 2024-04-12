@@ -7,7 +7,6 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.Map;
 import jakarta.servlet.http.HttpServletResponse;
-import com.nfwork.dbfound.model.base.FileSaveType;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.dto.ResponseObject;
@@ -72,8 +71,8 @@ public class FileDownloadUtil {
 			} catch (Exception e) {
 				LogUtil.error(e.getMessage(), e);
 			} finally {
-				if (p.getFileSaveType()== FileSaveType.DB && p.getStringValue().endsWith(".dbf")) {
-					file.delete();
+				if (file.getName().endsWith(".lob.dbf")) {
+					boolean ignore = file.delete();
 				}
 			}
 		} else {

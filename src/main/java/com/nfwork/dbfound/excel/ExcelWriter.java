@@ -84,7 +84,7 @@ public class ExcelWriter {
 
 	private static void doExport(Context context, List<?> result, List<ExcelColumn> columns)throws Exception {
 
-		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + ".export");
+		File file = new File(FileUtil.getUploadFolder(null), UUIDUtil.getUUID() + ".export.dbf");
 		try {
 			String exportType = getExportType(context);
 			if(DataUtil.isNull(exportType)){

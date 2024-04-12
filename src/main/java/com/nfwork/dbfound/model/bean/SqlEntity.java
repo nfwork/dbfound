@@ -429,7 +429,7 @@ public abstract class SqlEntity extends Entity {
 				}
 			}
 		}else if (nfParam.getDataType() == DataType.FILE)  {
-			if (nfParam.getFileSaveType() == FileSaveType.DISK && nfParam.getValue() instanceof String ) {
+			if (nfParam.getValue() instanceof String) {
 				File file = new File((String) nfParam.getValue());
 				nfParam.setValue(file);
 			}
