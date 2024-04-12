@@ -1,5 +1,8 @@
 package com.nfwork.dbfound.model.bean;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -10,6 +13,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
+import com.nfwork.dbfound.util.StreamUtils;
 import com.nfwork.dbfound.web.file.FilePart;
 
 public class ExcelReader extends SqlEntity {
@@ -47,17 +51,12 @@ public class ExcelReader extends SqlEntity {
 			type = "csv";
 		}
 
+		initParamValue(param);
+		initParamType(param);
+
 		Object ofile = param.getValue();
-		if(ofile instanceof InputStream){
-			Object object;
-			if("map".equals(requiredDataType)){
-				object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((InputStream) ofile, type);
-			} else {
-				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((InputStream) ofile, type);
-			}
-			context.setData(setPath, object);
-			LogUtil.info("ExcelReader execute success, sourcePath: " + param.getSourcePathHistory());
-		}else if(ofile instanceof byte[]){
+
+		if(ofile instanceof byte[]){
 			Object object;
 			if("map".equals(requiredDataType)){
 				object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((byte[]) ofile, type);
@@ -65,7 +64,33 @@ public class ExcelReader extends SqlEntity {
 				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((byte[]) ofile, type);
 			}
 			context.setData(setPath, object);
-			LogUtil.info("ExcelReader execute success, sourcePath: " + param.getSourcePathHistory());
+			LogUtil.info("ExcelReader execute success, param value: " + param.getValue() + ", sourcePath: " +param.getSourcePathHistory());
+		}else{
+			InputStream inputStream = null;
+			try {
+				if (ofile instanceof File) {
+					inputStream = new FileInputStream((File) ofile);
+				} else if (ofile instanceof FilePart) {
+					inputStream = ((FilePart) ofile).inputStream();
+				} else if (ofile instanceof InputStream) {
+					inputStream = (InputStream) ofile;
+				}
+
+				if (inputStream != null) {
+					Object object;
+					if ("map".equals(requiredDataType)) {
+						object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap(inputStream, type);
+					} else {
+						object = com.nfwork.dbfound.excel.ExcelReader.readExcel(inputStream, type);
+					}
+					context.setData(setPath, object);
+					LogUtil.info("ExcelReader execute success, param value: " + param.getValue() + ", sourcePath: " +param.getSourcePathHistory());
+				}
+			}catch (IOException exception){
+				throw new DBFoundRuntimeException("ExcelReader execute failed, cause by : " + exception.getMessage(),exception);
+			}finally {
+				StreamUtils.closeInputStream(inputStream);
+			}
 		}
 	}
 
