@@ -1,10 +1,10 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -213,7 +213,7 @@ public abstract class SqlEntity extends Entity {
 			} else if (value instanceof File) {
 				if(files != null){
 					File file = (File)value;
-					InputStream inputStream = new FileInputStream(file);
+					InputStream inputStream = Files.newInputStream(file.toPath());
 					statement.setBinaryStream(cursor, inputStream);
 					files.add(inputStream);
 				}else{
