@@ -1,5 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +17,7 @@ import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.StreamUtils;
 
 public class ExecuteSql extends Sql {
 
@@ -62,6 +65,8 @@ public class ExecuteSql extends Sql {
 		PreparedStatement statement = null;
 		ResultSet rs = null;
 
+		List<InputStream> fileList = new ArrayList<>();
+
 		try {
 			if (DataUtil.isNotNull(generatedKeyParam)){
 				statement = conn.prepareStatement(esql, Statement.RETURN_GENERATED_KEYS);
@@ -70,7 +75,7 @@ public class ExecuteSql extends Sql {
 			}
 
 			// 参数设定
-			initParam(statement, exeParam);
+			initParam(statement, exeParam, fileList);
 			statement.execute();
 
 			// 2013年9月9日8:47:54 添加主键返回
@@ -107,12 +112,23 @@ public class ExecuteSql extends Sql {
 					context.setOutParamData(param.getName(),param.getValue());
 				}
 			}
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			throw new SqlExecuteException(provideName, getSqlTask(context,"ExecuteSql"), esql, e.getMessage(), e);
+		} catch (IOException exception){
+			throw new DBFoundRuntimeException("init file param failed, cause by "+ exception.getMessage(), exception);
 		} finally {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
+			closeFileParam(fileList);
 			log("executeSql",esql, params);
+		}
+	}
+
+	private void closeFileParam(List<InputStream> list){
+		if(list != null) {
+			for (InputStream inputStream : list) {
+				StreamUtils.closeInputStream(inputStream);
+			}
 		}
 	}
 
