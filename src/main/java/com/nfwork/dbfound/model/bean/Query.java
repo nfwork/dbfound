@@ -19,6 +19,7 @@ import com.nfwork.dbfound.model.adapter.ObjectQueryAdapter;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.base.CountType;
+import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.resolver.TypeResolverTool;
 import com.nfwork.dbfound.util.*;
@@ -231,6 +232,10 @@ public class Query extends SqlEntity {
 						builder.append(nfFilter.getExpress()).append(" and ");
 					}
 				}else if(DataUtil.isNotNull(nfFilter.getValue())){
+					//集合参数，当length为0时，filter不生效
+					if(param.getDataType() == DataType.COLLECTION && DataUtil.getDataLength(nfFilter.getValue()) == 0){
+						continue;
+					}
 					builder.append(nfFilter.getExpress()).append(" and ");
 				}
 			}

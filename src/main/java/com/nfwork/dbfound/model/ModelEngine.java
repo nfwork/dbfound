@@ -458,13 +458,6 @@ public class ModelEngine {
 		// 取值
 		Object paramValue = context.getData(realPath, elCache);
 
-		if(nfParam.getDataType() == DataType.COLLECTION){
-			int length = DataUtil.getDataLength(paramValue);
-			if (length <= 0){
-				paramValue = null;
-			}
-		}
-
 		if(paramValue != null) {
 			if ("".equals(paramValue)) {
 				if(!nfParam.isEmptyAsNull()) {
