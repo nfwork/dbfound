@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
@@ -460,15 +461,20 @@ public abstract class SqlEntity extends Entity {
 	}
 
 	private void initCollection(Param nfParam){
-		if (!(nfParam.getValue() instanceof SimpleItemList)){
-			int length = DataUtil.getDataLength(nfParam.getValue());
-			if (length < 1) {
-				throw new DBFoundRuntimeException("collection param, data size must >= 1");
+		Object value = nfParam.getValue();
+		if (!(value instanceof SimpleItemList)){
+			if(value instanceof String){
+				value = Arrays.stream(((String) value).split(",")).map(String::trim).collect(Collectors.toList());
+			}
+			int length = DataUtil.getDataLength(value);
+			if (length == 0 || value == null) {
+				throw new DBFoundRuntimeException("collection param data size must >= 1, param name: "+ nfParam.getName());
+			}else if(length == -1){
+				throw new DBFoundRuntimeException("can not convert ‘" + value.getClass() + "’ to a collection, param name: " + nfParam.getName() +", param value: " + value);
 			}
 			SimpleItemList itemList = new SimpleItemList(length);
 
 			//el处理非arrayList集合性能较差，转化为array
-			Object value = nfParam.getValue();
 			if(!(value instanceof ArrayList) && value instanceof Collection){
 				value = ((Collection<?>)value).toArray();
 			}
