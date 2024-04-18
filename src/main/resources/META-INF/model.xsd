@@ -157,14 +157,6 @@
 			</xsd:simpleType>
 		</xsd:attribute>
 		<xsd:attribute name="sourcePath" />
-		<xsd:attribute name="fileSaveType">
-			<xsd:simpleType>
-				<xsd:restriction base="xsd:NMTOKEN">
-					<xsd:enumeration value="db" />
-					<xsd:enumeration value="disk" />
-				</xsd:restriction>
-			</xsd:simpleType>
-		</xsd:attribute>
 		<xsd:attribute name="fileNameParam" />
 		<xsd:attribute name="innerPath" />
 	</xsd:complexType>

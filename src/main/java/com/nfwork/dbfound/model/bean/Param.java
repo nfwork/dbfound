@@ -5,7 +5,6 @@ import java.util.Date;
 
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.Entity;
-import com.nfwork.dbfound.model.base.FileSaveType;
 import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LocalDateUtil;
@@ -23,7 +22,6 @@ public class Param extends Entity {
 	private String sourcePath;
 	private String sourcePathHistory;
 	private String scope;
-	private FileSaveType fileSaveType = FileSaveType.DB;
 	private String innerPath;
 	private String fileNameParam;
 	private boolean UUID = false;
@@ -140,14 +138,6 @@ public class Param extends Entity {
 
 	public void setSourcePathHistory(String sourcePathHistory) {
 		this.sourcePathHistory = sourcePathHistory;
-	}
-
-	public FileSaveType getFileSaveType() {
-		return fileSaveType;
-	}
-
-	public void setFileSaveType(FileSaveType fileSaveType) {
-		this.fileSaveType = fileSaveType;
 	}
 
 	public boolean isUUID() {

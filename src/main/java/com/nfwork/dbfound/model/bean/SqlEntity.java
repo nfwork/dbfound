@@ -1,10 +1,10 @@
 package com.nfwork.dbfound.model.bean;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
@@ -213,7 +214,7 @@ public abstract class SqlEntity extends Entity {
 			} else if (value instanceof File) {
 				if(files != null){
 					File file = (File)value;
-					InputStream inputStream = new FileInputStream(file);
+					InputStream inputStream = Files.newInputStream(file.toPath());
 					statement.setBinaryStream(cursor, inputStream);
 					files.add(inputStream);
 				}else{
@@ -429,7 +430,7 @@ public abstract class SqlEntity extends Entity {
 				}
 			}
 		}else if (nfParam.getDataType() == DataType.FILE)  {
-			if (nfParam.getFileSaveType() == FileSaveType.DISK && nfParam.getValue() instanceof String ) {
+			if (nfParam.getValue() instanceof String) {
 				File file = new File((String) nfParam.getValue());
 				nfParam.setValue(file);
 			}
@@ -460,15 +461,20 @@ public abstract class SqlEntity extends Entity {
 	}
 
 	private void initCollection(Param nfParam){
-		if (!(nfParam.getValue() instanceof SimpleItemList)){
-			int length = DataUtil.getDataLength(nfParam.getValue());
-			if (length < 1) {
-				throw new DBFoundRuntimeException("collection param, data size must >= 1");
+		Object value = nfParam.getValue();
+		if (!(value instanceof SimpleItemList)){
+			if(value instanceof String){
+				value = Arrays.stream(((String) value).split(",")).map(String::trim).collect(Collectors.toList());
+			}
+			int length = DataUtil.getDataLength(value);
+			if (length == 0 || value == null) {
+				throw new DBFoundRuntimeException("collection param data size must >= 1, param name: "+ nfParam.getName());
+			}else if(length == -1){
+				throw new DBFoundRuntimeException("can not convert ‘" + value.getClass() + "’ to a collection, param name: " + nfParam.getName() +", param value: " + value);
 			}
 			SimpleItemList itemList = new SimpleItemList(length);
 
 			//el处理非arrayList集合性能较差，转化为array
-			Object value = nfParam.getValue();
 			if(!(value instanceof ArrayList) && value instanceof Collection){
 				value = ((Collection<?>)value).toArray();
 			}

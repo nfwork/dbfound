@@ -7,7 +7,7 @@ import java.io.File;
 
 public class FileUtil{
 
-	private static String baseFolder = System.getProperty("java.io.tmpdir");
+	private static final String baseFolder = System.getProperty("java.io.tmpdir");
 
 	private static final Object lockObj = new Object();
 
@@ -18,12 +18,6 @@ public class FileUtil{
 			return baseFolder + "/" + value;
 		} else {
 			return value;
-		}
-	}
-	
-	public static void init(String fold) {
-		if(DataUtil.isNotNull(fold)) {
-			baseFolder = fold;
 		}
 	}
 

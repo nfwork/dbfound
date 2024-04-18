@@ -260,17 +260,6 @@ public class DBFoundConfig {
 			info.append("(jsonStringAutoCover = ").append(jsonStringAutoCover).append(")");
 		}
 
-		// 文件上传路径
-		Element folder = web.element("uploadFolder");
-		if (folder != null) {
-			String path = folder.getTextTrim();
-			if (!"".equals(path)) {
-				path = getRealPath(path);
-				FileUtil.init(path);
-				info.append("(uploadFolder = ").append(path).append(")");
-			}
-		}
-
 		// 文件上传大小
 		Element size = web.element("maxUploadSize");
 		if (size != null) {
