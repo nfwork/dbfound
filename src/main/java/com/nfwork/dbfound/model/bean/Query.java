@@ -104,7 +104,7 @@ public class Query extends SqlEntity {
 			if(DataUtil.isNotNull(sql)) {
 				autoCreateParam(sql.getSql(), params);
 				if(!sql.getSqlPartList().isEmpty()){
-					String tmp = sql.getSqlPartList().stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+					String tmp = sql.getSqlPartList().stream().map(SqlPart::getPart).collect(Collectors.joining(","));
 					autoCreateParam(tmp,params);
 				}
 			}
