@@ -37,8 +37,8 @@ public class ExecuteSql extends Sql {
 			return;
 		}
 		autoCreateParam(sql,this);
-		if(sqlPartList!=null && !sqlPartList.isEmpty()){
-			String tmp = sqlPartList.stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+		if(!sqlPartList.isEmpty()){
+			String tmp = sqlPartList.stream().map(SqlPart::getPart).collect(Collectors.joining(","));
 			autoCreateParam(tmp,this);
 		}
 	}
@@ -49,9 +49,9 @@ public class ExecuteSql extends Sql {
 		}
 
 		String executeSql;
-		if(sqlPartList != null && !sqlPartList.isEmpty()){
+		if(!sqlPartList.isEmpty()){
 			params = new LinkedHashMap<>(params);
-			executeSql = initSqlPart(sql,params,context,provideName);
+			executeSql = getSqlPartSql(params,context,provideName);
 		}else{
 			executeSql = sql;
 		}

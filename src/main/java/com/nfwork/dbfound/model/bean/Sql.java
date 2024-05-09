@@ -67,7 +67,7 @@ public class Sql extends SqlEntity {
 		return sqlPartList;
 	}
 
-	protected String initSqlPart(String sql, Map<String, Param> params, Context context, String provideName) {
+	protected String getSqlPartSql(Map<String, Param> params, Context context, String provideName) {
 		int sqlPartIndex = 0;
 		int commaIndex = 0;
 
