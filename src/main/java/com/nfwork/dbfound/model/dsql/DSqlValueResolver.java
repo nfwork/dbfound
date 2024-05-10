@@ -37,6 +37,10 @@ public abstract class DSqlValueResolver {
                 && (rightValue instanceof Number || rightValue instanceof String || rightValue instanceof Boolean);
     }
 
+    protected boolean isEqualsSupport(Object value){
+        return value instanceof Number || value instanceof String || value instanceof Boolean;
+    }
+
     protected boolean isCompareSupport(Object leftValue, Object rightValue){
         return  (leftValue instanceof Number || leftValue instanceof String)
                 && (rightValue instanceof Number || rightValue instanceof String);
