@@ -208,6 +208,8 @@
 		<xsd:attribute name="separator" />
 		<xsd:attribute name="begin" />
 		<xsd:attribute name="end" />
+		<xsd:attribute name="item" />
+		<xsd:attribute name="index" />
 	</xsd:complexType>
 
 	<xsd:complexType name="sqls_type">

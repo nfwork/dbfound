@@ -28,6 +28,10 @@ public class SqlPart extends Sql {
 
     String end = "";
 
+    String item;
+
+    String index;
+
     boolean autoCompletion;
 
     boolean autoClearComma;
@@ -128,7 +132,12 @@ public class SqlPart extends Sql {
                 if (param.isBatchAssign()){
                     String newParamName = param.getName()+"_"+i;
                     String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
-                    String sph = exeSourcePath +"[" + i +"]."+ sp;
+                    String sph;
+                    if(item !=null && item.equals(sp)){
+                        sph = exeSourcePath +"[" + i +"]";
+                    }else{
+                        sph = exeSourcePath +"[" + i +"]."+ sp;
+                    }
 
                     Param existsParam = params.get(newParamName);
                     if(existsParam != null) {
@@ -142,11 +151,17 @@ public class SqlPart extends Sql {
                     Param newParam = (Param) param.cloneEntity();
                     newParam.setName(newParamName);
                     newParam.setSourcePathHistory(sph);
-                    Object value = context.getData(newParam.getSourcePathHistory(), elCache);
-                    if("".equals(value) && param.isEmptyAsNull()){
-                        value = null;
+
+                    if(index !=null && index.equals(sp)){
+                        newParam.setValue(i);
+                        newParam.setSourcePathHistory("set_by_index");
+                    }else{
+                        Object value = context.getData(newParam.getSourcePathHistory(), elCache);
+                        if("".equals(value) && param.isEmptyAsNull()){
+                            value = null;
+                        }
+                        newParam.setValue(value);
                     }
-                    newParam.setValue(value);
                     params.put(newParam.getName(), newParam);
                 }
             }
@@ -267,5 +282,21 @@ public class SqlPart extends Sql {
 
     public void setAutoClearComma(boolean autoClearComma) {
         this.autoClearComma = autoClearComma;
+    }
+
+    public String getItem() {
+        return item;
+    }
+
+    public void setItem(String item) {
+        this.item = item;
+    }
+
+    public String getIndex() {
+        return index;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
     }
 }
