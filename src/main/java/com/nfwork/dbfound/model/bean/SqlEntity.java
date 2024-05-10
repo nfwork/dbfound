@@ -20,6 +20,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.model.base.*;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
@@ -564,11 +565,7 @@ public abstract class SqlEntity extends Entity {
 		String conditionSql = staticParamParse(condition, params);
 		List<Object> exeParam = new ArrayList<>();
 		conditionSql = getExecuteSql(conditionSql, params, exeParam);
-		Boolean result = DSqlEngine.checkWhenSql(conditionSql, exeParam, provideName, context);
-		if (result == null) {
-			throw new DBFoundRuntimeException("condition express is not support, condition:" + condition);
-		}
-		return result;
+        return DSqlEngine.checkWhenSql(conditionSql, exeParam, provideName, context);
 	}
 
 	protected String getSqlTask(Context context, String name){

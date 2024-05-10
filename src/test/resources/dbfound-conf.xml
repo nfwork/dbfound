@@ -6,17 +6,14 @@
 	</system>
 
 	<database>
-		<dataSourceConnectionProvide className="org.apache.commons.dbcp.BasicDataSource" dialect="MySqlDialect">
+		<dataSourceConnectionProvide className="com.zaxxer.hikari.HikariDataSource" dialect="MySqlDialect">
 			<properties>
 				<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://192.168.0.156/dbfound?useUnicode=true&amp;characterEncoding=utf8" />
+				<property name="jdbcUrl" value="jdbc:mysql://192.168.0.156/dbfound?useUnicode=true&amp;characterEncoding=utf8" />
 				<property name="username" value="dbfound" />
 				<property name="password" value="dbfound" />
-				<property name="initialSize" value="5" />
-				<property name="maxActive" value="10" />
-				<property name="maxIdle" value="5" />
-				<property name="testOnBorrow" value="true" />
-				<property name="validationQuery" value="select 1" />
+				<property name="minimumIdle" value="1" />
+				<property name="maximumPoolSize" value="2" />
 			</properties>
 		</dataSourceConnectionProvide>
 	</database>

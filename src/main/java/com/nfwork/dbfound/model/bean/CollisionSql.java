@@ -12,6 +12,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.CollisionException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
@@ -58,14 +59,15 @@ public class CollisionSql extends SqlEntity {
 		String eSql = getExecuteSql(whereSql, params, exeParam);
 
 		if( DSqlConfig.isOpenDSql() && useDSql){
-			Boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
-			if(result != null){
+			try {
+				boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
 				log("collision dSql","select "+eSql, params);
 				if(result) {
 					throw new CollisionException(staticParamParse(message, params),code);
 				}else{
 					return;
 				}
+			}catch (DSqlNotSupportException ignore){
 			}
 		}
 
