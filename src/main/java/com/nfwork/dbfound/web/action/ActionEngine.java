@@ -2,9 +2,11 @@ package com.nfwork.dbfound.web.action;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.PackageScannerUtil;
 import com.nfwork.dbfound.web.base.ActionController;
 import com.nfwork.dbfound.web.base.ActionMapping;
 import org.dom4j.Document;
@@ -21,52 +23,35 @@ public class ActionEngine {
 
 	private static long fileLastModify;
 
-	static Map<String, ActionBean> actionBeans = new HashMap<>();
+	private final static Map<String, ActionBean> actionBeans = new ConcurrentHashMap<>();
 
 	public static void initMappings(String paths){
-		List<String> classPaths = new ArrayList<>();
+		Set<String> classPaths = new LinkedHashSet<>();
 		String[] pathArray = paths.split(";");
 		for (String path : pathArray){
-			classPaths.addAll(getClassPaths(path.trim()));
+			classPaths.addAll(PackageScannerUtil.getClassPaths(path.trim()));
 		}
+		int count =0;
 		for (String classPath : classPaths){
 			try {
 				Class<?> clazz = Class.forName(classPath);
-				if(!ActionController.class.isAssignableFrom(clazz)){
-					throw new DBFoundRuntimeException("@ActionMapping can only be used in subclasses of ActionController");
-				}
 				ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
 				if (mapping != null && DataUtil.isNotNull(mapping.value())) {
+					if(!ActionController.class.isAssignableFrom(clazz)){
+						throw new DBFoundRuntimeException("@ActionMapping can only be used in subclasses of ActionController");
+					}
 					ActionBean actionBean = new ActionBean();
 					actionBean.setName(mapping.value());
 					actionBean.setClassName(classPath);
 					actionBean.setSingleton(true);
 					actionBeans.put(actionBean.getName(), actionBean);
+					count ++;
 				}
 			}catch (ClassNotFoundException exception){
 				throw new DBFoundRuntimeException(exception);
 			}
 		}
-	}
-
-	private static List<String> getClassPaths(String packageName) {
-		List<String> classPaths = new ArrayList<>();
-		String packagePath = packageName.replace(".", "/");
-		File packageDir = new File(Thread.currentThread().getContextClassLoader().getResource(packagePath).getPath());
-		File[] files = packageDir.listFiles();
-		if (files != null) {
-			for (File file : files) {
-				if (file.isDirectory()) {
-					classPaths.addAll(getClassPaths(packageName + "." + file.getName()));
-				} else if (file.isFile()) {
-					String name = packageName + "." + file.getName();
-					if(name.endsWith(".class")) {
-						classPaths.add(name.substring(0, name.length() - 6));
-					}
-				}
-			}
-		}
-		return classPaths;
+		LogUtil.info("actionEngine initMvcMappings success, paths: "+paths+", init ActionBeans size: "+ count);
 	}
 
 	/**
@@ -114,17 +99,19 @@ public class ActionEngine {
 			doc = reader.read(file);
 			Element root = doc.getRootElement();
 
-			/*
-			 * 把Action的配置放到ActionMap
-			 */
-			List<Element> actionElemts = root.elements("action");
-			for (Element element : actionElemts) {
+			List<Element> actionElements = root.elements("action");
+			if(actionElements == null){
+				return;
+			}
+			for (Element element : actionElements) {
 				ActionBean actionBean = new ActionBean();
 				actionBean.setName(element.attributeValue("name"));
 				actionBean.setClassName(element.attributeValue("class"));
 				actionBean.setSingleton("true".equals(element.attributeValue("singleton")));
 				actionBeans.put(actionBean.getName(), actionBean);
 			}
+
+			LogUtil.info("actionEngine initMvcFile success, file: "+file+", init ActionBeans size: "+ actionElements.size());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
