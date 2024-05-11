@@ -276,6 +276,16 @@ public class DBFoundConfig {
 			}
 		}
 
+		// dbfound mvc controller 初始化
+		Element controllerEl = web.element("controllerPaths");
+		if (controllerEl != null) {
+			String controllerPaths = controllerEl.getTextTrim();
+			if (!"".equals(controllerPaths)) {
+				ActionEngine.initMappings(controllerPaths);
+				info.append("(controllerPaths = ").append(controllerPaths).append(")");
+			}
+		}
+
 		// interceptor 初始化
 		Element filter = web.element("interceptor");
 		if (filter != null) {
