@@ -25,7 +25,7 @@ public class Reflector {
 	private final Class<?> type;
 	private final String[] readablePropertyNames;
 	private final String[] writeablePropertyNames;
-	private final Map<String, Invoker> methods = new HashMap<>();
+	private final Map<String, MethodInvoker> methods = new HashMap<>();
 	private final Map<String, Invoker> setMethods = new HashMap<>();
 	private final Map<String, Invoker> getMethods = new HashMap<>();
 	private final Map<String, Class<?>> setTypes = new HashMap<>();
@@ -420,8 +420,8 @@ public class Reflector {
 		}
 	}
 
-	public Invoker getMethodInvoker(String methodName,Class<?> ...clazz){
-		Invoker method = methods.get(unionMethodName(methodName, clazz));
+	public MethodInvoker getMethodInvoker(String methodName,Class<?> ...clazz){
+		MethodInvoker method = methods.get(unionMethodName(methodName, clazz));
 		if (method == null) {
 			throw new ReflectionException("There is no method or method is not public named '" + methodName + "' in '" + type
 					+ "'");

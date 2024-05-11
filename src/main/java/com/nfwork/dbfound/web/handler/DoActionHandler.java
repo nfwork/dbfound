@@ -35,16 +35,7 @@ public class DoActionHandler extends ActionHandler {
         ActionBean actionBean = ActionEngine.findActionBean(modelName); // 得到对应的class类的名字
         if (actionBean != null) {
             if (InterceptorHandler.doInterceptor(context, actionBean.getClassName(), methodName)) {
-                try {
-                    context.getTransaction().begin();
-                    object = ActionReflect.reflect(context, actionBean.getClassName(), methodName, actionBean.isSingleton());
-                    context.getTransaction().commit();
-                }catch (Exception exception){
-                    context.getTransaction().rollback();
-                    throw exception;
-                }finally {
-                    context.getTransaction().end();
-                }
+                object = ActionReflect.reflect(context, actionBean.getClassName(), methodName, actionBean.isSingleton());
             }
         } else {
             String message = "cant not found url:" + requestPath.substring(1) + " mapping class, please check config";
