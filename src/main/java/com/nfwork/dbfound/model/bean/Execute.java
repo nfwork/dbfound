@@ -58,10 +58,6 @@ public class Execute extends SqlEntity {
 	}
 
 	public ResponseObject doExecute(Context context, String modelName, String executeName, String currentPath, Map<String, Object> elCache) {
-		// 把model、currentPath对象放入到 当前线程里
-		context.setCurrentPath(currentPath);
-		context.setCurrentModel(modelName);
-
 		Map<String, Param> params = cloneParams();
 
 		// 设想sql查询参数

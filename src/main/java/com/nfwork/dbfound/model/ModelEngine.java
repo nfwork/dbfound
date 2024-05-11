@@ -168,11 +168,17 @@ public class ModelEngine {
 			int size = context.getDataLength(batchExecutePath);
 			if (size > 0) {
 				Model model = modelCache.getModel(modelName);
+
+				// 把modelName对象放入到 当前线程里
+				context.setCurrentModel(modelName);
 				Map<String, Object> elCache = new HashMap<>();
 
 				for (int j = 0; j < size; j++) {
 					String en ;
 					String currentPath = batchExecutePath + "[" + j + "]";
+					// 把currentPath对象放入到 当前线程里
+					context.setCurrentPath(currentPath);
+
 					if ("addOrUpdate".equals(executeName)) {
 						String status = context.getString(currentPath + "._status");
 						if (status != null)
@@ -241,6 +247,9 @@ public class ModelEngine {
 			if (execute == null) {
 				throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
 			}
+			// 把model、currentPath对象放入到 当前线程里
+			context.setCurrentPath(currentPath);
+			context.setCurrentModel(modelName);
 
 			Map<String, Object> elCache = new HashMap<>();
 			return execute.doExecute(context, modelName, executeName, currentPath, elCache);
