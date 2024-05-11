@@ -12,7 +12,7 @@ import com.nfwork.dbfound.web.file.FilePart;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
-import com.nfwork.dbfound.web.WebExceptionHandle;
+import com.nfwork.dbfound.web.WebExceptionHandler;
 
 public class ExcelReader extends TagSupport {
 
@@ -41,7 +41,7 @@ public class ExcelReader extends TagSupport {
 				transaction.rollback();
 				transaction.end();
 			}
-			WebExceptionHandle.handle(e, request, response);
+			WebExceptionHandler.handle(e, request, response);
 			return SKIP_PAGE;
 		}
 		return EVAL_BODY_INCLUDE;
