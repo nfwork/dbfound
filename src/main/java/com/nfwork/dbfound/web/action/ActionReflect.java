@@ -18,9 +18,11 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ActionReflect {
 
-	public static ResponseObject reflect(Context context, String className, String method, boolean singleton) throws Exception {
+	private final ActionBeanFactory actionBeanFactory = new ActionBeanFactory();
+
+	public ResponseObject reflect(Context context, String className, String method, boolean singleton) throws Exception {
 		try {
-			BaseControl baseControl = ActionBeanFactory.getControl(className, singleton);
+			BaseControl baseControl = actionBeanFactory.getControl(className, singleton);
 
 			Reflector reflector = Reflector.forClass(baseControl.getClass());
 			MethodInvoker methodInvoker = reflector.getMethodInvoker(method, Context.class);
