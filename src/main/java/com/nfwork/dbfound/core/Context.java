@@ -1,11 +1,9 @@
 package com.nfwork.dbfound.core;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.*;
 
 import jakarta.servlet.http.Cookie;
@@ -19,9 +17,7 @@ import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.model.ModelCache;
 import com.nfwork.dbfound.model.base.CountType;
-import com.nfwork.dbfound.model.bean.Model;
 import com.nfwork.dbfound.util.*;
 
 public class Context {
@@ -38,7 +34,6 @@ public class Context {
 	private String currentPath;
 	private String currentModel;
 	private Map<String, ConnObject> connMap;
-	private boolean inWebContainer;
 	private final Map<String, Object> rootDatas;
 	private Map<String, Object> paramDatas;
 	private Map<String, Object> outParamDatas;
@@ -106,8 +101,6 @@ public class Context {
 		if (DBFoundConfig.isOpenSession()) {
 			cloneSessionData(request.getSession());
 		}
-
-		inWebContainer = true;
 		this.request = request;
 		this.response = response;
 	}
@@ -402,27 +395,6 @@ public class Context {
 	}
 
 	/**
-	 * 获取model
-	 * 
-	 * @param modelName model name
-	 * @return model
-	 */
-	public Model getModel(String modelName) {
-		Model model = ModelCache.get(modelName);
-
-		if(!model.isPkgModel() && DBFoundConfig.isModelModifyCheck()) {
-			File file = new File(model.getFileLocation());
-			long newFileLastModify = file.lastModified();
-			if (newFileLastModify > model.getFileLastModify()) {
-				ModelCache.remove(modelName);
-				model = ModelCache.get(modelName);
-			}
-		}
-
-		return model;
-	}
-
-	/**
 	 * 得到数据库连接
 	 * 
 	 * @param provideName provide name
@@ -465,9 +437,8 @@ public class Context {
 	 * 得到默认数据库连接
 	 * 
 	 * @return Connection
-	 * @throws SQLException sql exception
 	 */
-	public Connection getConn() throws SQLException {
+	public Connection getConn() {
 		return getConn("_default");
 	}
 
@@ -598,10 +569,6 @@ public class Context {
 			}
 		}
 		return headerDatas;
-	}
-
-	public boolean isInWebContainer() {
-		return inWebContainer;
 	}
 
 	public int getPagerSize() {

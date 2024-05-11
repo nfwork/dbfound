@@ -1,7 +1,6 @@
 package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
 import org.dom4j.Comment;
@@ -15,16 +14,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 public class Sql extends SqlEntity {
-
-	private static final long serialVersionUID = -6802842084359033490L;
-
 	protected List<SqlPart> sqlPartList  = new ArrayList<>();
 
 	protected String sql;
 
 	@Override
-	public void init(Element element) {
-		super.init(element);
+	public void doStartTag(Element element) {
+		super.doStartTag(element);
 
 		List<Node> nodes = element.content();
 		StringBuilder builder = new StringBuilder();
@@ -44,7 +40,7 @@ public class Sql extends SqlEntity {
 	}
 
 	@Override
-	public void run() {
+	public void doEndTag() {
 		Entity entity = getParent();
 		if (entity instanceof Sqls) {
 			Sqls sqls = (Sqls) entity;
@@ -67,7 +63,7 @@ public class Sql extends SqlEntity {
 		return sqlPartList;
 	}
 
-	protected String initSqlPart(String sql, Map<String, Param> params, Context context, String provideName) {
+	protected String getSqlPartSql(Map<String, Param> params, Context context, String provideName) {
 		int sqlPartIndex = 0;
 		int commaIndex = 0;
 

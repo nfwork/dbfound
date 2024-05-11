@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.db.dialect.AbstractSqlDialect;
+import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
@@ -31,9 +32,6 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.reflector.ReflectorUtil;
 
 public class Query extends SqlEntity {
-
-	private static final long serialVersionUID = 83009892861541099L;
-
 	private String connectionProvide;
 	private String name = "_default"; // query对象的名字
 	private Map<String, Param> params; // query对象对应参数
@@ -60,14 +58,14 @@ public class Query extends SqlEntity {
 	private Sql sql;
 
 	@Override
-	public void init(Element element) {
+	public void doStartTag(Element element) {
 		params = new LinkedHashMap<>();
 		filters = new LinkedHashMap<>();
-		super.init(element);
+		super.doStartTag(element);
 	}
 
 	@Override
-	public void run() {
+	public void doEndTag() {
 		if(DataUtil.isNotNull(adapter)){
 			try {
 				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
@@ -104,7 +102,7 @@ public class Query extends SqlEntity {
 			if(DataUtil.isNotNull(sql)) {
 				autoCreateParam(sql.getSql(), params);
 				if(!sql.getSqlPartList().isEmpty()){
-					String tmp = sql.getSqlPartList().stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+					String tmp = sql.getSqlPartList().stream().map(SqlPart::getPart).collect(Collectors.joining(","));
 					autoCreateParam(tmp,params);
 				}
 			}
@@ -113,11 +111,78 @@ public class Query extends SqlEntity {
 				autoCreateParam(tmp,params);
 			}
 		} else {
-			super.run();
+			super.doEndTag();
 		}
 	}
 
-	public Map<String, Param> cloneParams() {
+	public <T> QueryResponseObject<T> doQuery(Context context, String modelName, String queryName, String currentPath, boolean autoPaging, Class<T> clazz){
+
+		// 初始化查询参数param
+		Map<String, Object> elCache = new HashMap<>();
+		Map<String, Param> params = cloneParams();
+		for (Param nfParam : params.values()) {
+			setParam(nfParam, context, currentPath, elCache);
+		}
+
+		// 设想分页参数
+		if (autoPaging) {
+			prePager(context);
+		}
+
+		if(queryAdapter != null){
+			queryAdapter.beforeQuery(context, params);
+		}
+
+		String provideName = ((Model)getParent()).getConnectionProvide(context, getConnectionProvide());
+
+		LogUtil.info("Query info (modelName:" + modelName + ", queryName:" + queryName + ", provideName:"+provideName+")");
+
+		//获取querySql
+		String querySql = getQuerySql(context, params, provideName);
+
+		// 查询数据，返回结果
+		List<T> datas = doExecuteQuery(context, querySql, params, provideName, clazz, autoPaging);
+
+		QueryResponseObject<T> ro = new QueryResponseObject<>();
+		ro.setDatas(datas);
+
+		if(context.getCountType() == CountType.REQUIRED) {
+			int dataSize = datas.size();
+			int pSize = context.getPagerSize();
+			if (pSize == 0 && pagerSize != null) {
+				pSize = pagerSize;
+			}
+			long start = context.getStartWith();
+			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
+				ro.setTotalCounts(datas.size());
+			} else {
+				Count count = getCount(querySql);
+				count.setDataSize(dataSize);
+				count.setTotalCounts(dataSize);
+
+				if (queryAdapter != null) {
+					queryAdapter.beforeCount(context, params, count);
+				}
+
+				if (count.isExecuteCount()) {
+					countItems(context, count, params, provideName);
+				}
+				ro.setTotalCounts(count.getTotalCounts());
+			}
+		}
+
+		ro.setSuccess(true);
+		ro.setMessage("success");
+		initOutParams(context, params, ro);
+
+		if(queryAdapter != null){
+			queryAdapter.afterQuery(context,params,ro);
+		}
+
+		return ro;
+	}
+
+	private Map<String, Param> cloneParams() {
 		HashMap<String, Param> params = new LinkedHashMap<>();
 		for(Map.Entry<String,Param> entry : this.params.entrySet()){
 			params.put(entry.getKey(), (Param) entry.getValue().cloneEntity());
@@ -125,7 +190,7 @@ public class Query extends SqlEntity {
 		return params;
 	}
 
-	public String getQuerySql(Context context,Map<String, Param> params, String provideName){
+	private String getQuerySql(Context context,Map<String, Param> params, String provideName){
 		if(sql == null) {
 			throw new DBFoundRuntimeException("query entity must have a sql");
 		}
@@ -134,7 +199,7 @@ public class Query extends SqlEntity {
 		return querySql;
 	}
 
-	public <T> List<T> query(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> clazz, boolean autoPaging) {
+	private <T> List<T> doExecuteQuery(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> clazz, boolean autoPaging) {
 		Connection conn = context.getConn(provideName);
 
 		List<Map> data = new ArrayList<>();
@@ -312,7 +377,7 @@ public class Query extends SqlEntity {
 		}
 	}
 
-	public Count getCount(String querySql){
+	private Count getCount(String querySql){
 
 		Count count = new Count();
 
@@ -389,7 +454,7 @@ public class Query extends SqlEntity {
 	 * 统计sql查询总共的条数
 	 *
 	 */
-	public void countItems(Context context,Count count ,Map<String, Param> params, String provideName) {
+	private void countItems(Context context,Count count ,Map<String, Param> params, String provideName) {
 
 		String cSql = count.getCountSql();
 		Connection conn = context.getConn(provideName);
@@ -430,7 +495,7 @@ public class Query extends SqlEntity {
 		return sqls[index] == ' ' || sqls[index] == '\n' || sqls[index] == '\t' || sqls[index] == '(';
 	}
 
-	public void prePager(Context context){
+	private void prePager(Context context){
 		Map<String,Object> params = context.getParamDatas();
 		Object start = params.get("start");
 		if (DataUtil.isNotNull(start)) {

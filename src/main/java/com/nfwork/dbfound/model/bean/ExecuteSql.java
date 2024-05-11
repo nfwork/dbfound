@@ -20,9 +20,6 @@ import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StreamUtils;
 
 public class ExecuteSql extends Sql {
-
-	private static final long serialVersionUID = 7525842037480200449L;
-
 	private String generatedKeyParam;
 
 	private String affectedCountParam;
@@ -30,15 +27,15 @@ public class ExecuteSql extends Sql {
 	private String initError;
 
 	@Override
-	public void run() {
-		super.run();
+	public void doEndTag() {
+		super.doEndTag();
 		if(DataUtil.isNull(sql)){
 			initError = "ExecuteSql content sql can not be null";
 			return;
 		}
 		autoCreateParam(sql,this);
-		if(sqlPartList!=null && !sqlPartList.isEmpty()){
-			String tmp = sqlPartList.stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+		if(!sqlPartList.isEmpty()){
+			String tmp = sqlPartList.stream().map(SqlPart::getPart).collect(Collectors.joining(","));
 			autoCreateParam(tmp,this);
 		}
 	}
@@ -49,9 +46,9 @@ public class ExecuteSql extends Sql {
 		}
 
 		String executeSql;
-		if(sqlPartList != null && !sqlPartList.isEmpty()){
+		if(!sqlPartList.isEmpty()){
 			params = new LinkedHashMap<>(params);
-			executeSql = initSqlPart(sql,params,context,provideName);
+			executeSql = getSqlPartSql(params,context,provideName);
 		}else{
 			executeSql = sql;
 		}

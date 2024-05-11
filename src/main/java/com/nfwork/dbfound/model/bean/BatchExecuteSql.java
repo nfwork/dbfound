@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 
 public class BatchExecuteSql extends Sql {
 
-	private static final long serialVersionUID = 7525842037480200449L;
-
 	private String affectedCountParam;
 
 	private String sourcePath;
@@ -39,8 +37,8 @@ public class BatchExecuteSql extends Sql {
 	private String initError;
 
 	@Override
-	public void run() {
-		super.run();
+	public void doEndTag() {
+		super.doEndTag();
 
 		if(DataUtil.isNull(sourcePath)){
 			initError = "BatchExecuteSql attribute sourcePath can not be null";

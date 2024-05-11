@@ -22,9 +22,6 @@ import com.nfwork.dbfound.util.StringUtil;
  * 
  */
 public class BatchSql extends Sqls {
-
-	private static final long serialVersionUID = 5145846152572625196L;
-
 	private String cursor;
 	private String cursorRootPath = "param.cursorList";
 	private String sourcePath;
@@ -32,8 +29,8 @@ public class BatchSql extends Sqls {
 	private String initError;
 
 	@Override
-	public void run() {
-		super.run();
+	public void doEndTag() {
+		super.doEndTag();
 		if(DataUtil.isNull(sourcePath) && DataUtil.isNull(cursor)){
 			initError = "BatchSql attribute sourcePath and cursor, can not be null on the same time";
 			return;

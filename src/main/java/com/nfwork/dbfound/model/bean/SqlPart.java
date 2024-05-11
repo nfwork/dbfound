@@ -12,11 +12,9 @@ import org.dom4j.Element;
 import java.util.*;
 import java.util.regex.Matcher;
 
-public class SqlPart extends SqlEntity {
+public class SqlPart extends Sql {
 
     String part;
-
-    String partTmp;
 
     String condition;
 
@@ -30,6 +28,10 @@ public class SqlPart extends SqlEntity {
 
     String end = "";
 
+    String item;
+
+    String index;
+
     boolean autoCompletion;
 
     boolean autoClearComma;
@@ -37,53 +39,65 @@ public class SqlPart extends SqlEntity {
     private Set<String> paramNameSet;
 
     @Override
-    public void init(Element element) {
-        super.init(element);
-        part = StringUtil.fullTrim(element.getTextTrim());
+    public void doStartTag(Element element) {
+        super.doStartTag(element);
         if(condition != null){
             condition = StringUtil.fullTrim(condition);
         }
-        if(type == SqlPartType.FOR){
-            paramNameSet = new LinkedHashSet<>();
-            partTmp = initPartSql(part, paramNameSet);
-        }
     }
 
     @Override
-    public void run() {
+    public void doEndTag() {
         if (getParent() instanceof Sql) {
             Sql sql = (Sql) getParent();
             sql.getSqlPartList().add(this);
-        }else if(getParent() instanceof SqlTrim){
-            SqlTrim trim = (SqlTrim) getParent();
-            trim.getSqlPartList().add(this);
+        }
+
+        //生成part内容
+        StringBuilder builder = new StringBuilder();
+        builder.append(sql).append(",").append(getCondition());
+        for (SqlPart sqlPart : sqlPartList) {
+            builder.append(",").append(sqlPart.getPart());
+        }
+        part = builder.toString();
+
+        //生成paramNameset集合
+        paramNameSet = new LinkedHashSet<>();
+        Matcher m = paramPattern.matcher(part);
+        while (m.find()) {
+            String param = m.group();
+            String pn = param.substring(2, param.length() - 1).trim();
+            paramNameSet.add(pn);
         }
     }
 
-    @Override
-    public void execute(Context context, Map<String, Param> params, String provideName) {
-
-    }
-
     protected String getPartSql(Context context,Map<String, Param> params,String provideName ){
-        if(this.type == SqlPartType.FOR) {
+        if(type == SqlPartType.FOR) {
             if(DataUtil.isNull(this.getSourcePath())){
                 throw new DBFoundRuntimeException("SqlPart the sourcePath can not be null when the type is FOR");
             }
-            return this.getPart(context, params);
+            if (type == SqlPartType.FOR && hasForChild()){
+                throw new DBFoundRuntimeException("for loop nesting is not supported in SqlPart");
+            }
+            return getForPart(context, params, provideName);
         }else{
             if(DataUtil.isNull(this.getCondition())){
                 throw new DBFoundRuntimeException("SqlPart the condition can not be null when the type is IF");
             }
-            if (checkCondition(this.getCondition(), params, context, provideName)) {
-                return this.getPart();
-            } else {
-                return "";
-            }
+            return getIfPart(context, params, provideName);
         }
     }
 
-    private String getPart(Context context, Map<String, Param> params) {
+    private boolean hasForChild(){
+        for (SqlPart sqlPart : sqlPartList){
+            if(sqlPart.type == SqlPartType.FOR || sqlPart.hasForChild() ){
+               return true;
+            }
+        }
+        return false;
+    }
+
+    private String getForPart(Context context, Map<String, Param> params, String provideName) {
         String exeSourcePath = sourcePath;
 
         if(!ELEngine.isAbsolutePath(exeSourcePath)){
@@ -91,16 +105,14 @@ public class SqlPart extends SqlEntity {
         }
 
         StringBuilder eSql = new StringBuilder();
-
         int dataSize = context.getDataLength(exeSourcePath);
-
         if(dataSize <= 0){
             return eSql.toString();
         }
 
         eSql.append(begin);
+        Map<String, Object> elCache = new HashMap<>();
 
-        String partSql = partTmp;
         for (String paramName : paramNameSet){
             Param param = params.get(paramName);
             if (DataUtil.isNotNull(param.getScope())){
@@ -108,14 +120,10 @@ public class SqlPart extends SqlEntity {
             }else if (ELEngine.isAbsolutePath(param.getSourcePath())) {
                 param.setBatchAssign(false);
             }
-            if(!param.isBatchAssign()){
-                partSql = partSql.replace(param.getName()+"_##",param.getName());
-            }
         }
 
-        Map<String, Object> elCache = new HashMap<>();
-
         for (int i =0; i< dataSize; i++){
+            context.setData("request._dbfoundForLoopIndex", i);
             for (String paramName : paramNameSet){
                 Param param = params.get(paramName);
                 if(param == null){
@@ -124,7 +132,12 @@ public class SqlPart extends SqlEntity {
                 if (param.isBatchAssign()){
                     String newParamName = param.getName()+"_"+i;
                     String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
-                    String sph = exeSourcePath +"[" + i +"]."+ sp;
+                    String sph;
+                    if(item !=null && item.equals(sp)){
+                        sph = exeSourcePath +"[" + i +"]";
+                    }else{
+                        sph = exeSourcePath +"[" + i +"]."+ sp;
+                    }
 
                     Param existsParam = params.get(newParamName);
                     if(existsParam != null) {
@@ -138,31 +151,66 @@ public class SqlPart extends SqlEntity {
                     Param newParam = (Param) param.cloneEntity();
                     newParam.setName(newParamName);
                     newParam.setSourcePathHistory(sph);
-                    Object value = context.getData(newParam.getSourcePathHistory(), elCache);
-                    if("".equals(value) && param.isEmptyAsNull()){
-                        value = null;
+
+                    if(index !=null && index.equals(sp)){
+                        newParam.setValue(i);
+                        newParam.setSourcePathHistory("set_by_index");
+                    }else{
+                        Object value = context.getData(newParam.getSourcePathHistory(), elCache);
+                        if("".equals(value) && param.isEmptyAsNull()){
+                            value = null;
+                        }
+                        newParam.setValue(value);
                     }
-                    newParam.setValue(value);
                     params.put(newParam.getName(), newParam);
                 }
             }
-            eSql.append(partSql.replace("##", i + "")).append(separator);
+
+            String partSql = sql;
+            if(!sqlPartList.isEmpty()){
+                partSql = getSqlPartSql(params,context, provideName);
+            }
+            partSql = getIndexParamSql(partSql, params, i);
+
+            if(!partSql.isEmpty()) {
+                eSql.append(partSql).append(separator);
+            }
         }
+        context.setData("request._dbfoundForLoopIndex", null);
         eSql.delete(eSql.length()-separator.length(), eSql.length());
         eSql.append(end);
 
         return eSql.toString();
     }
 
-    private String initPartSql(String sql, Set<String> batchParamNameSet ) {
+    private String getIfPart(Context context, Map<String, Param> params, String provideName){
+        String conditionSql = condition;
+        Integer forLoopIndex = context.getInt("request._dbfoundForLoopIndex");
+        if(forLoopIndex != null){
+            conditionSql = getIndexParamSql(conditionSql,params, forLoopIndex);
+        }
+        if (checkCondition(conditionSql, params, context, provideName)) {
+            if(sqlPartList.isEmpty()){
+                return sql;
+            }else {
+                return getSqlPartSql(params, context, provideName);
+            }
+        } else {
+            return "";
+        }
+    }
+
+    private String getIndexParamSql(String sql, Map<String, Param> params, int index) {
         Matcher m = paramPattern.matcher(sql);
         StringBuffer buf = new StringBuffer();
         while (m.find()) {
-            String param = m.group();
-            String pn = param.substring(2, param.length() - 1).trim();
-            batchParamNameSet.add(pn);
-            String value = "{@" + pn +"_##}";
-            m.appendReplacement(buf, value);
+            String paramName = m.group();
+            String pn = paramName.substring(2, paramName.length() - 1).trim();
+            Param param = params.get(pn);
+            if(param.isBatchAssign()){
+                String value = "{@" + pn + "_" + index + "}";
+                m.appendReplacement(buf, value);
+            }
         }
         m.appendTail(buf);
         return buf.toString();
@@ -170,10 +218,6 @@ public class SqlPart extends SqlEntity {
 
     public String getPart() {
         return part;
-    }
-
-    public void setPart(String part) {
-        this.part = part;
     }
 
     public String getCondition() {
@@ -238,5 +282,21 @@ public class SqlPart extends SqlEntity {
 
     public void setAutoClearComma(boolean autoClearComma) {
         this.autoClearComma = autoClearComma;
+    }
+
+    public String getItem() {
+        return item;
+    }
+
+    public void setItem(String item) {
+        this.item = item;
+    }
+
+    public String getIndex() {
+        return index;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
     }
 }

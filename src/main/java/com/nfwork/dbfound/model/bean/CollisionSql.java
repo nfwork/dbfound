@@ -12,6 +12,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.CollisionException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
@@ -26,9 +27,6 @@ import com.nfwork.dbfound.util.StringUtil;
  * 
  */
 public class CollisionSql extends SqlEntity {
-
-	private static final long serialVersionUID = 2002950391423757459L;
-
 	private String where;
 	private String message;
 	private String code;
@@ -36,8 +34,8 @@ public class CollisionSql extends SqlEntity {
 	private boolean useDSql = false;
 
 	@Override
-	public void run() {
-		super.run();
+	public void doEndTag() {
+		super.doEndTag();
 		if(DataUtil.isNull(where) || DataUtil.isNull(message)){
 			initError = "CollisionSql attribute where and message can not be null";
 			return;
@@ -58,14 +56,15 @@ public class CollisionSql extends SqlEntity {
 		String eSql = getExecuteSql(whereSql, params, exeParam);
 
 		if( DSqlConfig.isOpenDSql() && useDSql){
-			Boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
-			if(result != null){
+			try {
+				boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
 				log("collision dSql","select "+eSql, params);
 				if(result) {
 					throw new CollisionException(staticParamParse(message, params),code);
 				}else{
 					return;
 				}
+			}catch (DSqlNotSupportException ignore){
 			}
 		}
 

@@ -20,20 +20,18 @@ import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 
 public class QuerySql extends Sql {
-
-	private static final long serialVersionUID = -8182147424516469176L;
 	private String initError;
 
 	@Override
-	public void run() {
-		super.run();
+	public void doEndTag() {
+		super.doEndTag();
 		if(DataUtil.isNull(sql)){
 			initError = "QuerySql content sql can not be null";
 			return;
 		}
 		autoCreateParam(sql,this);
-		if(sqlPartList!=null && !sqlPartList.isEmpty()){
-			String tmp = sqlPartList.stream().map(v->v.getCondition()+","+v.getPart()).collect(Collectors.joining(","));
+		if(!sqlPartList.isEmpty()){
+			String tmp = sqlPartList.stream().map(SqlPart::getPart).collect(Collectors.joining(","));
 			autoCreateParam(tmp,this);
 		}
 	}
@@ -43,9 +41,9 @@ public class QuerySql extends Sql {
 			throw new DBFoundRuntimeException(initError);
 		}
 		String querySql;
-		if(sqlPartList != null && !sqlPartList.isEmpty()){
+		if(!sqlPartList.isEmpty()){
 			params = new LinkedHashMap<>(params);
-			querySql = initSqlPart(sql,params,context,provideName);
+			querySql = getSqlPartSql(params,context,provideName);
 		}else{
 			querySql = sql;
 		}
@@ -82,8 +80,10 @@ public class QuerySql extends Sql {
 
 					Param param = params.get(columnName);
 					if (param == null){
-						String newName = underscoreToCamelCase(columnName);
-						param = params.get(newName);
+						if(columnName.contains("_")) {
+							String newName = underscoreToCamelCase(columnName);
+							param = params.get(newName);
+						}
 					}
 
 					if (param == null) {

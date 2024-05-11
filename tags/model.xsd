@@ -14,7 +14,7 @@
 	</xsd:element>
 
 	<xsd:complexType name="query_type">
-		<xsd:choice maxOccurs="unbounded" minOccurs="0">
+		<xsd:sequence>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="param" type="param_type" />
 			<xsd:element maxOccurs="1" minOccurs="1" name="sql" nillable="false" type="sql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="filter">
@@ -59,7 +59,7 @@
 					<xsd:attribute name="innerPath" />
 				</xsd:complexType>
 			</xsd:element>
-		</xsd:choice>
+		</xsd:sequence>
 		<xsd:attribute name="pagerSize" />
 		<xsd:attribute name="exportSize" />
 		<xsd:attribute name="maxPagerSize" />
@@ -168,13 +168,17 @@
 		</xsd:choice>
 	</xsd:complexType>
 
-	<xsd:complexType name="sqlTrim_type">
-		<xsd:sequence>
+	<xsd:complexType name="sqlTrim_type" mixed="true">
+		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
-		</xsd:sequence>
+		</xsd:choice>
 	</xsd:complexType>
 
 	<xsd:complexType name="sqlPart_type" mixed="true">
+		<xsd:choice maxOccurs="unbounded" minOccurs="0">
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="sqlTrim_type" />
+		</xsd:choice>
 		<xsd:attribute name="type">
 			<xsd:simpleType>
 				<xsd:restriction base="xsd:NMTOKEN">
@@ -204,6 +208,8 @@
 		<xsd:attribute name="separator" />
 		<xsd:attribute name="begin" />
 		<xsd:attribute name="end" />
+		<xsd:attribute name="item" />
+		<xsd:attribute name="index" />
 	</xsd:complexType>
 
 	<xsd:complexType name="sqls_type">

@@ -3,16 +3,13 @@ package com.nfwork.dbfound.model.bean;
 import java.time.temporal.Temporal;
 import java.util.Date;
 
+import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.base.DataType;
-import com.nfwork.dbfound.model.base.Entity;
 import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LocalDateUtil;
 
-public class Param extends Entity {
-
-	private static final long serialVersionUID = 5538229252299018282L;
-
+public class Param extends Entity implements Cloneable{
 	private String name = "";
 	private DataType dataType = DataType.VARCHAR;
 	private IOType ioType = IOType.IN;
@@ -31,7 +28,7 @@ public class Param extends Entity {
 	private boolean emptyAsNull = true;
 
 	@Override
-	public void run() {
+	public void doEndTag() {
 		if (getParent() instanceof Model) {
 			Model model = (Model) getParent();
 			model.getParams().put(name, this);
@@ -41,6 +38,14 @@ public class Param extends Entity {
 		} else if (getParent() instanceof Query) {
 			Query query = (Query) getParent();
 			query.getParams().put(name, this);
+		}
+	}
+
+	public Object cloneEntity() {
+		try {
+			return clone();
+		} catch (CloneNotSupportedException e) {
+			throw new DBFoundPackageException("entity克隆异常:" + e.getMessage(), e);
 		}
 	}
 

@@ -11,6 +11,7 @@ import java.util.Map;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
@@ -19,17 +20,14 @@ import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
 
 public class WhenSql extends Sqls {
-
-	private static final long serialVersionUID = 1781803860305201223L;
-
 	private String when;
 	private String initError;
 	private boolean useDSql = false;
 	private OtherwiseSql otherwiseSql;
 
 	@Override
-	public void run() {
-		super.run();
+	public void doEndTag() {
+		super.doEndTag();
 		if(DataUtil.isNull(when)){
 			initError = "WhenSql attribute when can not be null";
 			return;
@@ -65,10 +63,11 @@ public class WhenSql extends Sqls {
 		String eSql = getExecuteSql(whenSql, params, exeParam);
 
 		if(DSqlConfig.isOpenDSql() && useDSql){
-			Boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
-			if(result != null){
+			try {
+				boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
 				log("when dSql", "select " + eSql, params);
 				return result;
+			}catch (DSqlNotSupportException ignore){
 			}
 		}
 

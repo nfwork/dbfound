@@ -17,7 +17,7 @@ public class DSqlTest {
         List<Object> list = new ArrayList<>();
         list.add("john");
 
-        Boolean result = DSqlEngine.checkWhenSql("? like 'john'",list,"", context);
+        boolean result = DSqlEngine.checkWhenSql("? like 'john'",list,"", context);
         assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("? like 'joh%'",list,"", context);
@@ -48,7 +48,7 @@ public class DSqlTest {
         List<Object> list = new ArrayList<>();
         list.add("john");
 
-        Boolean result = DSqlEngine.checkWhenSql("? is null",list,"", context);
+        boolean result = DSqlEngine.checkWhenSql("? is null",list,"", context);
         assert Boolean.FALSE.equals(result);
 
         result = DSqlEngine.checkWhenSql("? is not null",list,"", context);
@@ -70,7 +70,7 @@ public class DSqlTest {
         List<Object> list = new ArrayList<>();
         list.add("john");
 
-        Boolean result = DSqlEngine.checkWhenSql("? = null",list,"", context);
+        boolean result = DSqlEngine.checkWhenSql("? = null",list,"", context);
         assert Boolean.FALSE.equals(result);
 
         result = DSqlEngine.checkWhenSql("? = 'john'",list,"", context);
@@ -97,7 +97,7 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql("? = true",list,"", context);
         assert Boolean.TRUE.equals(result);
 
-        result = DSqlEngine.checkWhenSql("? = false",list,"", context);
+        result = DSqlEngine.checkWhenSql("? = FALSE",list,"", context);
         assert Boolean.FALSE.equals(result);
 
         result = DSqlEngine.checkWhenSql("? != 1",list,"", context);
@@ -129,7 +129,7 @@ public class DSqlTest {
         List<Object> list = new ArrayList<>();
         list.add(10000);
 
-        Boolean result = DSqlEngine.checkWhenSql("? > 9999",list,"", context);
+        boolean result = DSqlEngine.checkWhenSql("? > 9999",list,"", context);
         assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("? >= 10000",list,"", context);
@@ -150,9 +150,6 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql("? <= null",list,"", context);
         assert Boolean.FALSE.equals(result);
 
-        result = DSqlEngine.checkWhenSql("? <= true",list,"", context);
-        assert result == null;
-
         result = DSqlEngine.checkWhenSql("'abc' <= 'bcd'",list,"", context);
         assert Boolean.TRUE.equals(result);
 
@@ -169,7 +166,7 @@ public class DSqlTest {
         List<Object> list = new ArrayList<>();
         list.add("john");
 
-        Boolean result = DSqlEngine.checkWhenSql("length(?) = 4",list,"_default", context);
+        boolean result = DSqlEngine.checkWhenSql("length(?) = 4",list,"_default", context);
         assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("char_length(?) = 4",list,"_default", context);
@@ -200,7 +197,7 @@ public class DSqlTest {
         List<Object> list = new ArrayList<>();
         list.add(10000);
 
-        Boolean result = DSqlEngine.checkWhenSql("? * 2 = 20000",list,"", context);
+        boolean result = DSqlEngine.checkWhenSql("? * 2 = 20000",list,"", context);
         assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("? / 100 = 100",list,"", context);
@@ -240,7 +237,7 @@ public class DSqlTest {
         List<Object> list = new ArrayList<>();
         list.add(10000);
 
-        Boolean result = DSqlEngine.checkWhenSql("? * 2 = 20000 and 100 = 100",list,"", context);
+        boolean result = DSqlEngine.checkWhenSql("? * 2 = 20000 and 100 = 100",list,"", context);
         assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("? / 100 = 99 or 100 = 100",list,"", context);
@@ -262,6 +259,43 @@ public class DSqlTest {
         assert Boolean.FALSE.equals(result);
 
         result = DSqlEngine.checkWhenSql("! (100 = 100)",list,"", context);
+        assert Boolean.FALSE.equals(result);
+
+    }
+
+    @Test
+    public void testIn() {
+        Context context = new Context();
+        List<Object> list = new ArrayList<>();
+
+        boolean result = DSqlEngine.checkWhenSql("100 not in(100,200)",list,"", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("100 in(100,200)",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("'admin' not in('admin','hello')",list,"", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("'admin' in('admin','hello')",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("'huang' in('admin','hello')",list,"", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("'huang' not in('admin','hello')",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("'admin' in('admin','hello',null)",list,"", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("'huang' in('admin','hello',null)",list,"", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("'admin' not in('admin','hello',null)",list,"", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("'huang' not in('admin','hello',null)",list,"", context);
         assert Boolean.FALSE.equals(result);
 
     }

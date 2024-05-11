@@ -3,15 +3,12 @@ package com.nfwork.dbfound.model.bean;
 import com.nfwork.dbfound.util.StringUtil;
 
 public class Filter extends Param {
-
-	private static final long serialVersionUID = -7553494400564901864L;
-
 	private String express;
 	private boolean active;
 	private String condition;
 
 	@Override
-	public void run(){
+	public void doEndTag(){
 		if(express != null){
 			express = StringUtil.fullTrim(express);
 		}
