@@ -5,5 +5,5 @@ import com.nfwork.dbfound.dto.ResponseObject;
 
 public interface BaseControl {
 
-	public ResponseObject execute(Context context) throws Exception;
+	ResponseObject execute(Context context) throws Exception;
 }
