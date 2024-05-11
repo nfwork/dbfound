@@ -2,14 +2,13 @@ package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.model.base.Entity;
 
 import java.util.Map;
 
 public class CaseSql extends Sqls {
 
     @Override
-    public void run() {
+    public void doEndTag() {
         Entity entity = getParent();
         if (entity instanceof Sqls) {
             WhenSql whenSql = null;

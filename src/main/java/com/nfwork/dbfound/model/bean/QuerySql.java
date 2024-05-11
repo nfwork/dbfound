@@ -20,13 +20,11 @@ import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.web.file.FileUtil;
 
 public class QuerySql extends Sql {
-
-	private static final long serialVersionUID = -8182147424516469176L;
 	private String initError;
 
 	@Override
-	public void run() {
-		super.run();
+	public void doEndTag() {
+		super.doEndTag();
 		if(DataUtil.isNull(sql)){
 			initError = "QuerySql content sql can not be null";
 			return;
@@ -82,8 +80,10 @@ public class QuerySql extends Sql {
 
 					Param param = params.get(columnName);
 					if (param == null){
-						String newName = underscoreToCamelCase(columnName);
-						param = params.get(newName);
+						if(columnName.contains("_")) {
+							String newName = underscoreToCamelCase(columnName);
+							param = params.get(newName);
+						}
 					}
 
 					if (param == null) {

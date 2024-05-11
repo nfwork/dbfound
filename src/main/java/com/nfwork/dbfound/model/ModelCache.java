@@ -1,27 +1,51 @@
 package com.nfwork.dbfound.model;
 
+import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.bean.Model;
 
 public class ModelCache {
 
-	private static final ConcurrentMap<String, Future<Model>> models = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, Future<Model>> models = new ConcurrentHashMap<>();
+
+	private final ModelReader modelReader = new ModelReader();
 	
-	public static void remove(final String modelName) {
+	protected void remove(final String modelName) {
 		models.remove(modelName);
 	}
+
+	/**
+	 * 获取model
+	 *
+	 * @param modelName model name
+	 * @return model
+	 */
+	protected Model getModel(String modelName) {
+		Model model = get(modelName);
+
+		if(!model.isPkgModel() && DBFoundConfig.isModelModifyCheck()) {
+			File file = new File(model.getFileLocation());
+			long newFileLastModify = file.lastModified();
+			if (newFileLastModify > model.getFileLastModify()) {
+				remove(modelName);
+				model = get(modelName);
+			}
+		}
+		return model;
+	}
 	
-	public static Model get(final String modelName) {
+	protected Model get(final String modelName) {
 	    Future<Model> future = models.get(modelName);
 	    if (future == null) {
-	        Callable<Model> callable = () -> ModelReader.readerModel(modelName);
+	        Callable<Model> callable = () -> modelReader.readerModel(modelName);
 	        FutureTask<Model> task = new FutureTask<>(callable);
 	 
 	        future = models.putIfAbsent(modelName, task);
@@ -48,7 +72,7 @@ public class ModelCache {
 	/**
 	 * 清空缓存
 	 */
-	public static void clear() {
+	protected void clear() {
 		models.clear();
 	}
 }

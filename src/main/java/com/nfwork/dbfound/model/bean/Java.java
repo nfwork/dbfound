@@ -14,17 +14,14 @@ import com.nfwork.dbfound.model.base.ProvideNameAware;
 import com.nfwork.dbfound.util.LogUtil;
 
 public class Java extends SqlEntity {
-
-	private static final long serialVersionUID = -8978726798343582780L;
-
 	private String className;
 
 	private String method;
 
 	@Override
-	public void run() {
-		super.run();
-		if (method == null || "".equals(method)) {
+	public void doEndTag() {
+		super.doEndTag();
+		if (method == null || method.isEmpty()) {
 			method = "execute";
 		}
 	}
@@ -34,8 +31,8 @@ public class Java extends SqlEntity {
 			String provideName) {
 		LogUtil.info("execute Java plugin：" + className + ", method：" + method);
 		try {
-			Class executeClass = Class.forName(className);
-			Object object = executeClass.newInstance();
+			Class<?> executeClass = Class.forName(className);
+			Object object = executeClass.getConstructor().newInstance();
 
 			Reflector reflector = Reflector.forClass(executeClass);
 

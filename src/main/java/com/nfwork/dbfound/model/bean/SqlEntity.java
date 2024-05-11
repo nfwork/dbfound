@@ -17,10 +17,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.dto.FileDownloadResponseObject;
+import com.nfwork.dbfound.dto.QueryResponseObject;
+import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.el.DBFoundEL;
+import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.model.base.*;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
@@ -31,10 +34,9 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.web.file.FilePart;
 
+import javax.servlet.http.Cookie;
+
 public abstract class SqlEntity extends Entity {
-
-	private static final long serialVersionUID = 3035666882993092230L;
-
 	private final static String paramReplace = "\\{@[ a-zA-Z_0-9\u4E00-\u9FA5]*}";
 
 	protected final static Pattern dynamicPattern = Pattern.compile("\\$" + paramReplace);
@@ -49,7 +51,7 @@ public abstract class SqlEntity extends Entity {
 	protected final static Pattern timeMillisPattern = Pattern.compile("[0123456789]*");
 
 	@Override
-	public void run() {
+	public void doEndTag() {
 		Entity entity = getParent();
 		if (entity instanceof Sqls) {
 			Sqls sqls = (Sqls) entity;
@@ -515,7 +517,9 @@ public abstract class SqlEntity extends Entity {
 			}
 
 			if (DBFoundConfig.isUnderscoreToCamelCase()){
-				colName = underscoreToCamelCase(colName);
+				if(colName.contains("_")) {
+					colName = underscoreToCamelCase(colName);
+				}
 			}
 			colNames[i-1] = colName;
 		}
@@ -585,6 +589,109 @@ public abstract class SqlEntity extends Entity {
 		}
 
 		return context.getCurrentModel() + "#" + entityName +"#"+name;
+	}
+
+	/**
+	 * 处理参数 放入session、cookie、或者以outParam返回
+	 *
+	 * @param context context
+	 * @param params params
+	 * @return Map
+	 */
+	protected ResponseObject initOutParams(Context context, Map<String, Param> params, ResponseObject responseObject) {
+		boolean inWeb = context.request != null && context.response != null;
+		for (Param p : params.values()) {
+			if (inWeb) {
+				// 设定session参数
+				if (p.isAutoSession()) {
+					context.setSessionData(p.getName(), p.getValue());
+				}
+				// 设定cookie参数
+				if (p.isAutoCookie()) {
+					Cookie cookie = new Cookie(p.getName(), p.getStringValue());
+					String path = context.request.getContextPath();
+					if (!path.endsWith("/")) {
+						path = path + "/";
+					}
+					cookie.setPath(path);
+					cookie.setMaxAge(10 * 24 * 60 * 60);
+					context.response.addCookie(cookie);
+				}
+				// 将out参数输出
+				if (p.getIoType() != IOType.IN) {
+					if (p.getDataType() == DataType.FILE) {
+						if(!context.isExport() && ! (responseObject instanceof QueryResponseObject)) {
+							return new FileDownloadResponseObject(p, params);
+						}
+					} else {
+						context.setOutParamData(p.getName(), p.getValue());
+					}
+				}
+			} else {
+				// 将out参数输出
+				if (p.getIoType() != IOType.IN) {
+					context.setOutParamData(p.getName(), p.getValue());
+				}
+			}
+		}
+		responseObject.setOutParam(context.getOutParamDatas());
+		return responseObject;
+	}
+
+	protected void setParam(Param nfParam, Context context, String cp, Map<String, Object> elCache) {
+
+		// 增加UUID取值 在sql执行的时候动态的获取UUID 2012年8月8日8:47:08
+		if (nfParam.isUUID()) {
+			nfParam.setSourcePathHistory("UUID");
+			nfParam.setDataType(DataType.VARCHAR);
+			return;
+		}
+		// end 修改
+
+		if (nfParam.getIoType() == IOType.OUT) {
+			return; // out参数直接返回
+		}
+
+		// dbfound1.3新功能，根据sourcePath到pagerContext容器中取数据
+		String scope = nfParam.getScope();
+
+		// 设置 当前取值路径
+		String currentPath;
+		if (DataUtil.isNotNull(scope)) {
+			currentPath = scope;
+		} else {
+			currentPath = cp;
+		}
+
+		String realPath ;// 绝对路径
+
+		// 得到取值的相对路径
+		String sourcePath = nfParam.getSourcePath();
+		if (DataUtil.isNull(sourcePath)) {
+			sourcePath = nfParam.getName();
+			realPath = currentPath + "." + sourcePath;
+		} else {
+			// 判断sourcePath 是绝对路径，还是相当路径
+			if (ELEngine.isAbsolutePath(sourcePath)) {
+				realPath = sourcePath;
+			} else {
+				realPath = currentPath + "." + sourcePath;
+			}
+		}
+
+		// 取值
+		Object paramValue = context.getData(realPath, elCache);
+
+		if(paramValue != null) {
+			if ("".equals(paramValue)) {
+				if(!nfParam.isEmptyAsNull()) {
+					nfParam.setValue("");
+				}
+			} else{
+				nfParam.setValue(paramValue);
+			}
+		}
+		nfParam.setSourcePathHistory(realPath);
 	}
 
 	public void log(String sqlName, String sql, Map<String, Param> params) {
