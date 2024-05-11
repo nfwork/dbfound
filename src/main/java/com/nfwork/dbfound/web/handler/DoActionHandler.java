@@ -13,6 +13,8 @@ import com.nfwork.dbfound.web.file.FileDownloadUtil;
 
 public class DoActionHandler extends ActionHandler {
 
+    private final ActionReflect actionReflect = new ActionReflect();
+
     @Override
     public boolean isSupport(String requestPath) {
         return requestPath.endsWith(".do") || requestPath.contains(".do!");
@@ -35,7 +37,7 @@ public class DoActionHandler extends ActionHandler {
         ActionBean actionBean = ActionEngine.findActionBean(modelName); // 得到对应的class类的名字
         if (actionBean != null) {
             if (InterceptorHandler.doInterceptor(context, actionBean.getClassName(), methodName)) {
-                object = ActionReflect.reflect(context, actionBean.getClassName(), methodName, actionBean.isSingleton());
+                object = actionReflect.reflect(context, actionBean.getClassName(), methodName, actionBean.isSingleton());
             }
         } else {
             String message = "cant not found url:" + requestPath.substring(1) + " mapping class, please check config";

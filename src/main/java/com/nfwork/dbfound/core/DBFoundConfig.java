@@ -282,7 +282,6 @@ public class DBFoundConfig {
 			String controllerPaths = controllerEl.getTextTrim();
 			if (!"".equals(controllerPaths)) {
 				ActionEngine.initMappings(controllerPaths);
-				info.append("(controllerPaths = ").append(controllerPaths).append(")");
 			}
 		}
 
@@ -330,10 +329,7 @@ public class DBFoundConfig {
 			}
 		}
 		if (file.exists()) {
-			LogUtil.info("init mvc success, config file: "+ PathFormat.format(file.getAbsolutePath()));
 			ActionEngine.init(file);
-		} else {
-			LogUtil.info( "init mvc cancel, because file: " + PathFormat.format(getRealPath(mvcFile)) + " not found");
 		}
 	}
 
