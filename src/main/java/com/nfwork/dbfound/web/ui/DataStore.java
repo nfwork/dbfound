@@ -17,7 +17,7 @@ import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.JsonUtil;
-import com.nfwork.dbfound.web.WebExceptionHandle;
+import com.nfwork.dbfound.web.WebExceptionHandler;
 import com.nfwork.dbfound.web.base.StoreDataProvide;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -67,7 +67,7 @@ public class DataStore extends TagSupport {
 				transaction.rollback();
 				transaction.end();
 			}
-			WebExceptionHandle.handle(e, (HttpServletRequest) pageContext
+			WebExceptionHandler.handle(e, (HttpServletRequest) pageContext
 					.getRequest(), (HttpServletResponse) pageContext
 					.getResponse());
 			return SKIP_PAGE;

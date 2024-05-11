@@ -2,6 +2,7 @@ package com.nfwork.dbfound.core;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.*;
 
@@ -20,10 +21,9 @@ import com.nfwork.dbfound.db.JdbcConnectionProvide;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
-import com.nfwork.dbfound.web.ActionEngine;
+import com.nfwork.dbfound.web.action.ActionEngine;
 import com.nfwork.dbfound.web.DispatcherFilter;
-import com.nfwork.dbfound.web.InterceptorEngine;
-import com.nfwork.dbfound.web.file.FileUtil;
+import com.nfwork.dbfound.web.InterceptorHandler;
 import com.nfwork.dbfound.web.i18n.MultiLangUtil;
 
 public class DBFoundConfig {
@@ -80,7 +80,7 @@ public class DBFoundConfig {
 	}
 
 	public synchronized static void init(String confFile) {
-		if (confFile == null || "".equals(confFile)) {
+		if (confFile == null || confFile.isEmpty()) {
 			confFile = CLASSPATH + "/dbfound-conf.xml";
 		}
 		if (inited) {
@@ -148,7 +148,7 @@ public class DBFoundConfig {
 
 				if (listenerClass != null) {
 					try {
-						StartListener listener = (StartListener) Class.forName(listenerClass).newInstance();
+						StartListener listener = (StartListener) Class.forName(listenerClass).getConstructor().newInstance();
 						listener.execute();
 						LogUtil.info("invoke listenerClass success");
 					} catch (Exception e) {
@@ -170,7 +170,7 @@ public class DBFoundConfig {
 	}
 
 	private static void initDB(Element database)
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
 
 		List<Element> jdbcProvides = database.elements("jdbcConnectionProvide");
 		for (Element element : jdbcProvides) {
@@ -180,11 +180,11 @@ public class DBFoundConfig {
 			String username = getString(element, "username");
 			String password = getString(element, "password");
 			String dialect = getString(element, "dialect");
-			if (provideName == null || provideName.equals("")) {
+			if (provideName == null || provideName.isEmpty()) {
 				provideName = "_default";
 			}
-			if (dialect != null && url != null && driverClass != null && username != null && !"".equals(dialect)
-					&& !"".equals(driverClass) && !"".equals(url) && !"".equals(username)) {
+			if (dialect != null && url != null && driverClass != null && username != null && !dialect.isEmpty()
+					&& !driverClass.isEmpty() && !url.isEmpty() && !username.isEmpty()) {
 				ConnectionProvide provide = new JdbcConnectionProvide(provideName, url, driverClass, dialect, username,
 						password);
 				provide.regist();
@@ -200,15 +200,15 @@ public class DBFoundConfig {
 			String dataSource = getString(element, "dataSource");
 			String dialect = getString(element, "dialect");
 			String className = getString(element, "className");
-			if (provideName == null || provideName.equals("")) {
+			if (provideName == null || provideName.isEmpty()) {
 				provideName = "_default";
 			}
-			if (dialect != null && dataSource != null && !"".equals(dialect) && !"".equals(dataSource)) {
+			if (dialect != null && dataSource != null && !dialect.isEmpty() && !dataSource.isEmpty()) {
 				ConnectionProvide provide = new DataSourceConnectionProvide(provideName, dataSource, dialect);
 				provide.regist();
 				LogUtil.info("register dataSourceConnProvide success, provideName:"+ provideName);
-			} else if (dialect != null && className != null && !"".equals(dialect) && !"".equals(className)) {
-				DataSource ds = (DataSource) Class.forName(className).newInstance();
+			} else if (dialect != null && className != null && !dialect.isEmpty() && !className.isEmpty()) {
+				DataSource ds = (DataSource) Class.forName(className).getConstructor().newInstance();
 				List<Element> properties = element.element("properties").elements("property");
 
 				Reflector reflector = Reflector.forClass(ds.getClass());
@@ -252,11 +252,7 @@ public class DBFoundConfig {
 		Element jsonElement = web.element("jsonStringAutoCover");
 		if (jsonElement != null) {
 			String autoCover = jsonElement.getTextTrim();
-			if ("true".equals(autoCover)) {
-				jsonStringAutoCover = true;
-			}else{
-				jsonStringAutoCover = false;
-			}
+            jsonStringAutoCover = "true".equals(autoCover);
 			info.append("(jsonStringAutoCover = ").append(jsonStringAutoCover).append(")");
 		}
 
@@ -285,7 +281,7 @@ public class DBFoundConfig {
 		if (filter != null) {
 			String className = filter.getTextTrim();
 			if (!"".equals(className)) {
-				InterceptorEngine.init(className);
+				InterceptorHandler.init(className);
 				info.append("(interceptor = ").append(className).append(")");
 			}
 		}
@@ -398,11 +394,7 @@ public class DBFoundConfig {
 		if (modelModifyCheckElement != null) {
 			String modelModifyCheckConfig = modelModifyCheckElement.getTextTrim();
 			if (!"".equals(modelModifyCheckConfig)) {
-				if ("true".equals(modelModifyCheckConfig)){
-					modelModifyCheck = true;
-				}else{
-					modelModifyCheck = false;
-				}
+                modelModifyCheck = "true".equals(modelModifyCheckConfig);
 				info.append("(modelModifyCheck = ").append(modelModifyCheckConfig).append(")");
 			}
 		}
@@ -464,7 +456,7 @@ public class DBFoundConfig {
 	}
 
 	public static String getClasspath() {
-		if (classpath == null || "".equals(classpath)) {
+		if (classpath == null || classpath.isEmpty()) {
 			String cp = Thread.currentThread().getContextClassLoader().getResource("").getFile();
 			File file = new File(cp);
 			classpath = file.getAbsolutePath();
@@ -474,7 +466,7 @@ public class DBFoundConfig {
 	}
 
 	public static String getProjectRoot() {
-		if (projectRoot == null || "".equals(projectRoot)) {
+		if (projectRoot == null || projectRoot.isEmpty()) {
 			File file = new File(getClasspath());
 			try {
 				projectRoot = file.getParentFile().getParentFile().getAbsolutePath();
@@ -488,7 +480,7 @@ public class DBFoundConfig {
 
 	public static String getConfigFilePath() {
 		try {
-			if (configFilePath == null || "".equals(configFilePath)) {
+			if (configFilePath == null || configFilePath.isEmpty()) {
 				configFilePath = DispatcherFilter.getConfigFilePath();
 				configFilePath = PathFormat.format(configFilePath);
 			}
