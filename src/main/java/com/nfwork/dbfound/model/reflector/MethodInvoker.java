@@ -26,4 +26,12 @@ public class MethodInvoker implements Invoker {
   public Class<?> getType() {
     return type;
   }
+
+  public Method getMethod() {
+    return method;
+  }
+
+  public void setMethod(Method method) {
+    this.method = method;
+  }
 }

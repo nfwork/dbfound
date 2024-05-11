@@ -1,11 +1,14 @@
 package com.nfwork.dbfound.web.action;
 
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.model.reflector.MethodInvoker;
 import com.nfwork.dbfound.model.reflector.Reflector;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.web.base.ActionController;
+import com.nfwork.dbfound.web.base.ActionTransactional;
 import com.nfwork.dbfound.web.base.BaseControl;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,21 +18,40 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ActionReflect {
 
-	public static ResponseObject reflect(Context context, String className, String method, boolean singleton) {
+	public static ResponseObject reflect(Context context, String className, String method, boolean singleton) throws Exception {
 		try {
 			BaseControl baseControl = ActionBeanFactory.getControl(className, singleton);
-			Reflector reflector = Reflector.forClass(baseControl.getClass());
-			Object result = reflector.getMethodInvoker(method, Context.class).invoke(baseControl, new Object[] {context});
 
+			Reflector reflector = Reflector.forClass(baseControl.getClass());
+			MethodInvoker methodInvoker = reflector.getMethodInvoker(method, Context.class);
+
+			boolean requireTransaction = true;
+			if (baseControl instanceof ActionController){
+				ActionTransactional transactional = methodInvoker.getMethod().getAnnotation(ActionTransactional.class);
+				if(transactional == null){
+					requireTransaction = false;
+				}else{
+					if(transactional.isolation() != null) {
+						context.getTransaction().setTransactionIsolation(transactional.isolation().getValue());
+					}
+				}
+			}
+
+			if(requireTransaction) {
+				context.getTransaction().begin();
+			}
+			Object result = methodInvoker.invoke(baseControl, new Object[] {context});
 			if (result != null) {
 				if (result instanceof ResponseObject) {
+					context.getTransaction().commit();
 					return (ResponseObject) result;
 				} else {
 					throw new DBFoundRuntimeException("return object must extends ResponseObject");
 				}
 			}
 			return null;
-		}catch (Exception e){
+		}catch (Throwable e){
+			context.getTransaction().rollback();
 			Throwable throwable = e.getCause();
 			if(throwable instanceof DBFoundRuntimeException){
 				throw (DBFoundRuntimeException)throwable;
@@ -39,7 +61,13 @@ public class ActionReflect {
 					throw new DBFoundPackageException("ActionReflect execute failed, " + e.getMessage(), (Exception) throwable);
 				}
 			}
-			throw new DBFoundPackageException("ActionReflect execute failed, "+e.getMessage(), e);
+			if(e instanceof Exception) {
+				throw new DBFoundPackageException("ActionReflect execute failed, " + e.getMessage(), (Exception) e);
+			}else{
+				throw e;
+			}
+		}finally {
+			context.getTransaction().end();
 		}
 	}
 }

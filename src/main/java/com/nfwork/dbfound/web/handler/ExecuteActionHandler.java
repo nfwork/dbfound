@@ -43,9 +43,9 @@ public class ExecuteActionHandler extends ActionHandler {
                 object = ModelEngine.execute(context, modelName, executeName);
             }
             context.getTransaction().commit();
-        }catch (Exception exception){
+        }catch (Throwable throwable){
             context.getTransaction().rollback();
-            throw exception;
+            throw throwable;
         }finally {
             context.getTransaction().end();
         }
