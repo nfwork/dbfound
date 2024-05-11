@@ -39,15 +39,15 @@ public class SqlPart extends Sql {
     private Set<String> paramNameSet;
 
     @Override
-    public void init(Element element) {
-        super.init(element);
+    public void doStartTag(Element element) {
+        super.doStartTag(element);
         if(condition != null){
             condition = StringUtil.fullTrim(condition);
         }
     }
 
     @Override
-    public void run() {
+    public void doEndTag() {
         if (getParent() instanceof Sql) {
             Sql sql = (Sql) getParent();
             sql.getSqlPartList().add(this);

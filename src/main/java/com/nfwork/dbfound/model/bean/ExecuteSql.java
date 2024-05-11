@@ -20,9 +20,6 @@ import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StreamUtils;
 
 public class ExecuteSql extends Sql {
-
-	private static final long serialVersionUID = 7525842037480200449L;
-
 	private String generatedKeyParam;
 
 	private String affectedCountParam;
@@ -30,8 +27,8 @@ public class ExecuteSql extends Sql {
 	private String initError;
 
 	@Override
-	public void run() {
-		super.run();
+	public void doEndTag() {
+		super.doEndTag();
 		if(DataUtil.isNull(sql)){
 			initError = "ExecuteSql content sql can not be null";
 			return;

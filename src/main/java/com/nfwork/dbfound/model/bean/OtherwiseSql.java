@@ -2,16 +2,16 @@ package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.model.base.Entity;
+
 import java.util.Map;
 
 public class OtherwiseSql extends Sqls {
 
     @Override
-    public void run() {
+    public void doEndTag() {
         Entity entity = getParent();
         if(entity instanceof CaseSql){
-            super.run();
+            super.doEndTag();
             return;
         }
         if (entity instanceof Sqls) {

@@ -14,7 +14,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.core.PathFormat;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.model.base.Entity;
+import com.nfwork.dbfound.model.bean.Entity;
 import com.nfwork.dbfound.model.bean.Model;
 import com.nfwork.dbfound.util.LogUtil;
 
@@ -24,7 +24,7 @@ public class ModelReader {
 	 * 读取一个model
 	 *
 	 */
-	static Model readerModel(String modelName) {
+	protected Model readerModel(String modelName) {
 
 		SAXReader reader = new SAXReader();
 
@@ -87,9 +87,9 @@ public class ModelReader {
 		model.setFileLastModify(file.lastModified());
 		model.setPkgModel(pkgModel);
 
-		model.init(root);
+		model.doStartTag(root);
 		readerChild(root, model);
-		model.run();
+		model.doEndTag();
 
 		fileLocation = PathFormat.format(fileLocation);
 		model.setFileLocation(fileLocation);
@@ -100,17 +100,17 @@ public class ModelReader {
 	/**
 	 * 初始化 他的儿子节点 信息
 	 */
-	static void readerChild(Element parent, Entity parentEntity) {
+	private void readerChild(Element parent, Entity parentEntity) {
 		List<Element> elements = parent.elements();
 		for (Element unit : elements) {
 			String className = getClassName(unit);
 			Entity entity ;
 			try {
-				entity = (Entity) Class.forName(className).newInstance();
+				entity = (Entity) Class.forName(className).getConstructor().newInstance();
 				entity.setParent(parentEntity);
-				entity.init(unit);
+				entity.doStartTag(unit);
 				readerChild(unit, entity);
-				entity.run();
+				entity.doEndTag();
 			} catch (Exception e) {
 				if(e instanceof DBFoundRuntimeException){
 					throw (DBFoundRuntimeException)e;
@@ -126,7 +126,7 @@ public class ModelReader {
 	 * 得到 对应的class 名字
 	 *
 	 */
-	static String getClassName(Element element) {
+	private String getClassName(Element element) {
 		String path = element.getNamespace().getText();
 		if ("http://dbfound.googlecode.com/model".equals(path)) {
 			path = "com.nfwork.dbfound.model.bean.";

@@ -9,12 +9,8 @@ import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DataUtil;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.model.base.Entity;
 
 public class Model extends Entity {
-
-	private static final long serialVersionUID = -1944232395561791090L;
-
 	private long fileLastModify;
 	private Map<String, Query> querys;
 	private Map<String, Execute> executes;
@@ -25,15 +21,15 @@ public class Model extends Entity {
 	private boolean pkgModel = false;
 
 	@Override
-	public void init(Element element) {
+	public void doStartTag(Element element) {
 		querys = new HashMap<>();
 		executes = new HashMap<>();
 		params = new LinkedHashMap<>();
-		super.init(element);
+		super.doStartTag(element);
 	}
 
 	@Override
-	public void run() {
+	public void doEndTag() {
 		for (Param param : params.values()){
 			for (Execute execute : executes.values()){
 				Param exeParam = execute.getParams().get(param.getName());

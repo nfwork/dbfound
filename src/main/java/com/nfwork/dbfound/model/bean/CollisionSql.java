@@ -27,9 +27,6 @@ import com.nfwork.dbfound.util.StringUtil;
  * 
  */
 public class CollisionSql extends SqlEntity {
-
-	private static final long serialVersionUID = 2002950391423757459L;
-
 	private String where;
 	private String message;
 	private String code;
@@ -37,8 +34,8 @@ public class CollisionSql extends SqlEntity {
 	private boolean useDSql = false;
 
 	@Override
-	public void run() {
-		super.run();
+	public void doEndTag() {
+		super.doEndTag();
 		if(DataUtil.isNull(where) || DataUtil.isNull(message)){
 			initError = "CollisionSql attribute where and message can not be null";
 			return;

@@ -20,17 +20,14 @@ import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.StringUtil;
 
 public class WhenSql extends Sqls {
-
-	private static final long serialVersionUID = 1781803860305201223L;
-
 	private String when;
 	private String initError;
 	private boolean useDSql = false;
 	private OtherwiseSql otherwiseSql;
 
 	@Override
-	public void run() {
-		super.run();
+	public void doEndTag() {
+		super.doEndTag();
 		if(DataUtil.isNull(when)){
 			initError = "WhenSql attribute when can not be null";
 			return;

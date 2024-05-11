@@ -17,9 +17,6 @@ import com.nfwork.dbfound.util.StreamUtils;
 import com.nfwork.dbfound.web.file.FilePart;
 
 public class ExcelReader extends SqlEntity {
-
-	private static final long serialVersionUID = -9013279323716030635L;
-
 	private String sourceParam;
 	private String rootPath;
 	private String requiredDataType;

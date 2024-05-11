@@ -2,19 +2,19 @@ package com.nfwork.dbfound.model.bean;
 
 import java.util.*;
 
+import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.exception.ExecuteNotFoundException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
 import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.LogUtil;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 
 public class Execute extends SqlEntity {
-
-	private static final long serialVersionUID = 7670352852092590245L;
-
 	private String connectionProvide;
 	private String name = "_default";// execute对象的名字
 	private String modelName;
@@ -26,13 +26,13 @@ public class Execute extends SqlEntity {
 	private String currentPath;
 
 	@Override
-	public void init(Element element) {
+	public void doStartTag(Element element) {
 		params = new LinkedHashMap<>();
-		super.init(element);
+		super.doStartTag(element);
 	}
 
 	@Override
-	public void run() {
+	public void doEndTag() {
 		if(DataUtil.isNotNull(adapter)){
 			try {
 				executeAdapter = AdapterFactory.getExecuteAdapter(Class.forName(adapter));
@@ -45,7 +45,7 @@ public class Execute extends SqlEntity {
 			Model model = (Model) getParent();
 			model.putExecute(name, this);
 		} else {
-			super.run();
+			super.doEndTag();
 		}
 	}
 
@@ -57,13 +57,42 @@ public class Execute extends SqlEntity {
 		return params;
 	}
 
-	public void executeRun(Context context,Map<String, Param> params, String provideName){
+	public ResponseObject doExecute(Context context, String modelName, String executeName, String currentPath, Map<String, Object> elCache) {
+		// 把model、currentPath对象放入到 当前线程里
+		context.setCurrentPath(currentPath);
+		context.setCurrentModel(modelName);
+
+		Map<String, Param> params = cloneParams();
+
+		// 设想sql查询参数
+		for (Param nfParam : params.values()) {
+			setParam(nfParam, context, currentPath, elCache);
+		}
+
+		if(executeAdapter!=null){
+			executeAdapter.beforeExecute(context,params);
+		}
+
+		String provideName = ((Model)getParent()).getConnectionProvide(context, getConnectionProvide());
+		LogUtil.info("Execute info (modelName:" + modelName + ", executeName:" + executeName + ", provideName:"+provideName+")");
+
 		if (sqls != null) {
 			for (int i = 0; i < sqls.sqlList.size(); i++) {
 				SqlEntity sql = sqls.sqlList.get(i);
 				sql.execute(context, params, provideName);
 			}
 		}
+
+		if(executeAdapter!=null){
+			executeAdapter.afterExecute(context,params);
+		}
+
+		ResponseObject ro = new ResponseObject();
+		ro.setSuccess(true);
+		ro.setMessage("success");
+		ro = initOutParams(context, params, ro);
+
+		return ro;
 	}
 
 	@Override
