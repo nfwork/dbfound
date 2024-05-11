@@ -8,7 +8,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.model.ModelEngine;
-import com.nfwork.dbfound.web.WebExceptionHandle;
+import com.nfwork.dbfound.web.WebExceptionHandler;
 
 public class BatchExecute extends TagSupport {
 
@@ -34,7 +34,7 @@ public class BatchExecute extends TagSupport {
 				transaction.rollback();
 				transaction.end();
 			}
-			WebExceptionHandle.handle(e, request,
+			WebExceptionHandler.handle(e, request,
 					(HttpServletResponse) pageContext.getResponse());
 			return SKIP_PAGE;
 		}

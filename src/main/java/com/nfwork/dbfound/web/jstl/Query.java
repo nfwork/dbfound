@@ -12,7 +12,7 @@ import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
-import com.nfwork.dbfound.web.WebExceptionHandle;
+import com.nfwork.dbfound.web.WebExceptionHandler;
 import com.nfwork.dbfound.web.base.QueryDataProvide;
 
 public class Query extends TagSupport implements Cloneable {
@@ -48,7 +48,7 @@ public class Query extends TagSupport implements Cloneable {
 				transaction.rollback();
 				transaction.end();
 			}
-			WebExceptionHandle.handle(e, request,
+			WebExceptionHandler.handle(e, request,
 					(HttpServletResponse) pageContext.getResponse());
 			return SKIP_PAGE;
 		}
