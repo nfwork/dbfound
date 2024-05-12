@@ -332,6 +332,9 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
+			<description>
+				a function: isCellEditable(col, row, name, record) { return true; }
+			</description>
 		</attribute>
 		<attribute>
 			<name>selectable</name>
@@ -486,12 +489,19 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
+			<description>
+				a function: renderer(value, cell, record, row, col, store){ return value;}
+			</description>
 		</attribute>
 		<attribute>
 			<name>editor</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
+			<description>
+				one of (textfield, datefield, numberfield, combo, password,
+				datetimefield, timefield, lov, lovcombo)
+			</description>
 		</attribute>
 		<attribute>
 			<name>lovUrl</name>
@@ -540,6 +550,7 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
+			<description>one of (center、left、right)</description>
 		</attribute>
 		<attribute>
 			<name>allowDecimals</name>
@@ -680,6 +691,7 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
+			<description>one of (add, save, delete, excel)</description>
 		</attribute>
 		<attribute>
 			<name>action</name>
@@ -692,12 +704,22 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
+			<description>
+				a function
+				when type is add: beforeAction(grid, button){ return true;}
+				others: beforeAction(records, grid, button){ return true;}
+			</description>
 		</attribute>
 		<attribute>
 			<name>afterAction</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
+			<description>
+				a function
+				when type is add: afterAction(record, grid, button){ }
+				others: afterAction(records, resObj, button){ }
+			</description>
 		</attribute>
 		<attribute>
 			<name>title</name>
@@ -751,12 +773,18 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
+			<description>
+				a function: beforeAction(data, form, button){ return true;}
+			</description>
 		</attribute>
 		<attribute>
 			<name>afterAction</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
+			<description>
+				a function: afterAction(res, data, form, button){ }
+			</description>
 		</attribute>
 		<attribute>
 			<name>title</name>
@@ -962,6 +990,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
+			<description>
+				one of (combo，textfield，numberfield，datefield，spinnerfield
+				monthfield，datetimefield，htmleditor，textarea，password，file，
+				checkbox，lov，lovcombo, treecombo, file, checkboxgroup, radiogroup)
+			</description>
 		</attribute>
 		<attribute>
 			<name>anchor</name>
