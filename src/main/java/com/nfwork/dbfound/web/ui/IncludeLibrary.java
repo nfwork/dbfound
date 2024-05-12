@@ -19,8 +19,7 @@ import freemarker.template.Template;
 
 public class IncludeLibrary extends TagSupport {
 	private static final long serialVersionUID = 1L;
-	private String templateName = "includeLibrary.ftl";
-	private Configuration cfg;
+	private static final String templateName = "includeLibrary.ftl";
 
 	public int doEndTag() throws JspTagException {
 		JspWriter out = pageContext.getOut();
@@ -28,7 +27,7 @@ public class IncludeLibrary extends TagSupport {
 		HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
 		Context context = Context.getCurrentContext(request, response);
 		try {
-			cfg = FreemarkFactory.getConfig(pageContext.getServletContext());
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext.getServletContext());
 			// 定义Template对象
 			Template template = cfg.getTemplate(templateName);
 			// 定义数据

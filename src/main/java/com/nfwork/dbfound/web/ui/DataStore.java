@@ -44,7 +44,7 @@ public class DataStore extends TagSupport {
 				.getResponse();
 		Context context = Context.getCurrentContext(request, response);
 		try {
-			Configuration cfg = FreemarkFactory.getConfig(pageContext
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext
 					.getServletContext());
 			// 定义Template对象
 			Template template = cfg.getTemplate(templateName);

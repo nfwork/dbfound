@@ -20,7 +20,7 @@ public class Tab extends Panel implements Cloneable {
 	private String height;
 
 	public int doStartTag() throws JspTagException {
-		if (id == null || "".equals(id)) {
+		if (id == null || id.isEmpty()) {
 			id = "TAB" + UUIDUtil.getRandomString(5);
 		}
 		html = "<div id='" + id + "_div'>";

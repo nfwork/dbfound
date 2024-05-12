@@ -8,7 +8,6 @@ import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.exception.TagLocationException;
 
 public class Event extends TagSupport implements Cloneable {
-	private static final long serialVersionUID = 1L;
 	private String name;
 	private String handle;
 

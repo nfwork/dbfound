@@ -23,7 +23,7 @@ public class Tabs extends TagSupport {
 	private String width;
 	private String height;
 	private String id;
-	private String templateName = "tabs.ftl";
+	private static final String templateName = "tabs.ftl";
 	private boolean plain = true;
 	private String style = "";
 	private List<Tab> tabs;
@@ -55,7 +55,7 @@ public class Tabs extends TagSupport {
 
 	public void executeFreemarker(Writer out) {
 		try {
-			Configuration cfg = FreemarkFactory.getConfig(pageContext
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext
 					.getServletContext());
 
 			Template template = cfg.getTemplate(templateName);
@@ -63,7 +63,7 @@ public class Tabs extends TagSupport {
 			// 定义数据
 			Map<String, Object> root = new HashMap<String, Object>();
 
-			if (id == null || "".equals(id)) {
+			if (id == null || id.isEmpty()) {
 				id = "TABS" + UUIDUtil.getRandomString(5);
 			}
 

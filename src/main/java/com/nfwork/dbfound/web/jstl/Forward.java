@@ -12,9 +12,8 @@ import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.web.WebWriter;
 
-public class Forward extends TagSupport implements Cloneable {
+public class Forward extends TagSupport {
 
-	private static final long serialVersionUID = -5941376965347019531L;
 	private String queryName = "_default";
 	private String modelName;
 
