@@ -14,9 +14,8 @@ import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.web.WebExceptionHandler;
 import com.nfwork.dbfound.web.base.QueryDataProvide;
 
-public class Query extends TagSupport implements Cloneable {
+public class Query extends TagSupport {
 
-	private static final long serialVersionUID = -5941376965347019531L;
 	private String queryName;
 	private String modelName;
 	private String sourcePath;

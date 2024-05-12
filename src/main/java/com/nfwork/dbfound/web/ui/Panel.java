@@ -30,7 +30,7 @@ public class Panel extends TagSupport {
 	StringBuilder content;
 
 	public int doStartTag() throws JspTagException {
-		if (id == null || "".equals(id)) {
+		if (id == null || id.isEmpty()) {
 			id = "PANEL" + UUIDUtil.getRandomString(5);
 		}
 		content = new StringBuilder();
@@ -53,7 +53,7 @@ public class Panel extends TagSupport {
 
 	public void executeFreemarker(Writer out) {
 		try {
-			Configuration cfg = FreemarkFactory.getConfig(pageContext
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext
 					.getServletContext());
 
 			Template template = cfg.getTemplate(templateName);

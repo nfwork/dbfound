@@ -19,7 +19,6 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 public class Grid extends EventTag {
-	private static final long serialVersionUID = 1L;
 	private String width;
 	private String height = "335";
 	private String id;
@@ -28,7 +27,7 @@ public class Grid extends EventTag {
 	private String pagerSize = "10";
 	private String align = "center";
 	private boolean autoQuery = false;
-	private String templateName = "grid.ftl";
+	private static final String templateName = "grid.ftl";
 	private ToolBar toolBar;
 	private String model;
 	private String title;
@@ -43,8 +42,6 @@ public class Grid extends EventTag {
 	private boolean navBar = true;
 	private boolean rowNumber = true;
 	private String style = "";
-
-	private Configuration cfg;
 
 	public int doStartTag() throws JspTagException {
 		toolBar = null;
@@ -61,19 +58,19 @@ public class Grid extends EventTag {
 
 	public void executeFreemarker(Writer out) {
 		try {
-			cfg = FreemarkFactory.getConfig(pageContext.getServletContext());
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext.getServletContext());
 			// 定义Template对象
 			Template template = cfg.getTemplate(templateName);
 			// 定义数据
-			Map<String, Object> root = new HashMap<String, Object>();
+			Map<String, Object> root = new HashMap<>();
 
 			// 将转换信息放到map中 columns grid buttons
 
-			if (id == null || "".equals(id)) {
+			if (id == null || id.isEmpty()) {
 				id = "GRID" + UUIDUtil.getRandomString(5);
 			}
 
-			if (queryUrl == null || "".equals(queryUrl)) {
+			if (queryUrl == null || queryUrl.isEmpty()) {
 				queryUrl = model + ".query";
 			}
 			root.put("grid", this);
@@ -115,7 +112,7 @@ public class Grid extends EventTag {
 
 			// 判断是不是在第一个tab页
 			Object first = pageContext.getAttribute("isFirstTab");
-			if (first != null && (Boolean) first == false) {
+			if (first != null && !((Boolean) first)) {
 				root.put("delayRender", true);
 			} else {
 				root.put("delayRender", false);

@@ -7,8 +7,6 @@ import jakarta.servlet.jsp.JspTagException;
 import jakarta.servlet.jsp.tagext.TagSupport;
 
 public class EventTag extends TagSupport implements Cloneable {
- 
-	private static final long serialVersionUID = 6811748681670079843L;
 
 	String id;
 

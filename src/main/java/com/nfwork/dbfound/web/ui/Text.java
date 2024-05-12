@@ -10,7 +10,6 @@ import com.nfwork.dbfound.web.i18n.MultiLangUtil;
 
 public class Text extends TagSupport {
 
-	private static final long serialVersionUID = 7982987692288859474L;
 	private String value ;
 
 	public int doEndTag() throws JspException {

@@ -21,7 +21,7 @@ import freemarker.template.Template;
 
 public class ButtonGroup extends TagSupport {
 	private static final long serialVersionUID = 1L;
-	private String templateName = "buttonGroup.ftl";
+	private static final  String templateName = "buttonGroup.ftl";
 	private List<Button> buttons;
 	private String id;
 	private String align = "left";
@@ -43,14 +43,14 @@ public class ButtonGroup extends TagSupport {
 
 	public void executeFreemarker(Writer out) {
 		try {
-			Configuration cfg = FreemarkFactory.getConfig(pageContext
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext
 					.getServletContext());
 			// 定义Template对象
 			Template template = cfg.getTemplate(templateName);
 			// 定义数据
 			Map<String, Object> root = new HashMap<String, Object>();
 
-			if (id == null || "".equals(id)) {
+			if (id == null || id.isEmpty()) {
 				id = "BG" + UUIDUtil.getRandomString(5);
 			}
 
@@ -141,8 +141,6 @@ public class ButtonGroup extends TagSupport {
 
 	/**
 	 * 老版本兼容性处理
-	 * 
-	 * @param height
 	 */
 	public void setHeight(int height) {
 		if (height != 0) {
@@ -152,8 +150,6 @@ public class ButtonGroup extends TagSupport {
 
 	/**
 	 * 老版本兼容性处理
-	 * 
-	 * @param width
 	 */
 	public void setWidth(int width) {
 		if (width != 0) {

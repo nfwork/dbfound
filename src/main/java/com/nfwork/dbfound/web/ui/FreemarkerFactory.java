@@ -13,14 +13,13 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.TemplateExceptionHandler;
 
-public class FreemarkFactory {
+public class FreemarkerFactory {
 
 	private static Configuration config;
 
 	/**
 	 * 得到config
-	 * 
-	 * @return
+	 *
 	 */
 	public static Configuration getConfig(ServletContext context) {
 		if (config == null) {
@@ -30,35 +29,30 @@ public class FreemarkFactory {
 	}
 
 	public static void setConfig(Configuration config) {
-		FreemarkFactory.config = config;
+		FreemarkerFactory.config = config;
 	}
 
 	/**
 	 * 初始化路径
-	 * 
-	 * @param context
 	 */
 	public synchronized static void init(ServletContext context) {
 		if (config == null) {
 			try {
-				config = new Configuration();
+				config = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 				config.setEncoding(Locale.getDefault(), "utf-8");
 				// 设置对象包装器
-				config.setObjectWrapper(new DefaultObjectWrapper());
+				config.setObjectWrapper(new DefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
 				// 设置异常处理器
-				config
-						.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
+				config.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
 				// 从什么地方加载freemarker模板文件
 
 				String ftlPath = context.getRealPath("/DBFoundUI/template");
 				if (ftlPath == null) {
-					ftlPath = DBFoundConfig.getProjectRoot()
-							+ "/DBFoundUI/template";
+					ftlPath = DBFoundConfig.getProjectRoot()+ "/DBFoundUI/template";
 				}
 				File fold = new File(ftlPath);
-				if (fold.exists() == false) {
-					throw new DBFoundRuntimeException(
-							"/DBFoundUI/template 没有找到，请确认是否加入DBFoundUI到webRoot下");
+				if (!fold.exists()) {
+					throw new DBFoundRuntimeException("/DBFoundUI/template 没有找到，请确认是否加入DBFoundUI到webRoot下");
 				}
 				config.setDirectoryForTemplateLoading(fold);
 			} catch (Exception e) {

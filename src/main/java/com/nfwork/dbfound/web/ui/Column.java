@@ -3,8 +3,8 @@ package com.nfwork.dbfound.web.ui;
 import jakarta.servlet.jsp.JspTagException;
 import jakarta.servlet.jsp.tagext.Tag;
 
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.exception.TagLocationException;
 import com.nfwork.dbfound.web.i18n.MultiLangUtil;
 
@@ -40,14 +40,14 @@ public class Column extends EventTag {
 			throw new TagLocationException("column标签" + name + "位置不正确，只能在columns标签里面使用");
 		}
 		Columns columns = (Columns) t;
-		Column column = null;
+		Column column;
 		try {
 			column = (Column) this.clone();
 		} catch (CloneNotSupportedException e) {
-			LogUtil.error(e.getMessage(), e);
+			throw new DBFoundRuntimeException(e);
 		}
 
-		if (column.editor != null && !"".equals(column.editor)) {
+		if (column.editor != null && !column.editor.isEmpty()) {
 			// 是否为空加载
 			String editorConfig;
 			if (column.required) {
@@ -56,7 +56,7 @@ public class Column extends EventTag {
 				editorConfig = "{allowBlank:true";
 			}
 
-			if (column.editable == false) {
+			if (!column.editable) {
 				editorConfig = editorConfig + ",editable : false";
 			}
 
@@ -65,20 +65,20 @@ public class Column extends EventTag {
 			}
 
 			// 添加事件
-			String listeners = ",enableKeyEvents : true,listeners: {";
+			StringBuilder listeners = new StringBuilder(",enableKeyEvents : true,listeners: {");
 			if (upper) {
-				listeners += "keypress :function(t, e){DBFound.keypress(t, e,this);},blur:function(){DBFound.blurUpper(this);},";
+				listeners.append("keypress :function(t, e){DBFound.keypress(t, e,this);},blur:function(){DBFound.blurUpper(this);},");
 			}
 			for (Event event : events) {
 				if ("enter".equals(event.getName())) {
-					listeners += "specialKey:function(field,e){if(e.getKey()==Ext.EventObject.ENTER)"
-							+ event.getHandle() + "(field,e);}";
+					listeners.append("specialKey:function(field,e){if(e.getKey()==Ext.EventObject.ENTER)").append(event.getHandle()).append("(field,e);}");
 				} else {
-					listeners += event.getName() + ":" + event.getHandle() + ",";
+					listeners.append(event.getName()).append(":").append(event.getHandle()).append(",");
 				}
 			}
-			if (listeners.endsWith(",")) {
-				listeners = listeners.substring(0, listeners.length() - 1) + "}";
+			if(listeners.charAt(listeners.length()-1) == ','){
+				listeners.deleteCharAt(listeners.length()-1);
+				listeners.append("}");
 				editorConfig = editorConfig + listeners;
 			}
 
@@ -87,10 +87,10 @@ public class Column extends EventTag {
 				editorConfig = editorConfig + "}";
 				column.editor = "new Ext.form.TextField(" + editorConfig + ")";
 			} else if ("numberfield".equals(column.editor)) {
-				if (allowDecimals == false) {
+				if (!allowDecimals) {
 					editorConfig = editorConfig + ",allowDecimals:false";
 				}
-				if (allowNegative == false) {
+				if (!allowNegative) {
 					editorConfig = editorConfig + ",allowNegative:false";
 				}
 				editorConfig = editorConfig + "}";
