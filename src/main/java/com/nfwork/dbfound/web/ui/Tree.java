@@ -40,14 +40,14 @@ public class Tree extends EventTag {
 
 	public void executeFreemarker(Writer out) {
 		try {
-			Configuration cfg = FreemarkFactory.getConfig(pageContext
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext
 					.getServletContext());
 			// 定义Template对象
 			Template template = cfg.getTemplate(templateName);
 			// 定义数据
 			Map<String, Object> root = new HashMap<String, Object>();
 
-			if (id == null || "".equals(id)) {
+			if (id == null || id.isEmpty()) {
 				id = "TREE" + UUIDUtil.getRandomString(5);
 			}
 			root.put("tree", this);

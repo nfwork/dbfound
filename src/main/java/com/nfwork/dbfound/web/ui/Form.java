@@ -21,14 +21,13 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 public class Form extends TagSupport {
-	private static final long serialVersionUID = 1L;
 	private String width;
 	private String labelWidth;
 	private String height;
 	private String id;
 	private String title;
 	private String bindTarget;
-	private String templateName = "form.ftl";
+	private static final String templateName = "form.ftl";
 	private List<Line> lines;
 	private ToolBar toolBar;
 	private boolean fileUpload;
@@ -51,21 +50,21 @@ public class Form extends TagSupport {
 
 	public void executeFreemarker(Writer out) {
 		try {
-			Configuration cfg = FreemarkFactory.getConfig(pageContext
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext
 					.getServletContext());
 
 			Template template = cfg.getTemplate(templateName);
 
 			// 定义数据
-			Map<String, Object> root = new HashMap<String, Object>();
+			Map<String, Object> root = new HashMap<>();
 
-			if (id == null || "".equals(id)) {
+			if (id == null || id.isEmpty()) {
 				id = "FORM" + UUIDUtil.getRandomString(5);
 			}
 
 			if (toolBar != null) {
 				List<GridButton> buttons = toolBar.getButtons();
-				if (buttons != null && buttons.size() > 0) {
+				if (buttons != null && !buttons.isEmpty()) {
 					root.put("buttons", buttons);
 				}
 			}
@@ -75,7 +74,7 @@ public class Form extends TagSupport {
 
 			// 判断是不是在第一个tab页
 			Object first = pageContext.getAttribute("isFirstTab");
-			if (first != null && (Boolean) first == false) {
+			if (first != null && !((Boolean) first)) {
 				root.put("delayRender", true);
 			} else {
 				root.put("delayRender", false);

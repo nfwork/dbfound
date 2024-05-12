@@ -77,7 +77,7 @@ public class Field extends EventTag {
 			if (hidden) {
 				field.setEditor("hidden");
 			} else {
-				if (hiddenName == null || "".equals(hiddenName)) {
+				if (hiddenName == null || hiddenName.isEmpty()) {
 					field.hiddenName = name;
 				}
 				if ("textarea".equals(field.getEditor())) {

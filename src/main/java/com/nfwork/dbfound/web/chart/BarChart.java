@@ -10,7 +10,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
-import com.nfwork.dbfound.web.ui.FreemarkFactory;
+import com.nfwork.dbfound.web.ui.FreemarkerFactory;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -40,7 +40,7 @@ public class BarChart extends TagSupport {
 
 	public void executeFreemarker(Writer out) {
 		try {
-			Configuration cfg = FreemarkFactory.getConfig(pageContext
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext
 					.getServletContext());
 			// 定义Template对象
 			Template template = cfg.getTemplate(templateName);

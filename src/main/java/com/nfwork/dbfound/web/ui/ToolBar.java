@@ -11,12 +11,11 @@ import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.TagLocationException;
 
 public class ToolBar extends TagSupport implements Cloneable {
-	private static final long serialVersionUID = 1L;
 	private List<GridButton> buttons;
 	private String align;
 
 	public int doStartTag() throws JspTagException {
-		buttons = new ArrayList<GridButton>();
+		buttons = new ArrayList<>();
 		return EVAL_BODY_INCLUDE;
 	}
 

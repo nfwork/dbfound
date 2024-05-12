@@ -21,8 +21,6 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 public class DataSet extends TagSupport {
-
-	private static final long serialVersionUID = 7492822892288859474L;
 	private static final String templateName = "dataSet.ftl";
 
 	private String id;
@@ -45,7 +43,7 @@ public class DataSet extends TagSupport {
 				.getResponse();
 		Context context = Context.getCurrentContext(request, response);
 		try {
-			Configuration cfg = FreemarkFactory.getConfig(pageContext
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext
 					.getServletContext());
 			// 定义Template对象
 			Template template = cfg.getTemplate(templateName);

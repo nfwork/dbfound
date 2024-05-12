@@ -15,7 +15,7 @@ public class Div extends TagSupport {
 	private String style = "";
 
 	public int doStartTag() throws JspTagException {
-		if (id == null || "".equals(id)) {
+		if (id == null || id.isEmpty()) {
 			id = "DIV" + UUIDUtil.getRandomString(5);
 		}
 		style = "display:none;" + style;

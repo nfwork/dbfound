@@ -17,7 +17,7 @@ public class Line extends TagSupport implements Cloneable {
 	private String height;
 
 	public int doStartTag() throws JspTagException {
-		if (height == null || "".equals(height)) {
+		if (height == null || height.isEmpty()) {
 			height = "27";
 		}
 		fields = new ArrayList<Field>();

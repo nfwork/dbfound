@@ -19,7 +19,7 @@ import freemarker.template.Template;
 public class TreeGrid extends Grid {
 
 	private static final long serialVersionUID = 4582827692987859474L;
-	private String templateName = "treeGrid.ftl";
+	private static final String templateName = "treeGrid.ftl";
 	private String title;
 	private String id;
 	private String bindTarget;
@@ -39,14 +39,14 @@ public class TreeGrid extends Grid {
 
 	public void executeFreemarker(Writer out) {
 		try {
-			Configuration cfg = FreemarkFactory.getConfig(pageContext
+			Configuration cfg = FreemarkerFactory.getConfig(pageContext
 					.getServletContext());
 			// 定义Template对象
 			Template template = cfg.getTemplate(templateName);
 			// 定义数据
 			Map<String, Object> root = new HashMap<String, Object>();
 
-			if (id == null || "".equals(id)) {
+			if (id == null || id.isEmpty()) {
 				id = "TG" + UUIDUtil.getRandomString(6);
 			}
 			root.put("tree", this);
