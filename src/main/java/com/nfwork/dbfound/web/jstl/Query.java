@@ -8,7 +8,6 @@ import javax.servlet.jsp.tagext.TagSupport;
 import com.nfwork.dbfound.model.reflector.Reflector;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
@@ -35,21 +34,15 @@ public class Query extends TagSupport implements Cloneable {
 			if (dataProvideClass != null) {
 				context.setData(rootPath, getData(context));
 			} else {
-				if (queryName == null || "".equals(queryName))
+				if (queryName == null || queryName.isEmpty()) {
 					queryName = "_default";
-				QueryResponseObject ro = ModelEngine.query(context, modelName, queryName,
-						sourcePath, false);
+				}
+				QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName, sourcePath, false);
 				context.setData(rootPath, ro.getDatas());
 			}
 			
 		} catch (Exception e) {
-			Transaction transaction = context.getTransaction();
-			if (transaction.isOpen()) {
-				transaction.rollback();
-				transaction.end();
-			}
-			WebExceptionHandler.handle(e, request,
-					(HttpServletResponse) pageContext.getResponse());
+			WebExceptionHandler.handle(e, request,(HttpServletResponse) pageContext.getResponse());
 			return SKIP_PAGE;
 		}
 
@@ -57,7 +50,7 @@ public class Query extends TagSupport implements Cloneable {
 	}
 
 	private Object getData(Context context) throws Exception {
-		Object object = Class.forName(dataProvideClass).newInstance();
+		Object object = Class.forName(dataProvideClass).getConstructor().newInstance();
 
 		if (object instanceof QueryDataProvide) {
 			Reflector reflector = Reflector.forClass(object.getClass());

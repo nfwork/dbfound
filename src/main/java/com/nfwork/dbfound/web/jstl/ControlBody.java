@@ -8,7 +8,6 @@ import javax.servlet.jsp.JspException;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.web.WebWriter;
 
@@ -23,9 +22,6 @@ public class ControlBody extends InitProcedure {
 
 		// 提交关闭事务
 		Context context = getContext();
-		Transaction transaction = context.getTransaction();
-		transaction.commit();
-		transaction.end();
 
 		try {
 			if (outMessage) {

@@ -17,7 +17,7 @@ public class Transaction {
 
 	private boolean open = false;
 
-	private int transactionIsolation;
+	private int transactionIsolation = -1;
 
 	private boolean readOnly;
 
