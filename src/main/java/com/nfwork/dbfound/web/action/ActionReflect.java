@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.web.action;
 
+import com.nfwork.dbfound.core.IsolationLevel;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.reflector.MethodInvoker;
 import com.nfwork.dbfound.model.reflector.Reflector;
@@ -7,6 +8,7 @@ import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.util.TransactionUtil;
 import com.nfwork.dbfound.web.base.ActionController;
 import com.nfwork.dbfound.web.base.ActionTransactional;
 import com.nfwork.dbfound.web.base.BaseControl;
@@ -33,27 +35,28 @@ public class ActionReflect {
 				if(transactional == null){
 					requireTransaction = false;
 				}else{
-					if(transactional.isolation() != null) {
+					if(transactional.isolation() != IsolationLevel.DEFAULT) {
 						context.getTransaction().setTransactionIsolation(transactional.isolation().getValue());
 					}
 				}
 			}
 
+			Object result;
 			if(requireTransaction) {
-				context.getTransaction().begin();
+				result = TransactionUtil.execute(context,()-> methodInvoker.invoke(baseControl, new Object[] {context}));
+			}else {
+				result = methodInvoker.invoke(baseControl, new Object[]{context});
 			}
-			Object result = methodInvoker.invoke(baseControl, new Object[] {context});
+
 			if (result != null) {
 				if (result instanceof ResponseObject) {
-					context.getTransaction().commit();
 					return (ResponseObject) result;
 				} else {
 					throw new DBFoundRuntimeException("return object must extends ResponseObject");
 				}
 			}
 			return null;
-		}catch (Throwable e){
-			context.getTransaction().rollback();
+		}catch (Exception e){
 			Throwable throwable = e.getCause();
 			if(throwable instanceof DBFoundRuntimeException){
 				throw (DBFoundRuntimeException)throwable;
@@ -63,13 +66,7 @@ public class ActionReflect {
 					throw new DBFoundPackageException("ActionReflect execute failed, " + e.getMessage(), (Exception) throwable);
 				}
 			}
-			if(e instanceof Exception) {
-				throw new DBFoundPackageException("ActionReflect execute failed, " + e.getMessage(), (Exception) e);
-			}else{
-				throw e;
-			}
-		}finally {
-			context.getTransaction().end();
+			throw new DBFoundPackageException("ActionReflect execute failed, " + e.getMessage(), e);
 		}
 	}
 }

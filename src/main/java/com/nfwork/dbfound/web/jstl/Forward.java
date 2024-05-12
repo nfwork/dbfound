@@ -6,7 +6,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.JsonUtil;
@@ -26,16 +25,8 @@ public class Forward extends TagSupport implements Cloneable {
 			HttpServletResponse response = (HttpServletResponse) pageContext
 					.getResponse();
 			Context context = Context.getCurrentContext(request, response);
-			QueryResponseObject ro = ModelEngine.query(context, modelName, queryName, null,
-					true);
-			
-			Transaction transaction = context.getTransaction();
-			if (transaction.isOpen()) {
-				transaction.commit();
-				transaction.end();
-			}
-			WebWriter.jsonWriter((HttpServletResponse) pageContext
-					.getResponse(), JsonUtil.toJson(ro));
+			QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName, null, true);
+			WebWriter.jsonWriter((HttpServletResponse) pageContext.getResponse(), JsonUtil.toJson(ro));
 		} catch (Exception e) {
 			LogUtil.error(e.getMessage(), e);
 		}

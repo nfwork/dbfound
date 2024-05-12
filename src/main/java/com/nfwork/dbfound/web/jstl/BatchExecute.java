@@ -6,7 +6,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.web.WebExceptionHandler;
 
@@ -24,18 +23,12 @@ public class BatchExecute extends TagSupport {
 		HttpServletResponse response = (HttpServletResponse) pageContext
 				.getResponse();
 		Context context = Context.getCurrentContext(request, response);
-		if (name == null || "".equals(name))
+		if (name == null || name.isEmpty())
 			name = "addOrUpdate";
 		try {
 			ModelEngine.batchExecute(context, modelName, name, sourcePath);
 		} catch (Exception e) {
-			Transaction transaction = context.getTransaction();
-			if (transaction.isOpen()) {
-				transaction.rollback();
-				transaction.end();
-			}
-			WebExceptionHandler.handle(e, request,
-					(HttpServletResponse) pageContext.getResponse());
+			WebExceptionHandler.handle(e, request,(HttpServletResponse) pageContext.getResponse());
 			return SKIP_PAGE;
 		}
 		return EVAL_BODY_INCLUDE;

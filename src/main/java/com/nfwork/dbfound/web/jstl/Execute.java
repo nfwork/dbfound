@@ -6,7 +6,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.web.WebExceptionHandler;
 
@@ -26,18 +25,12 @@ public class Execute extends TagSupport {
 				.getResponse();
 		Context context = Context.getCurrentContext(request, response);
 		try {
-			if (executeName == null || "".equals(executeName))
+			if (executeName == null || executeName.isEmpty())
 				executeName = "_default";
 			ModelEngine.execute(context, modelName, executeName, sourcePath);
 			
 		} catch (Exception e) {
-			Transaction transaction = context.getTransaction();
-			if (transaction.isOpen()) {
-				transaction.rollback();
-				transaction.end();
-			}
-			WebExceptionHandler.handle(e, request,
-					(HttpServletResponse) pageContext.getResponse());
+			WebExceptionHandler.handle(e, request,(HttpServletResponse) pageContext.getResponse());
 			return SKIP_PAGE;
 		}
 
