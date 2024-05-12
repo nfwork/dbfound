@@ -13,7 +13,6 @@ import jakarta.servlet.jsp.tagext.TagSupport;
 import com.nfwork.dbfound.model.reflector.Reflector;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.JsonUtil;
@@ -25,7 +24,7 @@ import freemarker.template.Template;
 public class DataStore extends TagSupport {
 
 	private static final long serialVersionUID = 5802822892288859474L;
-	private String templateName = "dataStore.ftl";
+	private static final String templateName = "dataStore.ftl";
 	private String id;
 	private String url;
 	private String dataProvideClass;
@@ -62,11 +61,6 @@ public class DataStore extends TagSupport {
 			template.process(root, out);
 
 		} catch (Exception e) {
-			Transaction transaction = context.getTransaction();
-			if (transaction.isOpen()) {
-				transaction.rollback();
-				transaction.end();
-			}
 			WebExceptionHandler.handle(e, (HttpServletRequest) pageContext
 					.getRequest(), (HttpServletResponse) pageContext
 					.getResponse());
@@ -79,12 +73,12 @@ public class DataStore extends TagSupport {
 		if (dataProvideClass == null) {
 			return null;
 		}
-		Object object = Class.forName(dataProvideClass).newInstance();
+		Object object = Class.forName(dataProvideClass).getConstructor().newInstance();
 		if (object instanceof StoreDataProvide) {
 			Reflector reflector = Reflector.forClass(object.getClass());
 			Object ro = reflector.getMethodInvoker(dataProvideMethod, Context.class).invoke(object, new Object[] {context});
 			if (ro instanceof QueryResponseObject) {
-				QueryResponseObject qro = (QueryResponseObject) ro;
+				QueryResponseObject<?> qro = (QueryResponseObject<?>) ro;
 				return JsonUtil.toJson(qro);
 			}
 		} else {

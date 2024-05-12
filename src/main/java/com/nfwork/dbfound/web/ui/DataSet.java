@@ -14,7 +14,6 @@ import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.web.WebExceptionHandler;
 
@@ -24,7 +23,7 @@ import freemarker.template.Template;
 public class DataSet extends TagSupport {
 
 	private static final long serialVersionUID = 7492822892288859474L;
-	private String templateName = "dataSet.ftl";
+	private static final String templateName = "dataSet.ftl";
 
 	private String id;
 	private String queryName;
@@ -39,7 +38,6 @@ public class DataSet extends TagSupport {
 		return executeFreemarker(out);
 	}
 
-	@SuppressWarnings("unchecked")
 	public int executeFreemarker(Writer out) {
 		HttpServletRequest request = (HttpServletRequest) pageContext
 				.getRequest();
@@ -57,18 +55,17 @@ public class DataSet extends TagSupport {
 			root.put("id", id);
 			root.put("loadData", loadData);
 			String url = modelName + ".query";
-			if (queryName != null && queryName != "_default") {
+			if (queryName != null && !queryName.equals("_default")) {
 				url = url + "!" + queryName;
 			}
 			root.put("url", url);
 
 			if (loadData) {
-				if (queryName == null || "".equals(queryName)) {
+				if (queryName == null || queryName.isEmpty()) {
 					queryName = "_default";
 				}
-				QueryResponseObject ro = ModelEngine.query(context, modelName,
-						queryName, sourcePath, autoCount);
-				if (ro != null && ro.getDatas().size() > 0) {
+				QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName, sourcePath, autoCount);
+				if (ro != null && !ro.getDatas().isEmpty()) {
 					try {
 						Map map0 = (Map) ro.getDatas().get(0);
 						root.put("keySet", map0.keySet());
@@ -86,11 +83,6 @@ public class DataSet extends TagSupport {
 
 			template.process(root, out);
 		} catch (Exception e) {
-			Transaction transaction = context.getTransaction();
-			if (transaction.isOpen()) {
-				transaction.rollback();
-				transaction.end();
-			}
 			WebExceptionHandler.handle(e, (HttpServletRequest) pageContext
 					.getRequest(), (HttpServletResponse) pageContext
 					.getResponse());

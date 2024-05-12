@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.core;
 
 public enum IsolationLevel {
-    DEFAULT(0),
+    DEFAULT(-1),
     READ_UNCOMMITTED(1),
     READ_COMMITTED(2),
     REPEATABLE_READ(4),
