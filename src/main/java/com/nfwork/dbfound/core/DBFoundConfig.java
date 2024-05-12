@@ -285,6 +285,17 @@ public class DBFoundConfig {
 			}
 		}
 
+		// 初始化dbfound mvc
+		Element mvc = web.element("mvcConfigFile");
+		String mvcFile = null;
+		if(mvc != null){
+			mvcFile = mvc.getTextTrim();
+		}
+		if (mvcFile == null || mvcFile.isEmpty()) {
+			mvcFile = CLASSPATH + "/dbfound-mvc.xml";
+		}
+		ActionEngine.init(mvcFile);
+
 		// interceptor 初始化
 		Element filter = web.element("interceptor");
 		if (filter != null) {
@@ -295,7 +306,7 @@ public class DBFoundConfig {
 			}
 		}
 
-		// interceptor 初始化
+		// openSession 初始化
 		Element openSession = web.element("openSession");
 		if (openSession != null) {
 			String open = openSession.getTextTrim();
@@ -309,28 +320,6 @@ public class DBFoundConfig {
 		}
 
 		LogUtil.info(info.toString());
-
-		// 初始化dbfound mvc
-		Element mvc = web.element("mvcConfigFile");
-		String mvcFile = null;
-		if (mvc == null || "".equals(mvc.getTextTrim())) {
-			mvcFile = CLASSPATH + "/dbfound-mvc.xml";
-		} else {
-			mvcFile = mvc.getTextTrim();
-		}
-		File file = new File(getRealPath(mvcFile));
-		if (!file.exists() && mvcFile.startsWith(CLASSPATH)) {
-			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			URL url = loader.getResource(mvcFile.substring(CLASSPATH.length() + 1));
-			if (url != null) {
-				if (url.getFile() != null) {
-					file = new File(url.getFile());
-				}
-			}
-		}
-		if (file.exists()) {
-			ActionEngine.init(file);
-		}
 	}
 
 	private static void initSystem(Element system) {
