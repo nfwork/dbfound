@@ -30,7 +30,7 @@ public abstract class ActionHandler {
             }
 
             ResponseObject responseObject = doHandle(context, requestUrl);
-            if(responseObject != null){
+            if(context.isOutMessage() && responseObject != null){
                 WebWriter.jsonWriter(response, JsonUtil.toJson(responseObject));
             }
         } catch (Throwable throwable) {
