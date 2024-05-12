@@ -1,30 +1,36 @@
 package com.nfwork.dbfound.util;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.core.Transaction;
 
 public class TransactionUtil {
 
     public static <T> T execute(Context context, CallBack<T> callBack) throws Exception {
+        Transaction transaction = context.getTransaction();
         try {
-            context.getTransaction().begin();
-            return callBack.call();
+            transaction.begin();
+            T result = callBack.call();
+            transaction.commit();
+            return result;
         }catch (Throwable throwable){
-            context.getTransaction().rollback();
+            transaction.rollback();
             throw throwable;
         }finally {
-            context.getTransaction().end();
+            transaction.end();
         }
     }
 
     public static void executeWithoutResult(Context context, CallBackWithoutResult callBack) throws Exception {
+        Transaction transaction = context.getTransaction();
         try {
-            context.getTransaction().begin();
+            transaction.begin();
             callBack.call();
+            transaction.commit();
         }catch (Throwable throwable){
-            context.getTransaction().rollback();
+            transaction.rollback();
             throw throwable;
         }finally {
-            context.getTransaction().end();
+            transaction.end();
         }
     }
 

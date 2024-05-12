@@ -499,6 +499,7 @@ public class Context {
 		}
 		cookie.setPath(path);
 		cookie.setMaxAge(10 * 24 * 60 * 60);
+		response.addCookie(cookie);
 	}
 
 	public Map<String, Object> getOutParamDatas() {
