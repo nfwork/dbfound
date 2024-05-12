@@ -34,8 +34,6 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.web.file.FilePart;
 
-import javax.servlet.http.Cookie;
-
 public abstract class SqlEntity extends Entity {
 	private final static String paramReplace = "\\{@[ a-zA-Z_0-9\u4E00-\u9FA5]*}";
 
@@ -608,14 +606,7 @@ public abstract class SqlEntity extends Entity {
 				}
 				// 设定cookie参数
 				if (p.isAutoCookie()) {
-					Cookie cookie = new Cookie(p.getName(), p.getStringValue());
-					String path = context.request.getContextPath();
-					if (!path.endsWith("/")) {
-						path = path + "/";
-					}
-					cookie.setPath(path);
-					cookie.setMaxAge(10 * 24 * 60 * 60);
-					context.response.addCookie(cookie);
+					context.addCookie(p);
 				}
 				// 将out参数输出
 				if (p.getIoType() != IOType.IN) {
