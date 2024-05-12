@@ -18,6 +18,7 @@ import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.CountType;
+import com.nfwork.dbfound.model.bean.Param;
 import com.nfwork.dbfound.util.*;
 
 public class Context {
@@ -488,6 +489,16 @@ public class Context {
 
 	public void setCurrentModel(String currentModel) {
 		this.currentModel = currentModel;
+	}
+
+	public void addCookie(Param param){
+		Cookie cookie = new Cookie(param.getName(), param.getStringValue());
+		String path = request.getContextPath();
+		if (!path.endsWith("/")) {
+			path = path + "/";
+		}
+		cookie.setPath(path);
+		cookie.setMaxAge(10 * 24 * 60 * 60);
 	}
 
 	public Map<String, Object> getOutParamDatas() {
