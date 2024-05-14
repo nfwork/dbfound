@@ -18,6 +18,12 @@ public class ExcelColumn {
     public ExcelColumn(){
     }
 
+    public ExcelColumn(String name, String title, int width){
+        this.name = name;
+        this.title = title;
+        this.width = width;
+    }
+
     public ExcelColumn(Map<String,Object> data){
         Object name = data.get("name");
         assert name != null;
