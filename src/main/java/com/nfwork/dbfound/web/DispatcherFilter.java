@@ -39,6 +39,9 @@ public class DispatcherFilter implements Filter {
 			}
 		}
 		if (requestUrl.endsWith(".jsp")) {
+			if (request.getCharacterEncoding() == null) {
+				request.setCharacterEncoding(DBFoundConfig.getEncoding());// 编码设置
+			}
 			String basePath = URLUtil.getBasePath(request);
 			request.setAttribute("basePath", basePath);
 			try {
