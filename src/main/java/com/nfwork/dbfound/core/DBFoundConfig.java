@@ -156,12 +156,12 @@ public class DBFoundConfig {
 					}
 				}
 			} else {
-				LogUtil.info("config file init skiped, because file not found. filePath:" + file.getAbsolutePath());
+				LogUtil.info("config file init skipped, because file not found. filePath:" + file.getAbsolutePath());
 			}
 			LogUtil.info("NFWork dbfound service init success");
 			LogUtil.info("**************************************************************************");
 		} catch (Exception e) {
-			LogUtil.error("dbfound init faild，please check config", e);
+			LogUtil.error("dbfound init failed, please check config", e);
 			if (e instanceof RuntimeException) {
 				throw (RuntimeException) e;
 			}
