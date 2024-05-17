@@ -7,20 +7,23 @@ import com.nfwork.dbfound.core.Context;
 
 public interface Interceptor {
 
-	public boolean jspInterceptor(HttpServletRequest request,
+	boolean jspInterceptor(HttpServletRequest request,
 			HttpServletResponse response) throws Exception;
 
-	public boolean queryInterceptor(Context context, String modelName,
+	boolean queryInterceptor(Context context, String modelName,
 			String queryName) throws Exception;
 
-	public boolean executeInterceptor(Context context, String modelName,
+	boolean executeInterceptor(Context context, String modelName,
 			String executeName) throws Exception;
 
-	public boolean exportInterceptor(Context context, String modelName,
+	boolean exportInterceptor(Context context, String modelName,
 			String queryName) throws Exception;
 
-	public boolean doInterceptor(Context context, String className,
+	boolean doInterceptor(Context context, String className,
 			String method) throws Exception;
 
-	public void init();
+	void init();
+
+	default void setCorsMapping(HttpServletRequest request,HttpServletResponse response){}
+
 }
