@@ -5,6 +5,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundErrorException;
 import com.nfwork.dbfound.util.JsonUtil;
+import com.nfwork.dbfound.web.InterceptorHandler;
 import com.nfwork.dbfound.web.WebExceptionHandler;
 import com.nfwork.dbfound.web.WebWriter;
 import com.nfwork.dbfound.web.file.FileUploadUtil;
@@ -19,6 +20,10 @@ public abstract class ActionHandler {
         boolean isFileUpload = false;
 
         try {
+            InterceptorHandler.setCors(request,response);
+            if("OPTIONS".equals(request.getMethod())){
+                return;
+            }
             if (request.getCharacterEncoding() == null) {
                 request.setCharacterEncoding(DBFoundConfig.getEncoding());// 编码设置
             }

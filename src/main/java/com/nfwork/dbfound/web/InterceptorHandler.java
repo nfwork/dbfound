@@ -30,6 +30,12 @@ public class InterceptorHandler {
 		}
 	}
 
+	public static void setCors(HttpServletRequest request,HttpServletResponse response){
+		if (inited) {
+			interceptor.setCors(request, response);
+		}
+	}
+
 	public static boolean jspInterceptor(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		if (inited) {
