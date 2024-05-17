@@ -20,7 +20,7 @@ public abstract class ActionHandler {
         boolean isFileUpload = false;
 
         try {
-            InterceptorHandler.setCorsMapping(request,response);
+            InterceptorHandler.setCors(request,response);
             if("OPTIONS".equals(request.getMethod())){
                 return;
             }

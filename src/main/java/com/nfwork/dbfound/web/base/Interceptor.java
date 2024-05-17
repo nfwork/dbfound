@@ -24,6 +24,6 @@ public interface Interceptor {
 
 	void init();
 
-	default void setCorsMapping(HttpServletRequest request,HttpServletResponse response){}
+	default void setCors(HttpServletRequest request,HttpServletResponse response){}
 
 }
