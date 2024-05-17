@@ -30,9 +30,9 @@ public class InterceptorHandler {
 		}
 	}
 
-	public static void setCorsMapping(HttpServletRequest request,HttpServletResponse response){
+	public static void setCors(HttpServletRequest request,HttpServletResponse response){
 		if (inited) {
-			interceptor.setCorsMapping(request, response);
+			interceptor.setCors(request, response);
 		}
 	}
 
