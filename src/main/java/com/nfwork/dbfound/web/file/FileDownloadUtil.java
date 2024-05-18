@@ -57,7 +57,7 @@ public class FileDownloadUtil {
 				filename = URLEncoder.encode(filename, DBFoundConfig.getEncoding()).replaceAll("\\+", "%20");
 				response.setContentLength((int)file.length());
 				response.setContentType("application/x-download");
-				response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+				response.addHeader("Access-Control-Expose-Headers", "Content-Disposition");
 				response.setHeader("Content-Disposition","attachment;filename=" + filename);
 
 				byte[] b = new byte[4096];
