@@ -9,7 +9,7 @@ import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 
-public class WebExceptionHandler {
+public final class WebExceptionHandler {
 
 	public static void handle(Exception exception, HttpServletRequest request, HttpServletResponse response) {
 		try {

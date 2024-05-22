@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.CollectionUtil;
+import com.nfwork.dbfound.web.ListenerHandler;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -276,6 +277,19 @@ public class DBFoundConfig {
 			}
 		}
 
+		// openSession 初始化
+		Element openSession = web.element("openSession");
+		if (openSession != null) {
+			String open = openSession.getTextTrim();
+			if ("true".equals(open)) {
+				DBFoundConfig.openSession = true;
+				info.append("(openSession = true)");
+			}else{
+				DBFoundConfig.openSession = false;
+				info.append("(openSession = false)");
+			}
+		}
+
 		// dbfound mvc controller 初始化
 		Element controllerEl = web.element("controllerPaths");
 		if (controllerEl != null) {
@@ -306,16 +320,13 @@ public class DBFoundConfig {
 			}
 		}
 
-		// openSession 初始化
-		Element openSession = web.element("openSession");
-		if (openSession != null) {
-			String open = openSession.getTextTrim();
-			if ("true".equals(open)) {
-				DBFoundConfig.openSession = true;
-				info.append("(openSession = true)");
-			}else{
-				DBFoundConfig.openSession = false;
-				info.append("(openSession = false)");
+		//listener 初始化
+		Element listener = web.element("listener");
+		if (listener != null) {
+			String className = listener.getTextTrim();
+			if (!"".equals(className)) {
+				ListenerHandler.init(className);
+				info.append("(listener = ").append(className).append(")");
 			}
 		}
 

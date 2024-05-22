@@ -3,7 +3,6 @@ package com.nfwork.dbfound.web;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.List;
-import java.util.Map;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -12,9 +11,9 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.excel.ExcelWriter;
 import com.nfwork.dbfound.util.LogUtil;
 
-public class WebWriter {
+public final class WebWriter {
 
-	public static void excelWriter(Context context, List<Map> result) {
+	public static void excelWriter(Context context, List<?> result) {
 		try {
 			ExcelWriter.excelExport(context, result);
 		} catch (Exception e) {
