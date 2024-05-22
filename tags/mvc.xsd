@@ -4,20 +4,10 @@
 	<xsd:element name="dbfound-mvc">
 		<xsd:complexType>
 			<xsd:choice maxOccurs="unbounded" minOccurs="0">
-				<xsd:element maxOccurs="1" minOccurs="1" name="devMode" type="devMode_type" />
-				<xsd:element maxOccurs="unbounded" minOccurs="0" name="import" type="import_type" />
 				<xsd:element maxOccurs="unbounded" minOccurs="0" name="action" type="action_type" />
 			</xsd:choice>
 		</xsd:complexType>
 	</xsd:element>
-
-	<xsd:complexType name="devMode_type">
-		<xsd:attribute name="value" />
-	</xsd:complexType>
-
-	<xsd:complexType name="import_type">
-		<xsd:attribute name="file" />
-	</xsd:complexType>
 
 	<xsd:complexType name="action_type">
 		<xsd:attribute name="name" />

@@ -23,9 +23,11 @@
 			<xsd:element maxOccurs="1" minOccurs="0" name="i18nProvide" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="mvcConfigFile" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="interceptor" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="listener" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="basePath" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="jsonStringAutoCover" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="openSession" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="controllerPaths" />
 		</xsd:choice>
 	</xsd:complexType>
 
@@ -36,9 +38,6 @@
 			<xsd:element maxOccurs="1" minOccurs="0" name="camelCaseToUnderscore" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="modeRootPath" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="startListener" />
-			<xsd:element maxOccurs="1" minOccurs="0" name="queryLimit" />
-			<xsd:element maxOccurs="1" minOccurs="0" name="queryLimitSize" />
-			<xsd:element maxOccurs="1" minOccurs="0" name="reportQueryLimitSize" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="modelModifyCheck" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="dateTimeFormat" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="dateFormat" />
