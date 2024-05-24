@@ -11,7 +11,8 @@ import javax.sql.DataSource;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.CollectionUtil;
-import com.nfwork.dbfound.web.ListenerHandler;
+import com.nfwork.dbfound.web.ExceptionHandlerFacade;
+import com.nfwork.dbfound.web.ListenerFacade;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -24,7 +25,7 @@ import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.web.action.ActionEngine;
 import com.nfwork.dbfound.web.DispatcherFilter;
-import com.nfwork.dbfound.web.InterceptorHandler;
+import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.i18n.MultiLangUtil;
 
 public class DBFoundConfig {
@@ -311,11 +312,21 @@ public class DBFoundConfig {
 		ActionEngine.init(mvcFile);
 
 		// interceptor 初始化
+		Element handler = web.element("exceptionHandler");
+		if (handler != null) {
+			String className = handler.getTextTrim();
+			if (!"".equals(className)) {
+				ExceptionHandlerFacade.initExceptionHandler(className);
+				info.append("(exceptionHandler = ").append(className).append(")");
+			}
+		}
+
+		// interceptor 初始化
 		Element filter = web.element("interceptor");
 		if (filter != null) {
 			String className = filter.getTextTrim();
 			if (!"".equals(className)) {
-				InterceptorHandler.init(className);
+				InterceptorFacade.init(className);
 				info.append("(interceptor = ").append(className).append(")");
 			}
 		}
@@ -325,7 +336,7 @@ public class DBFoundConfig {
 		if (listener != null) {
 			String className = listener.getTextTrim();
 			if (!"".equals(className)) {
-				ListenerHandler.init(className);
+				ListenerFacade.init(className);
 				info.append("(listener = ").append(className).append(")");
 			}
 		}

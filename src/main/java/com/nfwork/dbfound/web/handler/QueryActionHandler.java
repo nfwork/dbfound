@@ -3,7 +3,7 @@ package com.nfwork.dbfound.web.handler;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.model.ModelEngine;
-import com.nfwork.dbfound.web.InterceptorHandler;
+import com.nfwork.dbfound.web.InterceptorFacade;
 
 public class QueryActionHandler extends ActionHandler {
 
@@ -24,7 +24,7 @@ public class QueryActionHandler extends ActionHandler {
             modelName = requestPath.substring(1,requestPath.length() - 6);
             queryName = null;
         }
-        if (!InterceptorHandler.queryInterceptor(context, modelName, queryName)) {
+        if (!InterceptorFacade.queryInterceptor(context, modelName, queryName)) {
             return null;
         }
         return ModelEngine.query(context, modelName, queryName);

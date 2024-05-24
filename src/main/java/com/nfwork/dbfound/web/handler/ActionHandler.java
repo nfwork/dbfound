@@ -5,8 +5,8 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundErrorException;
 import com.nfwork.dbfound.util.JsonUtil;
-import com.nfwork.dbfound.web.InterceptorHandler;
-import com.nfwork.dbfound.web.WebExceptionHandler;
+import com.nfwork.dbfound.web.InterceptorFacade;
+import com.nfwork.dbfound.web.ExceptionHandlerFacade;
 import com.nfwork.dbfound.web.WebWriter;
 import com.nfwork.dbfound.web.file.FileUploadUtil;
 
@@ -20,7 +20,7 @@ public abstract class ActionHandler {
         boolean isFileUpload = false;
 
         try {
-            InterceptorHandler.setCors(request,response);
+            InterceptorFacade.setCors(request,response);
             if("OPTIONS".equals(request.getMethod())){
                 return;
             }
@@ -45,7 +45,7 @@ public abstract class ActionHandler {
             }else{
                 exception = new DBFoundErrorException("dbfound execute error, cause by "+ throwable.getMessage(), throwable);
             }
-            WebExceptionHandler.handle(exception, request, response);
+            ExceptionHandlerFacade.handle(exception, request, response);
         }finally {
             if(isFileUpload){
                 FileUploadUtil.clearFileItemLocal();

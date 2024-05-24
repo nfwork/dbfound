@@ -7,7 +7,7 @@ import jakarta.servlet.jsp.tagext.TagSupport;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.model.ModelEngine;
-import com.nfwork.dbfound.web.WebExceptionHandler;
+import com.nfwork.dbfound.web.ExceptionHandlerFacade;
 
 public class Execute extends TagSupport {
 
@@ -30,7 +30,7 @@ public class Execute extends TagSupport {
 			ModelEngine.execute(context, modelName, executeName, sourcePath);
 			
 		} catch (Exception e) {
-			WebExceptionHandler.handle(e, request,(HttpServletResponse) pageContext.getResponse());
+			ExceptionHandlerFacade.handle(e, request,(HttpServletResponse) pageContext.getResponse());
 			return SKIP_PAGE;
 		}
 

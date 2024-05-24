@@ -3,7 +3,7 @@ package com.nfwork.dbfound.web.handler;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.excel.ExcelWriter;
-import com.nfwork.dbfound.web.InterceptorHandler;
+import com.nfwork.dbfound.web.InterceptorFacade;
 
 public class ExportActionHandler extends ActionHandler {
 
@@ -24,7 +24,7 @@ public class ExportActionHandler extends ActionHandler {
             modelName = requestPath.substring(1,requestPath.length() - 7);
             queryName = null;
         }
-        if (InterceptorHandler.exportInterceptor(context, modelName, queryName)) {
+        if (InterceptorFacade.exportInterceptor(context, modelName, queryName)) {
             ExcelWriter.excelExport(context, modelName, queryName);
         }
         return null;

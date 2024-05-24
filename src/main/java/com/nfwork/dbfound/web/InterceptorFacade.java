@@ -8,7 +8,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.web.base.Interceptor;
 
-public final class InterceptorHandler {
+public final class InterceptorFacade {
 
 	static Interceptor interceptor;
 

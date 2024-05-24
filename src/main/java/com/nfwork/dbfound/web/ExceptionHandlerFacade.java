@@ -3,31 +3,29 @@ package com.nfwork.dbfound.web;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import com.nfwork.dbfound.exception.CollisionException;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.web.base.WebExceptionHandler;
 
-public final class WebExceptionHandler {
+public final class ExceptionHandlerFacade {
+
+	private static WebExceptionHandler exceptionHandler = new WebExceptionHandler();
+
+	public static void initExceptionHandler(String name){
+		try {
+			exceptionHandler = (WebExceptionHandler) Class.forName(name).getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new DBFoundRuntimeException("init exceptionHandler failed, "+ e.getMessage(),e);
+		}
+	}
 
 	public static void handle(Exception exception, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			exception = getException(exception);
-
-			String em = exception.getMessage();
-			String code = null;
-			if(exception instanceof CollisionException){
-				code = ((CollisionException) exception).getCode();
-				LogUtil.info(exception.getClass().getName() + ": " + em);
-			} else {
-				em = exception.getClass().getName() + ": " + em;
-				LogUtil.error(em, exception);
-			}
-			ResponseObject ro = new ResponseObject();
-			ro.setSuccess(false);
-			ro.setCode(code);
-			ro.setMessage(em);
+			ResponseObject ro = exceptionHandler.handle(exception, request, response);
 			WebWriter.jsonWriter(response, JsonUtil.toJson(ro));
 		} catch (Exception e) {
 			LogUtil.error(e.getMessage(), e);

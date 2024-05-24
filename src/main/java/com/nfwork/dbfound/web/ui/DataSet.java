@@ -15,7 +15,7 @@ import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.QueryResponseObject;
-import com.nfwork.dbfound.web.WebExceptionHandler;
+import com.nfwork.dbfound.web.ExceptionHandlerFacade;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -81,7 +81,7 @@ public class DataSet extends TagSupport {
 
 			template.process(root, out);
 		} catch (Exception e) {
-			WebExceptionHandler.handle(e, (HttpServletRequest) pageContext
+			ExceptionHandlerFacade.handle(e, (HttpServletRequest) pageContext
 					.getRequest(), (HttpServletResponse) pageContext
 					.getResponse());
 			return SKIP_PAGE;
