@@ -1,7 +1,6 @@
 package com.nfwork.dbfound.web.action;
 
 import com.nfwork.dbfound.core.IsolationLevel;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.reflector.MethodInvoker;
 import com.nfwork.dbfound.model.reflector.Reflector;
 
@@ -63,10 +62,10 @@ public class ActionReflect {
 			}
 			if(e instanceof InvocationTargetException){
 				if(throwable instanceof Exception) {
-					throw new DBFoundPackageException("ActionReflect execute failed, " + e.getMessage(), (Exception) throwable);
+					throw (Exception) throwable;
 				}
 			}
-			throw new DBFoundPackageException("ActionReflect execute failed, " + e.getMessage(), e);
+			throw e;
 		}
 	}
 }

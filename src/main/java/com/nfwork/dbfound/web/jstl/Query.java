@@ -11,7 +11,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
-import com.nfwork.dbfound.web.WebExceptionHandler;
+import com.nfwork.dbfound.web.ExceptionHandlerFacade;
 import com.nfwork.dbfound.web.base.QueryDataProvide;
 
 public class Query extends TagSupport {
@@ -41,7 +41,7 @@ public class Query extends TagSupport {
 			}
 			
 		} catch (Exception e) {
-			WebExceptionHandler.handle(e, request,(HttpServletResponse) pageContext.getResponse());
+			ExceptionHandlerFacade.handle(e, request,(HttpServletResponse) pageContext.getResponse());
 			return SKIP_PAGE;
 		}
 

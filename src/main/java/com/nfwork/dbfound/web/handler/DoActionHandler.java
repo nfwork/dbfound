@@ -4,7 +4,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.FileDownloadResponseObject;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.web.InterceptorHandler;
+import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.action.ActionBean;
 import com.nfwork.dbfound.web.action.ActionEngine;
 import com.nfwork.dbfound.web.action.ActionReflect;
@@ -36,7 +36,7 @@ public class DoActionHandler extends ActionHandler {
 
         ActionBean actionBean = ActionEngine.findActionBean(modelName); // 得到对应的class类的名字
         if (actionBean != null) {
-            if (InterceptorHandler.doInterceptor(context, actionBean.getClassName(), methodName)) {
+            if (InterceptorFacade.doInterceptor(context, actionBean.getClassName(), methodName)) {
                 object = actionReflect.reflect(context, actionBean.getClassName(), methodName, actionBean.isSingleton());
             }
         } else {
