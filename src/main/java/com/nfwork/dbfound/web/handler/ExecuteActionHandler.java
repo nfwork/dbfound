@@ -5,7 +5,7 @@ import com.nfwork.dbfound.dto.FileDownloadResponseObject;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.util.TransactionUtil;
-import com.nfwork.dbfound.web.InterceptorHandler;
+import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.file.FileDownloadUtil;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class ExecuteActionHandler extends ActionHandler {
             modelName = requestPath.substring(1, requestPath.length() - 8);
             executeName = null;
         }
-        if (!InterceptorHandler.executeInterceptor(context, modelName, executeName)) {
+        if (!InterceptorFacade.executeInterceptor(context, modelName, executeName)) {
             return null;
         }
 

@@ -45,7 +45,7 @@ public class DispatcherFilter implements Filter {
 			String basePath = URLUtil.getBasePath(request);
 			request.setAttribute("basePath", basePath);
 			try {
-				if (!InterceptorHandler.jspInterceptor(request, response)) {
+				if (!InterceptorFacade.jspInterceptor(request, response)) {
 					return;
 				}
 			} catch (Exception e) {

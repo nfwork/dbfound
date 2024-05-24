@@ -11,7 +11,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import com.nfwork.dbfound.web.file.FilePart;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.web.WebExceptionHandler;
+import com.nfwork.dbfound.web.ExceptionHandlerFacade;
 
 public class ExcelReader extends TagSupport {
 
@@ -35,7 +35,7 @@ public class ExcelReader extends TagSupport {
 				context.setData(rootPath, datas);
 			}
 		} catch (Exception e) {
-			WebExceptionHandler.handle(e, request, response);
+			ExceptionHandlerFacade.handle(e, request, response);
 			return SKIP_PAGE;
 		}
 		return EVAL_BODY_INCLUDE;
