@@ -6,18 +6,30 @@ import com.nfwork.dbfound.web.base.Listener;
 
 public final class ListenerFacade {
 
+	private static Listener listener;
+
 	public static synchronized void init(String className) {
 		try {
 			Object object = Class.forName(className).getConstructor().newInstance();
 			if (object instanceof Listener) {
-				Listener listener = (Listener) object;
+				listener = (Listener) object;
 				listener.init();
 			} else {
 				throw new DBFoundRuntimeException("class:" + className
 						+ ", not implements com.nfwork.dbfound.web.base.Listener");
 			}
 		} catch (Exception e) {
-			LogUtil.error("Listener init failed", e);
+			throw new DBFoundRuntimeException("Listener init failed", e);
+		}
+	}
+
+	public static void destroy(){
+		if(listener != null){
+			try {
+				listener.destroy();
+			} catch (Throwable throwable) {
+				LogUtil.error("Listener init failed", throwable);
+			}
 		}
 	}
 }
