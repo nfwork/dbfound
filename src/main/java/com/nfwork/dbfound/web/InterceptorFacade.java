@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.web.base.Interceptor;
 
 public final class InterceptorFacade {
@@ -26,7 +25,7 @@ public final class InterceptorFacade {
 						+ ", not implements com.nfwork.dbfound.web.base.AccessFilter");
 			}
 		} catch (Exception e) {
-			LogUtil.error("access filter init failed", e);
+			throw new DBFoundRuntimeException("Interceptor init failed", e);
 		}
 	}
 
