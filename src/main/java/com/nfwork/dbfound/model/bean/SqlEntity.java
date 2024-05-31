@@ -86,7 +86,7 @@ public abstract class SqlEntity extends Entity {
 
 			if(nfParam.getDataType() == DataType.COLLECTION){
 				initCollection(nfParam);
-				SimpleItemList itemList = nfParam.getValue();
+				SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 
 				StringBuilder value = new StringBuilder();
 				for(Object item : itemList){
@@ -270,7 +270,7 @@ public abstract class SqlEntity extends Entity {
 			if(nfParam.getDataType() == DataType.COLLECTION){
 
 				initCollection(nfParam);
-				SimpleItemList itemList = nfParam.getValue();
+				SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 
 				StringBuilder paramBuilder = new StringBuilder();
 
@@ -341,7 +341,7 @@ public abstract class SqlEntity extends Entity {
 		}
 
 		if(nfParam.getValue() instanceof Enum){
-			Object value = getEnumValue(nfParam.getValue());
+			Object value = getEnumValue((Enum<?>) nfParam.getValue());
 			nfParam.setValue(value);
 		}
 
@@ -402,7 +402,7 @@ public abstract class SqlEntity extends Entity {
 		} else if (nfParam.getDataType() == DataType.DATE) {
 			if (!(nfParam.getValue() instanceof Date) && !(nfParam.getValue() instanceof Temporal)) {
 				if(nfParam.getValue() instanceof Long){
-					nfParam.setValue(new Timestamp(nfParam.getValue()));
+					nfParam.setValue(new Timestamp((Long) nfParam.getValue()));
 				} else if(nfParam.getValue() instanceof String){
 					String paramValue = nfParam.getValue().toString().trim();
 					if (timeMillisPattern.matcher(paramValue).matches()) {
