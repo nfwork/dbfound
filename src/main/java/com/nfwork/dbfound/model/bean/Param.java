@@ -2,6 +2,8 @@ package com.nfwork.dbfound.model.bean;
 
 import java.time.temporal.Temporal;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.model.base.DataType;
@@ -81,8 +83,16 @@ public class Param extends Entity implements Cloneable{
 		this.scope = scope;
 	}
 
-	public <T> T  getValue() {
-		return (T)value;
+	public Object getValue() {
+		return value;
+	}
+
+	public <K,V> Map<K,V> getMapValue(){
+		return (Map<K, V>) value;
+	}
+
+	public <T> List<T> getListValue(){
+		return (List<T>) value;
 	}
 
 	public Integer getIntValue(){
