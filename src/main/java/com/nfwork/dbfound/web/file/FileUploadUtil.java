@@ -2,6 +2,8 @@ package com.nfwork.dbfound.web.file;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.util.DataUtil;
+import com.nfwork.dbfound.util.JsonUtil;
 import org.apache.commons.fileupload2.core.DiskFileItem;
 import org.apache.commons.fileupload2.jakarta.JakartaServletDiskFileUpload;
 import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
@@ -33,7 +35,16 @@ public class FileUploadUtil {
 		for (DiskFileItem fileItem : items) {
 			String filedName = fileItem.getFieldName();
 			if (fileItem.isFormField()) {
-				context.setParamData(filedName, fileItem.getString(Charset.forName(context.request.getCharacterEncoding())));
+				String value = fileItem.getString(Charset.forName(context.request.getCharacterEncoding()));
+				Object object = value;
+				if(DataUtil.isNotNull(value) && ( DBFoundConfig.isJsonStringAutoCover() || DBFoundConfig.getJsonStringForceCoverSet().contains(filedName))){
+					if (value.charAt(0)=='{' && value.charAt(value.length()-1)=='}') {
+						object = JsonUtil.jsonToMap(value);
+					} else if (value.charAt(0)=='[' && value.charAt(value.length()-1)==']') {
+						object = JsonUtil.jsonToList(value);
+					}
+				}
+				context.setParamData(filedName, object);
 			} else {
 				FilePart filePart = new CommonFilePart(fileItem);
 				Object object = context.getData("param."+filedName);
