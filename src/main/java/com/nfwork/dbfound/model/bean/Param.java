@@ -81,8 +81,8 @@ public class Param extends Entity implements Cloneable{
 		this.scope = scope;
 	}
 
-	public Object getValue() {
-		return value;
+	public <T> T  getValue() {
+		return (T)value;
 	}
 
 	public Integer getIntValue(){
