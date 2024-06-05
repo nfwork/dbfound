@@ -95,7 +95,7 @@ public class BatchExecuteSql extends Sql {
 				param.setBatchAssign(false);
 			}
 			if(!param.isBatchAssign()){
-				realTmpSql = realTmpSql.replace(param.getName()+"_##",param.getName());
+				realTmpSql = realTmpSql.replace("@" +param.getName()+"_##", "@"+param.getName());
 			}
 		}
 
