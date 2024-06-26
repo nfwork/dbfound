@@ -197,7 +197,7 @@ public class ModelEngine {
 					if (execute == null) {
 						throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
 					}
-					ro = execute.doExecute(context, modelName, executeName, currentPath, elCache);
+					ro = execute.doExecute(context, modelName, en, currentPath, elCache);
 				}
 			}
 			if(ro == null){
