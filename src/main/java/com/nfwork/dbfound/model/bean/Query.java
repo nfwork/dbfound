@@ -92,11 +92,10 @@ public class Query extends SqlEntity {
 
 		if (getParent() instanceof Model) {
 			Model model = (Model) getParent();
-			if (name == null || name.isEmpty()) {
-				model.putQuery("_default", this);
-			} else {
-				model.putQuery(name, this);
+			if(DataUtil.isNull(name)){
+				name = "_default";
 			}
+			model.putQuery(name, this);
 			params.putAll(filters);
 
 			if(DataUtil.isNotNull(sql)) {
@@ -115,7 +114,7 @@ public class Query extends SqlEntity {
 		}
 	}
 
-	public <T> QueryResponseObject<T> doQuery(Context context, String modelName, String queryName, String currentPath, boolean autoPaging, Class<T> clazz){
+	public <T> QueryResponseObject<T> doQuery(Context context, String currentPath, boolean autoPaging, Class<T> clazz){
 
 		// 初始化查询参数param
 		Map<String, Object> elCache = new HashMap<>();
@@ -135,7 +134,7 @@ public class Query extends SqlEntity {
 
 		String provideName = ((Model)getParent()).getConnectionProvide(context, getConnectionProvide());
 
-		LogUtil.info("Query info (modelName:" + modelName + ", queryName:" + queryName + ", provideName:"+provideName+")");
+		LogUtil.info("Query info (modelName:" + context.getCurrentModel() + ", queryName:" + name + ", provideName:"+provideName+")");
 
 		//获取querySql
 		String querySql = getQuerySql(context, params, provideName);

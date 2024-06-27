@@ -88,7 +88,8 @@ public class BatchExecuteSql extends Sql {
 		}
 
 		String realTmpSql = tmpSql;
-		for (Param param : params.values()){
+		for (String paramName : paramNameSet){
+			Param param = params.get(paramName);
 			if (DataUtil.isNotNull(param.getScope())){
 				param.setBatchAssign(false);
 			}else if (ELEngine.isAbsolutePath(param.getSourcePath())) {

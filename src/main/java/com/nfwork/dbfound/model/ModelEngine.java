@@ -120,7 +120,7 @@ public class ModelEngine {
 			if (query == null) {
 				throw new QueryNotFoundException("can not found Query:" + queryName + ", on Model:" + modelName);
 			}
-			return query.doQuery(context,modelName,queryName, currentPath, autoPaging, clazz);
+			return query.doQuery(context, currentPath, autoPaging, clazz);
 		} finally {
 			context.modelDeepReduce();
 			if(context.onTopModelDeep()) {
@@ -197,7 +197,7 @@ public class ModelEngine {
 					if (execute == null) {
 						throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
 					}
-					ro = execute.doExecute(context, modelName, en, currentPath, elCache);
+					ro = execute.doExecute(context, currentPath, elCache);
 				}
 			}
 			if(ro == null){
@@ -252,7 +252,7 @@ public class ModelEngine {
 			context.setCurrentModel(modelName);
 
 			Map<String, Object> elCache = new HashMap<>();
-			return execute.doExecute(context, modelName, executeName, currentPath, elCache);
+			return execute.doExecute(context, currentPath, elCache);
 		} finally {
 			context.modelDeepReduce();
 			if(context.onTopModelDeep()) {

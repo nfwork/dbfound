@@ -42,6 +42,9 @@ public class Execute extends SqlEntity {
 		}
 		if (getParent() instanceof Model) {
 			Model model = (Model) getParent();
+			if(DataUtil.isNull(name)){
+				name = "_default";
+			}
 			model.putExecute(name, this);
 		} else {
 			super.doEndTag();
@@ -56,7 +59,7 @@ public class Execute extends SqlEntity {
 		return params;
 	}
 
-	public ResponseObject doExecute(Context context, String modelName, String executeName, String currentPath, Map<String, Object> elCache) {
+	public ResponseObject doExecute(Context context, String currentPath, Map<String, Object> elCache) {
 		Map<String, Param> params = cloneParams();
 
 		// 设想sql查询参数
@@ -69,7 +72,7 @@ public class Execute extends SqlEntity {
 		}
 
 		String provideName = ((Model)getParent()).getConnectionProvide(context, getConnectionProvide());
-		LogUtil.info("Execute info (modelName:" + modelName + ", executeName:" + executeName + ", provideName:"+provideName+")");
+		LogUtil.info("Execute info (modelName:" + context.getCurrentModel() + ", executeName:" + name + ", provideName:"+provideName+")");
 
 		if (sqls != null) {
 			for (int i = 0; i < sqls.sqlList.size(); i++) {
