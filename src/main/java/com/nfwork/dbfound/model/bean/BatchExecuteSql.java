@@ -90,6 +90,9 @@ public class BatchExecuteSql extends Sql {
 		String realTmpSql = tmpSql;
 		for (String paramName : paramNameSet){
 			Param param = params.get(paramName);
+			if(param == null){
+				throw new ParamNotFoundException("param: "+ paramName +" not defined");
+			}
 			if (DataUtil.isNotNull(param.getScope())){
 				param.setBatchAssign(false);
 			}else if (ELEngine.isAbsolutePath(param.getSourcePath())) {
@@ -132,9 +135,6 @@ public class BatchExecuteSql extends Sql {
 		for (int i =begin; i< end; i++){
 			for (String paramName : paramNameSet){
 				Param param = params.get(paramName);
-				if(param == null){
-					throw new ParamNotFoundException("param: "+ paramName +" not defined");
-				}
 
 				if (param.isBatchAssign()){
 					Param newParam = (Param) param.cloneEntity();
