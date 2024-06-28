@@ -115,6 +115,9 @@ public class SqlPart extends Sql {
 
         for (String paramName : paramNameSet){
             Param param = params.get(paramName);
+            if(param == null){
+                throw new ParamNotFoundException("param: "+ paramName +" not defined");
+            }
             if (DataUtil.isNotNull(param.getScope())){
                 param.setBatchAssign(false);
             }else if (ELEngine.isAbsolutePath(param.getSourcePath())) {
@@ -126,9 +129,6 @@ public class SqlPart extends Sql {
             context.setData("request._dbfoundForLoopIndex", i);
             for (String paramName : paramNameSet){
                 Param param = params.get(paramName);
-                if(param == null){
-                    throw new ParamNotFoundException("param: "+ paramName +" not defined");
-                }
                 if (param.isBatchAssign()){
                     String newParamName = param.getName()+"_"+i;
                     String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
@@ -203,17 +203,23 @@ public class SqlPart extends Sql {
     private String getIndexParamSql(String sql, Map<String, Param> params, int index) {
         Matcher m = paramPattern.matcher(sql);
         StringBuffer buf = new StringBuffer();
+        int size = 0;
         while (m.find()) {
             String paramName = m.group();
             String pn = paramName.substring(2, paramName.length() - 1).trim();
             Param param = params.get(pn);
             if(param.isBatchAssign()){
+                size ++;
                 String value = "{@" + pn + "_" + index + "}";
                 m.appendReplacement(buf, value);
             }
         }
-        m.appendTail(buf);
-        return buf.toString();
+        if(size == 0){
+            return sql;
+        }else {
+            m.appendTail(buf);
+            return buf.toString();
+        }
     }
 
     public String getPart() {
