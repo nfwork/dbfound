@@ -98,7 +98,7 @@ public class Execute extends SqlEntity {
 		final String currentPath = context.getCurrentPath();
 		final String currentModel = context.getCurrentModel();
 
-		String mName = modelName != null ? modelName : currentModel;
+		String mName = DataUtil.isNull(modelName) ? currentModel : modelName;
 
 		String exePath = this.currentPath;
 		if(DataUtil.isNotNull(exePath)){
