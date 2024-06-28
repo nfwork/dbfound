@@ -633,7 +633,7 @@ public class Query extends SqlEntity {
 		}else{
 			exePath = currentPath;
 		}
-		String mName = modelName != null?modelName : currentModel;
+		String mName = DataUtil.isNull(modelName) ? currentModel : modelName;
 		List data = ModelEngine.query(context, mName, name, exePath, false, entityClass).getDatas();
 
 		String setPath = rootPath;
