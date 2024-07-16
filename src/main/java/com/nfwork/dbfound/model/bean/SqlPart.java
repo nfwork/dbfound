@@ -81,8 +81,8 @@ public class SqlPart extends Sql {
             }
             return getForPart(context, params, provideName);
         }else{
-            if(DataUtil.isNull(this.getCondition())){
-                throw new DBFoundRuntimeException("SqlPart the condition can not be null when the type is IF");
+            if(DataUtil.isNull(this.getCondition()) && DataUtil.isNull(this.getSourcePath())){
+                throw new DBFoundRuntimeException("SqlPart the condition or sourcePath can not be null at the same time when the type is IF");
             }
             return getIfPart(context, params, provideName);
         }
@@ -184,12 +184,28 @@ public class SqlPart extends Sql {
     }
 
     private String getIfPart(Context context, Map<String, Param> params, String provideName){
-        String conditionSql = condition;
-        Integer forLoopIndex = context.getInt("request._dbfoundForLoopIndex");
-        if(forLoopIndex != null){
-            conditionSql = getIndexParamSql(conditionSql,params, forLoopIndex);
+        boolean isOK = false;
+        if(DataUtil.isNotNull(condition)){
+            String conditionSql = condition;
+            Integer forLoopIndex = context.getInt("request._dbfoundForLoopIndex");
+            if(forLoopIndex != null){
+                conditionSql = getIndexParamSql(conditionSql,params, forLoopIndex);
+            }
+            if (checkCondition(conditionSql, params, context, provideName)) {
+                isOK = true;
+            }
+        }else if(DataUtil.isNotNull(sourcePath)) {
+            String exeSourcePath = sourcePath;
+            if (!ELEngine.isAbsolutePath(exeSourcePath)) {
+                exeSourcePath = context.getCurrentPath() + "." + exeSourcePath;
+            }
+            Object data = context.getData(exeSourcePath);
+            if (DataUtil.isNotNull(data) && DataUtil.getDataLength(data) != 0) {
+               isOK = true;
+            }
         }
-        if (checkCondition(conditionSql, params, context, provideName)) {
+
+        if (isOK) {
             if(sqlPartList.isEmpty()){
                 return sql;
             }else {
