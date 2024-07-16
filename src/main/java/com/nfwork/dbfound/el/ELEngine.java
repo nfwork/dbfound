@@ -1,6 +1,9 @@
 package com.nfwork.dbfound.el;
 
+import com.nfwork.dbfound.util.CollectionUtil;
 import com.nfwork.dbfound.util.DataUtil;
+
+import java.util.Set;
 
 public class ELEngine {
 	public static final String sessionScope = "session.";
@@ -10,13 +13,20 @@ public class ELEngine {
 	public static final String cookieScope = "cookie.";
 	public static final String headerScope = "header.";
 
+	private static final Set<String> absolutePathSet = CollectionUtil.asSet(sessionScope,requestScope,paramScope,outParamScope,cookieScope,headerScope);
+
 	public static boolean isAbsolutePath(String exeSourcePath){
 		if (DataUtil.isNull(exeSourcePath)){
 			return false;
 		}
-		exeSourcePath = exeSourcePath + ".";
-		return  exeSourcePath.startsWith(paramScope) || exeSourcePath.startsWith(outParamScope)
-				|| exeSourcePath.startsWith(sessionScope) || exeSourcePath.startsWith(requestScope)
-				|| exeSourcePath.startsWith(cookieScope) || exeSourcePath.startsWith(headerScope) ;
+		exeSourcePath = exeSourcePath.trim();
+		int index = exeSourcePath.indexOf(".");
+		String rootPath;
+		if(index > -1){
+			rootPath = exeSourcePath.substring(0,index+1);
+		}else{
+			rootPath = exeSourcePath + ".";
+		}
+		return absolutePathSet.contains(rootPath) ;
 	}
 }
