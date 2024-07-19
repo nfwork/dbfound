@@ -44,7 +44,10 @@ public class InResolver extends DSqlValueResolver {
                     throw new DSqlNotSupportException();
                 }
             }
-            if(inExpression.isNot() && !hasNull){
+            if(hasNull){
+                return null;
+            }
+            if(inExpression.isNot()){
                 return true;
             }else {
                 return false;

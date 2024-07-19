@@ -11,18 +11,16 @@ public class OrExpressionResolver extends DSqlValueResolver {
     public Object getValue(Expression expression, List<Object> param, String provideName, Context context) {
         OrExpression orExpression = (OrExpression) expression;
         Object left = DSqlEngine.getExpressionValue(orExpression.getLeftExpression(),param, provideName, context);
+        if(left != null && getBooleanValue(left)){
+            return true;
+        }
         Object right = DSqlEngine.getExpressionValue(orExpression.getRightExpression(),param, provideName, context);
-        if(left == null && right == null){
+        if(right != null && getBooleanValue(right)){
+            return true;
+        }
+        if(left == null || right == null){
             return null;
         }
-        if(left == null){
-            return getBooleanValue(right);
-        }
-        if(right == null){
-            return getBooleanValue(left);
-        }
-        boolean leftValue = getBooleanValue(left);
-        boolean rightValue = getBooleanValue(right);
-        return leftValue || rightValue;
+        return false;
     }
 }
