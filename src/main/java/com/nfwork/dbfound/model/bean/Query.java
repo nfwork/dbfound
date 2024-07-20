@@ -340,7 +340,7 @@ public class Query extends SqlEntity {
 					break;
 				case SQL_PART:
 					SqlPart sqlPart = sql.getSqlPartList().get(sqlPartIndex++);
-					String partValue = Matcher.quoteReplacement(sqlPart.getPartSql(context,params,provideName));
+					String partValue = sqlPart.getPartSql(context,params,provideName);
 
 					if(partValue.isEmpty()) {
 						m.appendReplacement(buffer, "");
@@ -356,6 +356,7 @@ public class Query extends SqlEntity {
 						}else {
 							partValue = partValue.replace(WHERE_CLAUSE, whereSql).replace(AND_CLAUSE, andSql);
 						}
+						partValue = Matcher.quoteReplacement(partValue);
 						m.appendReplacement(buffer, partValue);
 
 						if(sqlPart.isAutoClearComma()){
