@@ -75,7 +75,9 @@ public class Sql extends SqlEntity {
 				SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
 				String partValue =  Matcher.quoteReplacement(sqlPart.getPartSql(context,params,provideName));
 				m.appendReplacement(buffer, partValue);
-				reduceBlank(buffer);
+				if(partValue.isEmpty()) {
+					reduceBlank(buffer);
+				}
 
 				if(sqlPart.isAutoClearComma() && DataUtil.isNotNull(partValue)){
 					commaIndex = buffer.length() - 1;

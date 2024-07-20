@@ -342,7 +342,10 @@ public class Query extends SqlEntity {
 					SqlPart sqlPart = sql.getSqlPartList().get(sqlPartIndex++);
 					String partValue = Matcher.quoteReplacement(sqlPart.getPartSql(context,params,provideName));
 
-					if(DataUtil.isNotNull(partValue)) {
+					if(partValue.isEmpty()) {
+						m.appendReplacement(buffer, "");
+						reduceBlank(buffer);
+					}else{
 						if(sqlPart.isAutoCompletion() && followType != 0 ){
 							if(followType == 1 ){
 								partValue = "where " + partValue;
@@ -351,16 +354,13 @@ public class Query extends SqlEntity {
 								partValue = "and " + partValue;
 							}
 						}else {
-							partValue = partValue.replace(WHERE_CLAUSE, whereSql)
-									.replace(AND_CLAUSE, andSql);
+							partValue = partValue.replace(WHERE_CLAUSE, whereSql).replace(AND_CLAUSE, andSql);
 						}
-					}
+						m.appendReplacement(buffer, partValue);
 
-					m.appendReplacement(buffer, partValue);
-					reduceBlank(buffer);
-
-					if(sqlPart.isAutoClearComma() && DataUtil.isNotNull(partValue)){
-						commaIndex = buffer.length() - 1;
+						if(sqlPart.isAutoClearComma()){
+							commaIndex = buffer.length() - 1;
+						}
 					}
 					break;
 			}
