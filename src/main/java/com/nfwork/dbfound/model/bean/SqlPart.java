@@ -107,7 +107,7 @@ public class SqlPart extends Sql {
         StringBuilder eSql = new StringBuilder();
         int dataSize = context.getDataLength(exeSourcePath);
         if(dataSize <= 0){
-            return eSql.toString();
+            return "";
         }
 
         eSql.append(begin);
@@ -125,6 +125,7 @@ public class SqlPart extends Sql {
             }
         }
 
+        int appendCount = 0;
         for (int i =0; i< dataSize; i++){
             context.setData("request._dbfoundForLoopIndex", i);
             for (String paramName : paramNameSet){
@@ -174,13 +175,18 @@ public class SqlPart extends Sql {
 
             if(!partSql.isEmpty()) {
                 eSql.append(partSql).append(separator);
+                appendCount++;
             }
         }
         context.setData("request._dbfoundForLoopIndex", null);
-        eSql.delete(eSql.length()-separator.length(), eSql.length());
-        eSql.append(end);
 
-        return eSql.toString();
+        if(appendCount>0) {
+            eSql.delete(eSql.length() - separator.length(), eSql.length());
+            eSql.append(end);
+            return eSql.toString();
+        }else{
+            return "";
+        }
     }
 
     private String getIfPart(Context context, Map<String, Param> params, String provideName){
