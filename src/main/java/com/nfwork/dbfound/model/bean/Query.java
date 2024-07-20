@@ -346,6 +346,7 @@ public class Query extends SqlEntity {
 						m.appendReplacement(buffer, "");
 						reduceBlank(buffer);
 					}else{
+						partValue = Matcher.quoteReplacement(partValue);
 						if(sqlPart.isAutoCompletion() && followType != 0 ){
 							if(followType == 1 ){
 								partValue = "where " + partValue;
@@ -356,7 +357,6 @@ public class Query extends SqlEntity {
 						}else {
 							partValue = partValue.replace(WHERE_CLAUSE, whereSql).replace(AND_CLAUSE, andSql);
 						}
-						partValue = Matcher.quoteReplacement(partValue);
 						m.appendReplacement(buffer, partValue);
 
 						if(sqlPart.isAutoClearComma()){
