@@ -90,7 +90,7 @@ public class Sql extends SqlEntity {
 			buffer.deleteCharAt(commaIndex);
 		}
 		m.appendTail(buffer);
-		if(buffer.charAt(0)==' '){
+		if(buffer.length()>0 && buffer.charAt(0)==' '){
 			buffer.deleteCharAt(0);
 		}
 		return buffer.toString();
