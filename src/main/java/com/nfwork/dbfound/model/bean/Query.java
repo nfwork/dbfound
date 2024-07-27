@@ -279,7 +279,7 @@ public class Query extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.log("querySql",eSql, params.values());
+			LogUtil.log("querySql",eSql, params.values(),exeParam);
 		}
 		return (List<T>) data;
 	}
@@ -355,7 +355,12 @@ public class Query extends SqlEntity {
 								partValue = "and " + partValue;
 							}
 						}else {
-							partValue = partValue.replace(WHERE_CLAUSE, whereSql).replace(AND_CLAUSE, andSql);
+							if(partValue.contains(WHERE_CLAUSE)) {
+								partValue = partValue.replace(WHERE_CLAUSE, whereSql);
+							}
+							if(partValue.contains(AND_CLAUSE)) {
+								partValue = partValue.replace(AND_CLAUSE, andSql);
+							}
 						}
 						m.appendReplacement(buffer, partValue);
 
@@ -479,7 +484,7 @@ public class Query extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.info("Execute countSql：" + ceSql);
+			LogUtil.sqlLog("Execute countSql：", ceSql, exeParam);
 		}
 	}
 

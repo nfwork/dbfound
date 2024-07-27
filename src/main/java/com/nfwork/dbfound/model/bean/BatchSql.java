@@ -160,7 +160,7 @@ public class BatchSql extends Sqls {
 		}finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			log("batchCursorSql",esql, params);
+			log("batchCursorSql",esql, params,exeParam);
 		}
 	}
 

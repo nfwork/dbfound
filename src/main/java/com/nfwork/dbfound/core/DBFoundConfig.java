@@ -55,6 +55,7 @@ public class DBFoundConfig {
 	private static String timeFormat = "HH:mm:ss";
 	private static boolean openSession = true;
 	private static boolean openLog = true;
+	private static boolean logWithParamSql = false;
 	private static String encoding = "UTF-8";
 	private static Integer maxUploadSize = 10; // 单位M
 	private static String basePath ;
@@ -362,6 +363,18 @@ public class DBFoundConfig {
 			}
 		}
 
+		Element paramSql = system.element("logWithParamSql");
+		if (paramSql != null) {
+			String printParamSql = paramSql.getTextTrim();
+			if ("false".equals(printParamSql.trim())) {
+				DBFoundConfig.logWithParamSql = false;
+				info.append("(logWithParamSql=false) ");
+			} else if ("true".equals(printParamSql.trim())) {
+				DBFoundConfig.logWithParamSql = true;
+				info.append("(logWithParamSql=true) ");
+			}
+		}
+
 		// 设置驼峰转化开关
 		Element underscoreToCamelCase = system.element("underscoreToCamelCase");
 		if (underscoreToCamelCase != null) {
@@ -637,6 +650,14 @@ public class DBFoundConfig {
 
 	public static void setBasePath(String basePath) {
 		DBFoundConfig.basePath = basePath;
+	}
+
+	public static boolean isLogWithParamSql() {
+		return logWithParamSql;
+	}
+
+	public static void setLogWithParamSql(boolean logWithParamSql) {
+		DBFoundConfig.logWithParamSql = logWithParamSql;
 	}
 
 	public static String getTimeFormat() {

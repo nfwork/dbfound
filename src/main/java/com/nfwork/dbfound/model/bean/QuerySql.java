@@ -122,7 +122,7 @@ public class QuerySql extends Sql {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			log("querySql",esql, params);
+			log("querySql",esql, params, exeParam);
 		}
 	}
 
