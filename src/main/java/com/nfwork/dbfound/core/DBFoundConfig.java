@@ -194,7 +194,7 @@ public class DBFoundConfig {
 				provide.regist();
 				LogUtil.info( "register jdbcConnProvide success, provideName:" + provideName);
 			} else {
-				throw new DBFoundRuntimeException("user jdbc type，url driverClass username dialect can not be null");
+				throw new DBFoundRuntimeException("user jdbc type, url driverClass username dialect can not be null");
 			}
 		}
 
@@ -223,7 +223,7 @@ public class DBFoundConfig {
 				provide.regist();
 				LogUtil.info("register dataSourceConnProvide success, provideName:"+ provideName);
 			} else {
-				throw new DBFoundRuntimeException("user dataSource type，dataSource dialect can not null");
+				throw new DBFoundRuntimeException("user dataSource type, dataSource dialect can not null");
 			}
 		}
 	}

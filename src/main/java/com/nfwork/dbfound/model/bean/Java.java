@@ -29,7 +29,7 @@ public class Java extends SqlEntity {
 	@Override
 	public void execute(Context context, Map<String, Param> params,
 			String provideName) {
-		LogUtil.info("execute Java plugin：" + className + ", method：" + method);
+		LogUtil.info("execute Java plugin: " + className + ", method: " + method);
 		try {
 			Class<?> executeClass = Class.forName(className);
 			Object object = executeClass.getConstructor().newInstance();

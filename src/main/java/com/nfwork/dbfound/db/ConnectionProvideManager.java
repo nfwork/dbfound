@@ -32,7 +32,7 @@ public class ConnectionProvideManager {
 	public static ConnectionProvide getConnectionProvide(String provideName) {
 		ConnectionProvide provide = provides.get(provideName);
 		if (provide == null) {
-			throw new DBFoundRuntimeException("can not found ConnectionProvide："
+			throw new DBFoundRuntimeException("can not found ConnectionProvide: "
 					+ provideName + ", please check config");
 		}
 		return provide;

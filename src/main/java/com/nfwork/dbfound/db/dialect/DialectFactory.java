@@ -6,7 +6,7 @@ public class DialectFactory {
 
 	public static SqlDialect createDialect(String dialectType) {
 		if (dialectType == null) {
-			throw new DBFoundRuntimeException("dialect is empty，please check");
+			throw new DBFoundRuntimeException("dialect is empty, please check");
 		}
 		String className =  dialectType.trim();
 		if(!dialectType.contains(".")){
@@ -15,7 +15,7 @@ public class DialectFactory {
 		try {
 			 return (SqlDialect) Class.forName(className).getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
-			throw new DBFoundRuntimeException("SqlDialect init failed, please check the class：" + className +" is exists or it is implements SqlDialect", e);
+			throw new DBFoundRuntimeException("SqlDialect init failed, please check the class: " + className +" is exists or it is implements SqlDialect", e);
 		}
 	}
 }
