@@ -35,6 +35,7 @@
 	<xsd:complexType name="system_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="1" minOccurs="0" name="openLog" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="logWithParamSql" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="underscoreToCamelCase" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="camelCaseToUnderscore" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="modeRootPath" />

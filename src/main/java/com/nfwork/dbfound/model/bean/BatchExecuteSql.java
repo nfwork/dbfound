@@ -199,7 +199,7 @@ public class BatchExecuteSql extends Sql {
 			if(begin>0){
 				collection = collection.stream().filter(p->p.getName().endsWith("_"+begin)).collect(Collectors.toList());
 			}
-			LogUtil.log("batchExecuteSql", esql, collection);
+			LogUtil.log("batchExecuteSql", esql, collection,exeParam);
 		}
 	}
 
