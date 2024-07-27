@@ -305,7 +305,9 @@ public abstract class SqlEntity extends Entity {
 				paramValue = paramValue.replace("$", "\\$");
 			}
 			m.appendReplacement(buf, paramValue);
-			reduceBlank(buf);
+			if(paramValue.isEmpty()) {
+				reduceBlank(buf);
+			}
 		}
 		if(findCount == 0){
 			return sql;
