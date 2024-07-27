@@ -57,16 +57,22 @@ public class LogUtil {
 			int syh = 0;
 
 			int paramIndex = 0;
-			StringBuilder buffer = new StringBuilder();
+			int start = 0;
+			StringBuilder buffer = new StringBuilder(comment);
 			for(int i=0; i< chars.length; i++){
-				if (chars[i] == '\'' && (i==0 || chars[i-1] != '\\') && syh==0) {
-					dyh = dyh ^ 1;
-					buffer.append(chars[i]);
-				}else if (chars[i] == '\"' && (i==0 || chars[i-1] != '\\') && dyh==0) {
-					syh = syh ^ 1;
-					buffer.append(chars[i]);
-				}else if (dyh == 0 && syh ==0) {
-					if(chars[i] == '?'){
+				if (chars[i] == '\'') {
+					if((i==0 || chars[i-1] != '\\') && syh==0) {
+						dyh = dyh ^ 1;
+					}
+				}else if (chars[i] == '\"') {
+					if((i==0 || chars[i-1] != '\\') && dyh==0) {
+						syh = syh ^ 1;
+					}
+				}else if(chars[i] == '?'){
+					if (dyh == 0 && syh ==0) {
+						buffer.append(chars, start, i - start);
+						start = i + 1;
+
 						Object value = exeParam.get(paramIndex++);
 						if(value == null){
 							buffer.append("null");
@@ -87,10 +93,11 @@ public class LogUtil {
 						} else{
 							buffer.append("?");
 						}
-					}else {
-						buffer.append(chars[i]);
 					}
 				}
+			}
+			if(start < chars.length){
+				buffer.append(chars,start, chars.length-start);
 			}
 			log.info(buffer.toString());
 		}
