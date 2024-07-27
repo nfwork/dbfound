@@ -484,7 +484,7 @@ public class Query extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.sqlLog("Execute countSql：", ceSql, exeParam);
+			LogUtil.countSqlLog("Execute countSql: ", ceSql, exeParam);
 		}
 	}
 

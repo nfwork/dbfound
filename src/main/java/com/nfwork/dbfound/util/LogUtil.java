@@ -46,61 +46,65 @@ public class LogUtil {
 		}
 	}
 
-	public static void sqlLog(String comment, String sql, List<Object> exeParam){
+	public static void countSqlLog(String comment, String sql, List<Object> exeParam){
 		if (DBFoundConfig.isOpenLog()) {
-			if(!DBFoundConfig.isLogWithParamSql() || exeParam.isEmpty()){
-				log.info(comment + sql);
-				return;
-			}
-			char [] chars = sql.toCharArray();
-			int dyh = 0;
-			int syh = 0;
+			sqlLog(comment, sql, exeParam);
+		}
+	}
 
-			int paramIndex = 0;
-			int start = 0;
-			StringBuilder buffer = new StringBuilder(comment);
-			for(int i=0; i< chars.length; i++){
-				if (chars[i] == '\'') {
-					if((i==0 || chars[i-1] != '\\') && syh==0) {
-						dyh = dyh ^ 1;
-					}
-				}else if (chars[i] == '\"') {
-					if((i==0 || chars[i-1] != '\\') && dyh==0) {
-						syh = syh ^ 1;
-					}
-				}else if(chars[i] == '?'){
-					if (dyh == 0 && syh ==0) {
-						buffer.append(chars, start, i - start);
-						start = i + 1;
+	private static void sqlLog(String comment, String sql, List<Object> exeParam){
+		if(!DBFoundConfig.isLogWithParamSql() || exeParam.isEmpty()){
+			log.info(comment + sql);
+			return;
+		}
+		char [] chars = sql.toCharArray();
+		int dyh = 0;
+		int syh = 0;
 
-						Object value = exeParam.get(paramIndex++);
-						if(value == null){
-							buffer.append("null");
-						}else if (value instanceof Number){
-							buffer.append(value);
-						}else if(value instanceof String){
-							String sValue = (String) value;
-							if(sValue.contains("'")){
-								sValue = sValue.replace("'","\\'");
-							}
-							buffer.append("'").append(sValue).append("'");
-						} else if (value instanceof Date) {
-							buffer.append("'").append(LocalDateUtil.formatDate((Date) value)).append("'");
-						} else if (value instanceof Temporal) {
-							buffer.append("'").append(LocalDateUtil.formatTemporal((Temporal) value)).append("'");
-						} else if(value instanceof Boolean){
-							buffer.append(value);
-						} else{
-							buffer.append("?");
+		int paramIndex = 0;
+		int start = 0;
+		StringBuilder buffer = new StringBuilder(comment);
+		for(int i=0; i< chars.length; i++){
+			if (chars[i] == '\'') {
+				if((i==0 || chars[i-1] != '\\') && syh==0) {
+					dyh = dyh ^ 1;
+				}
+			}else if (chars[i] == '\"') {
+				if((i==0 || chars[i-1] != '\\') && dyh==0) {
+					syh = syh ^ 1;
+				}
+			}else if(chars[i] == '?'){
+				if (dyh == 0 && syh ==0) {
+					buffer.append(chars, start, i - start);
+					start = i + 1;
+
+					Object value = exeParam.get(paramIndex++);
+					if(value == null){
+						buffer.append("null");
+					}else if (value instanceof Number){
+						buffer.append(value);
+					}else if(value instanceof String){
+						String sValue = (String) value;
+						if(sValue.contains("'")){
+							sValue = sValue.replace("'","\\'");
 						}
+						buffer.append("'").append(sValue).append("'");
+					} else if (value instanceof Date) {
+						buffer.append("'").append(LocalDateUtil.formatDate((Date) value)).append("'");
+					} else if (value instanceof Temporal) {
+						buffer.append("'").append(LocalDateUtil.formatTemporal((Temporal) value)).append("'");
+					} else if(value instanceof Boolean){
+						buffer.append(value);
+					} else{
+						buffer.append("?");
 					}
 				}
 			}
-			if(start < chars.length){
-				buffer.append(chars,start, chars.length-start);
-			}
-			log.info(buffer.toString());
 		}
+		if(start < chars.length){
+			buffer.append(chars,start, chars.length-start);
+		}
+		log.info(buffer.toString());
 	}
 
 	public static void info(String message) {
@@ -110,9 +114,7 @@ public class LogUtil {
 	}
 
 	public static void warn(String message) {
-		if (DBFoundConfig.isOpenLog()) {
-			log.warn(message);
-		}
+		log.warn(message);
 	}
 
 	public static void error(String message, Throwable throwable) {
