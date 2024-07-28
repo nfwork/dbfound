@@ -6,6 +6,7 @@ import com.nfwork.dbfound.util.LogUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
 
 public class WebExceptionHandler {
 
@@ -16,9 +17,12 @@ public class WebExceptionHandler {
 			code = ((CollisionException) exception).getCode();
 			LogUtil.info(exception.getClass().getName() + ": " + em);
 		} else {
-			em = exception.getClass().getName() + ": " + em;
 			String message = "Unexpected exception: "+exception.getClass().getName()+" caused, when request url: "+request.getRequestURI();
 			LogUtil.error(message, exception);
+			if(exception.getCause() instanceof SQLException){
+				em = exception.getCause().getMessage();
+			}
+			em = message + ", message: " + em;
 		}
 		ResponseObject ro = new ResponseObject();
 		ro.setSuccess(false);
