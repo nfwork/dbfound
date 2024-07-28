@@ -17,7 +17,8 @@ public class WebExceptionHandler {
 			LogUtil.info(exception.getClass().getName() + ": " + em);
 		} else {
 			em = exception.getClass().getName() + ": " + em;
-			LogUtil.error(em, exception);
+			String message = "Unexpected exception: "+exception.getClass().getName()+" caused, when request url: "+request.getRequestURI();
+			LogUtil.error(message, exception);
 		}
 		ResponseObject ro = new ResponseObject();
 		ro.setSuccess(false);
