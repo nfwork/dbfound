@@ -2,6 +2,7 @@ package com.nfwork.dbfound.web.base;
 
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.CollisionException;
+import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,12 +18,14 @@ public class WebExceptionHandler {
 			code = ((CollisionException) exception).getCode();
 			LogUtil.info(exception.getClass().getName() + ": " + em);
 		} else {
-			String message = "Unexpected exception: "+exception.getClass().getName()+" caused, when request url: "+request.getRequestURI();
+			String message = "an exception: "+exception.getClass().getName()+" caused, when request url: "+request.getRequestURI();
 			LogUtil.error(message, exception);
 			if(exception.getCause() instanceof SQLException){
 				em = exception.getCause().getMessage();
 			}
-			em = message + ", message: " + em;
+		}
+		if(DataUtil.isNull(em)){
+			em = exception.getClass().getName();
 		}
 		ResponseObject ro = new ResponseObject();
 		ro.setSuccess(false);
