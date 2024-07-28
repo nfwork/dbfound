@@ -41,7 +41,7 @@ public class ModelReader {
 			try (FileInputStream inputStream = new FileInputStream(file)){
 				doc = reader.read(inputStream);
 			} catch (Exception e) {
-				String message = "modelReader exception，file: " + fileLocation;
+				String message = "modelReader exception, file: " + fileLocation;
 				throw new DBFoundPackageException(message, e);
 			}
 		} else {

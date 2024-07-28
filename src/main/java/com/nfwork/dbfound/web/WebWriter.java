@@ -17,7 +17,7 @@ public final class WebWriter {
 		try {
 			ExcelWriter.excelExport(context, result);
 		} catch (Exception e) {
-			LogUtil.warn("response Excel writer exception：" + e.getMessage());
+			LogUtil.warn("response Excel writer exception: " + e.getMessage());
 		}
 	}
 
@@ -37,7 +37,7 @@ public final class WebWriter {
 			}
 			writer.flush();
 		} catch (Exception e) {
-			LogUtil.warn("response writer exception：" + e.getMessage());
+			LogUtil.warn("response writer exception: " + e.getMessage());
 		}
 	}
 

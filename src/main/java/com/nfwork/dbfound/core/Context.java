@@ -56,7 +56,7 @@ public class Context {
 	}
 
 	/**
-	 * 得到当前 context，是否需要开启session
+	 * 得到当前 context, 是否需要开启session
 	 * 
 	 * @param request request
 	 * @param response response
@@ -642,7 +642,7 @@ public class Context {
 	private void checkContext(){
 		long runThread = Thread.currentThread().getId();
 		if (runThread != createThread) {
-			throw new DBFoundRuntimeException("Context can not be user by different thread，create thread id:"+
+			throw new DBFoundRuntimeException("Context can not be user by different thread, create thread id:"+
 					createThread + ", run thread id:" + runThread);
 		}
 	}

@@ -188,7 +188,7 @@ public class ModelEngine {
 						} else if ("OLD".equals(status)) {
 							en = "update";
 						} else {
-							throw new ExecuteNotFoundException("cant not found (_status) field，can not found Execute");
+							throw new ExecuteNotFoundException("cant not found (_status) field, can not found Execute");
 						}
 					} else {
 						en = executeName;

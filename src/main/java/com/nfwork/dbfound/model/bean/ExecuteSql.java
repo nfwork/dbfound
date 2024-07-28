@@ -117,7 +117,7 @@ public class ExecuteSql extends Sql {
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(statement);
 			closeFileParam(fileList);
-			log("executeSql",esql, params);
+			log("executeSql",esql, params, exeParam);
 		}
 	}
 

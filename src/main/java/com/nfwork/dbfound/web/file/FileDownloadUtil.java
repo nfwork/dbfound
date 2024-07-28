@@ -76,7 +76,7 @@ public class FileDownloadUtil {
 				}
 			}
 		} else {
-			String message = "file：" + file.getAbsolutePath() + ", not found";
+			String message = "file: " + file.getAbsolutePath() + ", not found";
 			ResponseObject responseObject = new ResponseObject();
 			responseObject.setMessage(message);
 			responseObject.setSuccess(false);

@@ -65,7 +65,7 @@ public class WhenSql extends Sqls {
 		if(DSqlConfig.isOpenDSql() && useDSql){
 			try {
 				boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
-				log("when dSql", "select " + eSql, params);
+				log("when dSql", "select " + eSql, params, exeParam);
 				return result;
 			}catch (DSqlNotSupportException ignore){
 			}
@@ -91,7 +91,7 @@ public class WhenSql extends Sqls {
 		} finally {
 			DBUtil.closeResultSet(set);
 			DBUtil.closeStatement(statement);
-			log("whenSql",eSql, params);
+			log("whenSql",eSql, params, exeParam);
 		}
 		return flag != 0;
 	}

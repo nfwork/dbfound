@@ -301,11 +301,13 @@ public abstract class SqlEntity extends Entity {
 				paramValue = UUIDUtil.getUUID();
 			}else if (paramValue == null) {
 				paramValue = "";
-			}else {
+			}else if(paramValue.contains("$")){
 				paramValue = paramValue.replace("$", "\\$");
 			}
 			m.appendReplacement(buf, paramValue);
-			reduceBlank(buf);
+			if(paramValue.isEmpty()) {
+				reduceBlank(buf);
+			}
 		}
 		if(findCount == 0){
 			return sql;
@@ -685,8 +687,8 @@ public abstract class SqlEntity extends Entity {
 		nfParam.setSourcePathHistory(realPath);
 	}
 
-	public void log(String sqlName, String sql, Map<String, Param> params) {
-		LogUtil.log(sqlName, sql, params.values());
+	public void log(String sqlName, String sql, Map<String, Param> params, List<Object> exeParam) {
+		LogUtil.log(sqlName, sql, params.values(),exeParam);
 	}
 
 }

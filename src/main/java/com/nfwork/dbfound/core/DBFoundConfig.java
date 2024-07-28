@@ -55,6 +55,7 @@ public class DBFoundConfig {
 	private static String timeFormat = "HH:mm:ss";
 	private static boolean openSession = true;
 	private static boolean openLog = true;
+	private static boolean logWithParamSql = false;
 	private static String encoding = "UTF-8";
 	private static Integer maxUploadSize = 10; // 单位M
 	private static String basePath ;
@@ -193,7 +194,7 @@ public class DBFoundConfig {
 				provide.regist();
 				LogUtil.info( "register jdbcConnProvide success, provideName:" + provideName);
 			} else {
-				throw new DBFoundRuntimeException("user jdbc type，url driverClass username dialect can not be null");
+				throw new DBFoundRuntimeException("user jdbc type, url driverClass username dialect can not be null");
 			}
 		}
 
@@ -222,7 +223,7 @@ public class DBFoundConfig {
 				provide.regist();
 				LogUtil.info("register dataSourceConnProvide success, provideName:"+ provideName);
 			} else {
-				throw new DBFoundRuntimeException("user dataSource type，dataSource dialect can not null");
+				throw new DBFoundRuntimeException("user dataSource type, dataSource dialect can not null");
 			}
 		}
 	}
@@ -359,6 +360,18 @@ public class DBFoundConfig {
 			} else if ("true".equals(openLog.trim())) {
 				DBFoundConfig.openLog = true;
 				info.append("(openLog=true) ");
+			}
+		}
+
+		Element paramSql = system.element("logWithParamSql");
+		if (paramSql != null) {
+			String printParamSql = paramSql.getTextTrim();
+			if ("false".equals(printParamSql.trim())) {
+				DBFoundConfig.logWithParamSql = false;
+				info.append("(logWithParamSql=false) ");
+			} else if ("true".equals(printParamSql.trim())) {
+				DBFoundConfig.logWithParamSql = true;
+				info.append("(logWithParamSql=true) ");
 			}
 		}
 
@@ -637,6 +650,14 @@ public class DBFoundConfig {
 
 	public static void setBasePath(String basePath) {
 		DBFoundConfig.basePath = basePath;
+	}
+
+	public static boolean isLogWithParamSql() {
+		return logWithParamSql;
+	}
+
+	public static void setLogWithParamSql(boolean logWithParamSql) {
+		DBFoundConfig.logWithParamSql = logWithParamSql;
 	}
 
 	public static String getTimeFormat() {
