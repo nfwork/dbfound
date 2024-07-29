@@ -36,7 +36,7 @@ public class BatchSql extends Sqls {
 			return;
 		}
 		if(DataUtil.isNotNull(cursor)) {
-			cursor = StringUtil.fullTrim(cursor);
+			cursor = StringUtil.sqlFullTrim(cursor);
 			autoCreateParam(cursor, this);
 		}
 	}

@@ -32,7 +32,7 @@ public class WhenSql extends Sqls {
 			initError = "WhenSql attribute when can not be null";
 			return;
 		}
-		when = StringUtil.fullTrim(when);
+		when = StringUtil.sqlFullTrim(when);
 		useDSql = !when.toLowerCase().contains("select ");
 		autoCreateParam(when,this);
 	}

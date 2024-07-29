@@ -40,7 +40,7 @@ public class CollisionSql extends SqlEntity {
 			initError = "CollisionSql attribute where and message can not be null";
 			return;
 		}
-		where = StringUtil.fullTrim(where);
+		where = StringUtil.sqlFullTrim(where);
 		useDSql = !where.toLowerCase().contains("select ");
 		autoCreateParam(where,this);
 		autoCreateParam(message,this);

@@ -48,7 +48,7 @@ public class StringUtil {
         return String.valueOf(chars);
     }
 
-    public static String fullTrim(String value){
+    public static String sqlFullTrim(String value){
         if(value == null){
             return null;
         }
@@ -170,4 +170,40 @@ public class StringUtil {
         return buffer.toString();
     }
 
+    public static String addWhere(String sql){
+        if(isBeginAnd(sql)){
+            return "where" + sql.substring(3);
+        }
+        return "where " + sql;
+    }
+
+    public static String addAnd(String sql){
+        if(isBeginAnd(sql)){
+            return sql;
+        }
+        return "and " + sql;
+    }
+
+    private static boolean isBeginAnd(String value){
+        if(value.length() < 3){
+            return false;
+        }
+        char a0 = value.charAt(0);
+        if(a0 !='a' && a0 != 'A'){
+            return false;
+        }
+        char a1 = value.charAt(1);
+        if(a1 !='n' && a1 != 'N'){
+            return false;
+        }
+        char a2 = value.charAt(2);
+        if(a2 !='d' && a2 != 'D'){
+            return false;
+        }
+        if(value.length()==3){
+            return true;
+        }
+        char a3 = value.charAt(3);
+        return a3 == ' ' || a3 == '(';
+    }
 }

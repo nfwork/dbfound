@@ -10,10 +10,10 @@ public class Filter extends Param {
 	@Override
 	public void doEndTag(){
 		if(express != null){
-			express = StringUtil.fullTrim(express);
+			express = StringUtil.sqlFullTrim(express);
 		}
 		if(condition != null){
-			condition = StringUtil.fullTrim(condition);
+			condition = StringUtil.sqlFullTrim(condition);
 		}
 		if (getParent() instanceof Query) {
 			Query query = (Query) getParent();
