@@ -1,12 +1,9 @@
 package com.nfwork.dbfound.db;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-
-import com.nfwork.dbfound.core.Transaction;
 import com.nfwork.dbfound.db.dialect.DialectFactory;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.util.DataUtil;
 
 public abstract class ConnectionProvide {
 
@@ -38,7 +35,7 @@ public abstract class ConnectionProvide {
 
 	public ConnectionProvide(String provideName, String dialectName) {
 		sqlDialect = DialectFactory.createDialect(dialectName);
-		if (provideName != null && !"".equals(provideName)) {
+		if (DataUtil.isNotNull(provideName)) {
 			this.provideName = provideName;
 		}
 	}
