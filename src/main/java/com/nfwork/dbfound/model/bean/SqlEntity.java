@@ -688,7 +688,7 @@ public abstract class SqlEntity extends Entity {
 	}
 
 	public void log(String sqlName, String sql, Map<String, Param> params, List<Object> exeParam) {
-		LogUtil.log(sqlName, sql, params.values(),exeParam);
+		LogUtil.logSql(sqlName, sql, params.values(),exeParam);
 	}
 
 }

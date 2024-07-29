@@ -18,7 +18,7 @@ public class LogUtil {
 
 	private static final Logger log = LoggerFactory.getLogger("dbfound");
 
-	public static void log(String sqlName, String sql, Collection<Param> params , List<Object> exeParam) {
+	public static void logSql(String sqlName, String sql, Collection<Param> params , List<Object> exeParam) {
 		if (DBFoundConfig.isOpenLog()) {
 			if(DBFoundConfig.isLogWithParamSql() && !exeParam.isEmpty()){
 				sql = StringUtil.getParamSql(sql, exeParam);

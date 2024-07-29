@@ -35,7 +35,7 @@ public class Sql extends SqlEntity {
 				builder.append(text);
 			}
 		}
-		sql = StringUtil.fullTrim(builder.toString());
+		sql = StringUtil.sqlFullTrim(builder.toString());
 	}
 
 	@Override

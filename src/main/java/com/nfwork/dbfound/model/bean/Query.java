@@ -279,7 +279,7 @@ public class Query extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.log("querySql",eSql, params.values(),exeParam);
+			LogUtil.logSql("querySql",eSql, params.values(),exeParam);
 		}
 		return (List<T>) data;
 	}
@@ -349,10 +349,10 @@ public class Query extends SqlEntity {
 						partValue = Matcher.quoteReplacement(partValue);
 						if(sqlPart.isAutoCompletion() && followType != 0 ){
 							if(followType == 1 ){
-								partValue = "where " + partValue;
+								partValue = StringUtil.addWhere(partValue);
 								followType = 2;
 							}else {
-								partValue = "and " + partValue;
+								partValue = StringUtil.addAnd(partValue);
 							}
 						}else {
 							if(partValue.contains(WHERE_CLAUSE)) {

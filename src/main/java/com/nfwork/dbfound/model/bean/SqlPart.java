@@ -42,7 +42,7 @@ public class SqlPart extends Sql {
     public void doStartTag(Element element) {
         super.doStartTag(element);
         if(condition != null){
-            condition = StringUtil.fullTrim(condition);
+            condition = StringUtil.sqlFullTrim(condition);
         }
     }
 
