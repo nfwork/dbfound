@@ -29,9 +29,7 @@ public class DSqlEngine {
         try {
             Expression expression = lruCache.get(sql);
             if (expression == NOT_SUPPORT_EXPRESSION) {
-                DSqlNotSupportException notSupportException = new DSqlNotSupportException();
-                notSupportException.setMessage("sql express is not support, sql: " + sql + ", param: " +param);
-                throw notSupportException;
+                throw new DSqlNotSupportException();
             }
             Object result = getExpressionValue(expression, param, provideName, context);
             if(result == null){
@@ -40,7 +38,7 @@ public class DSqlEngine {
                 return getBooleanValue(result);
             }
         }catch (DSqlNotSupportException exception){
-            exception.setMessage("sql express is not support, sql: " + sql + ", param: " +param);
+            exception.setMessage("sql grammar or sql param type is not supported, sql: " + sql + ", param: " + param);
             throw exception;
         }
     }
@@ -98,6 +96,7 @@ public class DSqlEngine {
         resolverMap.put(MinorThanEquals.class,new MinorThanEqualsResolver());
         resolverMap.put(LikeExpression.class,new LikeResolver());
         resolverMap.put(InExpression.class,new InResolver());
+        resolverMap.put(Between.class,new BetweenResolver());
 
         resolverMap.put(net.sf.jsqlparser.expression.Function.class, new FunctionResolver());
 
