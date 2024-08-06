@@ -2,7 +2,6 @@ package com.nfwork.dbfound.web.base;
 
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.CollisionException;
-import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,9 +22,7 @@ public class WebExceptionHandler {
 			if(exception.getCause() instanceof SQLException){
 				em = exception.getCause().getMessage();
 			}
-		}
-		if(DataUtil.isNull(em)){
-			em = exception.getClass().getName();
+			em =  exception.getClass().getName() +": " + em;
 		}
 		ResponseObject ro = new ResponseObject();
 		ro.setSuccess(false);

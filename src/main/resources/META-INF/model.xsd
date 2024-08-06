@@ -59,6 +59,13 @@
 					<xsd:attribute name="innerPath" />
 				</xsd:complexType>
 			</xsd:element>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="verifier">
+				<xsd:complexType>
+					<xsd:attribute name="express" />
+					<xsd:attribute name="message" />
+					<xsd:attribute name="code" />
+				</xsd:complexType>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="pagerSize" />
 		<xsd:attribute name="exportSize" />
