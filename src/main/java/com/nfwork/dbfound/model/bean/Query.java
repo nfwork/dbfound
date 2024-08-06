@@ -14,6 +14,7 @@ import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
+import com.nfwork.dbfound.exception.VerifyException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ObjectQueryAdapter;
@@ -36,6 +37,7 @@ public class Query extends SqlEntity {
 	private String name = "_default"; // query对象的名字
 	private Map<String, Param> params; // query对象对应参数
 	private Map<String, Filter> filters;
+	private final List<Verifier> verifiers = new ArrayList<>();
 	private String rootPath;
 	private String modelName;
 	private Integer queryTimeout;
@@ -109,6 +111,10 @@ public class Query extends SqlEntity {
 				String tmp = filters.values().stream().map(v->v.getCondition()+","+v.getExpress()).collect(Collectors.joining(","));
 				autoCreateParam(tmp,params);
 			}
+			if(!verifiers.isEmpty()){
+				String tmp = verifiers.stream().map(v->v.getMessage()+","+v.getExpress()).collect(Collectors.joining(","));
+				autoCreateParam(tmp,params);
+			}
 		} else {
 			super.doEndTag();
 		}
@@ -135,6 +141,8 @@ public class Query extends SqlEntity {
 		String provideName = ((Model)getParent()).getConnectionProvide(context, getConnectionProvide());
 
 		LogUtil.info("Query info (modelName:" + context.getCurrentModel() + ", queryName:" + name + ", provideName:"+provideName+")");
+
+		doVerify(params,context,provideName);
 
 		//获取querySql
 		String querySql = getQuerySql(context, params, provideName);
@@ -179,6 +187,15 @@ public class Query extends SqlEntity {
 		}
 
 		return ro;
+	}
+
+	private void doVerify( Map<String, Param> params, Context context, String provideName){
+		for (Verifier verifier : verifiers){
+			if(checkCondition(verifier.getExpress(), params, context ,provideName)){
+				String message = staticParamParse(verifier.getMessage(),params);
+				throw new VerifyException(message,verifier.getCode());
+			}
+		}
 	}
 
 	private Map<String, Param> cloneParams() {
@@ -621,6 +638,10 @@ public class Query extends SqlEntity {
 
 	public void setSql(Sql sql) {
 		this.sql = sql;
+	}
+
+	public List<Verifier> getVerifiers() {
+		return verifiers;
 	}
 
 	@Override
