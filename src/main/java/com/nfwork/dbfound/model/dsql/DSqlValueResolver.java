@@ -46,6 +46,12 @@ public abstract class DSqlValueResolver {
                 && (rightValue instanceof Number || rightValue instanceof String);
     }
 
+    protected boolean isBetweenSupport(Object value, Object start, Object end){
+        return  (value instanceof Number || value instanceof String)
+                && (start instanceof Number || start instanceof String)
+                 && (end instanceof Number || end instanceof String);
+    }
+
     protected double compareTo(Object leftValue, Object rightValue){
         if(leftValue instanceof Number || rightValue instanceof Number){
             double left = getDoubleValue(leftValue);
