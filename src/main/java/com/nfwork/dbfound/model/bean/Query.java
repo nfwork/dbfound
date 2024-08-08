@@ -17,7 +17,6 @@ import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.exception.VerifyException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
-import com.nfwork.dbfound.model.adapter.ObjectQueryAdapter;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.base.CountType;
@@ -53,7 +52,7 @@ public class Query extends SqlEntity {
 	private Integer maxPagerSize = 10000;
 	private Integer exportSize = 50 * 10000;
 	private String adapter;
-	private QueryAdapter queryAdapter;
+	private List<QueryAdapter<?>> queryAdapterList;
 	private String entity;
 	private Class entityClass;
 	private String currentPath;
@@ -69,11 +68,18 @@ public class Query extends SqlEntity {
 	@Override
 	public void doEndTag() {
 		if(DataUtil.isNotNull(adapter)){
-			try {
-				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
-			}catch (Exception exception){
-				String message = "queryAdapter init failed, please check the class "+ adapter+" is exists or it is implement QueryAdapter";
-				throw new DBFoundRuntimeException(message,exception);
+			adapter = adapter.replaceAll("\\s+", " ");
+			queryAdapterList = new ArrayList<>();
+			String [] names = adapter.split(" ");
+			for (String name : names){
+				if(!name.isEmpty()) {
+					try {
+						queryAdapterList.add(AdapterFactory.getQueryAdapter(Class.forName(name)));
+					}catch (Exception exception){
+						String message = "queryAdapter init failed, please check the class "+ name+" is exists or it is implement QueryAdapter";
+						throw new DBFoundRuntimeException(message,exception);
+					}
+				}
 			}
 		}
 		if(DataUtil.isNotNull(entity)){
@@ -85,10 +91,13 @@ public class Query extends SqlEntity {
 			}
 		}
 
-		if(queryAdapter !=null && !(queryAdapter instanceof ObjectQueryAdapter)) {
-			Class qClass = queryAdapter.getEntityClass();
-			if (qClass != null) {
-				entityClass = qClass;
+		if(queryAdapterList !=null) {
+			for(QueryAdapter<?> queryAdapter : queryAdapterList) {
+				Class qClass = queryAdapter.getEntityClass();
+				if (qClass != null && qClass != Object.class) {
+					entityClass = qClass;
+					break;
+				}
 			}
 		}
 
@@ -134,8 +143,10 @@ public class Query extends SqlEntity {
 			prePager(context);
 		}
 
-		if(queryAdapter != null){
-			queryAdapter.beforeQuery(context, params);
+		if(queryAdapterList != null){
+			for (QueryAdapter<?> queryAdapter: queryAdapterList){
+				queryAdapter.beforeQuery(context, params);
+			}
 		}
 
 		String provideName = ((Model)getParent()).getConnectionProvide(context, getConnectionProvide());
@@ -167,8 +178,10 @@ public class Query extends SqlEntity {
 				count.setDataSize(dataSize);
 				count.setTotalCounts(dataSize);
 
-				if (queryAdapter != null) {
-					queryAdapter.beforeCount(context, params, count);
+				if (queryAdapterList != null) {
+					for (QueryAdapter<?> queryAdapter: queryAdapterList) {
+						queryAdapter.beforeCount(context, params, count);
+					}
 				}
 
 				if (count.isExecuteCount()) {
@@ -182,8 +195,10 @@ public class Query extends SqlEntity {
 		ro.setMessage("success");
 		initOutParams(context, params, ro);
 
-		if(queryAdapter != null){
-			queryAdapter.afterQuery(context,params,ro);
+		if(queryAdapterList != null){
+			for (QueryAdapter queryAdapter: queryAdapterList) {
+				queryAdapter.afterQuery(context, params, ro);
+			}
 		}
 
 		return ro;
@@ -590,10 +605,6 @@ public class Query extends SqlEntity {
 
 	public void setAdapter(String adapter) {
 		this.adapter = adapter;
-	}
-
-	public QueryAdapter getQueryAdapter() {
-		return queryAdapter;
 	}
 
 	public String getEntity() {

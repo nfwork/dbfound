@@ -21,7 +21,7 @@ public class Execute extends SqlEntity {
 	private Map<String, Param> params; // query对象对应参数
 
 	private String adapter;
-	private ExecuteAdapter executeAdapter;
+	private List<ExecuteAdapter> executeAdapterList;
 	private String currentPath;
 
 	@Override
@@ -33,11 +33,16 @@ public class Execute extends SqlEntity {
 	@Override
 	public void doEndTag() {
 		if(DataUtil.isNotNull(adapter)){
-			try {
-				executeAdapter = AdapterFactory.getExecuteAdapter(Class.forName(adapter));
-			}catch (Exception exception){
-				String message = "ExecuteAdapter init failed, please check the class "+ adapter+" is exists or it is implement ExecuteAdapter";
-				throw new DBFoundRuntimeException(message, exception);
+			adapter = adapter.replaceAll("\\s+", " ");
+			executeAdapterList = new ArrayList<>();
+			String [] names = adapter.split(" ");
+			for (String name : names) {
+				try {
+					executeAdapterList.add(AdapterFactory.getExecuteAdapter(Class.forName(name)));
+				} catch (Exception exception) {
+					String message = "ExecuteAdapter init failed, please check the class " + name + " is exists or it is implement ExecuteAdapter";
+					throw new DBFoundRuntimeException(message, exception);
+				}
 			}
 		}
 		if (getParent() instanceof Model) {
@@ -67,8 +72,10 @@ public class Execute extends SqlEntity {
 			setParam(nfParam, context, currentPath, elCache);
 		}
 
-		if(executeAdapter!=null){
-			executeAdapter.beforeExecute(context,params);
+		if(executeAdapterList!=null){
+			for(ExecuteAdapter executeAdapter : executeAdapterList) {
+				executeAdapter.beforeExecute(context, params);
+			}
 		}
 
 		String provideName = ((Model)getParent()).getConnectionProvide(context, getConnectionProvide());
@@ -81,8 +88,10 @@ public class Execute extends SqlEntity {
 			}
 		}
 
-		if(executeAdapter!=null){
-			executeAdapter.afterExecute(context,params);
+		if(executeAdapterList!=null){
+			for(ExecuteAdapter executeAdapter : executeAdapterList) {
+				executeAdapter.afterExecute(context, params);
+			}
 		}
 
 		ResponseObject ro = new ResponseObject();
@@ -151,10 +160,6 @@ public class Execute extends SqlEntity {
 
 	public void setAdapter(String adapter) {
 		this.adapter = adapter;
-	}
-
-	public ExecuteAdapter getExecuteAdapter() {
-		return executeAdapter;
 	}
 
 	public String getCurrentPath() {
