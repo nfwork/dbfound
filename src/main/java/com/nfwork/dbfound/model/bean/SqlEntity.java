@@ -110,12 +110,12 @@ public abstract class SqlEntity extends Entity {
 	 * 自动补齐 Param定义
 	 * since 2.5.0
 	 */
-	public void autoCreateParam(String sql, Map<String, Param> params) {
+	protected void autoCreateParam(String sql, Map<String, Param> params, Map<String, Param> globalParams) {
 		Matcher m = paramPattern.matcher(sql);
 		while (m.find()) {
 			String paramName = m.group();
 			String name = paramName.substring(2, paramName.length() - 1).trim();
-			if(params.get(name)==null) {
+			if(params.get(name)==null && globalParams.get(name)==null) {
 				Param nfParam = new Param();
 				nfParam.setName(name);
 				nfParam.setDataType(DataType.UNKNOWN);
@@ -124,13 +124,14 @@ public abstract class SqlEntity extends Entity {
 		}
 	}
 
-	public void autoCreateParam(String sql, Entity entity) {
+	protected void autoCreateParam(String sql, Entity entity) {
 		if (DataUtil.isNull(sql))return;
 		Entity entityParent = entity.getParent();
 		while (entityParent != null){
 			if ( entityParent instanceof  Execute){
 				Execute execute = (Execute) entityParent;
-				autoCreateParam(sql, execute.getParams());
+				Model model = (Model) execute.getParent();
+				autoCreateParam(sql, execute.getParams(), model.getParams());
 				break;
 			}else{
 				entityParent = entityParent.getParent();

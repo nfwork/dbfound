@@ -101,19 +101,19 @@ public class Query extends SqlEntity {
 			params.putAll(filters);
 
 			if(DataUtil.isNotNull(sql)) {
-				autoCreateParam(sql.getSql(), params);
+				autoCreateParam(sql.getSql(), params, model.getParams());
 				if(!sql.getSqlPartList().isEmpty()){
 					String tmp = sql.getSqlPartList().stream().map(SqlPart::getPart).collect(Collectors.joining(","));
-					autoCreateParam(tmp,params);
+					autoCreateParam(tmp,params, model.getParams());
 				}
 			}
 			if(!filters.isEmpty()){
 				String tmp = filters.values().stream().map(v->v.getCondition()+","+v.getExpress()).collect(Collectors.joining(","));
-				autoCreateParam(tmp,params);
+				autoCreateParam(tmp,params, model.getParams());
 			}
 			if(!verifiers.isEmpty()){
 				String tmp = verifiers.stream().map(v->v.getMessage()+","+v.getExpress()).collect(Collectors.joining(","));
-				autoCreateParam(tmp,params);
+				autoCreateParam(tmp,params, model.getParams());
 			}
 		} else {
 			super.doEndTag();
