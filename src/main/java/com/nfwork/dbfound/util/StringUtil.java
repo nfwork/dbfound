@@ -1,8 +1,10 @@
 package com.nfwork.dbfound.util;
 
 import java.time.temporal.Temporal;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StringUtil {
 
@@ -46,6 +48,11 @@ public class StringUtil {
         char[] chars = str.toCharArray();
         chars[0] -= 32;
         return String.valueOf(chars);
+    }
+
+    public static List<String> splitToList(String value){
+        value = value.replaceAll("[\\s,;]+", ",");
+        return Arrays.stream(value.split(",")).filter(v-> !v.isEmpty()).collect(Collectors.toList());
     }
 
     public static String sqlFullTrim(String value){

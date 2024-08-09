@@ -10,6 +10,7 @@ import com.nfwork.dbfound.model.adapter.AdapterFactory;
 import com.nfwork.dbfound.model.adapter.ExecuteAdapter;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
+import com.nfwork.dbfound.util.StringUtil;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
 
@@ -33,10 +34,9 @@ public class Execute extends SqlEntity {
 	@Override
 	public void doEndTag() {
 		if(DataUtil.isNotNull(adapter)){
-			adapter = adapter.replaceAll("\\s+", " ");
 			executeAdapterList = new ArrayList<>();
-			String [] names = adapter.split(" ");
-			for (String name : names) {
+			List<String> nameList = StringUtil.splitToList(adapter);
+			for (String name : nameList) {
 				try {
 					executeAdapterList.add(AdapterFactory.getExecuteAdapter(Class.forName(name)));
 				} catch (Exception exception) {
