@@ -68,17 +68,14 @@ public class Query extends SqlEntity {
 	@Override
 	public void doEndTag() {
 		if(DataUtil.isNotNull(adapter)){
-			adapter = adapter.replaceAll("\\s+", " ");
 			queryAdapterList = new ArrayList<>();
-			String [] names = adapter.split(" ");
-			for (String name : names){
-				if(!name.isEmpty()) {
-					try {
-						queryAdapterList.add(AdapterFactory.getQueryAdapter(Class.forName(name)));
-					}catch (Exception exception){
-						String message = "queryAdapter init failed, please check the class "+ name+" is exists or it is implement QueryAdapter";
-						throw new DBFoundRuntimeException(message,exception);
-					}
+			List<String> nameList = StringUtil.splitToList(adapter);
+			for (String name : nameList){
+				try {
+					queryAdapterList.add(AdapterFactory.getQueryAdapter(Class.forName(name)));
+				}catch (Exception exception){
+					String message = "queryAdapter init failed, please check the class "+ name+" is exists or it is implement QueryAdapter";
+					throw new DBFoundRuntimeException(message,exception);
 				}
 			}
 		}

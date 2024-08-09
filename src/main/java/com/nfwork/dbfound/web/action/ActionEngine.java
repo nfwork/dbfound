@@ -9,6 +9,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.PackageScannerUtil;
+import com.nfwork.dbfound.util.StringUtil;
 import com.nfwork.dbfound.web.base.ActionController;
 import com.nfwork.dbfound.web.base.ActionMapping;
 import org.dom4j.Document;
@@ -24,9 +25,9 @@ public class ActionEngine {
 
 	public static void initMappings(String paths){
 		Set<String> classPaths = new LinkedHashSet<>();
-		String[] pathArray = paths.split(";");
-		for (String path : pathArray){
-			classPaths.addAll(PackageScannerUtil.getClassPaths(path.trim()));
+		List<String> pathList = StringUtil.splitToList(paths);
+		for (String path : pathList){
+			classPaths.addAll(PackageScannerUtil.getClassPaths(path));
 		}
 		int count =0;
 		for (String classPath : classPaths){
