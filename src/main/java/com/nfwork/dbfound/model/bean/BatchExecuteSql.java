@@ -31,6 +31,10 @@ public class BatchExecuteSql extends Sql {
 
 	private Set<String> paramNameSet;
 
+	private String item;
+
+	private String index;
+
 	private static  final  String BATCH_TEMPLATE_BEGIN = "#BATCH_TEMPLATE_BEGIN#";
 	private static  final  String BATCH_TEMPLATE_END = "#BATCH_TEMPLATE_END#";
 
@@ -139,19 +143,28 @@ public class BatchExecuteSql extends Sql {
 				if (param.isBatchAssign()){
 					Param newParam = (Param) param.cloneEntity();
 					newParam.setName(newParam.getName()+"_"+i);
+					if (exeParams.containsKey(newParam.getName())) {
+						throw new DBFoundRuntimeException("BatchExecuteSql create param failed, the param '" + newParam.getName() + "' already exists");
+					}
 					String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
-					newParam.setSourcePathHistory(exeSourcePath +"[" + i +"]."+ sp);
-
-					if(exeParams.containsKey(newParam.getName())){
-						throw new DBFoundRuntimeException("BatchExecuteSql create param failed, the param '" + newParam.getName() +"' already exists");
+					if (index != null && index.equals(sp)) {
+						newParam.setValue(i);
+						newParam.setSourcePathHistory("set_by_index");
+					}else {
+						String sph;
+						if (item != null && item.equals(sp)) {
+							sph = exeSourcePath + "[" + i + "]";
+						} else {
+							sph = exeSourcePath + "[" + i + "]." + sp;
+						}
+						newParam.setSourcePathHistory(sph);
+						Object value = context.getData(newParam.getSourcePathHistory(), elCache);
+						if ("".equals(value) && param.isEmptyAsNull()) {
+							value = null;
+						}
+						newParam.setValue(value);
 					}
-
-					Object value = context.getData(newParam.getSourcePathHistory(), elCache);
-					if("".equals(value) && param.isEmptyAsNull()){
-						value = null;
-					}
-					newParam.setValue(value);
-					exeParams.put(newParam.getName(),newParam);
+					exeParams.put(newParam.getName(), newParam);
 				}
 			}
 			eSql.append(realTmpSql.replace("##", i + ""));
@@ -239,5 +252,21 @@ public class BatchExecuteSql extends Sql {
 
 	public void setBatchSize(Integer batchSize) {
 		this.batchSize = batchSize;
+	}
+
+	public String getItem() {
+		return item;
+	}
+
+	public void setItem(String item) {
+		this.item = item;
+	}
+
+	public String getIndex() {
+		return index;
+	}
+
+	public void setIndex(String index) {
+		this.index = index;
 	}
 }
