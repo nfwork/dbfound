@@ -67,7 +67,7 @@ public class BatchExecuteSql extends Sql {
 			return;
 		}
 		beforeTmpSql = sql.substring(0,indexBegin);
-		tmpSql = sql.substring(indexBegin+BATCH_TEMPLATE_BEGIN.length(), indexEnd);
+		tmpSql = sql.substring(indexBegin+BATCH_TEMPLATE_BEGIN.length(), indexEnd).trim();
 		afterTmpSql = sql.substring(indexEnd + BATCH_TEMPLATE_END.length());
 
 		paramNameSet = new LinkedHashSet<>();
