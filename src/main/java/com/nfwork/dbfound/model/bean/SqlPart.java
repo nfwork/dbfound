@@ -76,7 +76,7 @@ public class SqlPart extends Sql {
             if(DataUtil.isNull(this.getSourcePath())){
                 throw new DBFoundRuntimeException("SqlPart the sourcePath can not be null when the type is FOR");
             }
-            if (type == SqlPartType.FOR && hasForChild()){
+            if (hasForChild()){
                 throw new DBFoundRuntimeException("for loop nesting is not supported in SqlPart");
             }
             return getForPart(context, params, provideName);
@@ -86,15 +86,6 @@ public class SqlPart extends Sql {
             }
             return getIfPart(context, params, provideName);
         }
-    }
-
-    private boolean hasForChild(){
-        for (SqlPart sqlPart : sqlPartList){
-            if(sqlPart.type == SqlPartType.FOR || sqlPart.hasForChild() ){
-               return true;
-            }
-        }
-        return false;
     }
 
     private String getForPartItem(){
