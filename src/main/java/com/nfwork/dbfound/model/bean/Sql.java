@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.model.base.SqlPartType;
 import com.nfwork.dbfound.util.StringUtil;
 import org.dom4j.Comment;
 import org.dom4j.Element;
@@ -48,6 +49,18 @@ public class Sql extends SqlEntity {
 			Query query = (Query) entity;
 			query.setSql(this);
 		}
+	}
+
+	protected boolean hasForChild(){
+		if(sqlPartList.isEmpty()){
+			return false;
+		}
+		for (SqlPart sqlPart : sqlPartList){
+			if(sqlPart.type == SqlPartType.FOR || sqlPart.hasForChild() ){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public String getSql() {
