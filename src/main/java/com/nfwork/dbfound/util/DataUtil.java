@@ -161,6 +161,18 @@ public class DataUtil {
 	}
 
 	public static boolean isArray(Object obj) {
-		return obj != null && obj.getClass().isArray();
+		if(obj == null){
+			return false;
+		}
+		return obj instanceof Object[]
+				|| obj instanceof int[]
+				|| obj instanceof long[]
+				|| obj instanceof float[]
+				|| obj instanceof double[]
+				|| obj instanceof short[]
+				|| obj instanceof boolean[]
+				|| obj instanceof char[]
+				|| obj instanceof byte[];
 	}
+
 }
