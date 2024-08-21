@@ -1,5 +1,11 @@
 package com.nfwork.dbfound.util;
 
+import java.time.temporal.Temporal;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class StringUtil {
 
     public static String underscoreToCamelCase(String underscore){
@@ -44,7 +50,12 @@ public class StringUtil {
         return String.valueOf(chars);
     }
 
-    public static String fullTrim(String value){
+    public static List<String> splitToList(String value){
+        value = value.replaceAll("[\\s,;]+", ",");
+        return Arrays.stream(value.split(",")).filter(v-> !v.isEmpty()).collect(Collectors.toList());
+    }
+
+    public static String sqlFullTrim(String value){
         if(value == null){
             return null;
         }
@@ -113,5 +124,93 @@ public class StringUtil {
             buffer.deleteCharAt(buffer.length()-1);
         }
         return buffer.toString();
+    }
+
+    public static String getParamSql(String sql, List<Object> exeParam){
+        char [] chars = sql.toCharArray();
+        int dyh = 0;
+        int syh = 0;
+
+        int paramIndex = 0;
+        int start = 0;
+        StringBuilder buffer = new StringBuilder();
+        for(int i=0; i< chars.length; i++){
+            if (chars[i] == '\'') {
+                if((i==0 || chars[i-1] != '\\') && syh==0) {
+                    dyh = dyh ^ 1;
+                }
+            }else if (chars[i] == '\"') {
+                if((i==0 || chars[i-1] != '\\') && dyh==0) {
+                    syh = syh ^ 1;
+                }
+            }else if(chars[i] == '?'){
+                if (dyh == 0 && syh ==0) {
+                    buffer.append(chars, start, i - start);
+                    start = i + 1;
+
+                    Object value = exeParam.get(paramIndex++);
+                    if(value == null){
+                        buffer.append("null");
+                    }else if (value instanceof Number){
+                        buffer.append(value);
+                    }else if(value instanceof String){
+                        String sValue = (String) value;
+                        if(sValue.contains("'")){
+                            sValue = sValue.replace("'","\\'");
+                        }
+                        buffer.append("'").append(sValue).append("'");
+                    } else if (value instanceof Date) {
+                        buffer.append("'").append(LocalDateUtil.formatDate((Date) value)).append("'");
+                    } else if (value instanceof Temporal) {
+                        buffer.append("'").append(LocalDateUtil.formatTemporal((Temporal) value)).append("'");
+                    } else if(value instanceof Boolean){
+                        buffer.append(value);
+                    } else{
+                        buffer.append("?");
+                    }
+                }
+            }
+        }
+        if(start < chars.length){
+            buffer.append(chars,start, chars.length-start);
+        }
+        return buffer.toString();
+    }
+
+    public static String addWhere(String sql){
+        if(isBeginAnd(sql)){
+            return "where" + sql.substring(3);
+        }
+        return "where " + sql;
+    }
+
+    public static String addAnd(String sql){
+        if(isBeginAnd(sql)){
+            return sql;
+        }
+        return "and " + sql;
+    }
+
+    private static boolean isBeginAnd(String value){
+        if(value.length() < 3){
+            return false;
+        }
+        char a0 = value.charAt(0);
+        if(a0 !='a' && a0 != 'A'){
+            return false;
+        }
+        char a1 = value.charAt(1);
+        if(a1 !='n' && a1 != 'N'){
+            return false;
+        }
+        char a2 = value.charAt(2);
+        if(a2 !='d' && a2 != 'D'){
+            return false;
+        }
+        if(value.length()==3){
+            return true;
+        }
+        char a3 = value.charAt(3);
+        return a3 == ' ' || a3 == '(';
     }
 }

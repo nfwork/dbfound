@@ -59,6 +59,13 @@
 					<xsd:attribute name="innerPath" />
 				</xsd:complexType>
 			</xsd:element>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="verifier">
+				<xsd:complexType>
+					<xsd:attribute name="express" />
+					<xsd:attribute name="message" />
+					<xsd:attribute name="code" />
+				</xsd:complexType>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="pagerSize" />
 		<xsd:attribute name="exportSize" />
@@ -381,6 +388,8 @@
 		<xsd:attribute name="cursor" />
 		<xsd:attribute name="sourcePath" />
 		<xsd:attribute name="cursorRootPath" />
+		<xsd:attribute name="item" />
+		<xsd:attribute name="index" />
 	</xsd:complexType>
 
 	<xsd:complexType name="executeSql_type" mixed="true">
@@ -431,6 +440,8 @@
 		<xsd:attribute name="sourcePath" />
 		<xsd:attribute name="affectedCountParam" />
 		<xsd:attribute name="batchSize" />
+		<xsd:attribute name="item" />
+		<xsd:attribute name="index" />
 	</xsd:complexType>
 
 	<xsd:complexType name="java_type">

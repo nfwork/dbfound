@@ -17,12 +17,12 @@ public class WebExceptionHandler {
 			code = ((CollisionException) exception).getCode();
 			LogUtil.info(exception.getClass().getName() + ": " + em);
 		} else {
-			String message = "Unexpected exception: "+exception.getClass().getName()+" caused, when request url: "+request.getRequestURI();
+			String message = "an exception: "+exception.getClass().getName()+" caused, when request url: "+request.getRequestURI();
 			LogUtil.error(message, exception);
 			if(exception.getCause() instanceof SQLException){
 				em = exception.getCause().getMessage();
 			}
-			em = message + ", message: " + em;
+			em =  exception.getClass().getName() +": " + em;
 		}
 		ResponseObject ro = new ResponseObject();
 		ro.setSuccess(false);

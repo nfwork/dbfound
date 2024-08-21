@@ -46,7 +46,7 @@ public class ExecuteSql extends Sql {
 		}
 
 		String executeSql;
-		if(!sqlPartList.isEmpty()){
+		if(hasForChild()){
 			params = new LinkedHashMap<>(params);
 			executeSql = getSqlPartSql(params,context,provideName);
 		}else{

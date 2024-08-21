@@ -42,7 +42,7 @@ public class SqlPart extends Sql {
     public void doStartTag(Element element) {
         super.doStartTag(element);
         if(condition != null){
-            condition = StringUtil.fullTrim(condition);
+            condition = StringUtil.sqlFullTrim(condition);
         }
     }
 
@@ -76,7 +76,7 @@ public class SqlPart extends Sql {
             if(DataUtil.isNull(this.getSourcePath())){
                 throw new DBFoundRuntimeException("SqlPart the sourcePath can not be null when the type is FOR");
             }
-            if (type == SqlPartType.FOR && hasForChild()){
+            if (hasForChild()){
                 throw new DBFoundRuntimeException("for loop nesting is not supported in SqlPart");
             }
             return getForPart(context, params, provideName);
@@ -88,13 +88,20 @@ public class SqlPart extends Sql {
         }
     }
 
-    private boolean hasForChild(){
-        for (SqlPart sqlPart : sqlPartList){
-            if(sqlPart.type == SqlPartType.FOR || sqlPart.hasForChild() ){
-               return true;
+    private String getForPartItem(){
+        Entity entity = this;
+        while (true){
+            entity = entity.getParent();
+            if (entity instanceof SqlPart) {
+                SqlPart sqlPart = (SqlPart) entity;
+                if (sqlPart.type == SqlPartType.FOR) {
+                    return sqlPart.getItem();
+                }
+            }else{
+                break;
             }
         }
-        return false;
+        return null;
     }
 
     private String getForPart(Context context, Map<String, Param> params, String provideName) {
@@ -126,59 +133,67 @@ public class SqlPart extends Sql {
         }
 
         int appendCount = 0;
-        for (int i =0; i< dataSize; i++){
-            context.setData("request._dbfoundForLoopIndex", i);
-            for (String paramName : paramNameSet){
-                Param param = params.get(paramName);
-                if (param.isBatchAssign()){
-                    String newParamName = param.getName()+"_"+i;
-                    String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
-                    String sph;
-                    if(item !=null && item.equals(sp)){
-                        sph = exeSourcePath +"[" + i +"]";
-                    }else{
-                        sph = exeSourcePath +"[" + i +"]."+ sp;
-                    }
+        String currentPath = context.getCurrentPath();
+        try {
+            for (int i = 0; i < dataSize; i++) {
+                context.getRequestDatas().put("_dbfoundForLoopIndex", i);
+                String forPath = exeSourcePath + "[" + i + "]";
+                context.setCurrentPath(forPath);
 
-                    Param existsParam = params.get(newParamName);
-                    if(existsParam != null) {
-                        if(sph.equals(existsParam.getSourcePathHistory())){
-                            continue;
-                        }else{
-                            throw new DBFoundRuntimeException("SqlPart create param failed, the param '" + newParamName +"' already exists of sourcePath '" + existsParam.getSourcePathHistory() + "'");
+                for (String paramName : paramNameSet) {
+                    Param param = params.get(paramName);
+                    if (param.isBatchAssign()) {
+                        String newParamName = param.getName() + "_" + i;
+                        String sp = DataUtil.isNull(param.getSourcePath()) ? param.getName() : param.getSourcePath();
+                        String sph;
+                        if (item != null && item.equals(sp)) {
+                            sph = forPath;
+                        } else {
+                            sph = forPath + "." + sp;
                         }
-                    }
 
-                    Param newParam = (Param) param.cloneEntity();
-                    newParam.setName(newParamName);
-                    newParam.setSourcePathHistory(sph);
-
-                    if(index !=null && index.equals(sp)){
-                        newParam.setValue(i);
-                        newParam.setSourcePathHistory("set_by_index");
-                    }else{
-                        Object value = context.getData(newParam.getSourcePathHistory(), elCache);
-                        if("".equals(value) && param.isEmptyAsNull()){
-                            value = null;
+                        Param existsParam = params.get(newParamName);
+                        if (existsParam != null) {
+                            if (sph.equals(existsParam.getSourcePathHistory())) {
+                                continue;
+                            } else {
+                                throw new DBFoundRuntimeException("SqlPart create param failed, the param '" + newParamName + "' already exists of sourcePath '" + existsParam.getSourcePathHistory() + "'");
+                            }
                         }
-                        newParam.setValue(value);
+
+                        Param newParam = (Param) param.cloneEntity();
+                        newParam.setName(newParamName);
+                        newParam.setSourcePathHistory(sph);
+
+                        if (index != null && index.equals(sp)) {
+                            newParam.setValue(i);
+                            newParam.setSourcePathHistory("set_by_index");
+                        } else {
+                            Object value = context.getData(newParam.getSourcePathHistory(), elCache);
+                            if ("".equals(value) && param.isEmptyAsNull()) {
+                                value = null;
+                            }
+                            newParam.setValue(value);
+                        }
+                        params.put(newParam.getName(), newParam);
                     }
-                    params.put(newParam.getName(), newParam);
+                }
+
+                String partSql = sql;
+                if (!sqlPartList.isEmpty()) {
+                    partSql = getSqlPartSql(params, context, provideName);
+                }
+                partSql = getIndexParamSql(partSql, params, i);
+
+                if (!partSql.isEmpty()) {
+                    eSql.append(partSql).append(separator);
+                    appendCount++;
                 }
             }
-
-            String partSql = sql;
-            if(!sqlPartList.isEmpty()){
-                partSql = getSqlPartSql(params,context, provideName);
-            }
-            partSql = getIndexParamSql(partSql, params, i);
-
-            if(!partSql.isEmpty()) {
-                eSql.append(partSql).append(separator);
-                appendCount++;
-            }
+        }finally {
+            context.getRequestDatas().remove("_dbfoundForLoopIndex");
+            context.setCurrentPath(currentPath);
         }
-        context.setData("request._dbfoundForLoopIndex", null);
 
         if(appendCount>0) {
             eSql.delete(eSql.length() - separator.length(), eSql.length());
@@ -191,9 +206,10 @@ public class SqlPart extends Sql {
 
     private String getIfPart(Context context, Map<String, Param> params, String provideName){
         boolean isOK = false;
+        Integer forLoopIndex = DataUtil.intValue(context.getRequestDatas().get("_dbfoundForLoopIndex"));
+
         if(DataUtil.isNotNull(condition)){
             String conditionSql = condition;
-            Integer forLoopIndex = context.getInt("request._dbfoundForLoopIndex");
             if(forLoopIndex != null){
                 conditionSql = getIndexParamSql(conditionSql,params, forLoopIndex);
             }
@@ -203,7 +219,15 @@ public class SqlPart extends Sql {
         }else if(DataUtil.isNotNull(sourcePath)) {
             String exeSourcePath = sourcePath;
             if (!ELEngine.isAbsolutePath(exeSourcePath)) {
-                exeSourcePath = context.getCurrentPath() + "." + exeSourcePath;
+                String item = null;
+                if(forLoopIndex != null){
+                    item = getForPartItem();
+                }
+                if(sourcePath.equals(item)) {
+                    exeSourcePath = context.getCurrentPath();
+                }else{
+                    exeSourcePath = context.getCurrentPath() + "." + exeSourcePath;
+                }
             }
             Object data = context.getData(exeSourcePath);
             if (DataUtil.isNotNull(data) && DataUtil.getDataLength(data) != 0) {

@@ -28,6 +28,10 @@ public class BatchSql extends Sqls {
 
 	private String initError;
 
+	private String item;
+
+	private String index;
+
 	@Override
 	public void doEndTag() {
 		super.doEndTag();
@@ -36,7 +40,7 @@ public class BatchSql extends Sqls {
 			return;
 		}
 		if(DataUtil.isNotNull(cursor)) {
-			cursor = StringUtil.fullTrim(cursor);
+			cursor = StringUtil.sqlFullTrim(cursor);
 			autoCreateParam(cursor, this);
 		}
 	}
@@ -103,12 +107,23 @@ public class BatchSql extends Sqls {
 
 			for (Param param : paramList){
 				String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
-				param.setSourcePathHistory(currentPath +"."+sp);
-				Object value = context.getData(param.getSourcePathHistory(), elCache);
-				if("".equals(value) && param.isEmptyAsNull()){
-					value = null;
+				if (index != null && index.equals(sp)) {
+					param.setValue(i);
+					param.setSourcePathHistory("set_by_index");
+				}else {
+					String sph;
+					if (item != null && item.equals(sp)) {
+						sph = currentPath;
+					} else {
+						sph = currentPath + "." + sp;
+					}
+					param.setSourcePathHistory(sph);
+					Object value = context.getData(param.getSourcePathHistory(), elCache);
+					if ("".equals(value) && param.isEmptyAsNull()) {
+						value = null;
+					}
+					param.setValue(value);
 				}
-				param.setValue(value);
 			}
 			for (SqlEntity sql : sqlList) {
 				sql.execute(context, params, provideName);
@@ -186,5 +201,21 @@ public class BatchSql extends Sqls {
 
 	public void setCursorRootPath(String cursorRootPath) {
 		this.cursorRootPath = cursorRootPath;
+	}
+
+	public String getItem() {
+		return item;
+	}
+
+	public void setItem(String item) {
+		this.item = item;
+	}
+
+	public String getIndex() {
+		return index;
+	}
+
+	public void setIndex(String index) {
+		this.index = index;
 	}
 }

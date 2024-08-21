@@ -27,8 +27,11 @@ public class LikeResolver extends DSqlValueResolver {
                 right = right.toLowerCase();
             }
             right = right.replace("%",".*");
-
-            return left.matches(right);
+            boolean result = left.matches(right);
+            if(likeExpression.isNot()){
+                result = !result;
+            }
+            return result;
         }else{
             throw new DSqlNotSupportException();
         }

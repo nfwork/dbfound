@@ -300,6 +300,43 @@ public class DSqlTest {
 
     }
 
+
+    @Test
+    public void testBetween() {
+        Context context = new Context();
+        List<Object> list = new ArrayList<>();
+
+        boolean result = DSqlEngine.checkWhenSql("10 between 0 and 100", list, "", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("110 between 0 and 100", list, "", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("111 not between 0 and 100", list, "", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("11 not between 0 and 100", list, "", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("null between 0 and 100", list, "", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("null not between 0 and 100", list, "", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("111 not between 0 and null", list, "", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("11 not between null and 100", list, "", context);
+        assert Boolean.FALSE.equals(result);
+
+        result = DSqlEngine.checkWhenSql(" 'a' between 'a' and 'f' ", list, "", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql(" 'x' between 'a' and 'f' ", list, "", context);
+        assert Boolean.FALSE.equals(result);
+    }
+
     @Test
     public void test() {
         System.out.println(331d/447);

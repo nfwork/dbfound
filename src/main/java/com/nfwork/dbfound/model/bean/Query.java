@@ -14,9 +14,9 @@ import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
+import com.nfwork.dbfound.exception.VerifyException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.adapter.AdapterFactory;
-import com.nfwork.dbfound.model.adapter.ObjectQueryAdapter;
 import com.nfwork.dbfound.model.adapter.QueryAdapter;
 import com.nfwork.dbfound.model.base.Count;
 import com.nfwork.dbfound.model.base.CountType;
@@ -36,6 +36,7 @@ public class Query extends SqlEntity {
 	private String name = "_default"; // query对象的名字
 	private Map<String, Param> params; // query对象对应参数
 	private Map<String, Filter> filters;
+	private final List<Verifier> verifiers = new ArrayList<>();
 	private String rootPath;
 	private String modelName;
 	private Integer queryTimeout;
@@ -51,7 +52,7 @@ public class Query extends SqlEntity {
 	private Integer maxPagerSize = 10000;
 	private Integer exportSize = 50 * 10000;
 	private String adapter;
-	private QueryAdapter queryAdapter;
+	private List<QueryAdapter<?>> queryAdapterList;
 	private String entity;
 	private Class entityClass;
 	private String currentPath;
@@ -67,11 +68,15 @@ public class Query extends SqlEntity {
 	@Override
 	public void doEndTag() {
 		if(DataUtil.isNotNull(adapter)){
-			try {
-				queryAdapter = AdapterFactory.getQueryAdapter( Class.forName(adapter));
-			}catch (Exception exception){
-				String message = "queryAdapter init failed, please check the class "+ adapter+" is exists or it is implement QueryAdapter";
-				throw new DBFoundRuntimeException(message,exception);
+			queryAdapterList = new ArrayList<>();
+			List<String> nameList = StringUtil.splitToList(adapter);
+			for (String name : nameList){
+				try {
+					queryAdapterList.add(AdapterFactory.getQueryAdapter(Class.forName(name)));
+				}catch (Exception exception){
+					String message = "queryAdapter init failed, please check the class "+ name+" is exists or it is implement QueryAdapter";
+					throw new DBFoundRuntimeException(message,exception);
+				}
 			}
 		}
 		if(DataUtil.isNotNull(entity)){
@@ -83,10 +88,13 @@ public class Query extends SqlEntity {
 			}
 		}
 
-		if(queryAdapter !=null && !(queryAdapter instanceof ObjectQueryAdapter)) {
-			Class qClass = queryAdapter.getEntityClass();
-			if (qClass != null) {
-				entityClass = qClass;
+		if(queryAdapterList !=null) {
+			for(QueryAdapter<?> queryAdapter : queryAdapterList) {
+				Class qClass = queryAdapter.getEntityClass();
+				if (qClass != null && qClass != Object.class) {
+					entityClass = qClass;
+					break;
+				}
 			}
 		}
 
@@ -99,15 +107,19 @@ public class Query extends SqlEntity {
 			params.putAll(filters);
 
 			if(DataUtil.isNotNull(sql)) {
-				autoCreateParam(sql.getSql(), params);
+				autoCreateParam(sql.getSql(), params, model.getParams());
 				if(!sql.getSqlPartList().isEmpty()){
 					String tmp = sql.getSqlPartList().stream().map(SqlPart::getPart).collect(Collectors.joining(","));
-					autoCreateParam(tmp,params);
+					autoCreateParam(tmp,params, model.getParams());
 				}
 			}
 			if(!filters.isEmpty()){
 				String tmp = filters.values().stream().map(v->v.getCondition()+","+v.getExpress()).collect(Collectors.joining(","));
-				autoCreateParam(tmp,params);
+				autoCreateParam(tmp,params, model.getParams());
+			}
+			if(!verifiers.isEmpty()){
+				String tmp = verifiers.stream().map(v->v.getMessage()+","+v.getExpress()).collect(Collectors.joining(","));
+				autoCreateParam(tmp,params, model.getParams());
 			}
 		} else {
 			super.doEndTag();
@@ -128,13 +140,17 @@ public class Query extends SqlEntity {
 			prePager(context);
 		}
 
-		if(queryAdapter != null){
-			queryAdapter.beforeQuery(context, params);
+		if(queryAdapterList != null){
+			for (QueryAdapter<?> queryAdapter: queryAdapterList){
+				queryAdapter.beforeQuery(context, params);
+			}
 		}
 
 		String provideName = ((Model)getParent()).getConnectionProvide(context, getConnectionProvide());
 
 		LogUtil.info("Query info (modelName:" + context.getCurrentModel() + ", queryName:" + name + ", provideName:"+provideName+")");
+
+		doVerify(params,context,provideName);
 
 		//获取querySql
 		String querySql = getQuerySql(context, params, provideName);
@@ -159,8 +175,10 @@ public class Query extends SqlEntity {
 				count.setDataSize(dataSize);
 				count.setTotalCounts(dataSize);
 
-				if (queryAdapter != null) {
-					queryAdapter.beforeCount(context, params, count);
+				if (queryAdapterList != null) {
+					for (QueryAdapter<?> queryAdapter: queryAdapterList) {
+						queryAdapter.beforeCount(context, params, count);
+					}
 				}
 
 				if (count.isExecuteCount()) {
@@ -174,11 +192,22 @@ public class Query extends SqlEntity {
 		ro.setMessage("success");
 		initOutParams(context, params, ro);
 
-		if(queryAdapter != null){
-			queryAdapter.afterQuery(context,params,ro);
+		if(queryAdapterList != null){
+			for (QueryAdapter queryAdapter: queryAdapterList) {
+				queryAdapter.afterQuery(context, params, ro);
+			}
 		}
 
 		return ro;
+	}
+
+	private void doVerify( Map<String, Param> params, Context context, String provideName){
+		for (Verifier verifier : verifiers){
+			if(checkCondition(verifier.getExpress(), params, context ,provideName)){
+				String message = staticParamParse(verifier.getMessage(),params);
+				throw new VerifyException(message,verifier.getCode());
+			}
+		}
 	}
 
 	private Map<String, Param> cloneParams() {
@@ -279,7 +308,7 @@ public class Query extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.log("querySql",eSql, params.values(),exeParam);
+			LogUtil.logSql("querySql",eSql, params.values(),exeParam);
 		}
 		return (List<T>) data;
 	}
@@ -349,10 +378,10 @@ public class Query extends SqlEntity {
 						partValue = Matcher.quoteReplacement(partValue);
 						if(sqlPart.isAutoCompletion() && followType != 0 ){
 							if(followType == 1 ){
-								partValue = "where " + partValue;
+								partValue = StringUtil.addWhere(partValue);
 								followType = 2;
 							}else {
-								partValue = "and " + partValue;
+								partValue = StringUtil.addAnd(partValue);
 							}
 						}else {
 							if(partValue.contains(WHERE_CLAUSE)) {
@@ -484,7 +513,7 @@ public class Query extends SqlEntity {
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.countSqlLog("Execute countSql: ", ceSql, exeParam);
+			LogUtil.logCountSql(ceSql, exeParam);
 		}
 	}
 
@@ -575,10 +604,6 @@ public class Query extends SqlEntity {
 		this.adapter = adapter;
 	}
 
-	public QueryAdapter getQueryAdapter() {
-		return queryAdapter;
-	}
-
 	public String getEntity() {
 		return entity;
 	}
@@ -621,6 +646,10 @@ public class Query extends SqlEntity {
 
 	public void setSql(Sql sql) {
 		this.sql = sql;
+	}
+
+	public List<Verifier> getVerifiers() {
+		return verifiers;
 	}
 
 	@Override
