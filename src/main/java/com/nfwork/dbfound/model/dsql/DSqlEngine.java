@@ -21,7 +21,7 @@ public class DSqlEngine {
 
     private static final LruCache<String,Expression> lruCache = new LruCache<>(5000, DSqlEngine::getExpression);
 
-    private static final Map<Class<? extends Expression>,DSqlValueResolver> resolverMap = new ConcurrentHashMap<>();
+    private static final Map<String,DSqlValueResolver> resolverMap = new ConcurrentHashMap<>();
 
     private static final Expression NOT_SUPPORT_EXPRESSION = new Column();
 
@@ -54,7 +54,7 @@ public class DSqlEngine {
     }
 
     static Object getExpressionValue(Expression expression , List<Object> param, String provideName, Context context){
-        DSqlValueResolver resolver = resolverMap.get(expression.getClass());
+        DSqlValueResolver resolver = resolverMap.get(expression.getClass().getName());
         if(resolver == null){
             throw new DSqlNotSupportException();
         }
@@ -76,36 +76,36 @@ public class DSqlEngine {
     }
 
     static {
-        resolverMap.put(StringValue.class, new StringValueResolver());
-        resolverMap.put(LongValue.class, new LongValueResolver());
-        resolverMap.put(NullValue.class, new NullValueResolver());
-        resolverMap.put(DoubleValue.class,new DoubleValueResolver());
-        resolverMap.put(JdbcParameter.class,new JdbcParameterResolver());
-        resolverMap.put(Column.class,new ColumnResolver());
+        resolverMap.put(StringValue.class.getName(), new StringValueResolver());
+        resolverMap.put(LongValue.class.getName(), new LongValueResolver());
+        resolverMap.put(NullValue.class.getName(), new NullValueResolver());
+        resolverMap.put(DoubleValue.class.getName(),new DoubleValueResolver());
+        resolverMap.put(JdbcParameter.class.getName(),new JdbcParameterResolver());
+        resolverMap.put(Column.class.getName(),new ColumnResolver());
 
-        resolverMap.put(NotExpression.class, new NotExpressionResolver());
-        resolverMap.put(AndExpression.class,new AndExpressionResolver());
-        resolverMap.put(OrExpression.class, new OrExpressionResolver());
-        resolverMap.put(IsNullExpression.class, new IsNullExpressionResolver());
+        resolverMap.put(NotExpression.class.getName(), new NotExpressionResolver());
+        resolverMap.put(AndExpression.class.getName(),new AndExpressionResolver());
+        resolverMap.put(OrExpression.class.getName(), new OrExpressionResolver());
+        resolverMap.put(IsNullExpression.class.getName(), new IsNullExpressionResolver());
 
-        resolverMap.put(EqualsTo.class,new EqualsToResolver());
-        resolverMap.put(NotEqualsTo.class, new NotEqualsToResolver());
-        resolverMap.put(GreaterThan.class,new GreaterThanResolver());
-        resolverMap.put(GreaterThanEquals.class,new GreaterThanEqualsResolver());
-        resolverMap.put(MinorThan.class,new MinorThanResolver());
-        resolverMap.put(MinorThanEquals.class,new MinorThanEqualsResolver());
-        resolverMap.put(LikeExpression.class,new LikeResolver());
-        resolverMap.put(InExpression.class,new InResolver());
-        resolverMap.put(Between.class,new BetweenResolver());
+        resolverMap.put(EqualsTo.class.getName(),new EqualsToResolver());
+        resolverMap.put(NotEqualsTo.class.getName(), new NotEqualsToResolver());
+        resolverMap.put(GreaterThan.class.getName(),new GreaterThanResolver());
+        resolverMap.put(GreaterThanEquals.class.getName(),new GreaterThanEqualsResolver());
+        resolverMap.put(MinorThan.class.getName(),new MinorThanResolver());
+        resolverMap.put(MinorThanEquals.class.getName(),new MinorThanEqualsResolver());
+        resolverMap.put(LikeExpression.class.getName(),new LikeResolver());
+        resolverMap.put(InExpression.class.getName(),new InResolver());
+        resolverMap.put(Between.class.getName(),new BetweenResolver());
 
-        resolverMap.put(net.sf.jsqlparser.expression.Function.class, new FunctionResolver());
+        resolverMap.put(Function.class.getName(), new FunctionResolver());
 
-        resolverMap.put(Multiplication.class,new MultiplicationResolver());
-        resolverMap.put(Division.class, new DivisionResolver());
-        resolverMap.put(Addition.class,new AdditionResolver());
-        resolverMap.put(Subtraction.class,new SubtractionResolver());
-        resolverMap.put(Modulo.class, new ModuloResolver());
-        resolverMap.put(SignedExpression.class, new SignedExpressionResolver());
-        resolverMap.put(Parenthesis.class, new ParenthesisResolver());
+        resolverMap.put(Multiplication.class.getName(),new MultiplicationResolver());
+        resolverMap.put(Division.class.getName(), new DivisionResolver());
+        resolverMap.put(Addition.class.getName(),new AdditionResolver());
+        resolverMap.put(Subtraction.class.getName(),new SubtractionResolver());
+        resolverMap.put(Modulo.class.getName(), new ModuloResolver());
+        resolverMap.put(SignedExpression.class.getName(), new SignedExpressionResolver());
+        resolverMap.put(Parenthesis.class.getName(), new ParenthesisResolver());
     }
 }

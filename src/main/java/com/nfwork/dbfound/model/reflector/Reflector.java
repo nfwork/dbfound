@@ -380,7 +380,7 @@ public class Reflector {
 		return getMethods.containsKey(propertyName);
 	}
 
-	private static final ConcurrentMap<Class<?>, Future<Reflector>> REFLECTOR_MAP = new ConcurrentHashMap<>();
+	private static final ConcurrentMap<String, Future<Reflector>> REFLECTOR_MAP = new ConcurrentHashMap<>();
 
 	/**
 	 * Gets an instance of ClassInfo for the specified class.
@@ -391,12 +391,12 @@ public class Reflector {
 	 */
 	public static Reflector forClass(final Class<?> clazz) {
 
-		Future<Reflector> future = REFLECTOR_MAP.get(clazz);
+		Future<Reflector> future = REFLECTOR_MAP.get(clazz.getName());
 		if (future == null) {
 			Callable<Reflector> callable = () -> new Reflector(clazz);
 			FutureTask<Reflector> task = new FutureTask<>(callable);
 
-			future = REFLECTOR_MAP.putIfAbsent(clazz, task);
+			future = REFLECTOR_MAP.putIfAbsent(clazz.getName(), task);
 			if (future == null) {
 				future = task;
 				task.run();
@@ -406,7 +406,7 @@ public class Reflector {
 		try {
 			return future.get();
 		} catch (Exception e) {
-			REFLECTOR_MAP.remove(clazz);
+			REFLECTOR_MAP.remove(clazz.getName());
 			throw new DBFoundPackageException(e);
 		}
 	}
