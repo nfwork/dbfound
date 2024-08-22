@@ -46,11 +46,13 @@ public class ExecuteSql extends Sql {
 		}
 
 		String executeSql;
-		if(hasForChild()){
+		if(hasForChild()) {
 			params = new LinkedHashMap<>(params);
-			executeSql = getSqlPartSql(params,context,provideName);
-		}else{
+		}
+		if(sqlPartList.isEmpty()){
 			executeSql = sql;
+		}else{
+			executeSql = getSqlPartSql(params,context,provideName);
 		}
 
 		Connection conn = context.getConn(provideName);

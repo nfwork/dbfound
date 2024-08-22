@@ -41,11 +41,13 @@ public class QuerySql extends Sql {
 			throw new DBFoundRuntimeException(initError);
 		}
 		String querySql;
-		if(hasForChild()){
+		if(hasForChild()) {
 			params = new LinkedHashMap<>(params);
-			querySql = getSqlPartSql(params,context,provideName);
-		}else{
+		}
+		if(sqlPartList.isEmpty()){
 			querySql = sql;
+		}else{
+			querySql = getSqlPartSql(params,context,provideName);
 		}
 
 		Connection conn = context.getConn(provideName);
