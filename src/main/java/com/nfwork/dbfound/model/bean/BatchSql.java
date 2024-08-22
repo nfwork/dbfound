@@ -127,8 +127,13 @@ public class BatchSql extends Sqls {
 					if ("".equals(value) && param.isEmptyAsNull()) {
 						value = null;
 					}
+
+					if(value == null){
+						param.setValue(param.getDefaultValue());
+					}else{
+						param.setValue(value);
+					}
 					param.setSourcePathHistory(sph);
-					param.setValue(value);
 				}
 			}
 			for (SqlEntity sql : sqlList) {

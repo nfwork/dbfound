@@ -166,8 +166,13 @@ public class BatchExecuteSql extends Sql {
 						if ("".equals(value) && param.isEmptyAsNull()) {
 							value = null;
 						}
+
+						if(value == null){
+							newParam.setValue(newParam.getDefaultValue());
+						}else{
+							newParam.setValue(value);
+						}
 						newParam.setSourcePathHistory(sph);
-						newParam.setValue(value);
 					}
 					exeParams.put(newParam.getName(), newParam);
 				}

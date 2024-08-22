@@ -18,6 +18,7 @@ public class Param extends Entity implements Cloneable{
 	private boolean autoSession = false;
 	private boolean autoCookie = false;
 	private Object value;
+	private Object defaultValue;
 	private String sourcePath;
 	private String sourcePathHistory;
 	private String scope;
@@ -41,6 +42,7 @@ public class Param extends Entity implements Cloneable{
 			Query query = (Query) getParent();
 			query.getParams().put(name, this);
 		}
+		this.defaultValue = value;
 	}
 
 	public Object cloneEntity() {
@@ -213,5 +215,9 @@ public class Param extends Entity implements Cloneable{
 
 	public void setEmptyAsNull(boolean emptyAsNull) {
 		this.emptyAsNull = emptyAsNull;
+	}
+
+	public Object getDefaultValue() {
+		return defaultValue;
 	}
 }

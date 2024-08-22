@@ -180,7 +180,11 @@ public class SqlPart extends Sql {
                                     throw new DBFoundRuntimeException("SqlPart create param failed, the param '" + newParamName + "' already exists of sourcePath '" + existsParam.getSourcePathHistory() + "'");
                                 }
                             }
-                            newParam.setValue(value);
+                            if(value == null){
+                                newParam.setValue(newParam.getDefaultValue());
+                            }else{
+                                newParam.setValue(value);
+                            }
                             newParam.setSourcePathHistory(sph);
                         }
                         params.put(newParam.getName(), newParam);
