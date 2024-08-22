@@ -1,6 +1,8 @@
 package com.nfwork.dbfound.model;
 
 import java.util.*;
+
+import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.QueryResponseObject;
@@ -165,7 +167,9 @@ public class ModelEngine {
 
 			ResponseObject ro = null;
 
-			int size = context.getDataLength(batchExecutePath);
+			Object rootData = context.getData(batchExecutePath);
+			int size =  DataUtil.getDataLength(rootData);
+
 			if (size > 0) {
 				Model model = modelCache.getModel(modelName);
 
@@ -176,8 +180,8 @@ public class ModelEngine {
 				for (int j = 0; j < size; j++) {
 					String en ;
 					String currentPath = batchExecutePath + "[" + j + "]";
-					// 把currentPath对象放入到 当前线程里
 					context.setCurrentPath(currentPath);
+					Object currentData = DBFoundEL.getDataByIndex(j, rootData);
 
 					if ("addOrUpdate".equals(executeName)) {
 						String status = context.getString(currentPath + "._status");
@@ -197,7 +201,7 @@ public class ModelEngine {
 					if (execute == null) {
 						throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
 					}
-					ro = execute.doExecute(context, currentPath, elCache);
+					ro = execute.doExecute(context, currentPath, currentData, elCache);
 				}
 			}
 			if(ro == null){
@@ -252,7 +256,8 @@ public class ModelEngine {
 			context.setCurrentModel(modelName);
 
 			Map<String, Object> elCache = new HashMap<>();
-			return execute.doExecute(context, currentPath, elCache);
+			Object currentData = context.getData(currentPath);
+			return execute.doExecute(context, currentPath, currentData, elCache);
 		} finally {
 			context.modelDeepReduce();
 			if(context.onTopModelDeep()) {

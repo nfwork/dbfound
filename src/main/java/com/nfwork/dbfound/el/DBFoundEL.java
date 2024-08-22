@@ -66,7 +66,13 @@ public class DBFoundEL extends PropertyTransfer{
 		if (express == null) {
 			return null;
 		}
-		String[] d = express.split("\\.");
+
+		String[] d;
+		if(express.contains(".")) {
+			d = express.split("\\.");
+		}else{
+			d = new String[]{express};
+		}
 
 		for (int i = 0; i < d.length; i++) {
 			if (currentObject == null) {

@@ -131,8 +131,9 @@ public class Query extends SqlEntity {
 		// 初始化查询参数param
 		Map<String, Object> elCache = new HashMap<>();
 		Map<String, Param> params = cloneParams();
+		Object currentData = context.getData(currentPath);
 		for (Param nfParam : params.values()) {
-			setParam(nfParam, context, currentPath, elCache);
+			setParam(nfParam, context, currentPath, currentData,elCache);
 		}
 
 		// 设想分页参数
