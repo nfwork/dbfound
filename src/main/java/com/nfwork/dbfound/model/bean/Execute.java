@@ -64,12 +64,12 @@ public class Execute extends SqlEntity {
 		return params;
 	}
 
-	public ResponseObject doExecute(Context context, String currentPath, Map<String, Object> elCache) {
+	public ResponseObject doExecute(Context context, String currentPath, Object currentData, Map<String, Object> elCache) {
 		Map<String, Param> params = cloneParams();
 
 		// 设想sql查询参数
 		for (Param nfParam : params.values()) {
-			setParam(nfParam, context, currentPath, elCache);
+			setParam(nfParam, context, currentPath, currentData,elCache);
 		}
 
 		if(executeAdapterList!=null){

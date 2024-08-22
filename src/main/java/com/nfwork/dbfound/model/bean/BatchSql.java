@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
@@ -75,10 +76,13 @@ public class BatchSql extends Sqls {
 			exeSourcePath = inCurrentPath +"." +exeSourcePath;
 		}
 
-		int dataSize = context.getDataLength(exeSourcePath);
-
+		Object rootData = context.getData(exeSourcePath);
+		int dataSize =  DataUtil.getDataLength(rootData);
 		if(dataSize <= 0){
 			return;
+		}
+		if(rootData instanceof Collection && !(rootData instanceof ArrayList)){
+			rootData = ((Collection<?>)rootData).toArray();
 		}
 
 		List<Param> paramList = new ArrayList<>();
@@ -97,13 +101,13 @@ public class BatchSql extends Sqls {
 			paramList.add(param);
 		}
 
-		Map<String, Object> elCache = new HashMap<>();
-
 		for (int i=0 ; i < dataSize ; i++) {
 			String currentPath = exeSourcePath +"[" + i +"]";
 
 			//执行过程中改变currentPath
 			context.setCurrentPath(currentPath);
+
+			Object currentData = DBFoundEL.getDataByIndex(i,rootData);
 
 			for (Param param : paramList){
 				String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
@@ -112,16 +116,18 @@ public class BatchSql extends Sqls {
 					param.setSourcePathHistory("set_by_index");
 				}else {
 					String sph;
+					Object value;
 					if (item != null && item.equals(sp)) {
 						sph = currentPath;
+						value = currentData;
 					} else {
 						sph = currentPath + "." + sp;
+						value = DBFoundEL.getData(sp, currentData);
 					}
-					param.setSourcePathHistory(sph);
-					Object value = context.getData(param.getSourcePathHistory(), elCache);
 					if ("".equals(value) && param.isEmptyAsNull()) {
 						value = null;
 					}
+					param.setSourcePathHistory(sph);
 					param.setValue(value);
 				}
 			}

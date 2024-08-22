@@ -220,7 +220,11 @@ public class Context {
 	}
 
 	public Object getData(String express) {
-		return DBFoundEL.getData(express, rootDatas);
+		if(ELEngine.isRootPath(express)){
+			return rootDatas.get(express);
+		}else {
+			return DBFoundEL.getData(express, rootDatas);
+		}
 	}
 
 	public Object getData(String express, Map<String, Object> elCache) {

@@ -12,6 +12,9 @@ public class ELEngine {
 	public static final String outParamScope = "outParam.";
 	private static final Set<String> absolutePathSet = CollectionUtil.asSet("session","request","param","outParam","cookie","header");
 
+	public static boolean isRootPath(String express){
+		return absolutePathSet.contains(express);
+	}
 	public static boolean isAbsolutePath(String exeSourcePath){
 		if (DataUtil.isNull(exeSourcePath)){
 			return false;

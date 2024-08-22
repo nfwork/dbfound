@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
@@ -112,13 +113,17 @@ public class SqlPart extends Sql {
         }
 
         StringBuilder eSql = new StringBuilder();
-        int dataSize = context.getDataLength(exeSourcePath);
+
+        Object rootData = context.getData(exeSourcePath);
+        int dataSize = DataUtil.getDataLength(rootData);
         if(dataSize <= 0){
             return "";
         }
+        if(rootData instanceof Collection && !(rootData instanceof ArrayList)){
+            rootData = ((Collection<?>)rootData).toArray();
+        }
 
         eSql.append(begin);
-        Map<String, Object> elCache = new HashMap<>();
 
         for (String paramName : paramNameSet){
             Param param = params.get(paramName);
@@ -140,40 +145,43 @@ public class SqlPart extends Sql {
                 String forPath = exeSourcePath + "[" + i + "]";
                 context.setCurrentPath(forPath);
 
+                Object currentData = DBFoundEL.getDataByIndex(i,rootData);
+
                 for (String paramName : paramNameSet) {
                     Param param = params.get(paramName);
                     if (param.isBatchAssign()) {
                         String newParamName = param.getName() + "_" + i;
                         String sp = DataUtil.isNull(param.getSourcePath()) ? param.getName() : param.getSourcePath();
-                        String sph;
-                        if (item != null && item.equals(sp)) {
-                            sph = forPath;
-                        } else {
-                            sph = forPath + "." + sp;
-                        }
-
-                        Param existsParam = params.get(newParamName);
-                        if (existsParam != null) {
-                            if (sph.equals(existsParam.getSourcePathHistory())) {
-                                continue;
-                            } else {
-                                throw new DBFoundRuntimeException("SqlPart create param failed, the param '" + newParamName + "' already exists of sourcePath '" + existsParam.getSourcePathHistory() + "'");
-                            }
-                        }
 
                         Param newParam = (Param) param.cloneEntity();
                         newParam.setName(newParamName);
-                        newParam.setSourcePathHistory(sph);
 
                         if (index != null && index.equals(sp)) {
                             newParam.setValue(i);
                             newParam.setSourcePathHistory("set_by_index");
-                        } else {
-                            Object value = context.getData(newParam.getSourcePathHistory(), elCache);
+                        }else {
+                            String sph;
+                            Object value;
+                            if (item != null && item.equals(sp)) {
+                                sph = forPath;
+                                value = currentData;
+                            } else {
+                                sph = forPath + "." + sp;
+                                value = DBFoundEL.getData(sp, currentData);
+                            }
                             if ("".equals(value) && param.isEmptyAsNull()) {
                                 value = null;
                             }
+                            Param existsParam = params.get(newParamName);
+                            if (existsParam != null) {
+                                if (sph.equals(existsParam.getSourcePathHistory())) {
+                                    continue;
+                                } else {
+                                    throw new DBFoundRuntimeException("SqlPart create param failed, the param '" + newParamName + "' already exists of sourcePath '" + existsParam.getSourcePathHistory() + "'");
+                                }
+                            }
                             newParam.setValue(value);
+                            newParam.setSourcePathHistory(sph);
                         }
                         params.put(newParam.getName(), newParam);
                     }
@@ -217,19 +225,22 @@ public class SqlPart extends Sql {
                 isOK = true;
             }
         }else if(DataUtil.isNotNull(sourcePath)) {
-            String exeSourcePath = sourcePath;
-            if (!ELEngine.isAbsolutePath(exeSourcePath)) {
+            Object data;
+            if(ELEngine.isAbsolutePath(sourcePath)){
+                data = context.getData(sourcePath);
+            }else{
                 String item = null;
                 if(forLoopIndex != null){
                     item = getForPartItem();
                 }
+                Object currentData = context.getData(context.getCurrentPath());
                 if(sourcePath.equals(item)) {
-                    exeSourcePath = context.getCurrentPath();
+                    data = currentData;
                 }else{
-                    exeSourcePath = context.getCurrentPath() + "." + exeSourcePath;
+                    data = DBFoundEL.getData(sourcePath, currentData);
                 }
             }
-            Object data = context.getData(exeSourcePath);
+
             if (DataUtil.isNotNull(data) && DataUtil.getDataLength(data) != 0) {
                isOK = true;
             }
