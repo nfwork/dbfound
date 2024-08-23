@@ -60,14 +60,19 @@ public class ELTest {
         DBFoundEL.setData("class",data,new ArrayList<>());
         DBFoundEL.setData("class[1]", data, c1);
         DBFoundEL.setData("class[3]", data, c3);
+        DBFoundEL.setData("class[36]", data, c3);
 
         assert "lily".equals(DBFoundEL.getData("class[3][0]",data,elCache));
+        assert "lily".equals(DBFoundEL.getData("class[ 3][ 0 ]",data,elCache));
         assert "lucy".equals(DBFoundEL.getData("class[3][1]",data));
         assert "lily".equals(DBFoundEL.getData("class[3].value[0]",data,elCache));
         assert "lucy".equals(DBFoundEL.getData("class[3].value[1]",data));
         assert DBFoundEL.getData("class[2][0]",data,elCache) == null;
         assert DBFoundEL.getData("class[2][1]",data) == null;
         assert DBFoundEL.getData("class[1][1]",data) == null;
+        assert DBFoundEL.getData("class[36]",data) == c3;
+        assert DBFoundEL.getData("class[36 ]",data) == c3;
+        assert DBFoundEL.getData("class[35]",data) == null;
     }
 
     @Test
