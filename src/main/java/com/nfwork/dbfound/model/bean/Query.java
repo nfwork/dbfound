@@ -280,7 +280,7 @@ public class Query extends SqlEntity {
 			if (clazz != null && ! Map.class.isAssignableFrom(clazz) && !clazz.equals(Object.class)) {
 				if(TypeResolverTool.isSupport(clazz)){
 					return ReflectorUtil.parseSimpleList(clazz,dataset);
-				}else if(Enum.class.isAssignableFrom(clazz)){
+				}else if(EnumHandlerFactory.isEnum(clazz)){
 					return ReflectorUtil.parseEnumList(clazz,dataset);
 				}else{
 					return ReflectorUtil.parseResultList(clazz, dataset);

@@ -7,7 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class EnumHandlerFactory {
 
-    static final Map<String,EnumTypeHandler<Enum<?>>> cache = new ConcurrentHashMap<>();
+    private static final Map<String,EnumTypeHandler<Enum<?>>> cache = new ConcurrentHashMap<>();
+
+    private static final Map<String, Boolean> enumClassMap = new ConcurrentHashMap<>();
 
     public static <T extends Enum<?>> EnumTypeHandler<T> getEnumHandler(Class<?> clazz){
         try {
@@ -26,5 +28,14 @@ public class EnumHandlerFactory {
         }catch (Exception e){
             throw new DBFoundRuntimeException("EnumTypeHandler create failed, " + e.getMessage(),e);
         }
+    }
+
+    public static boolean isEnum(Class<?> clazz){
+         Boolean result = enumClassMap.get(clazz.getName());
+         if(result == null){
+             result = Enum.class.isAssignableFrom(clazz);
+             enumClassMap.put(clazz.getName(),result);
+         }
+         return result;
     }
 }
