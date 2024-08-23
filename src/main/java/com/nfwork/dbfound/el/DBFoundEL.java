@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
@@ -36,15 +37,23 @@ public class DBFoundEL extends PropertyTransfer{
 			name = express.trim();
 		}
 
+		if (currentObject == null) {
+			return null;
+		}
+
 		Object value;
-		int index = findIndex(name);
-		if (index > -1) {
+		List<Integer> indexList = findIndex(name);
+		if (indexList != null) {
 			name = name.substring(0, name.indexOf("["));
 			String cacheName = childExpress == null ? name : childExpress+ "." + name;
 			value = elCache.get(cacheName);
 
 			if(value == null){
 				value = getDataByProperty(currentObject, name);
+				if (value == null) {
+					return null;
+				}
+
 				if(value instanceof Collection){
 					if(!(value instanceof ArrayList)){
 						value = ((Collection<?>)value).toArray();
@@ -52,7 +61,13 @@ public class DBFoundEL extends PropertyTransfer{
 					elCache.put(cacheName,value);
 				}
 			}
-			value = getDataByIndex(index,value);
+
+			for(int index : indexList) {
+				value = getDataByIndex(index, value);
+				if (value == null) {
+					return null;
+				}
+			}
 		} else {
 			value = getDataByProperty(currentObject, name);
 		}
@@ -79,15 +94,24 @@ public class DBFoundEL extends PropertyTransfer{
 				return null;
 			}
 			String currentExpress = d[i].trim();
-			int index = findIndex(currentExpress);
-			if (index != -1) {
+			List<Integer> indexList = findIndex(currentExpress);
+			if (indexList != null) {
 				currentExpress = currentExpress.substring(0, currentExpress.indexOf("["));
 			}
 			// 计算当前对象
 			Object nextObject = getDataByProperty(currentObject, currentExpress);
 
-			if (index != -1 && nextObject != null) {
-				nextObject = getDataByIndex(index, nextObject);
+			if (nextObject == null) {
+				return null;
+			}
+
+			if (indexList != null) {
+				for(int index : indexList) {
+					nextObject = getDataByIndex(index, nextObject);
+					if (nextObject == null) {
+						return null;
+					}
+				}
 			}
 
 			// 判断是否终止
@@ -112,7 +136,15 @@ public class DBFoundEL extends PropertyTransfer{
 		for (int i =0;i<expArray.length;i++){
 			String exp = expArray[i].trim();
 
-			int index = findIndex(exp);
+			int index = -1;
+			List<Integer> indexList = findIndex(exp);
+			if(indexList != null){
+				if(indexList.size()==1){
+					index = indexList.get(0);
+				}else{
+					throw new DBFoundRuntimeException("dbfoundEl setData failed, express: " +express +" is not supported");
+				}
+			}
 			if (index != -1) {
 				exp = exp.substring(0, exp.indexOf("["));
 			}
@@ -139,7 +171,7 @@ public class DBFoundEL extends PropertyTransfer{
 					} else if (DataUtil.isArray(nextObj)) {
 						Array.set(nextObj, index, value);
 					} else {
-						throw new RuntimeException("can not set array data into " + nextObj.getClass());
+						throw new DBFoundRuntimeException("dbfoundEl setData failed, can not set array data into " + nextObj.getClass());
 					}
 				}
 				return;
@@ -280,14 +312,18 @@ public class DBFoundEL extends PropertyTransfer{
 
 	private final static Pattern p = Pattern.compile("\\[[0123456789 ]+]");
 
-	private static int findIndex(String value) {
+	private static List<Integer> findIndex(String value) {
+		List<Integer> list = null;
 		Matcher m = p.matcher(value);
-		if (m.find()) {
+		while (m.find()) {
 			String text = m.group();
 			text = text.substring(1, text.length() - 1);
-			return Integer.parseInt(text.trim());
+			if(list == null){
+				list = new ArrayList<>();
+			}
+			list.add(Integer.parseInt(text.trim()));
 		}
-		return -1;
+		return list;
 	}
 }
 
