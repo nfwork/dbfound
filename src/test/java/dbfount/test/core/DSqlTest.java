@@ -1,7 +1,10 @@
 package dbfount.test.core;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.db.dialect.MySqlDialect;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
+import com.nfwork.dbfound.model.dsql.DSqlFunctionForMysql;
+import net.sf.jsqlparser.expression.Function;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -189,6 +192,10 @@ public class DSqlTest {
 
         result = DSqlEngine.checkWhenSql("!isnull(?)",list,"_default", context);
         assert Boolean.TRUE.equals(result);
+
+        new DSqlFunctionForTest().register(MySqlDialect.class);
+        result = DSqlEngine.checkWhenSql("say_hello() = 'hello world' ",list,"_default", context);
+        assert Boolean.TRUE.equals(result);
     }
 
     @Test
@@ -343,5 +350,16 @@ public class DSqlTest {
         BigDecimal a = new BigDecimal("331");
         BigDecimal b = new BigDecimal("447");
         System.out.println(a.divide(b,18, RoundingMode.HALF_UP).doubleValue());
+    }
+
+    static class DSqlFunctionForTest extends DSqlFunctionForMysql {
+        @Override
+        public Object apply(String functionName, Function function, List<Object> param, String provideName, Context context) {
+            if(functionName.equals("say_hello")){
+                return "hello world";
+            }else{
+                return super.apply(functionName,function,param,provideName,context);
+            }
+        }
     }
 }
