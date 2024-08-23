@@ -310,7 +310,7 @@ public class DBFoundEL extends PropertyTransfer{
 				|| object instanceof String || object instanceof Enum || object instanceof Boolean;
 	}
 
-	private final static Pattern p = Pattern.compile("\\[[0123456789 ]+]");
+	private final static Pattern p = Pattern.compile("\\[[0-9 ]+]");
 
 	private static List<Integer> findIndex(String value) {
 		List<Integer> list = null;
