@@ -13,6 +13,10 @@ public abstract class DSqlFunction {
 
     public abstract Object apply(String functionName, Function function, List<Object> param, String provideName, Context context);
 
+    public void register(Class<?> clazz){
+        FunctionResolver.functionMap.put(clazz.getName(), this);
+    }
+
     protected Object getExpressionValue(Expression expression , List<Object> param, String provideName, Context context){
         return DSqlEngine.getExpressionValue(expression, param, provideName, context);
     }

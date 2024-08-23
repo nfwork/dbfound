@@ -15,14 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class FunctionResolver extends DSqlValueResolver {
 
-    private static final Map<String, DSqlFunction> functionMap = new ConcurrentHashMap<>();
+    protected static final Map<String, DSqlFunction> functionMap = new ConcurrentHashMap<>();
     static {
-        register(MySqlDialect.class, new DSqlFunctionForMysql());
-        register(OracleDialect.class, new DSqlFunctionForOracle());
-    }
-
-    public static void register(Class<?> clazz, DSqlFunction function){
-        functionMap.put(clazz.getName(), function);
+        new DSqlFunctionForMysql().register(MySqlDialect.class);
+        new DSqlFunctionForOracle().register(OracleDialect.class);
     }
 
     @Override
