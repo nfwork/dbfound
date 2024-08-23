@@ -43,10 +43,12 @@ public abstract class SqlEntity extends Entity {
 
 	protected final static Pattern paramPattern = Pattern.compile(paramReplace);
 
-	protected final static Pattern SQL_PART_PATTERN  = Pattern.compile("#[A-Z_]+#");
-	protected static final String SQL_PART = "#SQL_PART#";
+	protected final static Pattern KEY_PART_PATTERN  = Pattern.compile("#[A-Z_]+#");
 
-	protected final static Pattern timeMillisPattern = Pattern.compile("[0123456789]*");
+	protected static final String SQL_PART = "#SQL_PART#";
+	protected final static Pattern SQL_PART_PATTERN  = Pattern.compile(SQL_PART);
+
+	protected final static Pattern timeMillisPattern = Pattern.compile("[0-9]+");
 
 	@Override
 	public void doEndTag() {
