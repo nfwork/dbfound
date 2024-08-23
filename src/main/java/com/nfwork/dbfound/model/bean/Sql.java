@@ -82,20 +82,17 @@ public class Sql extends SqlEntity {
 		Matcher m = SQL_PART_PATTERN.matcher(sql);
 		StringBuffer buffer = new StringBuffer();
 		while (m.find()) {
-			String text = m.group();
-			if (SQL_PART.equals(text)) {
-				SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
-				String partValue =  sqlPart.getPartSql(context,params,provideName);
+			SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
+			String partValue =  sqlPart.getPartSql(context,params,provideName);
 
-				if(partValue.isEmpty()) {
-					m.appendReplacement(buffer, "");
-					reduceBlank(buffer);
-				}else{
-					partValue =  Matcher.quoteReplacement(partValue);
-					m.appendReplacement(buffer, partValue);
-					if(sqlPart.isAutoClearComma()){
-						commaIndex = buffer.length() - 1;
-					}
+			if(partValue.isEmpty()) {
+				m.appendReplacement(buffer, "");
+				reduceBlank(buffer);
+			}else{
+				partValue =  Matcher.quoteReplacement(partValue);
+				m.appendReplacement(buffer, partValue);
+				if(sqlPart.isAutoClearComma()){
+					commaIndex = buffer.length() - 1;
 				}
 			}
 		}

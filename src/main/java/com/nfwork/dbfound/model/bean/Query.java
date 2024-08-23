@@ -346,7 +346,7 @@ public class Query extends SqlEntity {
 		int followType = 0;
 		int commaIndex = 0;
 
-		Matcher m = SQL_PART_PATTERN.matcher(ssql);
+		Matcher m = KEY_PART_PATTERN.matcher(ssql);
 		StringBuffer buffer = new StringBuffer();
 		while (m.find()) {
 			String text = m.group();
