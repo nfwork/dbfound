@@ -4,7 +4,6 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.MySqlDialect;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.dsql.DSqlFunctionForMysql;
-import net.sf.jsqlparser.expression.Function;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -354,11 +353,11 @@ public class DSqlTest {
 
     static class DSqlFunctionForTest extends DSqlFunctionForMysql {
         @Override
-        public Object apply(String functionName, Function function, List<Object> param, String provideName, Context context) {
+        public Object doApply(String functionName, List<Object> params, String provideName, Context context) {
             if(functionName.equals("say_hello")){
                 return "hello world";
             }else{
-                return super.apply(functionName,function,param,provideName,context);
+                return super.doApply(functionName,params, provideName, context);
             }
         }
     }

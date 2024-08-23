@@ -28,11 +28,10 @@ public class FunctionResolver extends DSqlValueResolver {
         if(function.getMultipartName().size()!=1){
             throw new DSqlNotSupportException();
         }
-        String functionName = function.getMultipartName().get(0).toLowerCase();
         DSqlFunction dSqlFunction = functionMap.get(provide.getSqlDialect().getClass().getName());
         if(dSqlFunction == null){
             throw new DSqlNotSupportException();
         }
-        return dSqlFunction.apply(functionName,function,param,provideName,context);
+        return dSqlFunction.apply(function,param,provideName,context);
     }
 }
