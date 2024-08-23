@@ -2,25 +2,25 @@ package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
-import net.sf.jsqlparser.expression.Function;
 
 import java.util.List;
 
 public class DSqlFunctionForOracle extends DSqlFunction {
 
-    public Object apply(String functionName, Function function, List<Object> param, String provideName, Context context){
+    @Override
+    public Object doApply(String functionName, List<Object> params,  String provideName, Context context){
         switch (functionName) {
             case "trim": {
-               return trim(function,param,provideName,context);
+               return trim(params);
             }
             case "length": {
-                return charLength(function,param,provideName,context);
+                return charLength(params);
             }
             case "lengthb": {
-                return length(function,param,provideName,context);
+                return length(params);
             }
             case "nvl": {
-                return ifNull(function,param,provideName,context);
+                return ifNull(params);
             }
             default:{
                 throw new DSqlNotSupportException();
