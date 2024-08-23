@@ -458,7 +458,7 @@ public class Reflector {
 				value = DataUtil.doubleValue(value);
 			} else if (clazz == float.class || clazz == Float.class) {
 				value = DataUtil.floatValue(value);
-			} else if (Enum.class.isAssignableFrom(clazz)) {
+			} else if (EnumHandlerFactory.isEnum(clazz)) {
 				value = EnumHandlerFactory.getEnumHandler(clazz).locateEnum(value.toString());
 			}
 		}
