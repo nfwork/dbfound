@@ -10,7 +10,7 @@ public class ConnectionProvideManager {
 	private static final Map<String, ConnectionProvide> provides = new ConcurrentHashMap<>();
 
 	// 注册数据源
-	static void registSource(ConnectionProvide provide) {
+	static void registerSource(ConnectionProvide provide) {
 		String provideName = provide.getProvideName();
 		synchronized (provides) {
 			ConnectionProvide s = provides.get(provideName);
@@ -22,7 +22,7 @@ public class ConnectionProvideManager {
 	}
 
 	// 取消注册数据源
-	static void unRegistSource(ConnectionProvide provide) {
+	static void unRegisterSource(ConnectionProvide provide) {
 		String provideName = provide.getProvideName();
 		synchronized (provides) {
 			provides.remove(provideName);
