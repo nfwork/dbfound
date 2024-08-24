@@ -90,6 +90,7 @@
 	</execute>
 
     <execute name="batchExecuteSql">
+        <param name="value" dataType="varchar" value="3" />
         <sqls>
             <batchExecuteSql sourcePath="users" item="user_id" index="index">
                 select
@@ -163,9 +164,9 @@
     <execute name="defaultValue">
         <param name="user_name" dataType="varchar" value="lily" ioType="both" />
         <sqls>
-            <collisionSql where="${@user_name} is null" message="不能为null" />
+            <collisionSql where="${@user_name} is null or ${@user_name}=''" message="不能为null" />
             <batchSql sourcePath="names" item="user_name">
-                <collisionSql where="${@user_name} is null" message="不能为null" />
+                <collisionSql where="${@user_name} is null or ${@user_name}=''" message="不能为null" />
             </batchSql>
             <querySql>
                 select
