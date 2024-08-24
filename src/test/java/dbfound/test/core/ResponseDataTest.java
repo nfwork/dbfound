@@ -1,4 +1,4 @@
-package dbfount.test.core;
+package dbfound.test.core;
 
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import org.junit.Test;

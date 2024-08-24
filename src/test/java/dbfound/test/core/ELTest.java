@@ -1,9 +1,10 @@
-package dbfount.test.core;
+package dbfound.test.core;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.el.DBFoundEL;
-import com.nfwork.dbfound.model.reflector.Column;
 import com.nfwork.dbfound.util.DataUtil;
+import dbfound.test.entity.Role;
+import dbfound.test.entity.User;
 import org.junit.Test;
 
 import java.util.*;
@@ -164,74 +165,10 @@ public class ELTest {
         map.put("user_name","join");
         map.put("flag",true);
         map.put("tags",null);
-        User user = DataUtil.convertMapToBean(map,User.class);
+        User user = DataUtil.convertMapToBean(map, User.class);
         assert "join".equals(user.getUserName());
         assert 123 == user.getUserId();
         assert user.getFlag();
         assert user.getTags() == null;
-    }
-
-    public enum Role{
-        ADMIN(1),
-        STUDENT(2);
-
-        final Integer value;
-
-        Role(Integer value){
-            this.value = value;
-        }
-
-        public Integer getValue(){
-            return value;
-        }
-    }
-
-    public static class User{
-        @Column(name = "user_id")
-        Integer userId;
-        String userName;
-        Boolean flag;
-        Role role;
-        List<String> tags;
-
-        public Integer getUserId() {
-            return userId;
-        }
-
-        public void setUserId(Integer userId) {
-            this.userId = userId;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
-
-        public Boolean getFlag() {
-            return flag;
-        }
-
-        public void setFlag(Boolean flag) {
-            this.flag = flag;
-        }
-
-        public Role getRole() {
-            return role;
-        }
-
-        public void setRole(Role role) {
-            this.role = role;
-        }
-
-        public List<String> getTags() {
-            return tags;
-        }
-
-        public void setTags(List<String> tags) {
-            this.tags = tags;
-        }
     }
 }

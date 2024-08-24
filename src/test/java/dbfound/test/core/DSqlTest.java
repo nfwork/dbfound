@@ -1,4 +1,4 @@
-package dbfount.test.core;
+package dbfound.test.core;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.MySqlDialect;
