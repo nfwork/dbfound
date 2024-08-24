@@ -1,46 +1,43 @@
 package dbfount.test.core;
 
 import com.nfwork.dbfound.dto.QueryResponseObject;
-import com.nfwork.dbfound.util.JsonUtil;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ResponseDataTest {
 
-    public static void main(String[] args) {
-        QueryResponseObject object = new QueryResponseObject();
-        List<Map> datas = new ArrayList<>();
-        Map data1 = new HashMap();
+    @Test
+    public void test(){
+        QueryResponseObject<Map<String,Object>> object = new QueryResponseObject<>();
+        List<Map<String,Object>> datas = new ArrayList<>();
+        Map<String,Object> data1 = new HashMap<>();
         data1.put("user_id",1);
         datas.add(data1);
 
-        Map data2 = new HashMap();
+        Map<String,Object> data2 = new HashMap<>();
         data2.put("user_id",2);
         datas.add(data2);
 
         object.setDatas(datas);
 
-        System.out.println(object.get());
-        System.out.println(object.getMap("user_id"));
+        assert object.get() == data1;
+        assert object.getMap("user_id").get("1") == data1;
+        assert object.getMap("user_id").get("2") == data2;
 
-        System.out.println(object.getPropertyList("user_id"));
-        System.out.println(object.getIntList("user_id"));
-        System.out.println(object.getLongList("user_id"));
-        System.out.println(object.getStringList("user_id"));
-        System.out.println(object.getDoubleList("user_id"));
-        System.out.println(object.getFloatList("user_id"));
+        assert Objects.equals(object.getPropertyList("user_id").get(0) , 1);
+        assert Objects.equals(object.getIntList("user_id").get(1) ,2);
+        assert Objects.equals(object.getLongList("user_id").get(1) ,2L);
+        assert Objects.equals(object.getStringList("user_id").get(1) ,"2");
+        assert Objects.equals(object.getDoubleList("user_id").get(1) ,2d);
+        assert Objects.equals(object.getFloatList("user_id").get(1) ,2f);
 
-        System.out.println(object.getProperty("user_id"));
-        System.out.println(object.getInt("user_id"));
-        System.out.println(object.getLong("user_id"));
-        System.out.println(object.getString("user_id"));
-        System.out.println(object.getDouble("user_id"));
-        System.out.println(object.getFloat("user_id"));
-
+        assert Objects.equals(object.getProperty("user_id"),1);
+        assert Objects.equals(object.getInt("user_id"),1);
+        assert Objects.equals(object.getLong("user_id"),1L);
+        assert Objects.equals(object.getString("user_id"),"1");
+        assert Objects.equals(object.getDouble("user_id"),1d);
+        assert Objects.equals(object.getFloat("user_id"),1f);
     }
 
     @Test
@@ -56,7 +53,7 @@ public class ResponseDataTest {
         Map<String,Object> map11 = new HashMap<>();
         map11.put("user_id",2);
         map11.put("user_name","lucy");
-        map11.put("role_id","1");
+        map11.put("role_id","2");
         data1.getDatas().add(map11);
 
         QueryResponseObject<Map<String,Object>> data2 = new QueryResponseObject<>();
@@ -67,6 +64,8 @@ public class ResponseDataTest {
         data2.getDatas().add(map2);
 
         data1.join(data2,"role_id");
-        System.out.println(JsonUtil.toJson(data1));
+
+        assert Objects.equals(data1.get().get("role_name"),"student");
+        assert Objects.equals(data1.getDatas().get(1).get("role_name"),null);
     }
 }

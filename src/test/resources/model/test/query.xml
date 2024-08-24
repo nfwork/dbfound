@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+
+    <query>
+        <param name="fields_size" sourcePath="fields.size" value="0" dataType="number" />
+        <sql>
+            select
+                <sqlPart condition="${@fields_size} = 0">
+					*
+				</sqlPart>
+                <sqlPart type="if" sourcePath="fields">
+					#{@fields}
+				</sqlPart>
+            from
+             (
+                  select 1 as user_id, 'lily' as user_name, '10000' as user_code
+                  union
+                  select 2 as user_id, 'lucy' as user_name, '10001' as user_code
+              ) t
+            #WHERE_CLAUSE#
+            <sqlPart type="for" sourcePath="order_fields" item="field" begin="order by ">
+                #{@field}
+            </sqlPart>
+        </sql>
+        <filter name="ids" dataType="collection" express="user_id in (${@ids})" />
+        <filter name="user_id" dataType="number" express="user_id = ${@user_id}" />
+        <filter name="user_name" dataType="varchar" express="user_name = ${@user_name}" />
+    </query>
+</model>
