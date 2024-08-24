@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+
+    <execute>
+        <param name="role_id" dataType="number" ioType="out" />
+        <param name="user_id" dataType="varchar" ioType="out" />
+        <param name="user_name" dataType="varchar" ioType="out" />
+        <param name="fields_size" dataType="number" sourcePath="fields.size" value="0" />
+		<sqls>
+			<collisionSql where="${@role} is null" message="role不能为空" code="10010" />
+            <querySql>
+				select ${@role} as role_id
+			</querySql>
+            <whenSql when="${@fields_size} > 0">
+                <querySql>
+                    select
+                    <sqlPart type="for" sourcePath="fields">
+                        ${@value} as #{@code}
+                    </sqlPart>
+                </querySql>
+                <executeSql>
+                    select
+                    <sqlPart type="for" sourcePath="fields">
+                        ${@value} as #{@code}
+                    </sqlPart>
+                </executeSql>
+			</whenSql>
+		</sqls>
+	</execute>
+
+    <execute name="ifPart">
+        <param name="user_id" dataType="varchar" ioType="both" />
+        <param name="user_name" dataType="varchar" ioType="both" />
+		<sqls>
+            <querySql>
+                select
+                <sqlTrim>
+                    <sqlPart type="if" sourcePath="user_id">
+                        1 as user_id,
+                    </sqlPart>
+                    <sqlPart type="if" sourcePath="user_name">
+                        'lily' as user_name,
+                    </sqlPart>
+                    <sqlPart type="if" condition="${@user_code} is not null">
+                        '10010' as user_code,
+                    </sqlPart>
+                </sqlTrim>
+            </querySql>
+			<executeSql>
+                select
+                <sqlTrim>
+                    <sqlPart type="if" sourcePath="user_id">
+                        1 as user_id,
+                    </sqlPart>
+                    <sqlPart type="if" sourcePath="user_name">
+                        'lily' as user_name,
+                    </sqlPart>
+                    <sqlPart type="if" condition="${@user_code} is not null">
+                        '10010' as user_code,
+                    </sqlPart>
+			    </sqlTrim>
+			</executeSql>
+            <executeSql>
+                select
+                    <sqlPart type="if" sourcePath="user_id" autoClearComma="true">
+                        1 as user_id,
+                    </sqlPart>
+                    <sqlPart type="if" sourcePath="user_name" autoClearComma="true">
+                        'lily' as user_name,
+                    </sqlPart>
+                    <sqlPart type="if" condition="${@user_code} is not null" autoClearComma="true">
+                        '10010' as user_code,
+                    </sqlPart>
+            </executeSql>
+		</sqls>
+	</execute>
+
+    <execute name="batchSql">
+        <param name="user_id_0" ioType="out" scope="outParam" />
+        <param name="user_id_1" ioType="out" scope="outParam" />
+		<sqls>
+			<batchSql sourcePath="users" item="user_id" index="index">
+                <collisionSql where="${@value} is null" message="user_id不能为空" />
+				<querySql>
+					select ${@user_id} as user_id_#{@index}
+				</querySql>
+			</batchSql>
+		</sqls>
+	</execute>
+
+    <execute name="batchExecuteSql">
+        <sqls>
+            <batchExecuteSql sourcePath="users" item="user_id" index="index">
+                select
+                    #BATCH_TEMPLATE_BEGIN#
+                    ${@user_id} as user_id_#{@index},
+                    #{@value} as value_#{@index}
+                    #BATCH_TEMPLATE_END#
+			</batchExecuteSql>
+        </sqls>
+    </execute>
+
+    <execute name="adapter" adapter="dbfound.test.adapter.ExecuteTestAdapter">
+        <sqls>
+            <querySql>
+				select 1 as user_id
+			</querySql>
+        </sqls>
+    </execute>
+
+    <execute name="generatedKey">
+        <param name="role_id" dataType="number" ioType="out" />
+        <sqls>
+            <collisionSql where="exists (select 1 from sys_role where role_code='unit_test_role')" message="测试角色已经存在" />
+            <executeSql generatedKeyParam="role_id">
+                INSERT INTO sys_role
+                (role_code,
+                 role_description,
+                 create_by,
+                 last_update_by,
+                 create_date,
+                 last_update_date)
+                VALUES ('unit_test_role',
+                        'unit_test_role',
+                        1,
+                        1,
+                        NOW(),
+                        NOW())
+			</executeSql>
+        </sqls>
+    </execute>
+
+    <execute name="affectedCount">
+        <param name="delete_num" dataType="number" ioType="out" />
+        <sqls>
+            <whenSql when="exists (select 1 from sys_role where role_code='unit_test_role')">
+                <executeSql affectedCountParam="delete_num">
+                    delete from sys_role where role_id = ${@role_id}
+                </executeSql>
+			</whenSql>
+        </sqls>
+    </execute>
+
+    <execute name="empty">
+        <param name="user_name" dataType="varchar" emptyAsNull="false" ioType="both" />
+		<sqls>
+			<collisionSql where="${@user_name} is null" message="不能为null，可以为空字符" />
+            <batchSql sourcePath="names" item="user_name">
+                <collisionSql where="${@user_name} is null" message="不能为null，可以为空字符" />
+			</batchSql>
+            <querySql>
+                select
+                <sqlPart type="for" sourcePath="names" item="user_name" index="index">
+                    <sqlPart condition="${@user_name} ='' and ${@index} = 0 ">
+                        'lucy' as user_name
+                    </sqlPart>
+                </sqlPart>
+            </querySql>
+		</sqls>
+	</execute>
+
+    <execute name="defaultValue">
+        <param name="user_name" dataType="varchar" value="lily" ioType="both" />
+        <sqls>
+            <collisionSql where="${@user_name} is null" message="不能为null" />
+            <batchSql sourcePath="names" item="user_name">
+                <collisionSql where="${@user_name} is null" message="不能为null" />
+            </batchSql>
+            <querySql>
+                select
+                <sqlPart type="for" sourcePath="names" item="user_name" index="index">
+                    <sqlPart condition="${@user_name} ='lily' and ${@index} = 0 ">
+                        'lucy' as user_name
+                    </sqlPart>
+                </sqlPart>
+            </querySql>
+        </sqls>
+    </execute>
+
+</model>
