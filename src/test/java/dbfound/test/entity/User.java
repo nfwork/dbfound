@@ -2,6 +2,7 @@ package dbfound.test.entity;
 
 import com.nfwork.dbfound.model.reflector.Column;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class User{
@@ -11,6 +12,8 @@ public class User{
     Boolean flag;
     Role role;
     List<String> tags;
+
+    LocalDateTime createDate;
 
     public Integer getUserId() {
         return userId;
@@ -50,5 +53,13 @@ public class User{
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
 }

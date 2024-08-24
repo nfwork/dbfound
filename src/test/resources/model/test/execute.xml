@@ -81,6 +81,7 @@
         <param name="user_id_1" ioType="out" scope="outParam" />
 		<sqls>
 			<batchSql sourcePath="users" item="user_id" index="index">
+                <collisionSql where="${@value} is null" message="user_id不能为空" />
 				<querySql>
 					select ${@user_id} as user_id_#{@index}
 				</querySql>
@@ -93,7 +94,8 @@
             <batchExecuteSql sourcePath="users" item="user_id" index="index">
                 select
                     #BATCH_TEMPLATE_BEGIN#
-                    ${@user_id} as user_id_#{@index}
+                    ${@user_id} as user_id_#{@index},
+                    #{@value} as value_#{@index}
                     #BATCH_TEMPLATE_END#
 			</batchExecuteSql>
         </sqls>
@@ -104,6 +106,75 @@
             <querySql>
 				select 1 as user_id
 			</querySql>
+        </sqls>
+    </execute>
+
+    <execute name="generatedKey">
+        <param name="role_id" dataType="number" ioType="out" />
+        <sqls>
+            <collisionSql where="exists (select 1 from sys_role where role_code='unit_test_role')" message="测试角色已经存在" />
+            <executeSql generatedKeyParam="role_id">
+                INSERT INTO sys_role
+                (role_code,
+                 role_description,
+                 create_by,
+                 last_update_by,
+                 create_date,
+                 last_update_date)
+                VALUES ('unit_test_role',
+                        'unit_test_role',
+                        1,
+                        1,
+                        NOW(),
+                        NOW())
+			</executeSql>
+        </sqls>
+    </execute>
+
+    <execute name="affectedCount">
+        <param name="delete_num" dataType="number" ioType="out" />
+        <sqls>
+            <whenSql when="exists (select 1 from sys_role where role_code='unit_test_role')">
+                <executeSql affectedCountParam="delete_num">
+                    delete from sys_role where role_id = ${@role_id}
+                </executeSql>
+			</whenSql>
+        </sqls>
+    </execute>
+
+    <execute name="empty">
+        <param name="user_name" dataType="varchar" emptyAsNull="false" ioType="both" />
+		<sqls>
+			<collisionSql where="${@user_name} is null" message="不能为null，可以为空字符" />
+            <batchSql sourcePath="names" item="user_name">
+                <collisionSql where="${@user_name} is null" message="不能为null，可以为空字符" />
+			</batchSql>
+            <querySql>
+                select
+                <sqlPart type="for" sourcePath="names" item="user_name" index="index">
+                    <sqlPart condition="${@user_name} ='' and ${@index} = 0 ">
+                        'lucy' as user_name
+                    </sqlPart>
+                </sqlPart>
+            </querySql>
+		</sqls>
+	</execute>
+
+    <execute name="defaultValue">
+        <param name="user_name" dataType="varchar" value="lily" ioType="both" />
+        <sqls>
+            <collisionSql where="${@user_name} is null" message="不能为null" />
+            <batchSql sourcePath="names" item="user_name">
+                <collisionSql where="${@user_name} is null" message="不能为null" />
+            </batchSql>
+            <querySql>
+                select
+                <sqlPart type="for" sourcePath="names" item="user_name" index="index">
+                    <sqlPart condition="${@user_name} ='lily' and ${@index} = 0 ">
+                        'lucy' as user_name
+                    </sqlPart>
+                </sqlPart>
+            </querySql>
         </sqls>
     </execute>
 

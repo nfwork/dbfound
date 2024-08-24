@@ -106,6 +106,9 @@ public class QueryTest {
         context.setParamData("limit", 5);
         QueryResponseObject<?> responseObject = ModelEngine.query(context, "test/query", "entity");
         assert Objects.equals(responseObject.get(), 1);
+
+        responseObject = ModelEngine.query(context, "test/query", "entity", Role.class);
+        assert Objects.equals(responseObject.get(), Role.ADMIN);
     }
 
     @Test
@@ -115,6 +118,7 @@ public class QueryTest {
         assert responseObject.get().getRole() == Role.ADMIN;
         assert responseObject.get().getUserId() == 1;
         assert responseObject.get().getUserName().equals("lily");
+        assert responseObject.get().getCreateDate() != null;
 
         context = new Context();
         context.setParamData("role", Role.STUDENT);

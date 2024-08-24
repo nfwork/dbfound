@@ -74,11 +74,11 @@
 
     <query name="entity" entity="java.lang.Integer">
         <sql>
-            select 1 as user_id
+            select 1 as role_id
             union
-            select 2 as user_id
+            select 2 as role_id
             union
-            select 3 as user_id
+            select 3 as role_id
         </sql>
     </query>
 
@@ -86,11 +86,11 @@
         <sql>
             select * from
             (
-                select 1 as user_id, 'lily' as user_name, 1 as role
+                select 1 as user_id, 'lily' as user_name, 1 as role, now() as create_date
                 union
-                select 2 as user_id, 'lucy' as user_name, 2 as role
+                select 2 as user_id, 'lucy' as user_name, 2 as role, now() as create_date
                 union
-                select 3 as user_id, 'lucy1' as user_name, 3 as role
+                select 3 as user_id, 'lucy1' as user_name, 3 as role, now() as create_date
             ) t #WHERE_CLAUSE#
         </sql>
         <filter name="role" dataType="number" express="role = ${@role}" />

@@ -4,6 +4,8 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.CollisionException;
 import com.nfwork.dbfound.model.ModelEngine;
+import com.nfwork.dbfound.util.CollectionUtil;
+import com.nfwork.dbfound.util.TransactionUtil;
 import dbfound.test.entity.Role;
 import org.junit.Test;
 
@@ -76,4 +78,38 @@ public class ExecuteTest {
         assert context.getInt("param.before") == 1;
         assert context.getInt("param.after") == 1;
     }
+
+    @Test
+    public void testGeneratedKey() throws Exception {
+        Context context = new Context();
+        TransactionUtil.executeWithoutResult(context,()->{
+            ResponseObject responseObject = ModelEngine.execute(context, "test/execute", "generatedKey");
+            assert responseObject.getOutParam().get("role_id") != null;
+
+            Integer role_id = context.getInt("outParam.role_id");
+            context.setParamData("role_id" ,role_id);
+            responseObject = ModelEngine.execute(context, "test/execute", "affectedCount");
+            assert responseObject.getOutParam().get("delete_num") != null;
+            assert context.getInt("outParam.delete_num") == 1;
+        });
+    }
+
+    @Test
+    public void testEmpty() {
+        Context context = new Context();
+        context.setParamData("user_name","");
+        context.setParamData("names", CollectionUtil.asSet("","",""));
+        ModelEngine.execute(context, "test/execute", "empty");
+        assert context.getString("outParam.user_name").equals("lucy");
+    }
+
+    @Test
+    public void testDefaultValue() {
+        Context context = new Context();
+        context.setParamData("user_name","");
+        context.setParamData("names", CollectionUtil.asSet("","",""));
+        ModelEngine.execute(context, "test/execute", "defaultValue");
+        assert context.getString("outParam.user_name").equals("lucy");
+    }
+
 }
