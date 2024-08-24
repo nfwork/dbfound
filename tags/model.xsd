@@ -276,7 +276,7 @@
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="executeSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql" type="batchExecuteSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="querySql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="caseSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
@@ -315,7 +315,7 @@
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="executeSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql" type="batchExecuteSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="querySql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="caseSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
@@ -353,7 +353,7 @@
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="executeSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql"  type="batchExecuteSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="querySql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="caseSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />

@@ -143,4 +143,13 @@ public class QueryTest {
         assert responseObject.get().getUserId() == 2;
     }
 
+    @Test
+    public void testAutoCompletion() {
+        Context context = new Context();
+        context.setParamData("role", Role.STUDENT);
+        context.setParamData("user_id", 2);
+        QueryResponseObject<User> responseObject = ModelEngine.query(context, "test/query", "autoCompletion", User.class);
+        assert responseObject.get().getRole() == Role.STUDENT;
+        assert responseObject.get().getUserId() == 2;
+    }
 }
