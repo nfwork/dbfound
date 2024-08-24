@@ -131,8 +131,9 @@ public class Query extends SqlEntity {
 		// 初始化查询参数param
 		Map<String, Object> elCache = new HashMap<>();
 		Map<String, Param> params = cloneParams();
+		Object currentData = context.getData(currentPath);
 		for (Param nfParam : params.values()) {
-			setParam(nfParam, context, currentPath, elCache);
+			setParam(nfParam, context, currentPath, currentData,elCache);
 		}
 
 		// 设想分页参数
@@ -279,7 +280,7 @@ public class Query extends SqlEntity {
 			if (clazz != null && ! Map.class.isAssignableFrom(clazz) && !clazz.equals(Object.class)) {
 				if(TypeResolverTool.isSupport(clazz)){
 					return ReflectorUtil.parseSimpleList(clazz,dataset);
-				}else if(Enum.class.isAssignableFrom(clazz)){
+				}else if(EnumHandlerFactory.isEnum(clazz)){
 					return ReflectorUtil.parseEnumList(clazz,dataset);
 				}else{
 					return ReflectorUtil.parseResultList(clazz, dataset);
@@ -345,7 +346,7 @@ public class Query extends SqlEntity {
 		int followType = 0;
 		int commaIndex = 0;
 
-		Matcher m = SQL_PART_PATTERN.matcher(ssql);
+		Matcher m = KEY_PART_PATTERN.matcher(ssql);
 		StringBuffer buffer = new StringBuffer();
 		while (m.find()) {
 			String text = m.group();

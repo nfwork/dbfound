@@ -1,10 +1,10 @@
-package dbfount.test.core;
+package dbfound.test.core;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.el.DBFoundEL;
-import com.nfwork.dbfound.model.reflector.Column;
 import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.JsonUtil;
+import dbfound.test.entity.Role;
+import dbfound.test.entity.User;
 import org.junit.Test;
 
 import java.util.*;
@@ -13,7 +13,7 @@ public class ELTest {
 
     @Test
     public void testCollection(){
-        Set<String> set = new HashSet<>();
+        Set<String> set = new LinkedHashSet<>();
         set.add("xiao");
         set.add("ming");
         Map<String,Object> data = new HashMap<>();
@@ -35,14 +35,45 @@ public class ELTest {
         users.add(lily);
         param.put("users", users);
 
+        assert "xiao".equals(DBFoundEL.getData("set[0]",data));
+        assert "ming".equals(DBFoundEL.getData("set[1]",data));
+        assert "hello".equals(DBFoundEL.getData("param.list[0]",data));
+        assert "world".equals(DBFoundEL.getData("param.list[1]",data));
+        assert lucy == DBFoundEL.getData("param.users[0]",data);
+        assert lily == DBFoundEL.getData("param.users[1]",data);
+        assert "lucy".equals(DBFoundEL.getData("param.users[0].user_name",data));
+        assert "lily".equals(DBFoundEL.getData("param.users[1].user_name",data));
+
         Map<String,Object> elCache = new HashMap<>();
-        System.out.println(DBFoundEL.getData("set[0]",data,elCache));
-        System.out.println(DBFoundEL.getData("set[1]",data,elCache));
-        System.out.println(DBFoundEL.getData("param.list[0]",data,elCache));
-        System.out.println(DBFoundEL.getData("param.list[1]",data,elCache));
-        System.out.println(DBFoundEL.getData("param.users[0].user_name",data,elCache));
-        System.out.println(DBFoundEL.getData("param.users[1].user_name",data,elCache));
-        System.out.println(JsonUtil.toJson(elCache));
+        assert "xiao".equals(DBFoundEL.getData("set[0]",data,elCache));
+        assert "ming".equals(DBFoundEL.getData("set[1]",data,elCache));
+        assert "hello".equals(DBFoundEL.getData("param.list[0]",data,elCache));
+        assert "world".equals(DBFoundEL.getData("param.list[1]",data,elCache));
+        assert lucy == DBFoundEL.getData("param.users[0]",data,elCache);
+        assert lily == DBFoundEL.getData("param.users[1]",data,elCache);
+        assert "lucy".equals(DBFoundEL.getData("param.users[0].user_name",data,elCache));
+        assert "lily".equals(DBFoundEL.getData("param.users[1].user_name",data,elCache));
+
+        List<String> c1 = new ArrayList<>();
+        List<String > c3 = new ArrayList<>();
+        c3.add("lily");
+        c3.add("lucy");
+        DBFoundEL.setData("class",data,new ArrayList<>());
+        DBFoundEL.setData("class[1]", data, c1);
+        DBFoundEL.setData("class[3]", data, c3);
+        DBFoundEL.setData("class[36]", data, c3);
+
+        assert "lily".equals(DBFoundEL.getData("class[3][0]",data,elCache));
+        assert "lily".equals(DBFoundEL.getData("class[ 3][ 0 ]",data,elCache));
+        assert "lucy".equals(DBFoundEL.getData("class[3][1]",data));
+        assert "lily".equals(DBFoundEL.getData("class[3].value[0]",data,elCache));
+        assert "lucy".equals(DBFoundEL.getData("class[3].value[1]",data));
+        assert DBFoundEL.getData("class[2][0]",data,elCache) == null;
+        assert DBFoundEL.getData("class[2][1]",data) == null;
+        assert DBFoundEL.getData("class[1][1]",data) == null;
+        assert DBFoundEL.getData("class[36]",data) == c3;
+        assert DBFoundEL.getData("class[36 ]",data) == c3;
+        assert DBFoundEL.getData("class[35]",data) == null;
     }
 
     @Test
@@ -116,15 +147,15 @@ public class ELTest {
         context.setData("param.roles[0]", new HashMap<>());
 
         List<User> l1 = context.getList("param.users");
-        System.out.println(JsonUtil.toJson(l1));
+        assert l1.size() == 1;
         List<Map<String,Object>> l2 = context.getList("param.roles");
-        System.out.println(JsonUtil.toJson(l2));
+        assert l2.size() == 1;
         Map<String,Object> m1 = context.getMap("param");
-        System.out.println(JsonUtil.toJson(m1));
+        assert m1.get("users") == users;
         User u1 = context.getData("param.users[0]",User.class);
-        System.out.println(JsonUtil.toJson(u1));
+        assert u1 ==user;
         String s1 = context.getData("param.users[0].user_name",String.class);
-        System.out.println(s1);
+        assert "join".equals(s1);
     }
 
     @Test
@@ -134,76 +165,10 @@ public class ELTest {
         map.put("user_name","join");
         map.put("flag",true);
         map.put("tags",null);
-        User user = DataUtil.convertMapToBean(map,User.class);
-        System.out.println(JsonUtil.toJson(user));
-        long begin = System.currentTimeMillis();
-        for (int i=0;i <100000;i++){
-            DataUtil.convertMapToBean(map,User.class);
-        }
-        System.out.println(System.currentTimeMillis() - begin);
-    }
-
-    public enum Role{
-        ADMIN(1),
-        STUDENT(2);
-
-        final Integer value;
-
-        Role(Integer value){
-            this.value = value;
-        }
-
-        public Integer getValue(){
-            return value;
-        }
-    }
-
-    public static class User{
-        @Column(name = "user_id")
-        Integer userId;
-        String userName;
-        Boolean flag;
-        Role role;
-        List<String> tags;
-
-        public Integer getUserId() {
-            return userId;
-        }
-
-        public void setUserId(Integer userId) {
-            this.userId = userId;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
-
-        public Boolean getFlag() {
-            return flag;
-        }
-
-        public void setFlag(Boolean flag) {
-            this.flag = flag;
-        }
-
-        public Role getRole() {
-            return role;
-        }
-
-        public void setRole(Role role) {
-            this.role = role;
-        }
-
-        public List<String> getTags() {
-            return tags;
-        }
-
-        public void setTags(List<String> tags) {
-            this.tags = tags;
-        }
+        User user = DataUtil.convertMapToBean(map, User.class);
+        assert "join".equals(user.getUserName());
+        assert 123 == user.getUserId();
+        assert user.getFlag();
+        assert user.getTags() == null;
     }
 }

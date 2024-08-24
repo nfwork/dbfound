@@ -40,15 +40,15 @@ public abstract class ConnectionProvide {
 		}
 	}
 
-	public void regist() {
+	public void register() {
 		if (sqlDialect == null) {
 			sqlDialect = DialectFactory.createDialect(dialect);
 		}
-		ConnectionProvideManager.registSource(this);
+		ConnectionProvideManager.registerSource(this);
 	}
 
-	public void unRegist() {
-		ConnectionProvideManager.unRegistSource(this);
+	public void unRegister() {
+		ConnectionProvideManager.unRegisterSource(this);
 	}
 
 	public abstract Connection getConnection();

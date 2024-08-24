@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+
+    <query>
+        <param name="fields_size" sourcePath="fields.size" value="0" dataType="number" />
+        <sql>
+            select
+                <sqlPart condition="${@fields_size} = 0">
+					*
+				</sqlPart>
+                <sqlPart type="if" sourcePath="fields">
+					#{@fields}
+				</sqlPart>
+            from
+             (
+                  select 1 as user_id, 'lily' as user_name, '10000' as user_code
+                  union
+                  select 2 as user_id, 'lucy' as user_name, '10001' as user_code
+              ) t
+            #WHERE_CLAUSE#
+            <sqlPart type="for" sourcePath="order_fields" item="field" begin="order by ">
+                #{@field}
+            </sqlPart>
+        </sql>
+        <filter name="ids" dataType="collection" express="user_id in (${@ids})" />
+        <filter name="user_id" dataType="number" express="user_id = ${@user_id}" />
+        <filter name="user_name" dataType="varchar" express="user_name = ${@user_name}" />
+    </query>
+
+    <query name="page">
+        <sql>
+            select * from
+             (
+                  select 1 as user_id, 'lily' as user_name, '10000' as user_code
+                  union
+                  select 2 as user_id, 'lucy' as user_name, '10001' as user_code
+                  union
+                  select 3 as user_id, 'lucy1' as user_name, '10002' as user_code
+                  union
+                  select 4 as user_id, 'lucy2' as user_name, '10003' as user_code
+                  union
+                  select 5 as user_id, 'lucy3' as user_name, '10004' as user_code
+                  union
+                  select 6 as user_id, 'lucy4' as user_name, '10005' as user_code
+            ) t #WHERE_CLAUSE#
+        </sql>
+        <filter name="ids" dataType="collection" express="user_id in (${@ids})" />
+        <filter name="user_id" dataType="number" express="user_id = ${@user_id}" />
+        <filter name="user_name" dataType="varchar" express="user_name = ${@user_name}" />
+    </query>
+
+    <query name="adapter" adapter="dbfound.test.adapter.QueryTestAdapter">
+        <sql>
+            select * from
+                (
+                    select 1 as user_id, 'lily' as user_name, '10000' as user_code
+                    union
+                    select 2 as user_id, 'lucy' as user_name, '10001' as user_code
+                    union
+                    select 3 as user_id, 'lucy1' as user_name, '10002' as user_code
+                    union
+                    select 4 as user_id, 'lucy2' as user_name, '10003' as user_code
+                    union
+                    select 5 as user_id, 'lucy3' as user_name, '10004' as user_code
+                    union
+                    select 6 as user_id, 'lucy4' as user_name, '10005' as user_code
+                ) t #WHERE_CLAUSE#
+        </sql>
+        <filter name="ids" dataType="collection" express="user_id in (${@ids})" />
+        <filter name="user_id" dataType="number" express="user_id = ${@user_id}" />
+        <filter name="user_name" dataType="varchar" express="user_name = ${@user_name}" />
+    </query>
+
+    <query name="entity" entity="java.lang.Integer">
+        <sql>
+            select 1 as role_id
+            union
+            select 2 as role_id
+            union
+            select 3 as role_id
+        </sql>
+    </query>
+
+    <query name="bean">
+        <sql>
+            select * from
+            (
+                select 1 as user_id, 'lily' as user_name, 1 as role, now() as create_date
+                union
+                select 2 as user_id, 'lucy' as user_name, 2 as role, now() as create_date
+                union
+                select 3 as user_id, 'lucy1' as user_name, 3 as role, now() as create_date
+            ) t #WHERE_CLAUSE#
+        </sql>
+        <filter name="role" dataType="number" express="role = ${@role}" />
+    </query>
+
+    <query name="verifier">
+        <sql>
+            select * from
+             (
+                  select 1 as user_id, 'lily' as user_name, 1 as role
+                  union
+                  select 2 as user_id, 'lucy' as user_name, 2 as role
+             ) t
+             where role = ${@role}
+        </sql>
+        <verifier express="${@role} is null" message="role不能为空" code="10010" />
+    </query>
+
+    <query name="autoCompletion">
+        <sql>
+            select * from
+                (
+                    select 1 as user_id, 'lily' as user_name, 1 as role
+                    union
+                    select 2 as user_id, 'lucy' as user_name, 2 as role
+                ) t
+            #WHERE_CLAUSE#
+            <sqlPart sourcePath="role" autoCompletion="true">
+                and role = ${@role}
+			</sqlPart>
+            <sqlPart sourcePath="user_id" autoCompletion="true">
+				user_id = ${@user_id}
+            </sqlPart>
+        </sql>
+    </query>
+</model>

@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.model.bean;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
@@ -85,10 +86,13 @@ public class BatchExecuteSql extends Sql {
 			exeSourcePath = context.getCurrentPath() +"." +exeSourcePath;
 		}
 
-		int dataSize = context.getDataLength(exeSourcePath);
-
+		Object rootData = context.getData(exeSourcePath);
+		int dataSize =  DataUtil.getDataLength(rootData);
 		if(dataSize <= 0){
 			return;
+		}
+		if(rootData instanceof Collection && !(rootData instanceof ArrayList)){
+			rootData = ((Collection<?>)rootData).toArray();
 		}
 
 		String realTmpSql = tmpSql;
@@ -111,7 +115,7 @@ public class BatchExecuteSql extends Sql {
 		for (int begin= 0 ; begin < dataSize; begin=begin+batchSize){
 			int end = begin + batchSize;
 			if(end > dataSize) end = dataSize;
-			int size = execute(context,realTmpSql,params,exeSourcePath,provideName,begin,end);
+			int size = execute(context, rootData, realTmpSql,params,exeSourcePath,provideName,begin,end);
 			updateCount = updateCount +size;
 		}
 
@@ -129,14 +133,13 @@ public class BatchExecuteSql extends Sql {
 		}
 	}
 
-	private int execute(Context context, String realTmpSql, Map<String, Param> params, String exeSourcePath,String provideName, int begin ,int end){
+	private int execute(Context context, Object rootData, String realTmpSql, Map<String, Param> params, String exeSourcePath,String provideName, int begin ,int end){
 		Map<String, Param> exeParams = new LinkedHashMap<>(params);
 
 		StringBuilder eSql = new StringBuilder(beforeTmpSql);
 
-		Map<String, Object> elCache = new HashMap<>();
-
 		for (int i =begin; i< end; i++){
+			Object currentData = DBFoundEL.getDataByIndex(i,rootData);
 			for (String paramName : paramNameSet){
 				Param param = params.get(paramName);
 
@@ -152,17 +155,24 @@ public class BatchExecuteSql extends Sql {
 						newParam.setSourcePathHistory("set_by_index");
 					}else {
 						String sph;
+						Object value;
 						if (item != null && item.equals(sp)) {
 							sph = exeSourcePath + "[" + i + "]";
+							value = currentData;
 						} else {
 							sph = exeSourcePath + "[" + i + "]." + sp;
+							value = DBFoundEL.getData(sp, currentData);
 						}
-						newParam.setSourcePathHistory(sph);
-						Object value = context.getData(newParam.getSourcePathHistory(), elCache);
 						if ("".equals(value) && param.isEmptyAsNull()) {
 							value = null;
 						}
-						newParam.setValue(value);
+
+						if(value == null){
+							newParam.setValue(newParam.getDefaultValue());
+						}else{
+							newParam.setValue(value);
+						}
+						newParam.setSourcePathHistory(sph);
 					}
 					exeParams.put(newParam.getName(), newParam);
 				}

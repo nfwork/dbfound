@@ -43,10 +43,12 @@ public abstract class SqlEntity extends Entity {
 
 	protected final static Pattern paramPattern = Pattern.compile(paramReplace);
 
-	protected final static Pattern SQL_PART_PATTERN  = Pattern.compile("#[A-Z_]+#");
-	protected static final String SQL_PART = "#SQL_PART#";
+	protected final static Pattern KEY_PART_PATTERN  = Pattern.compile("#[A-Z_]+#");
 
-	protected final static Pattern timeMillisPattern = Pattern.compile("[0123456789]*");
+	protected static final String SQL_PART = "#SQL_PART#";
+	protected final static Pattern SQL_PART_PATTERN  = Pattern.compile(SQL_PART);
+
+	protected final static Pattern timeMillisPattern = Pattern.compile("[0-9]+");
 
 	@Override
 	public void doEndTag() {
@@ -632,60 +634,49 @@ public abstract class SqlEntity extends Entity {
 		return responseObject;
 	}
 
-	protected void setParam(Param nfParam, Context context, String cp, Map<String, Object> elCache) {
-
-		// 增加UUID取值 在sql执行的时候动态的获取UUID 2012年8月8日8:47:08
+	protected void setParam(Param nfParam, Context context, String currentPath,Object currentData, Map<String, Object> elCache) {
 		if (nfParam.isUUID()) {
 			nfParam.setSourcePathHistory("UUID");
 			nfParam.setDataType(DataType.VARCHAR);
 			return;
 		}
-		// end 修改
-
 		if (nfParam.getIoType() == IOType.OUT) {
-			return; // out参数直接返回
+			return;
 		}
+		String sph;
+		Object value;
 
-		// dbfound1.3新功能，根据sourcePath到pagerContext容器中取数据
-		String scope = nfParam.getScope();
-
-		// 设置 当前取值路径
-		String currentPath;
-		if (DataUtil.isNotNull(scope)) {
-			currentPath = scope;
-		} else {
-			currentPath = cp;
-		}
-
-		String realPath ;// 绝对路径
-
-		// 得到取值的相对路径
-		String sourcePath = nfParam.getSourcePath();
-		if (DataUtil.isNull(sourcePath)) {
-			sourcePath = nfParam.getName();
-			realPath = currentPath + "." + sourcePath;
-		} else {
-			// 判断sourcePath 是绝对路径，还是相当路径
-			if (ELEngine.isAbsolutePath(sourcePath)) {
-				realPath = sourcePath;
+		if (DataUtil.isNotNull(nfParam.getScope())) {
+			Map<?,?> data = (Map<?,?>)context.getDatas().get(nfParam.getScope());
+			if(data !=null) {
+				value = data.get(nfParam.getName());
+			}else{
+				value = null;
+			}
+			sph = nfParam.getScope() +"."+nfParam.getName();
+		}else {
+			String sourcePath = nfParam.getSourcePath();
+			if (DataUtil.isNull(sourcePath)) {
+				sourcePath = nfParam.getName();
+				sph = currentPath + "." + sourcePath;
+				value = DBFoundEL.getData(sourcePath, currentData);
 			} else {
-				realPath = currentPath + "." + sourcePath;
-			}
-		}
-
-		// 取值
-		Object paramValue = context.getData(realPath, elCache);
-
-		if(paramValue != null) {
-			if ("".equals(paramValue)) {
-				if(!nfParam.isEmptyAsNull()) {
-					nfParam.setValue("");
+				if (ELEngine.isAbsolutePath(sourcePath)) {
+					sph = sourcePath;
+					value = context.getData(sph, elCache);
+				} else {
+					sph = currentPath + "." + sourcePath;
+					value = DBFoundEL.getData(sourcePath, currentData);
 				}
-			} else{
-				nfParam.setValue(paramValue);
 			}
 		}
-		nfParam.setSourcePathHistory(realPath);
+		if ("".equals(value) && nfParam.isEmptyAsNull()) {
+			value = null;
+		}
+		if(value != null) {
+			nfParam.setValue(value);
+		}
+		nfParam.setSourcePathHistory(sph);
 	}
 
 	public void log(String sqlName, String sql, Map<String, Param> params, List<Object> exeParam) {

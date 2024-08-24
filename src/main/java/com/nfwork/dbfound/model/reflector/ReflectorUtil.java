@@ -41,7 +41,7 @@ public class ReflectorUtil extends PropertyTransfer {
 						if (columnValue != null) {
 							Class<?> fieldType = reflector.getSetterType(propertyName);
 
-							if (Enum.class.isAssignableFrom(fieldType)){
+							if (EnumHandlerFactory.isEnum(fieldType)){
 								String stringValue = rs.getString(i);
 								if(stringValue!=null) {
 									columnValue = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(stringValue);

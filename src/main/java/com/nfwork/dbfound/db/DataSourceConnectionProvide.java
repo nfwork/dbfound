@@ -82,19 +82,19 @@ public class DataSourceConnectionProvide extends ConnectionProvide {
 	}
 
 	@Override
-	public void regist() {
+	public void register() {
 		if (dataSource == null) {
 			init(jndiName);
 		}
-		super.regist();
+		super.register();
 		if(dataSource != null){
 			DBFoundConfig.getDsp().add(this);
 		}
 	}
 
 	@Override
-	public void unRegist() {
-		super.unRegist();
+	public void unRegister() {
+		super.unRegister();
 		if(dataSource != null){
 			DBFoundConfig.getDsp().remove(this);
 			try {

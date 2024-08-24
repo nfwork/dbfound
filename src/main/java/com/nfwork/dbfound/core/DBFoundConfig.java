@@ -191,7 +191,7 @@ public class DBFoundConfig {
 					&& !driverClass.isEmpty() && !url.isEmpty() && !username.isEmpty()) {
 				ConnectionProvide provide = new JdbcConnectionProvide(provideName, url, driverClass, dialect, username,
 						password);
-				provide.regist();
+				provide.register();
 				LogUtil.info( "register jdbcConnProvide success, provideName:" + provideName);
 			} else {
 				throw new DBFoundRuntimeException("user jdbc type, url driverClass username dialect can not be null");
@@ -209,7 +209,7 @@ public class DBFoundConfig {
 			}
 			if (dialect != null && dataSource != null && !dialect.isEmpty() && !dataSource.isEmpty()) {
 				ConnectionProvide provide = new DataSourceConnectionProvide(provideName, dataSource, dialect);
-				provide.regist();
+				provide.register();
 				LogUtil.info("register dataSourceConnProvide success, provideName:"+ provideName);
 			} else if (dialect != null && className != null && !dialect.isEmpty() && !className.isEmpty()) {
 				DataSource ds = (DataSource) Class.forName(className).getConstructor().newInstance();
@@ -220,7 +220,7 @@ public class DBFoundConfig {
 					reflector.setProperty(ds, property.attributeValue("name"), property.attributeValue("value"));
 				}
 				DataSourceConnectionProvide provide = new DataSourceConnectionProvide(provideName, ds, dialect);
-				provide.regist();
+				provide.register();
 				LogUtil.info("register dataSourceConnProvide success, provideName:"+ provideName);
 			} else {
 				throw new DBFoundRuntimeException("user dataSource type, dataSource dialect can not null");
