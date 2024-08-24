@@ -33,10 +33,7 @@ public class ExecuteTest {
         Map<String,String> map2 = new HashMap<>();
         map2.put("code","user_name");
         map2.put("value","lucy");
-        List<Map<String,String>> list = new ArrayList<>();
-        list.add(map1);
-        list.add(map2);
-        context.setParamData("fields", list);
+        context.setParamData("fields", CollectionUtil.asList(map1,map2));
         context.setParamData("role", Role.STUDENT);
 
         ResponseObject responseObject = ModelEngine.execute(context, "test/execute", null);
@@ -98,7 +95,7 @@ public class ExecuteTest {
     public void testEmpty() {
         Context context = new Context();
         context.setParamData("user_name","");
-        context.setParamData("names", CollectionUtil.asSet("","",""));
+        context.setParamData("names", CollectionUtil.asList("","1",""));
         ModelEngine.execute(context, "test/execute", "empty");
         assert context.getString("outParam.user_name").equals("lucy");
     }
@@ -107,7 +104,7 @@ public class ExecuteTest {
     public void testDefaultValue() {
         Context context = new Context();
         context.setParamData("user_name","");
-        context.setParamData("names", CollectionUtil.asSet("","",""));
+        context.setParamData("names", CollectionUtil.asList("","1",""));
         ModelEngine.execute(context, "test/execute", "defaultValue");
         assert context.getString("outParam.user_name").equals("lucy");
     }
