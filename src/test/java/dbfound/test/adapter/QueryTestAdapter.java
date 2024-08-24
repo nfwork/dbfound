@@ -17,7 +17,6 @@ public class QueryTestAdapter implements ObjectQueryAdapter {
 
     @Override
     public void beforeCount(Context context, Map<String, Param> params, Count count) {
-        System.out.println(123);
         context.setParamData("count", 1);
     }
 

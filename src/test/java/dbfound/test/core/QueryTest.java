@@ -2,6 +2,7 @@ package dbfound.test.core;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.QueryResponseObject;
+import com.nfwork.dbfound.exception.VerifyException;
 import com.nfwork.dbfound.model.ModelEngine;
 import dbfound.test.entity.Role;
 import dbfound.test.entity.User;
@@ -122,4 +123,24 @@ public class QueryTest {
         assert responseObject.get().getUserId() == 2;
         assert responseObject.get().getUserName().equals("lucy");
     }
+
+    @Test
+    public void testVerify() {
+        Context context = new Context();
+
+        int a = 0;
+        try {
+            ModelEngine.query(context, "test/query", "verifier", User.class);
+        }catch (VerifyException exception){
+            assert exception.getMessage().equals("role不能为空");
+            assert exception.getCode().equals("10010");
+            a = 1;
+        }
+        assert a==1;
+        context.setParamData("role", Role.STUDENT);
+        QueryResponseObject<User> responseObject = ModelEngine.query(context, "test/query", "verifier", User.class);
+        assert responseObject.get().getRole() == Role.STUDENT;
+        assert responseObject.get().getUserId() == 2;
+    }
+
 }

@@ -95,4 +95,17 @@
         </sql>
         <filter name="role" dataType="number" express="role = ${@role}" />
     </query>
+
+    <query name="verifier">
+        <sql>
+            select * from
+             (
+                  select 1 as user_id, 'lily' as user_name, 1 as role
+                  union
+                  select 2 as user_id, 'lucy' as user_name, 2 as role
+             ) t
+             where role = ${@role}
+        </sql>
+        <verifier express="${@role} is null" message="role不能为空" code="10010" />
+    </query>
 </model>
