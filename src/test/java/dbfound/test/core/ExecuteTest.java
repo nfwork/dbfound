@@ -65,6 +65,8 @@ public class ExecuteTest {
         assert Objects.equals(responseObject.getOutParam().get("user_id_0"), 1L);
         assert Objects.equals(responseObject.getOutParam().get("user_id_1"), 2L);
 
+        String[] users1 = {"1","2",null,""};
+        context.setParamData("users",users1);
         ModelEngine.execute(context, "test/execute", "batchExecuteSql");
     }
 

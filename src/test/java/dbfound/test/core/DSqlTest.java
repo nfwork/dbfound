@@ -22,6 +22,9 @@ public class DSqlTest {
         boolean result = DSqlEngine.checkWhenSql("? like 'john'",list,"", context);
         assert Boolean.TRUE.equals(result);
 
+        result = DSqlEngine.checkWhenSql("? not like 'joh%'",list,"", context);
+        assert Boolean.FALSE.equals(result);
+
         result = DSqlEngine.checkWhenSql("? like 'joh%'",list,"", context);
         assert Boolean.TRUE.equals(result);
 
