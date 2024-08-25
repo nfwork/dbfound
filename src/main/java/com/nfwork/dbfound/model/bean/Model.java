@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.nfwork.dbfound.el.ELEngine;
+import com.nfwork.dbfound.exception.ModelCompileException;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DataUtil;
 import org.dom4j.Element;
@@ -59,10 +60,16 @@ public class Model extends Entity {
 	}
 
 	public void putQuery(String name, Query query) {
+		if(querys.containsKey(name)){
+			throw new ModelCompileException("the queryName '"+name+"' is repeated in Model '"+ modelName +"'");
+		}
 		querys.put(name, query);
 	}
 
 	public void putExecute(String name, Execute execute) {
+		if(executes.containsKey(name)){
+			throw new ModelCompileException("the executeName '"+name+"' is repeated in Model '"+ modelName +"'");
+		}
 		executes.put(name, execute);
 	}
 

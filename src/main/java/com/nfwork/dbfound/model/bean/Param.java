@@ -10,6 +10,7 @@ import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LocalDateUtil;
+import com.nfwork.dbfound.util.LogUtil;
 
 public class Param extends Entity implements Cloneable{
 	private String name = "";
@@ -34,12 +35,28 @@ public class Param extends Entity implements Cloneable{
 	public void doEndTag() {
 		if (getParent() instanceof Model) {
 			Model model = (Model) getParent();
+			if (model.getParams().containsKey(name)){
+				String warn = "the paramName '"+name+"' is repeated in Model '"+ model.getModelName() +"'";
+				LogUtil.warn(warn);
+			}
 			model.getParams().put(name, this);
 		} else if (getParent() instanceof Execute) {
 			Execute execute = (Execute) getParent();
+			if (execute.getParams().containsKey(name)){
+				Model model = (Model) execute.getParent();
+				String warn = "model compile warning, the paramName '"+name+"' is repeated in Execute '"
+						+ execute.getName() +"' of Model '" + model.getModelName()+"'";
+				LogUtil.warn(warn);
+			}
 			execute.getParams().put(name, this);
 		} else if (getParent() instanceof Query) {
 			Query query = (Query) getParent();
+			if (query.getParams().containsKey(name)){
+				Model model = (Model) query.getParent();
+				String warn = "model compile warning, the paramName '"+name+"' is repeated in Query '"
+						+ query.getName() +"' of Model '" + model.getModelName()+"'";
+				LogUtil.warn(warn);
+			}
 			query.getParams().put(name, this);
 		}
 		this.defaultValue = value;
