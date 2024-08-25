@@ -36,7 +36,7 @@ public class Param extends Entity implements Cloneable{
 		if (getParent() instanceof Model) {
 			Model model = (Model) getParent();
 			if (model.getParams().containsKey(name)){
-				String warn = "the paramName '"+name+"' is repeated in Model '"+ model.getModelName() +"'";
+				String warn = "model compile warning, the paramName '"+name+"' is repeated in Model '"+ model.getModelName() +"'";
 				LogUtil.warn(warn);
 			}
 			model.getParams().put(name, this);
