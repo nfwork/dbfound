@@ -43,6 +43,22 @@ public class ExecuteTest {
     }
 
     @Test
+    public void testForPart(){
+        Context context = new Context();
+        Map<String,String> map1 = new HashMap<>();
+        map1.put("code","user_id");
+        map1.put("value","1");
+        Map<String,String> map2 = new HashMap<>();
+        map2.put("code","user_name");
+        map2.put("value","lucy");
+        context.setParamData("fields1", CollectionUtil.asList(map1,map2));
+        context.setParamData("fields2", CollectionUtil.asList(map1,map2));
+        ResponseObject responseObject = ModelEngine.execute(context, "test/execute", "forPart");
+        assert Objects.equals(responseObject.getOutParam().get("user_id"), "1");
+        assert Objects.equals(responseObject.getOutParam().get("user_name"), "lucy");
+    }
+
+    @Test
     public void testIfPart() {
         Context context = new Context();
         context.setParamData("user_id",1);
@@ -64,9 +80,14 @@ public class ExecuteTest {
         ResponseObject responseObject = ModelEngine.execute(context, "test/execute", "batchSql");
         assert Objects.equals(responseObject.getOutParam().get("user_id_0"), 1L);
         assert Objects.equals(responseObject.getOutParam().get("user_id_1"), 2L);
+    }
 
-        String[] users1 = {"1","2",null,""};
+    @Test
+    public void testBatchExecuteSql() {
+        Context context = new Context();
+        String[] users1 = {"1","2",null,"","3","4","5"};
         context.setParamData("users",users1);
+        context.setParamData("users_copy",users1);
         ModelEngine.execute(context, "test/execute", "batchExecuteSql");
     }
 

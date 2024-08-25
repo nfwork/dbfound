@@ -60,6 +60,7 @@ public class SqlEntityTest extends SqlEntity {
         initParamValue(param);
         assert param.getValue().toString().equals(JsonUtil.toJson(value));
 
+        param = new Param();
         param.setDataType(DataType.DATE);
         value = System.currentTimeMillis();
         param.setValue(value);
@@ -71,18 +72,22 @@ public class SqlEntityTest extends SqlEntity {
         assert param.getValue() instanceof Date;
 
         param.setValue("2024-08-25");
+        param.setName("date");
         initParamValue(param);
         assert param.getValue() instanceof LocalDate;
 
-        param = new Param();
-        param.setName("user_code");
-        param.setDataType(DataType.COLLECTION);
+        Param ids = new Param();
+        ids.setName("user_ids");
+        ids.setDataType(DataType.COLLECTION);
         value = new String[]{"1","2","3"};
-        param.setValue(value);
+        ids.setValue(value);
+
         Map<String,Param> params = new HashMap<>();
+        params.put(ids.getName(),ids);
         params.put(param.getName(),param);
-        staticParamParse("#{@user_code}",params);
-        assert param.getValue() instanceof SimpleItemList;
+        String result = staticParamParse("user_id in (#{@user_ids}) and date='#{@date}'",params);
+        assert ids.getValue() instanceof SimpleItemList;
+        assert result.equals("user_id in (1,2,3) and date='2024-08-25'");
     }
 
 
