@@ -2,6 +2,7 @@ package dbfound.test.core;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.MySqlDialect;
+import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.dsql.DSqlFunctionForMysql;
 import org.junit.Test;
@@ -198,6 +199,14 @@ public class DSqlTest {
         new DSqlFunctionForTest().register(MySqlDialect.class);
         result = DSqlEngine.checkWhenSql("say_hello() = 'hello world' ",list,"_default", context);
         assert Boolean.TRUE.equals(result);
+
+        int flag = 1;
+        try {
+            DSqlEngine.checkWhenSql("isnull.abc(?)", list, "_default", context);
+        }catch (DSqlNotSupportException e){
+            flag = 2;
+        }
+        assert flag ==2;
     }
 
     @Test

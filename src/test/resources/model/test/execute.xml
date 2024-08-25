@@ -29,6 +29,34 @@
 		</sqls>
 	</execute>
 
+    <execute name="forPart">
+        <param name="user_id" dataType="varchar" ioType="out" />
+        <param name="user_name" dataType="varchar" ioType="out" />
+        <sqls>
+            <querySql>
+                select
+                <sqlPart type="for" sourcePath="fields1">
+                    ${@value} as #{@code}
+                </sqlPart>
+                <sqlPart type="for" sourcePath="fields1" index="index" begin=", ">
+                    ${@value} as #{@code}_#{@index}
+                </sqlPart>
+            </querySql>
+            <executeSql>
+                select
+                <sqlPart type="for" sourcePath="fields2">
+                    ${@value} as #{@code}
+                </sqlPart>
+            </executeSql>
+            <querySql>
+                select
+                <sqlPart type="for" sourcePath="fields1">
+                    ${@value} as #{@code}
+                </sqlPart>
+            </querySql>
+        </sqls>
+    </execute>
+
     <execute name="ifPart">
         <param name="user_id" dataType="varchar" ioType="both" />
         <param name="user_name" dataType="varchar" ioType="both" />
@@ -92,13 +120,19 @@
     <execute name="batchExecuteSql">
         <param name="value" dataType="varchar" value="3" />
         <sqls>
-            <batchExecuteSql sourcePath="users" item="user_id" index="index">
+            <batchExecuteSql sourcePath="users" item="user_id" index="index" batchSize="3">
                 select
                     #BATCH_TEMPLATE_BEGIN#
                     ${@user_id} as user_id_#{@index},
                     #{@value} as value_#{@index}
                     #BATCH_TEMPLATE_END#
 			</batchExecuteSql>
+            <executeSql>
+                select
+                <sqlPart type="for" sourcePath="users_copy" index="index" item="user_id">
+                    ${@user_id} as user_#{@index}
+                </sqlPart>
+            </executeSql>
         </sqls>
     </execute>
 

@@ -313,6 +313,9 @@ public class DBFoundEL extends PropertyTransfer{
 	private final static Pattern p = Pattern.compile("\\[[0-9 ]+]");
 
 	private static List<Integer> findIndex(String value) {
+		if(!value.contains("[")){
+			return null;
+		}
 		List<Integer> list = null;
 		Matcher m = p.matcher(value);
 		while (m.find()) {
