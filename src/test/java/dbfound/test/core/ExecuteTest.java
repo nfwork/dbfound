@@ -92,6 +92,24 @@ public class ExecuteTest {
     }
 
     @Test
+    public void testBatchInsert() throws Exception {
+        Context context = new Context();
+        String[] roles = {"batch_role_0", "batch_role_1", "batch_role_2", "batch_role_3", "batch_role_4"};
+        context.setParamData("roles", roles);
+        TransactionUtil.executeWithoutResult(context,()-> {
+            ModelEngine.execute(context, "test/execute", "batchInsert");
+            assert context.getInt("outParam.num") == 5;
+            List<Map<String, Object>> roleList = ModelEngine.query(context, "test/execute", "getRoles").getDatas();
+            assert roleList.get(1).get("role_code").equals("batch_role_1");
+            assert roleList.get(4).get("role_code").equals("batch_role_4");
+            assert roleList.get(3).get("role_description").equals("batch_role_3");
+            assert roleList.size() == 5;
+            ModelEngine.execute(context, "test/execute", "deleteRoles");
+            assert context.getInt("outParam.delete_num") == 5;
+        });
+    }
+
+    @Test
     public void testAdapter() {
         Context context = new Context();
         ModelEngine.execute(context, "test/execute", "adapter");

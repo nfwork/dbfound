@@ -136,6 +136,45 @@
         </sqls>
     </execute>
 
+    <execute name="batchInsert">
+        <param name="num" dataType="number" ioType="out"/>
+        <sqls>
+            <batchExecuteSql sourcePath="roles" item="role_code" index="index" batchSize="2" affectedCountParam="num">
+                INSERT INTO sys_role
+                (role_code,
+                 role_description,
+                 create_by,
+                 last_update_by,
+                 create_date,
+                 last_update_date)
+                VALUES
+                #BATCH_TEMPLATE_BEGIN#
+                    (${@role_code},
+                    ${@value},
+                    1,
+                    1,
+                    NOW(),
+                    NOW())
+                #BATCH_TEMPLATE_END#
+            </batchExecuteSql>
+        </sqls>
+    </execute>
+
+    <query name="getRoles">
+        <sql>
+            select * from sys_role where role_code like 'batch_role%'
+        </sql>
+    </query>
+
+    <execute name="deleteRoles">
+        <param name="delete_num" dataType="number" ioType="out"/>
+		<sqls>
+			<executeSql affectedCountParam="delete_num">
+				delete from sys_role where role_code in (${@roles})
+			</executeSql>
+		</sqls>
+	</execute>
+
     <execute name="adapter" adapter="dbfound.test.adapter.ExecuteTestAdapter">
         <sqls>
             <querySql>
