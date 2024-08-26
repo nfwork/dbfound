@@ -1,63 +1,49 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
-			xmlns="http://dbfound.googlecode.com/model" targetNamespace="http://dbfound.googlecode.com/model">
+			xmlns:d="http://dbfound.googlecode.com/model" targetNamespace="http://dbfound.googlecode.com/model">
 
 	<xsd:element name="model">
 		<xsd:complexType>
 			<xsd:choice maxOccurs="unbounded" minOccurs="0">
-				<xsd:element maxOccurs="unbounded" minOccurs="0" name="param" type="param_type" />
-				<xsd:element maxOccurs="unbounded" minOccurs="0" name="query" type="query_type" />
-				<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute" type="execute_type" />
+				<xsd:element maxOccurs="unbounded" minOccurs="0" name="param" type="d:param_type" />
+				<xsd:element maxOccurs="unbounded" minOccurs="0" name="query" type="d:query_type">
+					<xsd:unique name="queryParamUnique">
+						<xsd:selector xpath="d:param"/>
+						<xsd:field xpath="@name"/>
+					</xsd:unique>
+					<xsd:unique name="queryFilterUnique">
+						<xsd:selector xpath="d:filter"/>
+						<xsd:field xpath="@name"/>
+					</xsd:unique>
+				</xsd:element>
+				<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute" type="d:execute_type">
+					<xsd:unique name="executeParamUnique">
+						<xsd:selector xpath="d:param"/>
+						<xsd:field xpath="@name"/>
+					</xsd:unique>
+				</xsd:element>
 			</xsd:choice>
 			<xsd:attribute name="connectionProvide" />
 		</xsd:complexType>
+		<xsd:unique name="modelParamUnique">
+			<xsd:selector xpath="d:param"/>
+			<xsd:field xpath="@name"/>
+		</xsd:unique>
+		<xsd:unique name="modelQueryUnique">
+			<xsd:selector xpath="d:query"/>
+			<xsd:field xpath="@name"/>
+		</xsd:unique>
+		<xsd:unique name="modelExecuteUnique">
+			<xsd:selector xpath="d:execute"/>
+			<xsd:field xpath="@name"/>
+		</xsd:unique>
 	</xsd:element>
 
 	<xsd:complexType name="query_type">
 		<xsd:sequence>
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="param" type="param_type" />
-			<xsd:element maxOccurs="1" minOccurs="1" name="sql" nillable="false" type="sql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="filter">
-				<xsd:complexType>
-					<xsd:attribute name="active">
-						<xsd:simpleType>
-							<xsd:restriction base="xsd:NMTOKEN">
-								<xsd:enumeration value="true" />
-								<xsd:enumeration value="false" />
-							</xsd:restriction>
-						</xsd:simpleType>
-					</xsd:attribute>
-					<xsd:attribute name="name" />
-					<xsd:attribute name="condition" />
-					<xsd:attribute name="express" />
-					<xsd:attribute name="dataType">
-						<xsd:simpleType>
-							<xsd:restriction base="xsd:NMTOKEN">
-								<xsd:enumeration value="varchar" />
-								<xsd:enumeration value="number" />
-								<xsd:enumeration value="date" />
-								<xsd:enumeration value="boolean" />
-								<xsd:enumeration value="collection" />
-								<xsd:enumeration value="file" />
-							</xsd:restriction>
-						</xsd:simpleType>
-					</xsd:attribute>
-					<xsd:attribute name="scope">
-						<xsd:simpleType>
-							<xsd:restriction base="xsd:NMTOKEN">
-								<xsd:enumeration value="session" />
-								<xsd:enumeration value="request" />
-								<xsd:enumeration value="param" />
-								<xsd:enumeration value="cookie" />
-								<xsd:enumeration value="header" />
-								<xsd:enumeration value="outParam" />
-							</xsd:restriction>
-						</xsd:simpleType>
-					</xsd:attribute>
-					<xsd:attribute name="sourcePath" />
-					<xsd:attribute name="value" />
-					<xsd:attribute name="innerPath" />
-				</xsd:complexType>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="param" type="d:param_type" />
+			<xsd:element name="sql" type="d:sql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="filter" type="d:filter_type">
 			</xsd:element>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="verifier">
 				<xsd:complexType>
@@ -77,10 +63,51 @@
 		<xsd:attribute name="connectionProvide" />
 	</xsd:complexType>
 
+	<xsd:complexType name="filter_type">
+		<xsd:attribute name="active">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="true" />
+					<xsd:enumeration value="false" />
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="name" use="required"/>
+		<xsd:attribute name="condition" />
+		<xsd:attribute name="express" />
+		<xsd:attribute name="dataType">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="varchar" />
+					<xsd:enumeration value="number" />
+					<xsd:enumeration value="date" />
+					<xsd:enumeration value="boolean" />
+					<xsd:enumeration value="collection" />
+					<xsd:enumeration value="file" />
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="scope">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="session" />
+					<xsd:enumeration value="request" />
+					<xsd:enumeration value="param" />
+					<xsd:enumeration value="cookie" />
+					<xsd:enumeration value="header" />
+					<xsd:enumeration value="outParam" />
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="sourcePath" />
+		<xsd:attribute name="value" />
+		<xsd:attribute name="innerPath" />
+	</xsd:complexType>
+
 	<xsd:complexType name="execute_type">
 		<xsd:sequence>
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="param" type="param_type" />
-			<xsd:element maxOccurs="1" minOccurs="0" name="sqls" type="sqls_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="param" type="d:param_type" />
+			<xsd:element minOccurs="0" name="sqls" type="d:sqls_type" />
 		</xsd:sequence>
 		<xsd:attribute name="name" />
 		<xsd:attribute name="adapter" />
@@ -88,7 +115,7 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="param_type">
-		<xsd:attribute name="name" />
+		<xsd:attribute name="name" use="required" />
 		<xsd:attribute name="dataType">
 			<xsd:simpleType>
 				<xsd:restriction base="xsd:NMTOKEN">
@@ -170,21 +197,21 @@
 
 	<xsd:complexType name="sql_type" mixed="true">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="sqlTrim_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="d:sqlPart_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="d:sqlTrim_type" />
 		</xsd:choice>
 	</xsd:complexType>
 
 	<xsd:complexType name="sqlTrim_type" mixed="true">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="d:sqlPart_type" />
 		</xsd:choice>
 	</xsd:complexType>
 
 	<xsd:complexType name="sqlPart_type" mixed="true">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="sqlTrim_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="d:sqlPart_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="d:sqlTrim_type" />
 		</xsd:choice>
 		<xsd:attribute name="type">
 			<xsd:simpleType>
@@ -221,15 +248,15 @@
 
 	<xsd:complexType name="sqls_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="executeSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql" type="batchExecuteSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="querySql_type"/>
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="caseSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="otherwiseSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="collisionSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="batchSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="d:executeSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql" type="d:batchExecuteSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="d:querySql_type"/>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="d:java_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="d:caseSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="d:whenSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="d:otherwiseSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="d:collisionSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="d:batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
@@ -260,29 +287,29 @@
 					</xsd:attribute>
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="setContextData" type="setContextData_type"/>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="setContextData" type="d:setContextData_type"/>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="printContext"/>
 		</xsd:choice>
 	</xsd:complexType>
 
 	<xsd:complexType name="caseSql_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="otherwiseSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="d:whenSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="d:otherwiseSql_type" />
 		</xsd:choice>
 	</xsd:complexType>
 
 	<xsd:complexType name="whenSql_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="executeSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql" type="batchExecuteSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="querySql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="caseSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="otherwiseSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="collisionSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="batchSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="d:executeSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql" type="d:batchExecuteSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="d:querySql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="d:java_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="d:caseSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="d:whenSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="d:otherwiseSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="d:collisionSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="d:batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
@@ -305,23 +332,23 @@
 					<xsd:attribute name="rootPath" />
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="setContextData" type="setContextData_type"/>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="setContextData" type="d:setContextData_type"/>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="printContext"/>
 		</xsd:choice>
-		<xsd:attribute name="when" />
+		<xsd:attribute name="when" use="required" />
 	</xsd:complexType>
 
 	<xsd:complexType name="otherwiseSql_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="executeSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql" type="batchExecuteSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="querySql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="caseSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="otherwiseSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="collisionSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="batchSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="d:executeSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql" type="d:batchExecuteSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="d:querySql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="d:java_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="d:caseSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="d:whenSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="d:otherwiseSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="d:collisionSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="d:batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
@@ -344,22 +371,22 @@
 					<xsd:attribute name="rootPath" />
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="setContextData" type="setContextData_type"/>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="setContextData" type="d:setContextData_type"/>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="printContext"/>
 		</xsd:choice>
 	</xsd:complexType>
 
 	<xsd:complexType name="batchSql_type">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="executeSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql"  type="batchExecuteSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="querySql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="java_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="caseSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="whenSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="otherwiseSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="collisionSql_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="batchSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="executeSql" type="d:executeSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchExecuteSql"  type="d:batchExecuteSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="querySql" type="d:querySql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="java" type="d:java_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="caseSql" type="d:caseSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="whenSql" type="d:whenSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="otherwiseSql" type="d:otherwiseSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="collisionSql" type="d:collisionSql_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="batchSql" type="d:batchSql_type" />
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="execute">
 				<xsd:complexType>
 					<xsd:attribute name="modelName" />
@@ -382,7 +409,7 @@
 					<xsd:attribute name="rootPath" />
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="setContextData" type="setContextData_type"/>
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="setContextData" type="d:setContextData_type"/>
 			<xsd:element maxOccurs="unbounded" minOccurs="0" name="printContext"/>
 		</xsd:choice>
 		<xsd:attribute name="cursor" />
@@ -394,8 +421,8 @@
 
 	<xsd:complexType name="executeSql_type" mixed="true">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="sqlTrim_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="d:sqlPart_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="d:sqlTrim_type" />
 		</xsd:choice>
 		<xsd:attribute name="generatedKeyParam" />
 		<xsd:attribute name="affectedCountParam" />
@@ -403,8 +430,8 @@
 
 	<xsd:complexType name="querySql_type" mixed="true">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="sqlPart_type" />
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="sqlTrim_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlPart" type="d:sqlPart_type" />
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="sqlTrim" type="d:sqlTrim_type" />
 		</xsd:choice>
 	</xsd:complexType>
 
@@ -450,7 +477,7 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="collisionSql_type">
-		<xsd:attribute name="where" />
+		<xsd:attribute name="where" use="required" />
 		<xsd:attribute name="message" />
 		<xsd:attribute name="code" />
 	</xsd:complexType>
