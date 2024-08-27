@@ -123,6 +123,32 @@ public class ELTest {
     }
 
     @Test
+    public void testSetData(){
+        Context context = new Context();
+        User user = new User();
+        user.setUserName("lily");
+        context.setData("param.user", user);
+        context.setParamData("user.role", Role.STUDENT);
+        assert context.getString("param.user.user_name").equals(user.getUserName());
+        assert context.getData("param.user.role") == Role.STUDENT;
+
+        context.setData("param.hello.world",1);
+        assert context.getInt("param.hello.world") == 1;
+
+        context.setParamData("hello.john[1]",1);
+        assert context.getInt("param.hello.john[1]") == 1;
+
+        context.setParamData("hello.john[10]",10);
+        assert context.getInt("param.hello.john[10]") == 10;
+
+        context.setParamData("hello.john[5].name[10]",100);
+        assert context.getInt("param.hello.john[5].name[10]") == 100;
+
+        assert context.getInt("param.hello.john[9].name[10]") == null;
+        assert context.getInt("param.hello1.john[9].name[10]") == null;
+    }
+
+    @Test
     public void testSizeAndLength(){
         Context context = new Context();
 
