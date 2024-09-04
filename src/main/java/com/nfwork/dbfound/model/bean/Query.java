@@ -223,9 +223,7 @@ public class Query extends SqlEntity {
 		if(sql == null) {
 			throw new DBFoundRuntimeException("query entity must have a sql");
 		}
-		String querySql = initFilterAndSqlPart(sql.getSql(), params, context, provideName);
-		querySql = staticParamParse(querySql, params);
-		return querySql;
+		return initFilterAndSqlPart(sql.getSql(), params, context, provideName);
 	}
 
 	private <T> List<T> doExecuteQuery(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> clazz, boolean autoPaging) {

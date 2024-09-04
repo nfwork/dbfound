@@ -52,8 +52,6 @@ public class QuerySql extends Sql {
 
 		Connection conn = context.getConn(provideName);
 
-		querySql = staticParamParse(querySql, params);
-
 		List<Object> exeParam = new ArrayList<>();
 		String esql = getExecuteSql(querySql, params, exeParam);
 

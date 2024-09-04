@@ -51,9 +51,8 @@ public class CollisionSql extends SqlEntity {
 			throw new DBFoundRuntimeException(initError);
 		}
 
-		String whereSql = staticParamParse(where, params);
 		List<Object> exeParam = new ArrayList<>();
-		String eSql = getExecuteSql(whereSql, params, exeParam);
+		String eSql = getExecuteSql(where, params, exeParam);
 
 		if( DSqlConfig.isOpenDSql() && useDSql){
 			try {

@@ -194,7 +194,6 @@ public class BatchExecuteSql extends Sql {
 	private int execute(Context context, Map<String, Param> params, String provideName,String sql, int begin) {
 		Connection conn = context.getConn(provideName);
 
-		sql = staticParamParse(sql, params);
 		List<Object> exeParam = new ArrayList<>();
 		String esql = getExecuteSql(sql, params, exeParam);
 

@@ -9,9 +9,7 @@ import com.nfwork.dbfound.util.JsonUtil;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SqlEntityTest extends SqlEntity {
 
@@ -49,6 +47,57 @@ public class SqlEntityTest extends SqlEntity {
         userCode.setEmptyAsNull(false);
         setParam(userCode,context,"param", context.getParamDatas(), elCache);
         assert userCode.getStringValue().isEmpty();
+    }
+
+    @Test
+    public void testGetExecuteSql(){
+        Param ids = new Param();
+        ids.setName("ids");
+        ids.setDataType(DataType.COLLECTION);
+        String[] value = new String[]{"1","2","3"};
+        ids.setValue(value);
+
+        Map<String,Param> params = new HashMap<>();
+        params.put(ids.getName(),ids);
+        List<Object> exeParam = new ArrayList<>();
+
+        String sql = getExecuteSql("id in (${@ids})",params,exeParam);
+        assert sql.equals("id in (?,?,?)");
+        assert exeParam.size() == 3;
+        assert "3".equals(exeParam.get(2));
+
+        exeParam.clear();
+        sql = getExecuteSql("id in (#{@ids})",params,exeParam);
+        assert sql.equals("id in (1,2,3)");
+        assert exeParam.isEmpty();
+
+        Param tmp = new Param();
+        tmp.setName("tmp");
+        tmp.setValue("id in (${@ids})");
+        params.put(tmp.getName(),tmp);
+        sql = getExecuteSql("select * from dual where #{@tmp}",params,exeParam);
+        System.out.println(sql);
+        assert sql.equals("select * from dual where id in (?,?,?)");
+        assert exeParam.size() == 3;
+        assert "2".equals(exeParam.get(1));
+
+        Param fields = new Param();
+        fields.setName("fields");
+        fields.setDataType(DataType.COLLECTION);
+        fields.setValue(new String[]{"user_id","user_name"});
+        params.put("fields",fields);
+        Param limit = new Param();
+        limit.setName("limit");
+        limit.setValue(10);
+        limit.setDataType(DataType.NUMBER);
+        params.put("limit",limit);
+        exeParam.clear();
+        sql = getExecuteSql("select #{@fields} from user where #{@tmp} limit ${@limit}",params,exeParam);
+        System.out.println(sql);
+        assert sql.equals("select user_id,user_name from user where id in (?,?,?) limit ?");
+        assert exeParam.size() == 4;
+        System.out.println(exeParam);
+        assert Objects.equals(10,exeParam.get(3));
     }
 
     @Test
