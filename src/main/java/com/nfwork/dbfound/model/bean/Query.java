@@ -183,7 +183,7 @@ public class Query extends SqlEntity {
 				}
 
 				if (count.isExecuteCount()) {
-					countItems(context, count, params, provideName);
+					countItems(context, count, provideName);
 				}
 				ro.setTotalCounts(count.getTotalCounts());
 			}
@@ -479,7 +479,10 @@ public class Query extends SqlEntity {
 			}
 		}
 
+		List<Object> sqlParams = new ArrayList<>();
+		cSql = getExecuteSql(cSql,params,sqlParams);
 		count.setCountSql(cSql);
+		count.setSqlParams(sqlParams);
 		return count;
 	}
 
@@ -487,32 +490,29 @@ public class Query extends SqlEntity {
 	 * 统计sql查询总共的条数
 	 *
 	 */
-	private void countItems(Context context,Count count ,Map<String, Param> params, String provideName) {
+	private void countItems(Context context,Count count, String provideName) {
 
 		String cSql = count.getCountSql();
 		Connection conn = context.getConn(provideName);
 
-		List<Object> exeParam = new ArrayList<>();
-		String ceSql = getExecuteSql(cSql,params, exeParam);
-
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
 		try {
-			statement = conn.prepareStatement(ceSql);
+			statement = conn.prepareStatement(cSql);
 			if (queryTimeout != null) {
 				statement.setQueryTimeout(queryTimeout);
 			}
 			// 参数设定
-			initParam(statement, exeParam);
+			initParam(statement, count.getSqlParams());
 			dataset = statement.executeQuery();
 			dataset.next();
 			count.setTotalCounts( dataset.getLong(1));
 		} catch (SQLException e) {
-			throw new SqlExecuteException(provideName, getSqlTask(context,"QueryCount"), ceSql, e.getMessage(), e);
+			throw new SqlExecuteException(provideName, getSqlTask(context,"QueryCount"), cSql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.logCountSql(ceSql, exeParam);
+			LogUtil.logCountSql(cSql, count.getSqlParams());
 		}
 	}
 
