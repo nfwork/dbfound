@@ -1,5 +1,7 @@
 package com.nfwork.dbfound.model.base;
 
+import java.util.List;
+
 public class Count {
 
     String countSql;
@@ -9,6 +11,8 @@ public class Count {
     int dataSize ;
 
     long totalCounts;
+
+    List<Object> sqlParams;
 
     public String getCountSql() {
         return countSql;
@@ -40,5 +44,13 @@ public class Count {
 
     public void setTotalCounts(long totalCounts) {
         this.totalCounts = totalCounts;
+    }
+
+    public List<Object> getSqlParams() {
+        return sqlParams;
+    }
+
+    public void setSqlParams(List<Object> sqlParams) {
+        this.sqlParams = sqlParams;
     }
 }
