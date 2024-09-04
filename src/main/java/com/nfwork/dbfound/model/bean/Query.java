@@ -172,7 +172,7 @@ public class Query extends SqlEntity {
 			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
 				ro.setTotalCounts(datas.size());
 			} else {
-				Count count = getCount(querySql);
+				Count count = getCount(querySql, params);
 				count.setDataSize(dataSize);
 				count.setTotalCounts(dataSize);
 
@@ -410,7 +410,7 @@ public class Query extends SqlEntity {
 		}
 	}
 
-	private Count getCount(String querySql){
+	private Count getCount(String querySql,Map<String, Param> params){
 
 		Count count = new Count();
 
