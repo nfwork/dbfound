@@ -397,7 +397,7 @@ public abstract class SqlEntity extends Entity {
 				} else if (nfParam.getValue() instanceof Collection) {
 					String paramValue = JsonUtil.toJson( nfParam.getValue());
 					nfParam.setValue(paramValue);
-				} else if (nfParam.getValue().getClass().isArray()) {
+				} else if (DataUtil.isArray(nfParam.getValue())) {
 					String paramValue = JsonUtil.toJson(nfParam.getValue());
 					nfParam.setValue(paramValue);
 				} else{

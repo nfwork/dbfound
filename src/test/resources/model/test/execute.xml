@@ -29,6 +29,34 @@
 		</sqls>
 	</execute>
 
+    <execute name="forPart">
+        <param name="user_id" dataType="varchar" ioType="out" />
+        <param name="user_name" dataType="varchar" ioType="out" />
+        <sqls>
+            <querySql>
+                select
+                <sqlPart type="for" sourcePath="fields1">
+                    ${@value} as #{@code}
+                </sqlPart>
+                <sqlPart type="for" sourcePath="fields1" index="index" begin=", ">
+                    ${@value} as #{@code}_#{@index}
+                </sqlPart>
+            </querySql>
+            <executeSql>
+                select
+                <sqlPart type="for" sourcePath="fields2">
+                    ${@value} as #{@code}
+                </sqlPart>
+            </executeSql>
+            <querySql>
+                select
+                <sqlPart type="for" sourcePath="fields1">
+                    ${@value} as #{@code}
+                </sqlPart>
+            </querySql>
+        </sqls>
+    </execute>
+
     <execute name="ifPart">
         <param name="user_id" dataType="varchar" ioType="both" />
         <param name="user_name" dataType="varchar" ioType="both" />
@@ -90,16 +118,62 @@
 	</execute>
 
     <execute name="batchExecuteSql">
+        <param name="value" dataType="varchar" value="3" />
         <sqls>
-            <batchExecuteSql sourcePath="users" item="user_id" index="index">
+            <batchExecuteSql sourcePath="users" item="user_id" index="index" batchSize="3">
                 select
                     #BATCH_TEMPLATE_BEGIN#
                     ${@user_id} as user_id_#{@index},
                     #{@value} as value_#{@index}
                     #BATCH_TEMPLATE_END#
 			</batchExecuteSql>
+            <executeSql>
+                select
+                <sqlPart type="for" sourcePath="users_copy" index="index" item="user_id">
+                    ${@user_id} as user_#{@index}
+                </sqlPart>
+            </executeSql>
         </sqls>
     </execute>
+
+    <execute name="batchInsert">
+        <param name="num" dataType="number" ioType="out"/>
+        <sqls>
+            <batchExecuteSql sourcePath="roles" item="role_code" index="index" batchSize="2" affectedCountParam="num">
+                INSERT INTO sys_role
+                (role_code,
+                 role_description,
+                 create_by,
+                 last_update_by,
+                 create_date,
+                 last_update_date)
+                VALUES
+                #BATCH_TEMPLATE_BEGIN#
+                    (${@role_code},
+                    ${@value},
+                    1,
+                    1,
+                    NOW(),
+                    NOW())
+                #BATCH_TEMPLATE_END#
+            </batchExecuteSql>
+        </sqls>
+    </execute>
+
+    <query name="getRoles">
+        <sql>
+            select * from sys_role where role_code like 'batch_role%'
+        </sql>
+    </query>
+
+    <execute name="deleteRoles">
+        <param name="delete_num" dataType="number" ioType="out"/>
+		<sqls>
+			<executeSql affectedCountParam="delete_num">
+				delete from sys_role where role_code in (${@roles})
+			</executeSql>
+		</sqls>
+	</execute>
 
     <execute name="adapter" adapter="dbfound.test.adapter.ExecuteTestAdapter">
         <sqls>
@@ -163,9 +237,9 @@
     <execute name="defaultValue">
         <param name="user_name" dataType="varchar" value="lily" ioType="both" />
         <sqls>
-            <collisionSql where="${@user_name} is null" message="不能为null" />
+            <collisionSql where="${@user_name} is null or ${@user_name}=''" message="不能为null" />
             <batchSql sourcePath="names" item="user_name">
-                <collisionSql where="${@user_name} is null" message="不能为null" />
+                <collisionSql where="${@user_name} is null or ${@user_name}=''" message="不能为null" />
             </batchSql>
             <querySql>
                 select

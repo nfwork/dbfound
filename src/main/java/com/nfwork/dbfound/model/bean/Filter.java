@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.model.bean;
 
+import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.StringUtil;
 
 public class Filter extends Param {
@@ -17,6 +18,12 @@ public class Filter extends Param {
 		}
 		if (getParent() instanceof Query) {
 			Query query = (Query) getParent();
+			if (query.getFilters().containsKey(getName())){
+				Model model = (Model) query.getParent();
+				String warn = "model compile warning, the filterName '"+getName()+"' is repeated in Query '"
+						+ query.getName() +"' of Model '" + model.getModelName()+"'";
+				LogUtil.warn(warn);
+			}
 			query.getFilters().put(getName(), this);
 		}
 	}

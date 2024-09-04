@@ -111,6 +111,7 @@ public class BatchExecuteSql extends Sql {
 			}
 		}
 
+		params = new LinkedHashMap<>(params);
 		int updateCount = 0;
 		for (int begin= 0 ; begin < dataSize; begin=begin+batchSize){
 			int end = begin + batchSize;
@@ -134,8 +135,6 @@ public class BatchExecuteSql extends Sql {
 	}
 
 	private int execute(Context context, Object rootData, String realTmpSql, Map<String, Param> params, String exeSourcePath,String provideName, int begin ,int end){
-		Map<String, Param> exeParams = new LinkedHashMap<>(params);
-
 		StringBuilder eSql = new StringBuilder(beforeTmpSql);
 
 		for (int i =begin; i< end; i++){
@@ -144,9 +143,15 @@ public class BatchExecuteSql extends Sql {
 				Param param = params.get(paramName);
 
 				if (param.isBatchAssign()){
-					Param newParam = (Param) param.cloneEntity();
-					newParam.setName(newParam.getName()+"_"+i);
-					if (exeParams.containsKey(newParam.getName())) {
+					Param newParam;
+					if(begin==0){
+						newParam = (Param) param.cloneEntity();
+						newParam.setName(newParam.getName()+"_"+i);
+					}else{
+						newParam = params.remove(param.getName()+"_"+(i-batchSize));
+						newParam.setName(param.getName()+"_"+i);
+					}
+					if (params.containsKey(newParam.getName())) {
 						throw new DBFoundRuntimeException("BatchExecuteSql create param failed, the param '" + newParam.getName() + "' already exists");
 					}
 					String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
@@ -174,7 +179,7 @@ public class BatchExecuteSql extends Sql {
 						}
 						newParam.setSourcePathHistory(sph);
 					}
-					exeParams.put(newParam.getName(), newParam);
+					params.put(newParam.getName(), newParam);
 				}
 			}
 			eSql.append(realTmpSql.replace("##", i + ""));
@@ -183,7 +188,7 @@ public class BatchExecuteSql extends Sql {
 			}
 		}
 		eSql.append(afterTmpSql);
-		return execute(context,exeParams,provideName, eSql.toString(), begin);
+		return execute(context,params,provideName, eSql.toString(), begin);
 	}
 
 	private int execute(Context context, Map<String, Param> params, String provideName,String sql, int begin) {
