@@ -149,10 +149,8 @@ public class BatchSql extends Sqls {
 
 	public void executeCursor(Context context, Map<String, Param> params,String provideName, List<Map<String,Object>> cursorValues){
 		Connection conn = context.getConn(provideName);
-
-		String cursorSql = staticParamParse(cursor, params);
 		List<Object> exeParam = new ArrayList<>();
-		String esql = getExecuteSql(cursorSql, params, exeParam);
+		String esql = getExecuteSql(cursor, params, exeParam);
 
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
