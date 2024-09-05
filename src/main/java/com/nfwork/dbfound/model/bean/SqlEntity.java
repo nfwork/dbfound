@@ -114,7 +114,7 @@ public abstract class SqlEntity extends Entity {
 				if (nfParam.getDataType() == DataType.COLLECTION) {
 					initCollection(nfParam);
 					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
-					Iterator<Object> iterator = itemList.stream().filter(DataUtil::isNull).iterator();
+					Iterator<Object> iterator = itemList.stream().filter(DataUtil::isNotNull).iterator();
 					while (iterator.hasNext()){
 						Object item = iterator.next();
 						buf.append(item);
