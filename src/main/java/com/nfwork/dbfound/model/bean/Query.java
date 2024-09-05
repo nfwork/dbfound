@@ -313,34 +313,27 @@ public class Query extends SqlEntity {
 	}
 
 	private String initFilterAndSqlPart(String ssql, Map<String, Param> params, Context context, String provideName) {
-		StringBuilder filterBuilder = new StringBuilder();
-		Iterator<Param> iterator = params.values().iterator();
-		while (iterator.hasNext()){
-			Param param = iterator.next();
+		Iterator<Param> iterator = params.values().stream().filter(param -> {
 			if (param instanceof Filter){
 				Filter nfFilter = (Filter) param;
 				if(nfFilter.isActive()) {
-					filterBuilder.append(nfFilter.getExpress());
-					if(iterator.hasNext()){
-						filterBuilder.append(" and ");
-					}
+					return true;
 				}else if(DataUtil.isNotNull(nfFilter.getCondition())) {
-					if(checkCondition(nfFilter.getCondition(),params,context,provideName)){
-						filterBuilder.append(nfFilter.getExpress());
-						if(iterator.hasNext()){
-							filterBuilder.append(" and ");
-						}
-					}
-				}else if(DataUtil.isNotNull(nfFilter.getValue())){
+                    return checkCondition(nfFilter.getCondition(), params, context, provideName);
+				}else if(DataUtil.isNotNull(nfFilter.getValue())) {
 					//集合参数，当length为0时，filter不生效
-					if(param.getDataType() == DataType.COLLECTION && DataUtil.getDataLength(nfFilter.getValue()) == 0){
-						continue;
-					}
-					filterBuilder.append(nfFilter.getExpress());
-					if(iterator.hasNext()){
-						filterBuilder.append(" and ");
-					}
-				}
+                    return param.getDataType() != DataType.COLLECTION || DataUtil.getDataLength(nfFilter.getValue()) != 0;
+                }
+			}
+			return false;
+		}).iterator();
+
+		StringBuilder filterBuilder = new StringBuilder();
+		while (iterator.hasNext()){
+			Filter nfFilter = (Filter) iterator.next();
+			filterBuilder.append(nfFilter.getExpress());
+			if(iterator.hasNext()){
+				filterBuilder.append(" and ");
 			}
 		}
 
