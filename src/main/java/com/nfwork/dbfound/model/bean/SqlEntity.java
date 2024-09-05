@@ -96,24 +96,32 @@ public abstract class SqlEntity extends Entity {
 					initCollection(nfParam);
 					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 					m.appendReplacement(buf, "");
-					for (Object item : itemList) {
-						buf.append("?,");
+					Iterator<Object> iterator = itemList.iterator();
+					while (iterator.hasNext()){
+						Object item = iterator.next();
+						buf.append("?");
+						if(iterator.hasNext()){
+							buf.append(",");
+						}
 						exeParam.add(item);
 					}
-					buf.deleteCharAt(buf.length() - 1);
 				} else {
 					exeParam.add(nfParam.getValue());
 					m.appendReplacement(buf, "?");
 				}
 			}else{
+				m.appendReplacement(buf, "");
 				if (nfParam.getDataType() == DataType.COLLECTION) {
 					initCollection(nfParam);
 					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
-					m.appendReplacement(buf, "");
-					for (Object item : itemList) {
-						buf.append(item).append(",");
+					Iterator<Object> iterator = itemList.iterator();
+					while (iterator.hasNext()){
+						Object item = iterator.next();
+						buf.append(item);
+						if(iterator.hasNext()){
+							buf.append(",");
+						}
 					}
-					buf.deleteCharAt(buf.length() - 1);
 				} else {
 					String value = nfParam.getStringValue();
 					if(value == null){
@@ -121,10 +129,9 @@ public abstract class SqlEntity extends Entity {
 					}
 					// 判断静态传参内容，是否包含动态参数
 					if(nfParam.getDataType() == DataType.VARCHAR && value.contains("${@")){
-						m.appendReplacement(buf, "");
 						initExecuteSql(value, params, exeParam, buf);
 					}else {
-						m.appendReplacement(buf, value);
+						buf.append(value);
 					}
 				}
 			}
@@ -301,7 +308,9 @@ public abstract class SqlEntity extends Entity {
 
 				StringBuilder paramBuilder = new StringBuilder();
 
-				for(Object item : itemList){
+				Iterator<Object> iterator = itemList.iterator();
+				while (iterator.hasNext()){
+					Object item = iterator.next();
 					if(item == null){
 						continue;
 					}
@@ -313,10 +322,10 @@ public abstract class SqlEntity extends Entity {
 					} else {
 						value = item.toString();
 					}
-					paramBuilder.append(value).append("," );
-				}
-				if(paramBuilder.length()>0){
-					paramBuilder.deleteCharAt(paramBuilder.length()-1);
+					paramBuilder.append(value);
+					if(iterator.hasNext()) {
+						paramBuilder.append(",");
+					}
 				}
 				paramValue = paramBuilder.toString();
 			}else{
@@ -328,12 +337,12 @@ public abstract class SqlEntity extends Entity {
 				paramValue = UUIDUtil.getUUID();
 			}else if (paramValue == null) {
 				paramValue = "";
-			}else if(paramValue.contains("$")){
-				paramValue = paramValue.replace("$", "\\$");
 			}
-			m.appendReplacement(buf, paramValue);
+			m.appendReplacement(buf, "");
 			if(paramValue.isEmpty()) {
 				reduceBlank(buf);
+			}else{
+				buf.append(paramValue);
 			}
 		}
 		if(findCount == 0){
