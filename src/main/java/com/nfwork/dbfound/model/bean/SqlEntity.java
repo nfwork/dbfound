@@ -308,12 +308,9 @@ public abstract class SqlEntity extends Entity {
 
 				StringBuilder paramBuilder = new StringBuilder();
 
-				Iterator<Object> iterator = itemList.iterator();
+				Iterator<Object> iterator = itemList.stream().filter(DataUtil::isNotNull).iterator();
 				while (iterator.hasNext()){
 					Object item = iterator.next();
-					if(DataUtil.isNull(item)){
-						continue;
-					}
 					String value;
 					if (item instanceof Date) {
 						value = LocalDateUtil.formatDate((Date) item);
