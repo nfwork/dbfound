@@ -84,7 +84,7 @@ public class SqlEntityTest extends SqlEntity {
         Param fields = new Param();
         fields.setName("fields");
         fields.setDataType(DataType.COLLECTION);
-        fields.setValue(new String[]{"user_id","user_name"});
+        fields.setValue(new String[]{"user_id","user_name","",null});
         params.put("fields",fields);
         Param limit = new Param();
         limit.setName("limit");
@@ -128,7 +128,7 @@ public class SqlEntityTest extends SqlEntity {
         Param ids = new Param();
         ids.setName("user_ids");
         ids.setDataType(DataType.COLLECTION);
-        value = new String[]{"1","2","3"};
+        value = new String[]{"1","2","3",null,""};
         ids.setValue(value);
 
         Map<String,Param> params = new HashMap<>();
