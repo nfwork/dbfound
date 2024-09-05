@@ -89,8 +89,8 @@ public class Sql extends SqlEntity {
 				m.appendReplacement(buffer, "");
 				reduceBlank(buffer);
 			}else{
-				partValue =  Matcher.quoteReplacement(partValue);
-				m.appendReplacement(buffer, partValue);
+				m.appendReplacement(buffer, "");
+				buffer.append(partValue);
 				if(sqlPart.isAutoClearComma()){
 					commaIndex = buffer.length() - 1;
 				}

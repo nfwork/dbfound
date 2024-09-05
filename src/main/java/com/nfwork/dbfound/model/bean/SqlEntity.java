@@ -115,18 +115,16 @@ public abstract class SqlEntity extends Entity {
 					}
 					buf.deleteCharAt(buf.length() - 1);
 				} else {
-					Object value = nfParam.getValue();
-
+					String value = nfParam.getStringValue();
+					if(value == null){
+						value = "";
+					}
 					// 判断静态传参内容，是否包含动态参数
-					if(value instanceof String && ((String)value).contains("${@")){
+					if(nfParam.getDataType() == DataType.VARCHAR && value.contains("${@")){
 						m.appendReplacement(buf, "");
-						initExecuteSql(((String)value), params, exeParam,buf);
+						initExecuteSql(value, params, exeParam, buf);
 					}else {
-						value = nfParam.getStringValue();
-						if(value == null){
-							value = "";
-						}
-						m.appendReplacement(buf, (String) value);
+						m.appendReplacement(buf, value);
 					}
 				}
 			}

@@ -313,31 +313,36 @@ public class Query extends SqlEntity {
 	}
 
 	private String initFilterAndSqlPart(String ssql, Map<String, Param> params, Context context, String provideName) {
-		StringBuilder builder = new StringBuilder();
-		for (Param param : params.values()) {
+		StringBuilder filterBuilder = new StringBuilder();
+		Iterator<Param> iterator = params.values().iterator();
+		while (iterator.hasNext()){
+			Param param = iterator.next();
 			if (param instanceof Filter){
 				Filter nfFilter = (Filter) param;
 				if(nfFilter.isActive()) {
-					builder.append(nfFilter.getExpress()).append(" and ");
+					filterBuilder.append(nfFilter.getExpress());
+					if(iterator.hasNext()){
+						filterBuilder.append(" and ");
+					}
 				}else if(DataUtil.isNotNull(nfFilter.getCondition())) {
 					if(checkCondition(nfFilter.getCondition(),params,context,provideName)){
-						builder.append(nfFilter.getExpress()).append(" and ");
+						filterBuilder.append(nfFilter.getExpress());
+						if(iterator.hasNext()){
+							filterBuilder.append(" and ");
+						}
 					}
 				}else if(DataUtil.isNotNull(nfFilter.getValue())){
 					//集合参数，当length为0时，filter不生效
 					if(param.getDataType() == DataType.COLLECTION && DataUtil.getDataLength(nfFilter.getValue()) == 0){
 						continue;
 					}
-					builder.append(nfFilter.getExpress()).append(" and ");
+					filterBuilder.append(nfFilter.getExpress());
+					if(iterator.hasNext()){
+						filterBuilder.append(" and ");
+					}
 				}
 			}
 		}
-		String fsql = builder.length() > 5 ? builder.substring(0, builder.length() - 5) : null;
-		if (fsql != null) {
-			fsql = Matcher.quoteReplacement(fsql);
-		}
-		String whereSql = fsql == null ? "" : "where " + fsql;
-		String andSql =  fsql == null ? "" : "and " + fsql;
 
 		int sqlPartIndex = 0;
 		int findCount = 0;
@@ -351,19 +356,24 @@ public class Query extends SqlEntity {
 			findCount++;
 			switch (text) {
 				case WHERE_CLAUSE:
-					m.appendReplacement(buffer, whereSql);
-					if (fsql == null) {
+					if (filterBuilder.length() == 0) {
 						followType = 1;
+						m.appendReplacement(buffer, "");
 						reduceBlank(buffer);
 					} else {
 						followType = 2;
+						m.appendReplacement(buffer, "where ");
+						buffer.append(filterBuilder);
 					}
 					break;
 				case AND_CLAUSE:
-					m.appendReplacement(buffer, andSql);
 					followType = 2;
-					if (fsql == null) {
+					if (filterBuilder.length() == 0) {
+						m.appendReplacement(buffer, "");
 						reduceBlank(buffer);
+					}else{
+						m.appendReplacement(buffer, "and ");
+						buffer.append(filterBuilder);
 					}
 					break;
 				case SQL_PART:
@@ -374,7 +384,6 @@ public class Query extends SqlEntity {
 						m.appendReplacement(buffer, "");
 						reduceBlank(buffer);
 					}else{
-						partValue = Matcher.quoteReplacement(partValue);
 						if(sqlPart.isAutoCompletion() && followType != 0 ){
 							if(followType == 1 ){
 								partValue = StringUtil.addWhere(partValue);
@@ -384,13 +393,22 @@ public class Query extends SqlEntity {
 							}
 						}else {
 							if(partValue.contains(WHERE_CLAUSE)) {
-								partValue = partValue.replace(WHERE_CLAUSE, whereSql);
+								if(filterBuilder.length() > 0) {
+									partValue = partValue.replace(WHERE_CLAUSE, "where " + filterBuilder);
+								}else{
+									partValue = partValue.replace(WHERE_CLAUSE, "");
+								}
 							}
 							if(partValue.contains(AND_CLAUSE)) {
-								partValue = partValue.replace(AND_CLAUSE, andSql);
+								if(filterBuilder.length() > 0) {
+									partValue = partValue.replace(AND_CLAUSE, "and " + filterBuilder);
+								}else{
+									partValue = partValue.replace(AND_CLAUSE, "");
+								}
 							}
 						}
-						m.appendReplacement(buffer, partValue);
+						m.appendReplacement(buffer, "");
+						buffer.append(partValue);
 
 						if(sqlPart.isAutoClearComma()){
 							commaIndex = buffer.length() - 1;
