@@ -303,12 +303,10 @@ public abstract class SqlEntity extends Entity {
 			initParamType(nfParam);
 
 			if(nfParam.getDataType() == DataType.COLLECTION){
-
 				initCollection(nfParam);
 				SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 
 				StringBuilder paramBuilder = new StringBuilder();
-
 				Iterator<String> iterator = itemList.stream().filter(DataUtil::isNotNull).map(this::parseCollectionParamItem).iterator();
 				if (iterator.hasNext()){
 					paramBuilder.append(iterator.next());
@@ -509,23 +507,22 @@ public abstract class SqlEntity extends Entity {
 			}
 			int length = DataUtil.getDataLength(value);
 			if (length == 0 || value == null) {
-				throw new DBFoundRuntimeException("collection param data size must >= 1, param name: "+ nfParam.getName());
+				nfParam.setValue(new SimpleItemList());
+				return;
 			}else if(length == -1){
 				throw new DBFoundRuntimeException("can not convert ‘" + value.getClass() + "’ to a collection, param name: " + nfParam.getName() +", param value: " + value);
 			}
-			SimpleItemList itemList = new SimpleItemList(length);
 
+			SimpleItemList itemList = new SimpleItemList(length);
 			//el处理非arrayList集合性能较差，转化为array
 			if(!(value instanceof ArrayList) && value instanceof Collection){
 				value = ((Collection<?>)value).toArray();
 			}
-
 			for (int i = 0; i < length; i++) {
 				Object pValue = DBFoundEL.getDataByIndex(i, value);
 				if(DataUtil.isNotNull(nfParam.getInnerPath())){
 					pValue = DBFoundEL.getData(nfParam.getInnerPath(),pValue);
 				}
-
 				if (pValue instanceof Enum) {
 					pValue = getEnumValue((Enum<?>) pValue);
 				}

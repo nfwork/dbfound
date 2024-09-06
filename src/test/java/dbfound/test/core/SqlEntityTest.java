@@ -157,6 +157,31 @@ public class SqlEntityTest extends SqlEntity {
         assert result.equals("date find_in_set ('2024-09-06,2024-09-07,2024-09-08')");
     }
 
+    @Test
+    public void testCollectionParam(){
+        String[] empty = new String[]{};
+        Param fields = new Param();
+        fields.setName("fields");
+        fields.setValue(empty);
+        fields.setDataType(DataType.UNKNOWN);
+        initParamType(fields);
+        Map<String,Param> params = new HashMap<>();
+        params.put(fields.getName(),fields);
+        String result = staticParamParse("find_in_set(fields,'#{@fields}')",params);
+        assert result.equals("find_in_set(fields,'')");
+        result = getExecuteSql("find_in_set(fields,'#{@fields}')",params, new ArrayList<>());
+        assert result.equals("find_in_set(fields,'')");
+        result = getExecuteSql("field in (${@fields})", params, new ArrayList<>());
+        assert result.equals("field in ()");
+
+        List<Integer> list = CollectionUtil.asList(1,2,3,null,5);
+        fields.setValue(list);
+        result = getExecuteSql("field in (${@fields})", params, new ArrayList<>());
+        assert result.equals("field in (?,?,?,?,?)");
+        result = getExecuteSql("find_in_set(fields,'#{@fields}')",params, new ArrayList<>());
+        assert result.equals("find_in_set(fields,'1,2,3,5')");
+    }
+
     @Override
     public void execute(Context context, Map<String, Param> params, String provideName) {
     }

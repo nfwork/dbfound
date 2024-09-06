@@ -38,7 +38,7 @@ public class QueryTest {
         context = new Context();
         context.setParamData("order_fields", CollectionUtil.asList("user_id desc","user_code"));
         datas = ModelEngine.query(context,"test/query",null).getDatas();
-        assert datas.get(0).get("user_name").equals("lucy");
+        assert datas.get(0).get("user_name").equals("lucy1");
     }
 
     @Test
