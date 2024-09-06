@@ -91,7 +91,7 @@ public class BatchExecuteSql extends Sql {
 		if(dataSize <= 0){
 			return;
 		}
-		if(rootData instanceof Collection && !(rootData instanceof ArrayList)){
+		if(!(rootData instanceof ArrayList) && rootData instanceof Collection){
 			rootData = ((Collection<?>)rootData).toArray();
 		}
 
@@ -194,7 +194,6 @@ public class BatchExecuteSql extends Sql {
 	private int execute(Context context, Map<String, Param> params, String provideName,String sql, int begin) {
 		Connection conn = context.getConn(provideName);
 
-		sql = staticParamParse(sql, params);
 		List<Object> exeParam = new ArrayList<>();
 		String esql = getExecuteSql(sql, params, exeParam);
 

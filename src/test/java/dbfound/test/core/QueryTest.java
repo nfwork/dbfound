@@ -38,7 +38,7 @@ public class QueryTest {
         context = new Context();
         context.setParamData("order_fields", CollectionUtil.asList("user_id desc","user_code"));
         datas = ModelEngine.query(context,"test/query",null).getDatas();
-        assert datas.get(0).get("user_name").equals("lucy");
+        assert datas.get(0).get("user_name").equals("lucy1");
     }
 
     @Test
@@ -148,5 +148,33 @@ public class QueryTest {
         QueryResponseObject<User> responseObject = ModelEngine.query(context, "test/query", "autoCompletion", User.class);
         assert responseObject.get().getRole() == Role.STUDENT;
         assert responseObject.get().getUserId() == 2;
+    }
+
+    @Test
+    public void testClauseInSqlPart(){
+        Context context = new Context();
+        context.setParamData("role", Role.STUDENT);
+        QueryResponseObject<User> responseObject = ModelEngine.query(context, "test/query", "clauseInSqlPart", User.class);
+        assert responseObject.get().getRole() == Role.STUDENT;
+        assert responseObject.get().getUserId() == 2;
+
+        context = new Context();
+        context.setParamData("user_id", 1);
+        responseObject = ModelEngine.query(context, "test/query", "clauseInSqlPart", User.class);
+        assert responseObject.get().getRole() == Role.ADMIN;
+        assert responseObject.getDatas().size() == 1;
+    }
+
+    @Test
+    public void testFilter(){
+        Context context = new Context();
+        QueryResponseObject<User> responseObject = ModelEngine.query(context, "test/query", "filter", User.class);
+        assert responseObject.get().getRole() == Role.STUDENT;
+        assert responseObject.get().getUserId() == 2;
+
+        context = new Context();
+        context.setParamData("role", Role.ADMIN);
+        responseObject = ModelEngine.query(context, "test/query", "filter", User.class);
+        assert responseObject.getDatas().isEmpty();
     }
 }

@@ -37,7 +37,7 @@ import com.nfwork.dbfound.web.file.FilePart;
 public abstract class SqlEntity extends Entity {
 	private final static String paramReplace = "\\{@[ a-zA-Z_0-9\u4E00-\u9FA5]*}";
 
-	protected final static Pattern dynamicPattern = Pattern.compile("\\$" + paramReplace);
+	protected final static Pattern executeParamPattern = Pattern.compile("[#$]" + paramReplace);
 
 	protected final static Pattern staticPattern = Pattern.compile("#" + paramReplace);
 
@@ -67,9 +67,14 @@ public abstract class SqlEntity extends Entity {
 	 * @return string
 	 */
 	protected String getExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam) {
-
-		Matcher m = dynamicPattern.matcher(sql);
 		StringBuffer buf = new StringBuffer();
+		initExecuteSql(sql, params, exeParam, buf);
+		return buf.toString();
+	}
+
+	protected void initExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam, StringBuffer buf) {
+		Matcher m = executeParamPattern.matcher(sql);
+
 		while (m.find()) {
 			String param = m.group();
 			String pn = param.substring(3, param.length() - 1);
@@ -86,26 +91,51 @@ public abstract class SqlEntity extends Entity {
 			initParamValue(nfParam);
 			initParamType(nfParam);
 
-			if(nfParam.getDataType() == DataType.COLLECTION){
-				initCollection(nfParam);
-				SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
-
-				StringBuilder value = new StringBuilder();
-				for(Object item : itemList){
-					value.append("?,");
-					exeParam.add(item);
+			if(param.charAt(0)=='$') {
+				if (nfParam.getDataType() == DataType.COLLECTION) {
+					initCollection(nfParam);
+					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
+					m.appendReplacement(buf, "");
+					Iterator<Object> iterator = itemList.iterator();
+					if (iterator.hasNext()){
+						buf.append("?");
+						exeParam.add(iterator.next());
+						while (iterator.hasNext()){
+							buf.append(",?");
+							exeParam.add(iterator.next());
+						}
+					}
+				} else {
+					exeParam.add(nfParam.getValue());
+					m.appendReplacement(buf, "?");
 				}
-				if(value.length()>0){
-					value.deleteCharAt(value.length()-1);
-				}
-				m.appendReplacement(buf, value.toString());
 			}else{
-				exeParam.add(nfParam.getValue());
-				m.appendReplacement(buf, "?");
+				m.appendReplacement(buf, "");
+				if (nfParam.getDataType() == DataType.COLLECTION) {
+					initCollection(nfParam);
+					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
+					Iterator<String> iterator = itemList.stream().filter(DataUtil::isNotNull).map(this::parseCollectionParamItem).iterator();
+					if (iterator.hasNext()){
+						buf.append(iterator.next());
+						while(iterator.hasNext()){
+							buf.append(",").append(iterator.next());
+						}
+					}
+				} else {
+					String value = nfParam.getStringValue();
+					if(value == null){
+						value = "";
+					}
+					// 判断静态传参内容，是否包含动态参数
+					if(nfParam.getDataType() == DataType.VARCHAR && value.contains("${@")){
+						initExecuteSql(value, params, exeParam, buf);
+					}else {
+						buf.append(value);
+					}
+				}
 			}
 		}
 		m.appendTail(buf);
-		return buf.toString();
 	}
 
 	/**
@@ -271,28 +301,17 @@ public abstract class SqlEntity extends Entity {
 			initParamType(nfParam);
 
 			if(nfParam.getDataType() == DataType.COLLECTION){
-
 				initCollection(nfParam);
 				SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 
 				StringBuilder paramBuilder = new StringBuilder();
-
-				for(Object item : itemList){
-					if(item == null){
-						continue;
+				Iterator<String> iterator = itemList.stream().filter(DataUtil::isNotNull).map(this::parseCollectionParamItem).iterator();
+				if (iterator.hasNext()){
+					paramBuilder.append(iterator.next());
+					while(iterator.hasNext()) {
+						paramBuilder.append(",");
+						paramBuilder.append(iterator.next());
 					}
-					String value;
-					if (item instanceof Date) {
-						value = LocalDateUtil.formatDate((Date) item);
-					} else if(item instanceof Temporal) {
-						value = LocalDateUtil.formatTemporal((Temporal) item);
-					} else {
-						value = item.toString();
-					}
-					paramBuilder.append(value).append("," );
-				}
-				if(paramBuilder.length()>0){
-					paramBuilder.deleteCharAt(paramBuilder.length()-1);
 				}
 				paramValue = paramBuilder.toString();
 			}else{
@@ -304,12 +323,12 @@ public abstract class SqlEntity extends Entity {
 				paramValue = UUIDUtil.getUUID();
 			}else if (paramValue == null) {
 				paramValue = "";
-			}else if(paramValue.contains("$")){
-				paramValue = paramValue.replace("$", "\\$");
 			}
-			m.appendReplacement(buf, paramValue);
+			m.appendReplacement(buf, "");
 			if(paramValue.isEmpty()) {
 				reduceBlank(buf);
+			}else{
+				buf.append(paramValue);
 			}
 		}
 		if(findCount == 0){
@@ -318,6 +337,18 @@ public abstract class SqlEntity extends Entity {
 			m.appendTail(buf);
 			return buf.toString();
 		}
+	}
+
+	private String parseCollectionParamItem(Object value){
+		String result;
+		if (value instanceof Date) {
+			result = LocalDateUtil.formatDate((Date) value);
+		} else if(value instanceof Temporal) {
+			result = LocalDateUtil.formatTemporal((Temporal) value);
+		} else {
+			result = value.toString();
+		}
+		return result;
 	}
 
 	protected void reduceBlank(StringBuffer buffer){
@@ -474,23 +505,22 @@ public abstract class SqlEntity extends Entity {
 			}
 			int length = DataUtil.getDataLength(value);
 			if (length == 0 || value == null) {
-				throw new DBFoundRuntimeException("collection param data size must >= 1, param name: "+ nfParam.getName());
+				nfParam.setValue(new SimpleItemList());
+				return;
 			}else if(length == -1){
 				throw new DBFoundRuntimeException("can not convert ‘" + value.getClass() + "’ to a collection, param name: " + nfParam.getName() +", param value: " + value);
 			}
-			SimpleItemList itemList = new SimpleItemList(length);
 
+			SimpleItemList itemList = new SimpleItemList(length);
 			//el处理非arrayList集合性能较差，转化为array
 			if(!(value instanceof ArrayList) && value instanceof Collection){
 				value = ((Collection<?>)value).toArray();
 			}
-
 			for (int i = 0; i < length; i++) {
 				Object pValue = DBFoundEL.getDataByIndex(i, value);
 				if(DataUtil.isNotNull(nfParam.getInnerPath())){
 					pValue = DBFoundEL.getData(nfParam.getInnerPath(),pValue);
 				}
-
 				if (pValue instanceof Enum) {
 					pValue = getEnumValue((Enum<?>) pValue);
 				}
@@ -569,9 +599,8 @@ public abstract class SqlEntity extends Entity {
 	}
 
 	protected Boolean checkCondition(String condition,  Map<String, Param> params, Context context, String provideName){
-		String conditionSql = staticParamParse(condition, params);
 		List<Object> exeParam = new ArrayList<>();
-		conditionSql = getExecuteSql(conditionSql, params, exeParam);
+		String conditionSql = getExecuteSql(condition, params, exeParam);
         return DSqlEngine.checkWhenSql(conditionSql, exeParam, provideName, context);
 	}
 

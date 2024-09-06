@@ -56,7 +56,6 @@ public class ExecuteSql extends Sql {
 		}
 
 		Connection conn = context.getConn(provideName);
-		executeSql = staticParamParse(executeSql, params);
 
 		List<Object> exeParam = new ArrayList<>();
 		String esql = getExecuteSql(executeSql, params, exeParam);

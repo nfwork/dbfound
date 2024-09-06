@@ -172,7 +172,7 @@ public class Query extends SqlEntity {
 			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
 				ro.setTotalCounts(datas.size());
 			} else {
-				Count count = getCount(querySql);
+				Count count = getCount(querySql, params);
 				count.setDataSize(dataSize);
 				count.setTotalCounts(dataSize);
 
@@ -183,7 +183,7 @@ public class Query extends SqlEntity {
 				}
 
 				if (count.isExecuteCount()) {
-					countItems(context, count, params, provideName);
+					countItems(context, count, provideName);
 				}
 				ro.setTotalCounts(count.getTotalCounts());
 			}
@@ -223,9 +223,7 @@ public class Query extends SqlEntity {
 		if(sql == null) {
 			throw new DBFoundRuntimeException("query entity must have a sql");
 		}
-		String querySql = initFilterAndSqlPart(sql.getSql(), params, context, provideName);
-		querySql = staticParamParse(querySql, params);
-		return querySql;
+		return initFilterAndSqlPart(sql.getSql(), params, context, provideName);
 	}
 
 	private <T> List<T> doExecuteQuery(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> clazz, boolean autoPaging) {
@@ -315,31 +313,28 @@ public class Query extends SqlEntity {
 	}
 
 	private String initFilterAndSqlPart(String ssql, Map<String, Param> params, Context context, String provideName) {
-		StringBuilder builder = new StringBuilder();
-		for (Param param : params.values()) {
+		Iterator<Param> iterator = params.values().stream().filter(param -> {
 			if (param instanceof Filter){
 				Filter nfFilter = (Filter) param;
 				if(nfFilter.isActive()) {
-					builder.append(nfFilter.getExpress()).append(" and ");
+					return true;
 				}else if(DataUtil.isNotNull(nfFilter.getCondition())) {
-					if(checkCondition(nfFilter.getCondition(),params,context,provideName)){
-						builder.append(nfFilter.getExpress()).append(" and ");
-					}
-				}else if(DataUtil.isNotNull(nfFilter.getValue())){
+                    return checkCondition(nfFilter.getCondition(), params, context, provideName);
+				}else if(DataUtil.isNotNull(nfFilter.getValue())) {
 					//集合参数，当length为0时，filter不生效
-					if(param.getDataType() == DataType.COLLECTION && DataUtil.getDataLength(nfFilter.getValue()) == 0){
-						continue;
-					}
-					builder.append(nfFilter.getExpress()).append(" and ");
-				}
+                    return param.getDataType() != DataType.COLLECTION || DataUtil.getDataLength(nfFilter.getValue()) != 0;
+                }
+			}
+			return false;
+		}).iterator();
+
+		StringBuilder filterBuilder = new StringBuilder();
+		if (iterator.hasNext()){
+			filterBuilder.append(((Filter) iterator.next()).getExpress());
+			while(iterator.hasNext()){
+				filterBuilder.append(" and ").append(((Filter) iterator.next()).getExpress());
 			}
 		}
-		String fsql = builder.length() > 5 ? builder.substring(0, builder.length() - 5) : null;
-		if (fsql != null) {
-			fsql = Matcher.quoteReplacement(fsql);
-		}
-		String whereSql = fsql == null ? "" : "where " + fsql;
-		String andSql =  fsql == null ? "" : "and " + fsql;
 
 		int sqlPartIndex = 0;
 		int findCount = 0;
@@ -353,19 +348,24 @@ public class Query extends SqlEntity {
 			findCount++;
 			switch (text) {
 				case WHERE_CLAUSE:
-					m.appendReplacement(buffer, whereSql);
-					if (fsql == null) {
+					if (filterBuilder.length() == 0) {
 						followType = 1;
+						m.appendReplacement(buffer, "");
 						reduceBlank(buffer);
 					} else {
 						followType = 2;
+						m.appendReplacement(buffer, "where ");
+						buffer.append(filterBuilder);
 					}
 					break;
 				case AND_CLAUSE:
-					m.appendReplacement(buffer, andSql);
 					followType = 2;
-					if (fsql == null) {
+					if (filterBuilder.length() == 0) {
+						m.appendReplacement(buffer, "");
 						reduceBlank(buffer);
+					}else{
+						m.appendReplacement(buffer, "and ");
+						buffer.append(filterBuilder);
 					}
 					break;
 				case SQL_PART:
@@ -376,7 +376,6 @@ public class Query extends SqlEntity {
 						m.appendReplacement(buffer, "");
 						reduceBlank(buffer);
 					}else{
-						partValue = Matcher.quoteReplacement(partValue);
 						if(sqlPart.isAutoCompletion() && followType != 0 ){
 							if(followType == 1 ){
 								partValue = StringUtil.addWhere(partValue);
@@ -386,13 +385,22 @@ public class Query extends SqlEntity {
 							}
 						}else {
 							if(partValue.contains(WHERE_CLAUSE)) {
-								partValue = partValue.replace(WHERE_CLAUSE, whereSql);
+								if(filterBuilder.length() > 0) {
+									partValue = partValue.replace(WHERE_CLAUSE, "where " + filterBuilder);
+								}else{
+									partValue = partValue.replace(WHERE_CLAUSE, "");
+								}
 							}
 							if(partValue.contains(AND_CLAUSE)) {
-								partValue = partValue.replace(AND_CLAUSE, andSql);
+								if(filterBuilder.length() > 0) {
+									partValue = partValue.replace(AND_CLAUSE, "and " + filterBuilder);
+								}else{
+									partValue = partValue.replace(AND_CLAUSE, "");
+								}
 							}
 						}
-						m.appendReplacement(buffer, partValue);
+						m.appendReplacement(buffer, "");
+						buffer.append(partValue);
 
 						if(sqlPart.isAutoClearComma()){
 							commaIndex = buffer.length() - 1;
@@ -412,7 +420,7 @@ public class Query extends SqlEntity {
 		}
 	}
 
-	private Count getCount(String querySql){
+	private Count getCount(String querySql,Map<String, Param> params){
 
 		Count count = new Count();
 
@@ -481,7 +489,10 @@ public class Query extends SqlEntity {
 			}
 		}
 
+		List<Object> sqlParams = new ArrayList<>();
+		cSql = getExecuteSql(cSql,params,sqlParams);
 		count.setCountSql(cSql);
+		count.setSqlParams(sqlParams);
 		return count;
 	}
 
@@ -489,32 +500,29 @@ public class Query extends SqlEntity {
 	 * 统计sql查询总共的条数
 	 *
 	 */
-	private void countItems(Context context,Count count ,Map<String, Param> params, String provideName) {
+	private void countItems(Context context,Count count, String provideName) {
 
 		String cSql = count.getCountSql();
 		Connection conn = context.getConn(provideName);
 
-		List<Object> exeParam = new ArrayList<>();
-		String ceSql = getExecuteSql(cSql,params, exeParam);
-
 		PreparedStatement statement = null;
 		ResultSet dataset = null;
 		try {
-			statement = conn.prepareStatement(ceSql);
+			statement = conn.prepareStatement(cSql);
 			if (queryTimeout != null) {
 				statement.setQueryTimeout(queryTimeout);
 			}
 			// 参数设定
-			initParam(statement, exeParam);
+			initParam(statement, count.getSqlParams());
 			dataset = statement.executeQuery();
 			dataset.next();
 			count.setTotalCounts( dataset.getLong(1));
 		} catch (SQLException e) {
-			throw new SqlExecuteException(provideName, getSqlTask(context,"QueryCount"), ceSql, e.getMessage(), e);
+			throw new SqlExecuteException(provideName, getSqlTask(context,"QueryCount"), cSql, e.getMessage(), e);
 		} finally {
 			DBUtil.closeResultSet(dataset);
 			DBUtil.closeStatement(statement);
-			LogUtil.logCountSql(ceSql, exeParam);
+			LogUtil.logCountSql(cSql, count.getSqlParams());
 		}
 	}
 
