@@ -5,7 +5,9 @@ import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.SimpleItemList;
 import com.nfwork.dbfound.model.bean.Param;
 import com.nfwork.dbfound.model.bean.SqlEntity;
+import com.nfwork.dbfound.util.CollectionUtil;
 import com.nfwork.dbfound.util.JsonUtil;
+import com.nfwork.dbfound.util.LocalDateUtil;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -137,8 +139,23 @@ public class SqlEntityTest extends SqlEntity {
         String result = staticParamParse("user_id in (#{@user_ids}) and date='#{@date}'",params);
         assert ids.getValue() instanceof SimpleItemList;
         assert result.equals("user_id in (1,2,3) and date='2024-08-25'");
-    }
+        result = getExecuteSql("user_id in (#{@user_ids}) and date='#{@date}'",params,new ArrayList<>());
+        assert result.equals("user_id in (1,2,3) and date='2024-08-25'");
 
+        params.clear();
+        LocalDate date1 = LocalDateUtil.parseDate("2024-09-06");
+        LocalDate date2 = LocalDateUtil.parseDate("2024-09-07");
+        Date date3 = java.sql.Date.valueOf(LocalDateUtil.parseDate("2024-09-08"));
+        Param dates = new Param();
+        dates.setDataType(DataType.COLLECTION);
+        dates.setName("dates");
+        dates.setValue(CollectionUtil.asList(date1,date2,date3));
+        params.put(dates.getName(),dates);
+        result = staticParamParse("date find_in_set ('#{@dates}')",params);
+        assert result.equals("date find_in_set ('2024-09-06,2024-09-07,2024-09-08')");
+        result = getExecuteSql("date find_in_set ('#{@dates}')",params, new ArrayList<>());
+        assert result.equals("date find_in_set ('2024-09-06,2024-09-07,2024-09-08')");
+    }
 
     @Override
     public void execute(Context context, Map<String, Param> params, String provideName) {

@@ -329,11 +329,11 @@ public class Query extends SqlEntity {
 		}).iterator();
 
 		StringBuilder filterBuilder = new StringBuilder();
-		while (iterator.hasNext()){
-			Filter nfFilter = (Filter) iterator.next();
-			filterBuilder.append(nfFilter.getExpress());
-			if(iterator.hasNext()){
+		if (iterator.hasNext()){
+			filterBuilder.append(((Filter) iterator.next()).getExpress());
+			while(iterator.hasNext()){
 				filterBuilder.append(" and ");
+				filterBuilder.append(((Filter) iterator.next()).getExpress());
 			}
 		}
 

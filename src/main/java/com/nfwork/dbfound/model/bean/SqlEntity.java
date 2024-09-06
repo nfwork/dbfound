@@ -97,13 +97,14 @@ public abstract class SqlEntity extends Entity {
 					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 					m.appendReplacement(buf, "");
 					Iterator<Object> iterator = itemList.iterator();
-					while (iterator.hasNext()){
-						Object item = iterator.next();
+					if (iterator.hasNext()){
 						buf.append("?");
-						if(iterator.hasNext()){
+						exeParam.add(iterator.next());
+						while (iterator.hasNext()){
 							buf.append(",");
+							buf.append("?");
+							exeParam.add(iterator.next());
 						}
-						exeParam.add(item);
 					}
 				} else {
 					exeParam.add(nfParam.getValue());
@@ -114,12 +115,12 @@ public abstract class SqlEntity extends Entity {
 				if (nfParam.getDataType() == DataType.COLLECTION) {
 					initCollection(nfParam);
 					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
-					Iterator<Object> iterator = itemList.stream().filter(DataUtil::isNotNull).iterator();
-					while (iterator.hasNext()){
-						Object item = iterator.next();
-						buf.append(item);
-						if(iterator.hasNext()){
+					Iterator<String> iterator = itemList.stream().filter(DataUtil::isNotNull).map(this::parseCollectionParamItem).iterator();
+					if (iterator.hasNext()){
+						buf.append(iterator.next());
+						while(iterator.hasNext()){
 							buf.append(",");
+							buf.append(iterator.next());
 						}
 					}
 				} else {
@@ -308,20 +309,12 @@ public abstract class SqlEntity extends Entity {
 
 				StringBuilder paramBuilder = new StringBuilder();
 
-				Iterator<Object> iterator = itemList.stream().filter(DataUtil::isNotNull).iterator();
-				while (iterator.hasNext()){
-					Object item = iterator.next();
-					String value;
-					if (item instanceof Date) {
-						value = LocalDateUtil.formatDate((Date) item);
-					} else if(item instanceof Temporal) {
-						value = LocalDateUtil.formatTemporal((Temporal) item);
-					} else {
-						value = item.toString();
-					}
-					paramBuilder.append(value);
-					if(iterator.hasNext()) {
+				Iterator<String> iterator = itemList.stream().filter(DataUtil::isNotNull).map(this::parseCollectionParamItem).iterator();
+				if (iterator.hasNext()){
+					paramBuilder.append(iterator.next());
+					while(iterator.hasNext()) {
 						paramBuilder.append(",");
+						paramBuilder.append(iterator.next());
 					}
 				}
 				paramValue = paramBuilder.toString();
@@ -348,6 +341,18 @@ public abstract class SqlEntity extends Entity {
 			m.appendTail(buf);
 			return buf.toString();
 		}
+	}
+
+	private String parseCollectionParamItem(Object value){
+		String result;
+		if (value instanceof Date) {
+			result = LocalDateUtil.formatDate((Date) value);
+		} else if(value instanceof Temporal) {
+			result = LocalDateUtil.formatTemporal((Temporal) value);
+		} else {
+			result = value.toString();
+		}
+		return result;
 	}
 
 	protected void reduceBlank(StringBuffer buffer){
