@@ -332,8 +332,7 @@ public class Query extends SqlEntity {
 		if (iterator.hasNext()){
 			filterBuilder.append(((Filter) iterator.next()).getExpress());
 			while(iterator.hasNext()){
-				filterBuilder.append(" and ");
-				filterBuilder.append(((Filter) iterator.next()).getExpress());
+				filterBuilder.append(" and ").append(((Filter) iterator.next()).getExpress());
 			}
 		}
 

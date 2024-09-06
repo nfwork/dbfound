@@ -101,8 +101,7 @@ public abstract class SqlEntity extends Entity {
 						buf.append("?");
 						exeParam.add(iterator.next());
 						while (iterator.hasNext()){
-							buf.append(",");
-							buf.append("?");
+							buf.append(",?");
 							exeParam.add(iterator.next());
 						}
 					}
@@ -119,8 +118,7 @@ public abstract class SqlEntity extends Entity {
 					if (iterator.hasNext()){
 						buf.append(iterator.next());
 						while(iterator.hasNext()){
-							buf.append(",");
-							buf.append(iterator.next());
+							buf.append(",").append(iterator.next());
 						}
 					}
 				} else {
