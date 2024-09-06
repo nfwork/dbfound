@@ -9,8 +9,11 @@
                 <sqlPart condition="${@fields_size} = 0">
 					*
 				</sqlPart>
-                <sqlPart type="if" sourcePath="fields">
-					#{@fields}
+                <sqlPart condition="${@fields_size} > 0" autoClearComma="true">
+                    ${@fields_size} as size,
+                </sqlPart>
+                <sqlPart type="if" sourcePath="fields" autoClearComma="true">
+					#{@fields},
 				</sqlPart>
             from
              (
@@ -126,4 +129,42 @@
             </sqlPart>
         </sql>
     </query>
+
+    <query name="clauseInSqlPart">
+        <sql>
+            select * from
+                (
+                    select 1 as user_id, 'lily' as user_name, 1 as role
+                    union
+                    select 2 as user_id, 'lucy' as user_name, 2 as role
+                ) t
+            <sqlPart sourcePath="role">
+                #WHERE_CLAUSE#
+            </sqlPart>
+            <sqlPart sourcePath="user_id">
+                where 1=1
+                #AND_CLAUSE#
+            </sqlPart>
+        </sql>
+        <filter name="f1" active="true" express="10 = 10" />
+        <filter name="f2" condition="1=1" express="20 = 20" />
+        <filter name="role" dataType="number" express="role = ${@role}" />
+        <filter name="user_id" dataType="number" express="user_id = ${@user_id}"/>
+    </query>
+
+    <query name="filter">
+        <sql>
+            select * from
+                (
+                    select 1 as user_id, 'lily' as user_name, 1 as role
+                    union
+                    select 2 as user_id, 'lucy' as user_name, 2 as role
+                ) t
+            #WHERE_CLAUSE#
+        </sql>
+        <filter name="user_id" condition="${@user_id} is not null" dataType="number" express="user_id = ${@user_id}"/>
+        <filter name="role" condition="${@role} is not null" dataType="number" express="role = ${@role}" />
+        <filter name="f2" active="true" express="user_id = 2" />
+    </query>
+
 </model>
