@@ -176,5 +176,15 @@ public class QueryTest {
         context.setParamData("role", Role.ADMIN);
         responseObject = ModelEngine.query(context, "test/query", "filter", User.class);
         assert responseObject.getDatas().isEmpty();
+
+        context = new Context();
+        context.setParamData("ids", CollectionUtil.asList(1,3));
+        responseObject = ModelEngine.query(context, "test/query", "filter", User.class);
+        assert responseObject.getDatas().isEmpty();
+
+        context = new Context();
+        context.setParamData("ids", new ArrayList<>());
+        responseObject = ModelEngine.query(context, "test/query", "filter", User.class);
+        assert responseObject.getDatas().size() == 1;
     }
 }

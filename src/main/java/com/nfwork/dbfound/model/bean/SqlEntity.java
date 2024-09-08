@@ -114,7 +114,7 @@ public abstract class SqlEntity extends Entity {
 				if (nfParam.getDataType() == DataType.COLLECTION) {
 					initCollection(nfParam);
 					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
-					Iterator<String> iterator = itemList.stream().filter(DataUtil::isNotNull).map(this::parseCollectionParamItem).iterator();
+					Iterator<String> iterator = itemList.stream().filter(Objects::nonNull).map(this::parseCollectionParamItem).iterator();
 					if (iterator.hasNext()){
 						buf.append(iterator.next());
 						while(iterator.hasNext()){
@@ -305,7 +305,7 @@ public abstract class SqlEntity extends Entity {
 				SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 
 				StringBuilder paramBuilder = new StringBuilder();
-				Iterator<String> iterator = itemList.stream().filter(DataUtil::isNotNull).map(this::parseCollectionParamItem).iterator();
+				Iterator<String> iterator = itemList.stream().filter(Objects::nonNull).map(this::parseCollectionParamItem).iterator();
 				if (iterator.hasNext()){
 					paramBuilder.append(iterator.next());
 					while(iterator.hasNext()) {

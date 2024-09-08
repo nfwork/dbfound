@@ -167,6 +167,7 @@
         <filter name="user_id" condition="${@user_id} is not null" dataType="number" express="user_id = ${@user_id}"/>
         <filter name="role" condition="${@role} is not null" dataType="number" express="role = ${@role}" />
         <filter name="f2" active="true" express="user_id = 2" />
+        <filter name="ids" dataType="collection" express="user_id in (${@ids})" />
     </query>
 
 </model>
