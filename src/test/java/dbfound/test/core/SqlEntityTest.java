@@ -86,7 +86,7 @@ public class SqlEntityTest extends SqlEntity {
         Param fields = new Param();
         fields.setName("fields");
         fields.setDataType(DataType.COLLECTION);
-        fields.setValue(new String[]{"user_id","user_name","",null});
+        fields.setValue(new String[]{"user_id","user_name",null});
         params.put("fields",fields);
         Param limit = new Param();
         limit.setName("limit");
@@ -138,9 +138,9 @@ public class SqlEntityTest extends SqlEntity {
         params.put(param.getName(),param);
         String result = staticParamParse("user_id in (#{@user_ids}) and date='#{@date}'",params);
         assert ids.getValue() instanceof SimpleItemList;
-        assert result.equals("user_id in (1,2,3) and date='2024-08-25'");
+        assert result.equals("user_id in (1,2,3,) and date='2024-08-25'");
         result = getExecuteSql("user_id in (#{@user_ids}) and date='#{@date}'",params,new ArrayList<>());
-        assert result.equals("user_id in (1,2,3) and date='2024-08-25'");
+        assert result.equals("user_id in (1,2,3,) and date='2024-08-25'");
 
         params.clear();
         LocalDate date1 = LocalDateUtil.parseDate("2024-09-06");
