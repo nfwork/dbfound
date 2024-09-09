@@ -98,12 +98,13 @@ public abstract class SqlEntity extends Entity {
 					m.appendReplacement(buf, "");
 					Iterator<Object> iterator = itemList.iterator();
 					if (iterator.hasNext()){
-						buf.append("?");
+						StringBuilder builder = new StringBuilder("?");
 						exeParam.add(iterator.next());
 						while (iterator.hasNext()){
-							buf.append(",?");
+							builder.append(",?");
 							exeParam.add(iterator.next());
 						}
+						buf.append(builder);
 					}
 				} else {
 					exeParam.add(nfParam.getValue());
@@ -116,10 +117,11 @@ public abstract class SqlEntity extends Entity {
 					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 					Iterator<String> iterator = itemList.stream().filter(Objects::nonNull).map(this::parseCollectionParamItem).iterator();
 					if (iterator.hasNext()){
-						buf.append(iterator.next());
+						StringBuilder builder = new StringBuilder(iterator.next());
 						while(iterator.hasNext()){
-							buf.append(",").append(iterator.next());
+							builder.append(",").append(iterator.next());
 						}
+						buf.append(builder);
 					}
 				} else {
 					String value = nfParam.getStringValue();
@@ -309,8 +311,7 @@ public abstract class SqlEntity extends Entity {
 				if (iterator.hasNext()){
 					paramBuilder.append(iterator.next());
 					while(iterator.hasNext()) {
-						paramBuilder.append(",");
-						paramBuilder.append(iterator.next());
+						paramBuilder.append(",").append(iterator.next());
 					}
 				}
 				paramValue = paramBuilder.toString();
