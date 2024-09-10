@@ -376,10 +376,18 @@ public class Query extends SqlEntity {
 					}else{
 						if(sqlPart.isAutoCompletion() && followType != 0 ){
 							if(followType == 1 ){
-								partValue = StringUtil.addWhere(partValue);
+								if(StringUtil.isBeginAnd(partValue)){
+									builder.append("where").append(partValue,3, partValue.length());
+								}else{
+									builder.append("where ").append(partValue);
+								}
 								followType = 2;
 							}else {
-								partValue = StringUtil.addAnd(partValue);
+								if(StringUtil.isBeginAnd(partValue)){
+									builder.append(partValue);
+								}else{
+									builder.append("and ").append(partValue);
+								}
 							}
 						}else {
 							if(partValue.contains(WHERE_CLAUSE)) {
@@ -396,8 +404,8 @@ public class Query extends SqlEntity {
 									partValue = partValue.replace(AND_CLAUSE, "");
 								}
 							}
+							builder.append(partValue);
 						}
-						builder.append(partValue);
 
 						if(sqlPart.isAutoClearComma()){
 							commaIndex = builder.length() - 1;

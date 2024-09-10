@@ -177,21 +177,7 @@ public class StringUtil {
         return buffer.toString();
     }
 
-    public static String addWhere(String sql){
-        if(isBeginAnd(sql)){
-            return "where" + sql.substring(3);
-        }
-        return "where " + sql;
-    }
-
-    public static String addAnd(String sql){
-        if(isBeginAnd(sql)){
-            return sql;
-        }
-        return "and " + sql;
-    }
-
-    private static boolean isBeginAnd(String value){
+    public static boolean isBeginAnd(String value){
         if(value.length() < 3){
             return false;
         }

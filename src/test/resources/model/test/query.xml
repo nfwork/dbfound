@@ -129,6 +129,9 @@
             <sqlPart sourcePath="user_id" autoCompletion="true">
 				user_id = ${@user_id}
             </sqlPart>
+            <sqlPart sourcePath="role" autoCompletion="true">
+                and 1 = 1
+            </sqlPart>
         </sql>
     </query>
 
