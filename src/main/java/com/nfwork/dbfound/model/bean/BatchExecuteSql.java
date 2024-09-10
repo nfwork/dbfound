@@ -232,16 +232,22 @@ public class BatchExecuteSql extends Sql {
 
 	private String analysisTmpSql(String sql, Set<String> batchParamNameSet ) {
 		Matcher m = paramPattern.matcher(sql);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder builder = new StringBuilder();
+		int start = 0;
 		while (m.find()) {
+			if(m.start() > start){
+				builder.append(sql, start, m.start());
+			}
+			start = m.end();
 			String param = m.group();
 			String pn = param.substring(2, param.length() - 1).trim();
 			batchParamNameSet.add(pn);
-			String value = "{@" + pn +"_##}";
-			m.appendReplacement(buf, value);
+			builder.append("{@").append(pn).append("_##}");
 		}
-		m.appendTail(buf);
-		return buf.toString();
+		if(start < sql.length()) {
+			builder.append(sql, start, sql.length());
+		}
+		return builder.toString();
 	}
 
 	public String getAffectedCountParam() {
