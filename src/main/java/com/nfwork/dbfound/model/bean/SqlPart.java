@@ -263,23 +263,27 @@ public class SqlPart extends Sql {
 
     private String getIndexParamSql(String sql, Map<String, Param> params, int index) {
         Matcher m = paramPattern.matcher(sql);
-        StringBuffer buf = new StringBuffer();
-        int size = 0;
+        StringBuilder builder = new StringBuilder();
+        int start = 0;
         while (m.find()) {
             String paramName = m.group();
             String pn = paramName.substring(2, paramName.length() - 1).trim();
             Param param = params.get(pn);
             if(param.isBatchAssign()){
-                size ++;
-                String value = "{@" + pn + "_" + index + "}";
-                m.appendReplacement(buf, value);
+                if(m.start() > start){
+                    builder.append(sql, start, m.start());
+                }
+                start = m.end();
+                builder.append("{@").append(pn).append("_").append(index).append("}");
             }
         }
-        if(size == 0){
+        if(start == 0){
             return sql;
         }else {
-            m.appendTail(buf);
-            return buf.toString();
+            if(start < sql.length()) {
+                builder.append(sql, start, sql.length());
+            }
+            return builder.toString();
         }
     }
 

@@ -78,32 +78,37 @@ public class Sql extends SqlEntity {
 	protected String getSqlPartSql(Map<String, Param> params, Context context, String provideName) {
 		int sqlPartIndex = 0;
 		int commaIndex = 0;
+		int start = 0;
 
 		Matcher m = SQL_PART_PATTERN.matcher(sql);
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder builder = new StringBuilder();
 		while (m.find()) {
+			if(m.start() > start){
+				builder.append(sql, start, m.start());
+			}
+			start = m.end();
 			SqlPart sqlPart = sqlPartList.get(sqlPartIndex++);
 			String partValue =  sqlPart.getPartSql(context,params,provideName);
 
 			if(partValue.isEmpty()) {
-				m.appendReplacement(buffer, "");
-				reduceBlank(buffer);
+				reduceBlank(builder);
 			}else{
-				m.appendReplacement(buffer, "");
-				buffer.append(partValue);
+				builder.append(partValue);
 				if(sqlPart.isAutoClearComma()){
-					commaIndex = buffer.length() - 1;
+					commaIndex = builder.length() - 1;
 				}
 			}
 		}
-		if(commaIndex > 0 && buffer.charAt(commaIndex) == ',') {
-			buffer.deleteCharAt(commaIndex);
+		if(commaIndex > 0 && builder.charAt(commaIndex) == ',') {
+			builder.deleteCharAt(commaIndex);
 		}
-		m.appendTail(buffer);
-		if(buffer.length()>0 && buffer.charAt(0)==' '){
-			buffer.deleteCharAt(0);
+		if(start < sql.length()) {
+			builder.append(sql, start, sql.length());
 		}
-		return buffer.toString();
+		if(builder.length()>0 && builder.charAt(0)==' '){
+			builder.deleteCharAt(0);
+		}
+		return builder.toString();
 	}
 
 	@Override
