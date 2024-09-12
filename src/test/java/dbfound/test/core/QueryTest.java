@@ -166,6 +166,22 @@ public class QueryTest {
     }
 
     @Test
+    public void testSqlPart(){
+        Context context = new Context();
+        context.setParamData("flag", 1);
+        context.setParamData("fields", CollectionUtil.asList("user_id","role"));
+        QueryResponseObject<User> responseObject = ModelEngine.query(context, "test/query", "sqlPart", User.class);
+        assert responseObject.get().getRole() == Role.STUDENT;
+        assert responseObject.get().getUserId() == 2;
+
+        context.setParamData("flag", 0);
+        responseObject = ModelEngine.query(context, "test/query", "sqlPart", User.class);
+        assert responseObject.get().getRole() == Role.ADMIN;
+        assert responseObject.get().getUserId() == 1;
+        assert responseObject.getDatas().size() == 2;
+    }
+
+    @Test
     public void testFilter(){
         Context context = new Context();
         QueryResponseObject<User> responseObject = ModelEngine.query(context, "test/query", "filter", User.class);
@@ -176,5 +192,15 @@ public class QueryTest {
         context.setParamData("role", Role.ADMIN);
         responseObject = ModelEngine.query(context, "test/query", "filter", User.class);
         assert responseObject.getDatas().isEmpty();
+
+        context = new Context();
+        context.setParamData("ids", CollectionUtil.asList(1,3));
+        responseObject = ModelEngine.query(context, "test/query", "filter", User.class);
+        assert responseObject.getDatas().isEmpty();
+
+        context = new Context();
+        context.setParamData("ids", new ArrayList<>());
+        responseObject = ModelEngine.query(context, "test/query", "filter", User.class);
+        assert responseObject.getDatas().size() == 1;
     }
 }

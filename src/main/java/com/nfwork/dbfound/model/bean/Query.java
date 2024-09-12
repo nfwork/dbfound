@@ -337,35 +337,34 @@ public class Query extends SqlEntity {
 		}
 
 		int sqlPartIndex = 0;
-		int findCount = 0;
 		int followType = 0;
 		int commaIndex = 0;
+		int start = 0;
 
 		Matcher m = KEY_PART_PATTERN.matcher(ssql);
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder builder = new StringBuilder();
 		while (m.find()) {
 			String text = m.group();
-			findCount++;
+			if(m.start() > start){
+				builder.append(ssql, start, m.start());
+			}
+			start = m.end();
 			switch (text) {
 				case WHERE_CLAUSE:
 					if (filterBuilder.length() == 0) {
 						followType = 1;
-						m.appendReplacement(buffer, "");
-						reduceBlank(buffer);
+						reduceBlank(builder);
 					} else {
 						followType = 2;
-						m.appendReplacement(buffer, "where ");
-						buffer.append(filterBuilder);
+						builder.append("where ").append(filterBuilder);
 					}
 					break;
 				case AND_CLAUSE:
 					followType = 2;
 					if (filterBuilder.length() == 0) {
-						m.appendReplacement(buffer, "");
-						reduceBlank(buffer);
+						reduceBlank(builder);
 					}else{
-						m.appendReplacement(buffer, "and ");
-						buffer.append(filterBuilder);
+						builder.append("and ").append(filterBuilder);
 					}
 					break;
 				case SQL_PART:
@@ -373,15 +372,22 @@ public class Query extends SqlEntity {
 					String partValue = sqlPart.getPartSql(context,params,provideName);
 
 					if(partValue.isEmpty()) {
-						m.appendReplacement(buffer, "");
-						reduceBlank(buffer);
+						reduceBlank(builder);
 					}else{
 						if(sqlPart.isAutoCompletion() && followType != 0 ){
 							if(followType == 1 ){
-								partValue = StringUtil.addWhere(partValue);
+								if(StringUtil.isBeginAnd(partValue)){
+									builder.append("where").append(partValue,3, partValue.length());
+								}else{
+									builder.append("where ").append(partValue);
+								}
 								followType = 2;
 							}else {
-								partValue = StringUtil.addAnd(partValue);
+								if(StringUtil.isBeginAnd(partValue)){
+									builder.append(partValue);
+								}else{
+									builder.append("and ").append(partValue);
+								}
 							}
 						}else {
 							if(partValue.contains(WHERE_CLAUSE)) {
@@ -398,25 +404,26 @@ public class Query extends SqlEntity {
 									partValue = partValue.replace(AND_CLAUSE, "");
 								}
 							}
+							builder.append(partValue);
 						}
-						m.appendReplacement(buffer, "");
-						buffer.append(partValue);
 
 						if(sqlPart.isAutoClearComma()){
-							commaIndex = buffer.length() - 1;
+							commaIndex = builder.length() - 1;
 						}
 					}
 					break;
 			}
 		}
-		if(findCount == 0){
+		if(start == 0){
 			return ssql;
 		}else {
-			if(commaIndex > 0 && buffer.charAt(commaIndex) == ',') {
-				buffer.deleteCharAt(commaIndex);
+			if(commaIndex > 0 && builder.charAt(commaIndex) == ',') {
+				builder.deleteCharAt(commaIndex);
 			}
-			m.appendTail(buffer);
-			return buffer.toString();
+			if(start < ssql.length()) {
+				builder.append(ssql, start, ssql.length());
+			}
+			return builder.toString();
 		}
 	}
 

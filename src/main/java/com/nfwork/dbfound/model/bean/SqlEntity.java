@@ -67,15 +67,20 @@ public abstract class SqlEntity extends Entity {
 	 * @return string
 	 */
 	protected String getExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam) {
-		StringBuffer buf = new StringBuffer();
-		initExecuteSql(sql, params, exeParam, buf);
-		return buf.toString();
+		StringBuilder builder = new StringBuilder();
+		initExecuteSql(sql, params, exeParam, builder);
+		return builder.toString();
 	}
 
-	protected void initExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam, StringBuffer buf) {
+	protected void initExecuteSql(String sql, Map<String, Param> params, List<Object> exeParam, StringBuilder builder) {
 		Matcher m = executeParamPattern.matcher(sql);
+		int start = 0;
 
 		while (m.find()) {
+			if(m.start() > start){
+				builder.append(sql, start, m.start());
+			}
+			start = m.end();
 			String param = m.group();
 			String pn = param.substring(3, param.length() - 1);
 			Param nfParam = params.get(pn.trim());
@@ -95,30 +100,28 @@ public abstract class SqlEntity extends Entity {
 				if (nfParam.getDataType() == DataType.COLLECTION) {
 					initCollection(nfParam);
 					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
-					m.appendReplacement(buf, "");
 					Iterator<Object> iterator = itemList.iterator();
 					if (iterator.hasNext()){
-						buf.append("?");
+						builder.append("?");
 						exeParam.add(iterator.next());
 						while (iterator.hasNext()){
-							buf.append(",?");
+							builder.append(",?");
 							exeParam.add(iterator.next());
 						}
 					}
 				} else {
 					exeParam.add(nfParam.getValue());
-					m.appendReplacement(buf, "?");
+					builder.append("?");
 				}
 			}else{
-				m.appendReplacement(buf, "");
 				if (nfParam.getDataType() == DataType.COLLECTION) {
 					initCollection(nfParam);
 					SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
-					Iterator<String> iterator = itemList.stream().filter(DataUtil::isNotNull).map(this::parseCollectionParamItem).iterator();
+					Iterator<String> iterator = itemList.stream().filter(Objects::nonNull).map(this::parseCollectionParamItem).iterator();
 					if (iterator.hasNext()){
-						buf.append(iterator.next());
+						builder.append(iterator.next());
 						while(iterator.hasNext()){
-							buf.append(",").append(iterator.next());
+							builder.append(",").append(iterator.next());
 						}
 					}
 				} else {
@@ -128,14 +131,16 @@ public abstract class SqlEntity extends Entity {
 					}
 					// 判断静态传参内容，是否包含动态参数
 					if(nfParam.getDataType() == DataType.VARCHAR && value.contains("${@")){
-						initExecuteSql(value, params, exeParam, buf);
+						initExecuteSql(value, params, exeParam, builder);
 					}else {
-						buf.append(value);
+						builder.append(value);
 					}
 				}
 			}
 		}
-		m.appendTail(buf);
+		if(start < sql.length()) {
+			builder.append(sql, start, sql.length());
+		}
 	}
 
 	/**
@@ -280,12 +285,15 @@ public abstract class SqlEntity extends Entity {
 		if (sql == null || sql.isEmpty()) {
 			return "";
 		}
-		int findCount = 0;
+		int start = 0;
 		Matcher m = staticPattern.matcher(sql);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		while (m.find()) {
-			findCount++;
+			if(m.start() > start){
+				buf.append(sql, start, m.start());
+			}
+			start = m.end();
 			String paramValue;
 
 			String param = m.group();
@@ -305,12 +313,11 @@ public abstract class SqlEntity extends Entity {
 				SimpleItemList itemList = (SimpleItemList) nfParam.getValue();
 
 				StringBuilder paramBuilder = new StringBuilder();
-				Iterator<String> iterator = itemList.stream().filter(DataUtil::isNotNull).map(this::parseCollectionParamItem).iterator();
+				Iterator<String> iterator = itemList.stream().filter(Objects::nonNull).map(this::parseCollectionParamItem).iterator();
 				if (iterator.hasNext()){
 					paramBuilder.append(iterator.next());
 					while(iterator.hasNext()) {
-						paramBuilder.append(",");
-						paramBuilder.append(iterator.next());
+						paramBuilder.append(",").append(iterator.next());
 					}
 				}
 				paramValue = paramBuilder.toString();
@@ -324,17 +331,18 @@ public abstract class SqlEntity extends Entity {
 			}else if (paramValue == null) {
 				paramValue = "";
 			}
-			m.appendReplacement(buf, "");
 			if(paramValue.isEmpty()) {
 				reduceBlank(buf);
 			}else{
 				buf.append(paramValue);
 			}
 		}
-		if(findCount == 0){
+		if(start == 0){
 			return sql;
 		}else {
-			m.appendTail(buf);
+			if(start < sql.length()) {
+				buf.append(sql, start, sql.length());
+			}
 			return buf.toString();
 		}
 	}
@@ -351,18 +359,18 @@ public abstract class SqlEntity extends Entity {
 		return result;
 	}
 
-	protected void reduceBlank(StringBuffer buffer){
-		if(buffer.length() == 0){
+	protected void reduceBlank(StringBuilder builder){
+		if(builder.length() == 0){
 			return;
 		}
 		int blankCount = 0;
-		int index = buffer.length() - 1;
-		while(index >=0 && buffer.charAt(index)==' '){
+		int index = builder.length() - 1;
+		while(index >=0 && builder.charAt(index)==' '){
 			blankCount ++;
 			index--;
 		}
 		if(blankCount > 0){
-			buffer.delete(buffer.length()- blankCount, buffer.length());
+			builder.delete(builder.length()- blankCount, builder.length());
 		}
 	}
 
