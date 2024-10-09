@@ -157,6 +157,24 @@
         <filter name="user_id" dataType="number" express="user_id = ${@user_id}"/>
     </query>
 
+    <query name="sqlPart">
+        <param name="flag" scope="param" dataType="number" />
+        <sql>
+            select * from
+                (
+                    select 1 as user_id, 'lily' as user_name, 1 as role
+                    union
+                    select 2 as user_id, 'lucy' as user_name, 2 as role
+                ) t
+                #WHERE_CLAUSE#
+                <sqlPart type="for" sourcePath="fields" autoCompletion="true" item="field" separator=" and ">
+					<sqlPart type="if" condition="${@flag} = 1 and ${@field} in ('user_id','role')">
+							#{@field} = 2
+					</sqlPart>
+				</sqlPart>
+        </sql>
+    </query>
+
     <query name="filter">
         <sql>
             select * from
