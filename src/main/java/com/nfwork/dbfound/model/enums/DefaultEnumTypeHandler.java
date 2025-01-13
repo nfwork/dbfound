@@ -37,6 +37,9 @@ public class DefaultEnumTypeHandler<E extends Enum<?>> implements EnumTypeHandle
     }
 
     public void initType(Class<E> type) {
+        if(type.isAnonymousClass()){
+            type = (Class<E>) type.getSuperclass();
+        }
         E[] enums =  type.getEnumConstants();
         if (enums == null) {
             throw new IllegalArgumentException(type.getSimpleName() + " does not represent an enum type.");
