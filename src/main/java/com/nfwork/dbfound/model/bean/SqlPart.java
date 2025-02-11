@@ -33,6 +33,8 @@ public class SqlPart extends Sql {
 
     String index;
 
+    SqlPart elseifPart;
+
     boolean autoCompletion;
 
     boolean autoClearComma;
@@ -51,7 +53,23 @@ public class SqlPart extends Sql {
     public void doEndTag() {
         if (getParent() instanceof Sql) {
             Sql sql = (Sql) getParent();
-            sql.getSqlPartList().add(this);
+            List<SqlPart> sqlPartList = sql.getSqlPartList();
+            if(type == SqlPartType.ELSE || type == SqlPartType.ELSEIF){
+                int size = sqlPartList.size();
+                if(size > 0){
+                    SqlPart sqlPart = sqlPartList.get(size-1);
+                    if(sqlPart.type != SqlPartType.ELSEIF && sqlPart.type != SqlPartType.IF){
+                        throw new DBFoundRuntimeException("sqlPart type '" + type.getValue() + "' can only follow the type 'if' or 'elseif'");
+                    }
+                    while(sqlPart.elseifPart != null){
+                        sqlPart = sqlPart.elseifPart;
+                    }
+                    sqlPart.elseifPart = this;
+                }else {
+                    throw new DBFoundRuntimeException("sqlPart type '" + type.getValue() + "' can only follow the type 'if' or 'elseif'");
+                }
+            }
+            sqlPartList.add(this);
         }
 
         //生成part内容
@@ -73,7 +91,9 @@ public class SqlPart extends Sql {
     }
 
     protected String getPartSql(Context context,Map<String, Param> params,String provideName ){
-        if(type == SqlPartType.FOR) {
+        if(type == SqlPartType.ELSEIF || type == SqlPartType.ELSE){
+            return "";
+        }else if(type == SqlPartType.FOR) {
             if(DataUtil.isNull(this.getSourcePath())){
                 throw new DBFoundRuntimeException("SqlPart the sourcePath can not be null when the type is FOR");
             }
@@ -220,7 +240,9 @@ public class SqlPart extends Sql {
         boolean isOK = false;
         Integer forLoopIndex = DataUtil.intValue(context.getRequestDatas().get("_dbfoundForLoopIndex"));
 
-        if(DataUtil.isNotNull(condition)){
+        if(type == SqlPartType.ELSE){
+            isOK = true;
+        }else if(DataUtil.isNotNull(condition)){
             String conditionSql = condition;
             if(forLoopIndex != null){
                 conditionSql = getIndexParamSql(conditionSql,params, forLoopIndex);
@@ -257,6 +279,9 @@ public class SqlPart extends Sql {
                 return getSqlPartSql(params, context, provideName);
             }
         } else {
+            if(elseifPart != null){
+                return elseifPart.getIfPart(context,params, provideName);
+            }
             return "";
         }
     }
