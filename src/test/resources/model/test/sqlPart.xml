@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
+
+    <query>
+        <param name="fields_size" sourcePath="fields.size" value="0" dataType="number" />
+        <sql>
+            select
+                <sqlPart type="if" sourcePath="fields">
+					#{@fields}
+				</sqlPart>
+                <sqlPart type="elseif" sourcePath="code_field">
+                    #{@code_field}
+                </sqlPart>
+                <sqlPart type="elseif" sourcePath="name_field">
+                    #{@name_field}
+                </sqlPart>
+                <sqlPart type="else">
+					*
+				</sqlPart>
+            from
+             (
+                  select 1 as user_id, 'lily' as user_name, '10000' as user_code
+                  union
+                  select 2 as user_id, 'lucy' as user_name, '10001' as user_code
+                  union
+                  select 3 as user_id, 'lucy1' as user_name, '10002' as user_code
+              ) t
+        </sql>
+    </query>
+
+    <query name="two">
+        <param name="fields_size" sourcePath="fields.size" value="0" dataType="number" />
+        <sql>
+            select
+            <sqlPart type="if" sourcePath="code_field">
+                #{@code_field},
+            </sqlPart>
+            <sqlPart type="else">
+                1 as number,
+            </sqlPart>
+
+            <sqlPart type="if" sourcePath="name_field">
+                #{@name_field}
+            </sqlPart>
+            <sqlPart type="else">
+                2 as `index`
+            </sqlPart>
+            from
+            (
+                select 1 as user_id, 'lily' as user_name, '10000' as user_code
+                union
+                select 2 as user_id, 'lucy' as user_name, '10001' as user_code
+                union
+                select 3 as user_id, 'lucy1' as user_name, '10002' as user_code
+            ) t
+        </sql>
+    </query>
+
+</model>

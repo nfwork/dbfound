@@ -217,6 +217,8 @@
 			<xsd:simpleType>
 				<xsd:restriction base="xsd:NMTOKEN">
 					<xsd:enumeration value="if" />
+					<xsd:enumeration value="elseif" />
+					<xsd:enumeration value="else" />
 					<xsd:enumeration value="for" />
 				</xsd:restriction>
 			</xsd:simpleType>
