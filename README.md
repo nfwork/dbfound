@@ -24,4 +24,4 @@ https://github.com/nfwork/dbfound/wiki/dbfound-mvc-api
 https://github.com/nfwork/dbfound/wiki/dbfound-environment-setup
 
 ## dbfound example 使用案列
-https://github.com/nfwork/dbfound/wiki/dbfound-model-example
+https://github.com/nfwork/dbfound/wiki/dbfound-example
