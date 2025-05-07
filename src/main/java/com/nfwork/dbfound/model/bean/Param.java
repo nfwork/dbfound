@@ -13,7 +13,7 @@ import com.nfwork.dbfound.util.LocalDateUtil;
 
 public class Param extends Entity implements Cloneable{
 	private String name = "";
-	private DataType dataType = DataType.VARCHAR;
+	private DataType dataType = DataType.UNKNOWN;
 	private IOType ioType = IOType.IN;
 	private boolean autoSession = false;
 	private boolean autoCookie = false;
