@@ -206,7 +206,7 @@ public class Param extends Entity implements Cloneable{
 	}
 
 	public boolean isEmptyAsNull() {
-		if(this.dataType == DataType.VARCHAR) {
+		if(this.dataType == DataType.VARCHAR || this.dataType == DataType.UNKNOWN) {
 			return emptyAsNull;
 		}else{
 			return true;
