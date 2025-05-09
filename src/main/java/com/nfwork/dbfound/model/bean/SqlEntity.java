@@ -396,7 +396,7 @@ public abstract class SqlEntity extends Entity {
 		if(nfParam.getDataType() == DataType.BOOLEAN){
 			if( !(nfParam.getValue() instanceof Boolean)) {
 				String paramValue = nfParam.getValue().toString().trim();
-				if ("".equals(paramValue)) {
+				if (paramValue.isEmpty()) {
 					nfParam.setValue(null);
 				}else if ("false".equals(paramValue) || "0".equals(paramValue)) {
 					nfParam.setValue(false);
@@ -414,7 +414,7 @@ public abstract class SqlEntity extends Entity {
 					}
 				} else if (nfParam.getValue() instanceof String) {
 					String paramValue = nfParam.getValue().toString().trim();
-					if ("".equals(paramValue)) {
+					if (paramValue.isEmpty()) {
 						nfParam.setValue(null);
 					} else if (!paramValue.contains(".")) {
 						nfParam.setValue(Long.parseLong(paramValue));
