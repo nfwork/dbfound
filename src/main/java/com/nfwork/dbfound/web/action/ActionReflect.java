@@ -10,7 +10,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.TransactionUtil;
 import com.nfwork.dbfound.web.base.ActionController;
 import com.nfwork.dbfound.web.base.ActionTransactional;
-import com.nfwork.dbfound.web.base.BaseControl;
+import com.nfwork.dbfound.web.base.BaseController;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -23,7 +23,7 @@ public class ActionReflect {
 
 	public ResponseObject reflect(Context context, String className, String method, boolean singleton) throws Exception {
 		try {
-			BaseControl baseControl = actionBeanFactory.getControl(className, singleton);
+			BaseController baseControl = actionBeanFactory.getControl(className, singleton);
 
 			Reflector reflector = Reflector.forClass(baseControl.getClass());
 			MethodInvoker methodInvoker = reflector.getMethodInvoker(method, Context.class);
