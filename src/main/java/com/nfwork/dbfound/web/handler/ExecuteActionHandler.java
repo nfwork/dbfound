@@ -4,6 +4,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.FileDownloadResponseObject;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.model.ModelEngine;
+import com.nfwork.dbfound.model.ModelOperator;
 import com.nfwork.dbfound.util.TransactionUtil;
 import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.file.FileDownloadUtil;
@@ -33,7 +34,7 @@ public class ExecuteActionHandler extends ActionHandler {
             return null;
         }
 
-        Object gridData = context.getData(ModelEngine.defaultBatchPath);
+        Object gridData = context.getData(ModelOperator.defaultBatchPath);
 
         ResponseObject object = TransactionUtil.execute(context,()->{
             if (gridData instanceof List) {
