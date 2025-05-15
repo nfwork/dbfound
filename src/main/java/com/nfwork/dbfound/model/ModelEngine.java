@@ -10,6 +10,10 @@ public class ModelEngine {
 
 	private static ModelOperator modelOperator = new ModelOperator();
 
+	public static final String defaultBatchPath = "param.GridData";
+
+	public static final String defaultPath = "param";
+
 	/**
 	 * 查询 根据传入的class返回对应的对象集合
 	 * 

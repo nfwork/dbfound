@@ -19,10 +19,6 @@ public class ModelOperator {
 
     private static final ModelCache modelCache = new ModelCache();
 
-    public static final String defaultBatchPath = "param.GridData";
-
-    public static final String defaultPath = "param";
-
     /**
      * 查询 可以指定当前路径、是否自动分页、返回对象的查询
      *
@@ -45,7 +41,7 @@ public class ModelOperator {
                 queryName = "_default";
             }
             if(DataUtil.isNull(sourcePath)){
-                sourcePath = defaultPath;
+                sourcePath = ModelEngine.defaultPath;
             }
             Model model = modelCache.getModel(modelName);
 
@@ -90,7 +86,7 @@ public class ModelOperator {
             // 批量执行查找客户端数据的路径
             String batchExecutePath;
             if (DataUtil.isNull(sourcePath)) {
-                batchExecutePath = defaultBatchPath;
+                batchExecutePath = ModelEngine.defaultBatchPath;
             }else{
                 batchExecutePath = sourcePath;
             }
@@ -169,7 +165,7 @@ public class ModelOperator {
                 executeName = "_default";
             }
             if(DataUtil.isNull(sourcePath)){
-                sourcePath = defaultPath;
+                sourcePath = ModelEngine.defaultPath;
             }
 
             Model model = modelCache.getModel(modelName);
