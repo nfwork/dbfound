@@ -34,7 +34,7 @@ public class ModelOperator {
      * @param clazz clazz
      * @return T
      */
-    protected <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging, Class<T> clazz) {
+    public <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging, Class<T> clazz) {
         try {
             if(context.onTopModelDeep()) {
                 LogUtil.info("-----------------------query begin--------------------------------------");
@@ -76,7 +76,7 @@ public class ModelOperator {
      * @param sourcePath sourcePath;
      * @return ResponseObject
      */
-    protected ResponseObject batchExecute(Context context, String modelName, String executeName, String sourcePath) {
+    public ResponseObject batchExecute(Context context, String modelName, String executeName, String sourcePath) {
         try {
             if(context.onTopModelDeep()) {
                 LogUtil.info("-----------------------batch execute begin------------------------------");
@@ -158,7 +158,7 @@ public class ModelOperator {
      * @param sourcePath source path
      * @return ResponseObject
      */
-    protected ResponseObject execute(Context context, String modelName, String executeName, String sourcePath) {
+    public ResponseObject execute(Context context, String modelName, String executeName, String sourcePath) {
         try {
             if(context.onTopModelDeep()) {
                 LogUtil.info("-----------------------execute begin------------------------------------");
