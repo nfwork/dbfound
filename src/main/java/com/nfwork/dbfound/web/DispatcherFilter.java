@@ -65,7 +65,7 @@ public class DispatcherFilter implements Filter {
 		if (configFilePath != null && !configFilePath.isEmpty()) {
 			DBFoundConfig.setConfigFilePath(configFilePath);
 		}
-		DBFoundConfig.init();
+		DBFoundConfig.init(cf.getServletContext());
 		this.handlerList.add(new QueryActionHandler());
 		this.handlerList.add(new ExecuteActionHandler());
 		this.handlerList.add(new ExportActionHandler());
