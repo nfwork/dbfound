@@ -88,7 +88,7 @@ public class DBFoundConfig {
 		doInit(getConfigFilePath(),servletContext);
 	}
 
-	public synchronized static void doInit(String confFile,ServletContext servletContext) {
+	private synchronized static void doInit(String confFile,ServletContext servletContext) {
 		if (confFile == null || confFile.isEmpty()) {
 			confFile = CLASSPATH + "/dbfound-conf.xml";
 		}
