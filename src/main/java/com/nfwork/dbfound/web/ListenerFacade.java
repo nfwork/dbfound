@@ -4,7 +4,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.web.base.Listener;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 public final class ListenerFacade {
 
