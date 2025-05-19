@@ -1,24 +1,23 @@
 package com.nfwork.dbfound.web.action;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.web.base.BaseControl;
+import com.nfwork.dbfound.web.base.BaseController;
 
 /**
  * 对应配置文件中的Action
  */
 public class ActionBeanFactory {
 
-	private final Map<String, BaseControl> controlMap = new ConcurrentHashMap<>();
+	private final Map<String, BaseController> controlMap = new ConcurrentHashMap<>();
 
-	protected BaseControl getControl(String className, boolean singleton) throws InstantiationException,
+	protected BaseController getControl(String className, boolean singleton) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
 		if (singleton) {
-			BaseControl baseControl = controlMap.get(className);
+			BaseController baseControl = controlMap.get(className);
 			if (baseControl == null) {
 				baseControl = controlMap.get(className);
 				if (baseControl == null) {
@@ -32,11 +31,11 @@ public class ActionBeanFactory {
 		}
 	}
 
-	private BaseControl instance(String className) throws InstantiationException, IllegalAccessException,
+	private BaseController instance(String className) throws InstantiationException, IllegalAccessException,
 			ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
 		Object object = Class.forName(className).getConstructor().newInstance();
-		if (object instanceof BaseControl) {
-            return (BaseControl) object;
+		if (object instanceof BaseController) {
+            return (BaseController) object;
 		} else {
 			throw new DBFoundRuntimeException("Control必须要实现BaseControl接口");
 		}

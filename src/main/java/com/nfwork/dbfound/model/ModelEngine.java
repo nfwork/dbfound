@@ -2,25 +2,17 @@ package com.nfwork.dbfound.model;
 
 import java.util.*;
 
-import com.nfwork.dbfound.el.DBFoundEL;
-import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.dto.ResponseObject;
-import com.nfwork.dbfound.exception.ExecuteNotFoundException;
-import com.nfwork.dbfound.exception.QueryNotFoundException;
-import com.nfwork.dbfound.model.bean.Execute;
-import com.nfwork.dbfound.model.bean.Model;
-import com.nfwork.dbfound.model.bean.Query;
-import com.nfwork.dbfound.util.LogUtil;
 
 public class ModelEngine {
+
+	private static ModelOperator modelOperator = new ModelOperator();
 
 	public static final String defaultBatchPath = "param.GridData";
 
 	public static final String defaultPath = "param";
-
-	private static final ModelCache modelCache = new ModelCache();
 
 	/**
 	 * 查询 根据传入的class返回对应的对象集合
@@ -32,7 +24,7 @@ public class ModelEngine {
 	 * @return T
 	 */
 	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, Class<T> clazz) {
-		return query(context, modelName, queryName, defaultPath, true, clazz);
+		return modelOperator.query(context, modelName, queryName, null, true, clazz);
 	}
 
 	/**
@@ -44,7 +36,7 @@ public class ModelEngine {
 	 * @return QueryResponseObject
 	 */
 	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName) {
-		return query(context, modelName, queryName, defaultPath, true, null);
+		return modelOperator.query(context, modelName, queryName, null, true, null);
 	}
 
 	/**
@@ -57,7 +49,7 @@ public class ModelEngine {
 	 * @return QueryResponseObject
 	 */
 	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, boolean autoPaging) {
-		return query(context, modelName, queryName, defaultPath, autoPaging, null);
+		return modelOperator.query(context, modelName, queryName, null, autoPaging, null);
 	}
 
 	/**
@@ -71,7 +63,7 @@ public class ModelEngine {
 	 * @return T
 	 */
 	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, boolean autoPaging, Class<T> clazz) {
-		return query(context, modelName, queryName, defaultPath, autoPaging, clazz);
+		return modelOperator.query(context, modelName, queryName, null, autoPaging, clazz);
 	}
 
 	/**
@@ -80,12 +72,12 @@ public class ModelEngine {
 	 * @param context context
 	 * @param modelName modelName
 	 * @param queryName query name
-	 * @param currentPath current path
+	 * @param sourcePath source path
 	 * @param autoPaging auto paging
 	 * @return QueryResponseObject
 	 */
-	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging) {
-		return query(context, modelName, queryName, currentPath, autoPaging, null);
+	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging) {
+		return modelOperator.query(context, modelName, queryName, sourcePath, autoPaging, null);
 	}
 
 	/**
@@ -94,52 +86,23 @@ public class ModelEngine {
 	 * @param context context
 	 * @param modelName model name
 	 * @param queryName query name
-	 * @param currentPath current path
+	 * @param sourcePath source path
 	 * @param autoPaging auto paging
 	 * @param clazz clazz
 	 * @return T
 	 */
-	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String currentPath, boolean autoPaging, Class<T> clazz) {
-		try {
-			if(context.onTopModelDeep()) {
-				LogUtil.info("-----------------------query begin--------------------------------------");
-			}
-			context.modelDeepIncrease();
-
-			if (DataUtil.isNull(queryName)) {
-				queryName = "_default";
-			}
-			if(DataUtil.isNull(currentPath)){
-				currentPath = defaultPath;
-			}
-			Model model = modelCache.getModel(modelName);
-
-			// 把model、currentPath对象放入到 当前线程里
-			context.setCurrentModel(modelName);
-			context.setCurrentPath(currentPath);
-
-			Query query = model.getQuery(queryName);
-			if (query == null) {
-				throw new QueryNotFoundException("can not found Query:" + queryName + ", on Model:" + modelName);
-			}
-			return query.doQuery(context, currentPath, autoPaging, clazz);
-		} finally {
-			context.modelDeepReduce();
-			if(context.onTopModelDeep()) {
-				context.closeConns();
-				LogUtil.info("-----------------------query end----------------------------------------");
-			}
-		}
+	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging, Class<T> clazz) {
+		return modelOperator.query(context, modelName, queryName, sourcePath, autoPaging, clazz);
 	}
 
 
 	public static ResponseObject batchExecute(Context context, String modelName, String executeName) {
-		return batchExecute(context, modelName, executeName, defaultBatchPath);
+		return modelOperator.batchExecute(context, modelName, executeName, null);
 	}
 
 	/**
 	 * 批量执行操作
-	 * 
+	 *
 	 * @param context context
 	 * @param modelName model name
 	 * @param executeName execute name
@@ -147,80 +110,11 @@ public class ModelEngine {
 	 * @return ResponseObject
 	 */
 	public static ResponseObject batchExecute(Context context, String modelName, String executeName, String sourcePath) {
-		try {
-			if(context.onTopModelDeep()) {
-				LogUtil.info("-----------------------batch execute begin------------------------------");
-			}
-			context.modelDeepIncrease();
-
-			if (DataUtil.isNull(executeName)) {
-				executeName = "addOrUpdate";
-			}
-
-			// 批量执行查找客户端数据的路径
-			String batchExecutePath;
-			if (DataUtil.isNull(sourcePath)) {
-				batchExecutePath = defaultBatchPath;
-			}else{
-				batchExecutePath = sourcePath;
-			}
-
-			ResponseObject ro = null;
-
-			Object rootData = context.getData(batchExecutePath);
-			int size =  DataUtil.getDataLength(rootData);
-
-			if (size > 0) {
-				Model model = modelCache.getModel(modelName);
-
-				// 把modelName对象放入到 当前线程里
-				context.setCurrentModel(modelName);
-				Map<String, Object> elCache = new HashMap<>();
-
-				for (int j = 0; j < size; j++) {
-					String en ;
-					String currentPath = batchExecutePath + "[" + j + "]";
-					context.setCurrentPath(currentPath);
-					Object currentData = DBFoundEL.getDataByIndex(j, rootData);
-
-					if ("addOrUpdate".equals(executeName)) {
-						String status = context.getString(currentPath + "._status");
-						if (status != null)
-							status = status.toUpperCase();
-						if ("NEW".equals(status)) {
-							en = "add";
-						} else if ("OLD".equals(status)) {
-							en = "update";
-						} else {
-							throw new ExecuteNotFoundException("cant not found (_status) field, can not found Execute");
-						}
-					} else {
-						en = executeName;
-					}
-					Execute execute = model.getExecute(en);
-					if (execute == null) {
-						throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
-					}
-					ro = execute.doExecute(context, currentPath, currentData, elCache);
-				}
-			}
-			if(ro == null){
-				ro = new ResponseObject();
-				ro.setSuccess(true);
-				ro.setMessage("success");
-			}
-			return ro;
-		} finally {
-			context.modelDeepReduce();
-			if(context.onTopModelDeep()) {
-				context.closeConns();
-				LogUtil.info("-----------------------batch execute end--------------------------------");
-			}
-		}
+		return modelOperator.batchExecute(context, modelName, executeName, sourcePath);
 	}
 
 	public static ResponseObject execute(Context context, String modelName, String executeName) {
-		return execute(context, modelName, executeName, defaultPath);
+		return modelOperator.execute(context, modelName, executeName, null);
 	}
 
 	/**
@@ -229,41 +123,18 @@ public class ModelEngine {
 	 * @param context context
 	 * @param modelName model name
 	 * @param executeName execute name
-	 * @param currentPath current path
+	 * @param sourcePath source path
 	 * @return ResponseObject
 	 */
-	public static ResponseObject execute(Context context, String modelName, String executeName, String currentPath) {
-		try {
-			if(context.onTopModelDeep()) {
-				LogUtil.info("-----------------------execute begin------------------------------------");
-			}
-			context.modelDeepIncrease();
+	public static ResponseObject execute(Context context, String modelName, String executeName, String sourcePath) {
+		return modelOperator.execute(context, modelName, executeName, sourcePath);
+	}
 
-			if (DataUtil.isNull(executeName)) {
-				executeName = "_default";
-			}
-			if(DataUtil.isNull(currentPath)){
-				currentPath = defaultPath;
-			}
+	public static ModelOperator getModelOperator() {
+		return modelOperator;
+	}
 
-			Model model = modelCache.getModel(modelName);
-			Execute execute = model.getExecute(executeName);
-			if (execute == null) {
-				throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
-			}
-			// 把model、currentPath对象放入到 当前线程里
-			context.setCurrentPath(currentPath);
-			context.setCurrentModel(modelName);
-
-			Map<String, Object> elCache = new HashMap<>();
-			Object currentData = context.getData(currentPath);
-			return execute.doExecute(context, currentPath, currentData, elCache);
-		} finally {
-			context.modelDeepReduce();
-			if(context.onTopModelDeep()) {
-				context.closeConns();
-				LogUtil.info("-----------------------execute end--------------------------------------");
-			}
-		}
+	public static void setModelOperator(ModelOperator modelOperator) {
+		ModelEngine.modelOperator = modelOperator;
 	}
 }

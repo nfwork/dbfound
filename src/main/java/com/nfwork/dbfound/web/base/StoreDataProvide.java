@@ -3,8 +3,8 @@ package com.nfwork.dbfound.web.base;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 
-public interface StoreDataProvide extends BaseControl{
+public interface StoreDataProvide extends BaseController {
 
-	public QueryResponseObject execute(Context context) throws Exception;
+	QueryResponseObject execute(Context context) throws Exception;
 	
 }

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.excel.ExcelWriter;
+import com.nfwork.dbfound.exception.NoServletResponseException;
 import com.nfwork.dbfound.util.LogUtil;
 
 public final class WebWriter {
@@ -22,6 +23,9 @@ public final class WebWriter {
 	}
 
 	public static void jsonWriter(HttpServletResponse response, String message) {
+		if (response == null){
+			throw new NoServletResponseException(message);
+		}
 		response.setCharacterEncoding(DBFoundConfig.getEncoding());
 
 		try (Writer writer = response.getWriter();

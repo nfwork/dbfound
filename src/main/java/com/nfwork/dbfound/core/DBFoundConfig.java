@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.*;
 
+import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
@@ -77,13 +78,17 @@ public class DBFoundConfig {
 	}
 
 	public static void init() {
+		init(null);
+	}
+
+	public static void init(ServletContext servletContext) {
 		if (inited) {
 			return;
 		}
-		init(getConfigFilePath());
+		doInit(getConfigFilePath(),servletContext);
 	}
 
-	public synchronized static void init(String confFile) {
+	private synchronized static void doInit(String confFile,ServletContext servletContext) {
 		if (confFile == null || confFile.isEmpty()) {
 			confFile = CLASSPATH + "/dbfound-conf.xml";
 		}
@@ -147,17 +152,7 @@ public class DBFoundConfig {
 				// web参数初始化
 				Element web = root.element("web");
 				if (web != null) {
-					initWeb(web);
-				}
-
-				if (listenerClass != null) {
-					try {
-						StartListener listener = (StartListener) Class.forName(listenerClass).getConstructor().newInstance();
-						listener.execute();
-						LogUtil.info("invoke listenerClass success");
-					} catch (Exception e) {
-						LogUtil.error("invoke listenerClass failed", e);
-					}
+					initWeb(web, servletContext);
 				}
 			} else {
 				LogUtil.info("config file init skipped, because file not found. filePath:" + file.getAbsolutePath());
@@ -228,7 +223,7 @@ public class DBFoundConfig {
 		}
 	}
 
-	private static void initWeb(Element web) {
+	private static void initWeb(Element web,ServletContext servletContext) {
 		StringBuilder info = new StringBuilder();
 		info.append("set web Param:");
 
@@ -338,7 +333,7 @@ public class DBFoundConfig {
 		if (listener != null) {
 			String className = listener.getTextTrim();
 			if (!"".equals(className)) {
-				ListenerFacade.init(className);
+				ListenerFacade.init(className, servletContext);
 				info.append("(listener = ").append(className).append(")");
 			}
 		}
