@@ -95,6 +95,9 @@ public class ModelEngine {
 		return modelOperator.query(context, modelName, queryName, sourcePath, autoPaging, clazz);
 	}
 
+	public static boolean isBatchExecuteRequest(Context context){
+		return context.getData(ModelEngine.defaultBatchPath) instanceof List;
+	}
 
 	public static ResponseObject batchExecute(Context context, String modelName, String executeName) {
 		return modelOperator.batchExecute(context, modelName, executeName, null);
