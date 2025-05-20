@@ -107,6 +107,17 @@ public class Context {
 	}
 
 	/**
+	 * set param for context
+	 * @param paramName param name
+	 * @param paramValue param value
+	 * @return Context
+	 */
+	public Context withParam(String paramName, Object paramValue) {
+		setParamData(paramName, paramValue);
+		return this;
+	}
+
+	/**
 	 * cloneCookieData
 	 * 
 	 * @param request http request
