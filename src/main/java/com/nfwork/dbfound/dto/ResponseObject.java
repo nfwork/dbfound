@@ -40,6 +40,13 @@ public class ResponseObject {
 		return outParam;
 	}
 
+	public <T> T getOutParam(String paramName){
+		if (outParam == null) {
+			return null;
+		}
+		return (T) outParam.get(paramName);
+	}
+
 	public void setOutParam(Map<String, Object> outParam) {
 		this.outParam = outParam;
 	}
