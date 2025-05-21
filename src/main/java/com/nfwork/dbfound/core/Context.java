@@ -2,6 +2,7 @@ package com.nfwork.dbfound.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.util.*;
@@ -19,6 +20,7 @@ import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.CountType;
 import com.nfwork.dbfound.model.bean.Param;
+import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.*;
 
 public class Context {
@@ -113,7 +115,25 @@ public class Context {
 	 * @return Context
 	 */
 	public Context withParam(String paramName, Object paramValue) {
-		setParamData(paramName, paramValue);
+		getParamDatas().put(paramName, paramValue);
+		return this;
+	}
+
+	/**
+	 * Expand objects and assign attributes to context
+	 * @param bean java bean
+	 * @return Context
+	 */
+	public Context withBeanParam(Object bean) {
+		Reflector reflector = Reflector.forClass(bean.getClass());
+		for (String propertyName : reflector.getSetablePropertyNames()) {
+            try {
+                Object value  = reflector.getGetInvoker(propertyName).invoke(bean,null);
+				getParamDatas().put(propertyName, value);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new DBFoundRuntimeException(e);
+            }
+        }
 		return this;
 	}
 
