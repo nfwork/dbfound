@@ -67,6 +67,7 @@ public class DataSet extends TagSupport {
 					ro = ModelEngine.query(context, modelName, queryName, sourcePath);
 				}else{
 					ro = new QueryResponseObject<>();
+					ro.setSuccess(true);
 					ro.setDatas(ModelEngine.queryList(context, modelName, queryName, sourcePath));
 					ro.setTotalCounts(ro.getDatas().size());
 				}
