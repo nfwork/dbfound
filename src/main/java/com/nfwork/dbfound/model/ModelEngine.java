@@ -24,46 +24,19 @@ public class ModelEngine {
 	 * @return T
 	 */
 	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, Class<T> clazz) {
-		return modelOperator.query(context, modelName, queryName, null, true, clazz);
+		return modelOperator.query(context, modelName, queryName, null, context.isAutoPaging(), clazz);
 	}
 
 	/**
 	 * 查询 返回一个list的Map集合
-	 * 
+	 *
 	 * @param context context
 	 * @param modelName modelName
 	 * @param queryName query name
 	 * @return QueryResponseObject
 	 */
 	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName) {
-		return modelOperator.query(context, modelName, queryName, null, true, null);
-	}
-
-	/**
-	 * 查询 返回一个list的Map集合
-	 *
-	 * @param context context
-	 * @param modelName modelName
-	 * @param queryName query name
-	 * @param autoPaging 是否分页
-	 * @return QueryResponseObject
-	 */
-	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, boolean autoPaging) {
-		return modelOperator.query(context, modelName, queryName, null, autoPaging, null);
-	}
-
-	/**
-	 * 查询 可以指定当前路径、是否自动分页、返回对象的查询
-	 *
-	 * @param context context
-	 * @param modelName model name
-	 * @param queryName query name
-	 * @param autoPaging auto paging
-	 * @param clazz clazz
-	 * @return T
-	 */
-	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, boolean autoPaging, Class<T> clazz) {
-		return modelOperator.query(context, modelName, queryName, null, autoPaging, clazz);
+		return modelOperator.query(context, modelName, queryName, null, context.isAutoPaging(), null);
 	}
 
 	/**
@@ -73,11 +46,10 @@ public class ModelEngine {
 	 * @param modelName modelName
 	 * @param queryName query name
 	 * @param sourcePath source path
-	 * @param autoPaging auto paging
 	 * @return QueryResponseObject
 	 */
-	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging) {
-		return modelOperator.query(context, modelName, queryName, sourcePath, autoPaging, null);
+	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, String sourcePath) {
+		return modelOperator.query(context, modelName, queryName, sourcePath, context.isAutoPaging(), null);
 	}
 
 	/**
@@ -87,12 +59,11 @@ public class ModelEngine {
 	 * @param modelName model name
 	 * @param queryName query name
 	 * @param sourcePath source path
-	 * @param autoPaging auto paging
 	 * @param clazz clazz
 	 * @return T
 	 */
-	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging, Class<T> clazz) {
-		return modelOperator.query(context, modelName, queryName, sourcePath, autoPaging, clazz);
+	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, Class<T> clazz) {
+		return modelOperator.query(context, modelName, queryName, sourcePath, context.isAutoPaging(), clazz);
 	}
 
 	public static boolean isBatchExecuteRequest(Context context){

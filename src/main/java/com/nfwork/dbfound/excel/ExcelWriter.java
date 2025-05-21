@@ -69,7 +69,8 @@ public class ExcelWriter {
 	public static void excelExport(Context context, String modelName, String queryName) throws Exception {
 		prepareContext(context);
 		List<ExcelColumn> columns = getColumns(context);
-		List<?> result = ModelEngine.query(context, modelName, queryName,false).getDatas();
+		context.setAutoPaging(false);
+		List<?> result = ModelEngine.query(context, modelName, queryName).getDatas();
 		doExport(context, result, columns);
 	}
 

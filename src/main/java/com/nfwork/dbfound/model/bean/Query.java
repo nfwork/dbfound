@@ -685,15 +685,21 @@ public class Query extends SqlEntity {
 			exePath = currentPath;
 		}
 		String mName = DataUtil.isNull(modelName) ? currentModel : modelName;
-		List data = ModelEngine.query(context, mName, name, exePath, false, entityClass).getDatas();
 
-		String setPath = rootPath;
-		if(!ELEngine.isAbsolutePath(setPath)){
-			setPath = currentPath + "." + setPath;
+		boolean autoPaging = context.isAutoPaging();
+		try {
+			context.setAutoPaging(false);
+			List data = ModelEngine.query(context, mName, name, exePath, entityClass).getDatas();
+			String setPath = rootPath;
+			if (!ELEngine.isAbsolutePath(setPath)) {
+				setPath = currentPath + "." + setPath;
+			}
+			context.setData(setPath, data);
+		}finally {
+			context.setAutoPaging(autoPaging);
+			context.setCurrentPath(currentPath);
+			context.setCurrentModel(currentModel);
 		}
-		context.setData(setPath, data);
-		context.setCurrentPath(currentPath);
-		context.setCurrentModel(currentModel);
 	}
 
 }
