@@ -117,9 +117,12 @@ public class Execute extends SqlEntity {
 		}else{
 			exePath = currentPath;
 		}
-		ModelEngine.execute(context, mName, name, exePath);
-		context.setCurrentPath(currentPath);
-		context.setCurrentModel(currentModel);
+		try {
+			ModelEngine.execute(context, mName, name, exePath);
+		}finally {
+			context.setCurrentPath(currentPath);
+			context.setCurrentModel(currentModel);
+		}
 	}
 
 	public String getName() {

@@ -32,6 +32,7 @@ public class Context {
 
 	private int pagerSize = 0;
 	private long startWith = 0;
+	private boolean autoPaging = true;
 	private CountType countType = CountType.REQUIRED;
 
 	private String currentPath;
@@ -134,6 +135,36 @@ public class Context {
                 throw new DBFoundRuntimeException(e);
             }
         }
+		return this;
+	}
+
+	/**
+	 * set query start with
+	 * @param startWith start with
+	 * @return Context
+	 */
+	public Context withStartWith(long startWith) {
+		this.startWith = startWith;
+		return this;
+	}
+
+	/**
+	 * set query pager size
+	 * @param pagerSize pager size
+	 * @return Context
+	 */
+	public Context withPagerSize(int pagerSize){
+		this.pagerSize = pagerSize;
+		return this;
+	}
+
+	/**
+	 * Automatic pagination query
+	 * @param autoPaging auto paging
+	 * @return Context
+	 */
+	public Context withAutoPaging(boolean autoPaging) {
+		this.autoPaging = autoPaging;
 		return this;
 	}
 
@@ -672,6 +703,14 @@ public class Context {
 
 	public void setTransaction(Transaction transaction) {
 		this.transaction = transaction;
+	}
+
+	public boolean isAutoPaging() {
+		return autoPaging;
+	}
+
+	public void setAutoPaging(boolean autoPaging) {
+		this.autoPaging = autoPaging;
 	}
 
 	private void checkContext(){

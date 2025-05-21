@@ -62,16 +62,22 @@ public class DataSet extends TagSupport {
 				if (queryName == null || queryName.isEmpty()) {
 					queryName = "_default";
 				}
-				QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName, sourcePath, autoCount);
-				if (ro != null && !ro.getDatas().isEmpty()) {
-					try {
-						Map map0 = (Map) ro.getDatas().get(0);
-						root.put("keySet", map0.keySet());
-					} catch (Exception e) {
-						LogUtil.warn("数据返回格式不是list<map>,自动转化field失败");
+				boolean autoPaging = context.isAutoPaging();
+				try {
+					context.setAutoPaging(autoCount);
+					QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName, sourcePath);
+					if (ro != null && !ro.getDatas().isEmpty()) {
+						try {
+							Map map0 = (Map) ro.getDatas().get(0);
+							root.put("keySet", map0.keySet());
+						} catch (Exception e) {
+							LogUtil.warn("数据返回格式不是list<map>,自动转化field失败");
+						}
 					}
+					root.put("qro", JsonUtil.toJson(ro));
+				}finally {
+					context.setAutoPaging(autoPaging);
 				}
-				root.put("qro", JsonUtil.toJson(ro));
 			}
 
 			if (fields != null) {

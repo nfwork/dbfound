@@ -36,10 +36,15 @@ public class Query extends TagSupport {
 				if (queryName == null || queryName.isEmpty()) {
 					queryName = "_default";
 				}
-				QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName, sourcePath, false);
-				context.setData(rootPath, ro.getDatas());
+				boolean autoPaging = context.isAutoPaging();
+				try {
+					context.setAutoPaging(false);
+					QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName, sourcePath);
+					context.setData(rootPath, ro.getDatas());
+				}finally {
+					context.setAutoPaging(autoPaging);
+				}
 			}
-			
 		} catch (Exception e) {
 			ExceptionHandlerFacade.handle(e, request,(HttpServletResponse) pageContext.getResponse());
 			return SKIP_PAGE;
