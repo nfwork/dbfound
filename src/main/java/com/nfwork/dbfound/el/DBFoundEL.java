@@ -243,7 +243,14 @@ public class DBFoundEL extends PropertyTransfer{
 
 		if(currentObj instanceof Map){
 			Map<?,?> currentMap = (Map<?,?>) currentObj;
-			return currentMap.get(property);
+			Object result = currentMap.get(property);
+			if(result == null){
+				if(property.contains("_") && !currentMap.containsKey(property)){
+					property = underscoreToCamelCase(property);
+					result = currentMap.get(property);
+				}
+			}
+			return result;
 		} else{
 			if("value".equals(property)){
 				if(isSampleObject(currentObj)){

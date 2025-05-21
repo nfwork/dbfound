@@ -19,12 +19,10 @@ public class Forward extends TagSupport {
 
 	public int doEndTag() throws JspException {
 		try {
-			HttpServletRequest request = (HttpServletRequest) pageContext
-					.getRequest();
-			HttpServletResponse response = (HttpServletResponse) pageContext
-					.getResponse();
+			HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+			HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
 			Context context = Context.getCurrentContext(request, response);
-			QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName, null, true);
+			QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName);
 			WebWriter.jsonWriter((HttpServletResponse) pageContext.getResponse(), JsonUtil.toJson(ro));
 		} catch (Exception e) {
 			LogUtil.error(e.getMessage(), e);

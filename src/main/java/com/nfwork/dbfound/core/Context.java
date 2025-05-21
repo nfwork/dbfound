@@ -2,6 +2,7 @@ package com.nfwork.dbfound.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.util.*;
@@ -19,6 +20,7 @@ import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.CountType;
 import com.nfwork.dbfound.model.bean.Param;
+import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.*;
 
 public class Context {
@@ -28,8 +30,8 @@ public class Context {
 	public final HttpServletRequest request;
 	public final HttpServletResponse response;
 
-	private int pagerSize = 0;
-	private long startWith = 0;
+	private int pageLimit = 0;
+	private long pageStart = 0;
 	private CountType countType = CountType.REQUIRED;
 
 	private String currentPath;
@@ -104,6 +106,55 @@ public class Context {
 		}
 		this.request = request;
 		this.response = response;
+	}
+
+	/**
+	 * set param for context
+	 * @param paramName param name
+	 * @param paramValue param value
+	 * @return Context
+	 */
+	public Context withParam(String paramName, Object paramValue) {
+		getParamDatas().put(paramName, paramValue);
+		return this;
+	}
+
+	/**
+	 * Expand objects and assign attributes to context
+	 * @param bean java bean
+	 * @return Context
+	 */
+	public Context withBeanParam(Object bean) {
+		Reflector reflector = Reflector.forClass(bean.getClass());
+		for (String propertyName : reflector.getSetablePropertyNames()) {
+            try {
+                Object value  = reflector.getGetInvoker(propertyName).invoke(bean,null);
+				getParamDatas().put(propertyName, value);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new DBFoundRuntimeException(e);
+            }
+        }
+		return this;
+	}
+
+	/**
+	 * set query page start with
+	 * @param start start with
+	 * @return Context
+	 */
+	public Context withPageStart(long start) {
+		this.pageStart = start;
+		return this;
+	}
+
+	/**
+	 * set query pager size
+	 * @param limit pager size
+	 * @return Context
+	 */
+	public Context withPageLimit(int limit){
+		this.pageLimit = limit;
+		return this;
 	}
 
 	/**
@@ -587,20 +638,20 @@ public class Context {
 		return headerDatas;
 	}
 
-	public int getPagerSize() {
-		return pagerSize;
+	public int getPageLimit() {
+		return pageLimit;
 	}
 
-	public void setPagerSize(int pagerSize) {
-		this.pagerSize = pagerSize;
+	public void setPageLimit(int pageLimit) {
+		this.pageLimit = pageLimit;
 	}
 
-	public long getStartWith() {
-		return startWith;
+	public long getPageStart() {
+		return pageStart;
 	}
 
-	public void setStartWith(long startWith) {
-		this.startWith = startWith;
+	public void setPageStart(long pageStart) {
+		this.pageStart = pageStart;
 	}
 
 	public boolean isOutMessage() {

@@ -164,11 +164,11 @@ public class Query extends SqlEntity {
 
 		if(context.getCountType() == CountType.REQUIRED) {
 			int dataSize = datas.size();
-			int pSize = context.getPagerSize();
+			int pSize = context.getPageLimit();
 			if (pSize == 0 && pagerSize != null) {
 				pSize = pagerSize;
 			}
-			long start = context.getStartWith();
+			long start = context.getPageStart();
 			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
 				ro.setTotalCounts(datas.size());
 			} else {
@@ -243,17 +243,17 @@ public class Query extends SqlEntity {
 				}
 			}
 		}else if(autoPaging) {
-			if (context.getPagerSize() > 0 || pagerSize != null) {
-				int ps = context.getPagerSize() > 0 ? context.getPagerSize() : pagerSize;
+			if (context.getPageLimit() > 0 || pagerSize != null) {
+				int ps = context.getPageLimit() > 0 ? context.getPageLimit() : pagerSize;
 				if(maxPagerSize != null && ps > maxPagerSize){
 					throw new DBFoundRuntimeException("pager size can not great than " + maxPagerSize);
 				}
 				SqlDialect dialect = context.getConnDialect(provideName);
 				if(dialect instanceof AbstractSqlDialect){
 					AbstractSqlDialect sqlDialect = (AbstractSqlDialect) dialect;
-					querySql = sqlDialect.getPagerSql(querySql, ps, context.getStartWith(),params);
+					querySql = sqlDialect.getPagerSql(querySql, ps, context.getPageStart(),params);
 				}else{
-					querySql = dialect.getPagerSql(querySql, ps, context.getStartWith());
+					querySql = dialect.getPagerSql(querySql, ps, context.getPageStart());
 				}
 			}
 		}
@@ -549,11 +549,11 @@ public class Query extends SqlEntity {
 		Map<String,Object> params = context.getParamDatas();
 		Object start = params.get("start");
 		if (DataUtil.isNotNull(start)) {
-			context.setStartWith(Long.parseLong(start.toString()));
+			context.setPageStart(Long.parseLong(start.toString()));
 		}
 		Object limit = params.get("limit");
 		if (DataUtil.isNotNull(limit)) {
-			context.setPagerSize(Integer.parseInt(limit.toString()));
+			context.setPageLimit(Integer.parseInt(limit.toString()));
 		}
 		Object count = params.get("count");
 		if(DataUtil.isNotNull(count)) {
@@ -685,15 +685,18 @@ public class Query extends SqlEntity {
 			exePath = currentPath;
 		}
 		String mName = DataUtil.isNull(modelName) ? currentModel : modelName;
-		List data = ModelEngine.query(context, mName, name, exePath, false, entityClass).getDatas();
 
-		String setPath = rootPath;
-		if(!ELEngine.isAbsolutePath(setPath)){
-			setPath = currentPath + "." + setPath;
+		try {
+			List data = ModelEngine.queryList(context, mName, name, exePath, entityClass);
+			String setPath = rootPath;
+			if (!ELEngine.isAbsolutePath(setPath)) {
+				setPath = currentPath + "." + setPath;
+			}
+			context.setData(setPath, data);
+		}finally {
+			context.setCurrentPath(currentPath);
+			context.setCurrentModel(currentModel);
 		}
-		context.setData(setPath, data);
-		context.setCurrentPath(currentPath);
-		context.setCurrentModel(currentModel);
 	}
 
 }

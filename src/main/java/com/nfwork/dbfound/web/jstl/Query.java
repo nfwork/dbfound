@@ -8,11 +8,12 @@ import jakarta.servlet.jsp.tagext.TagSupport;
 import com.nfwork.dbfound.model.reflector.Reflector;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.web.ExceptionHandlerFacade;
 import com.nfwork.dbfound.web.base.QueryDataProvide;
+
+import java.util.List;
 
 public class Query extends TagSupport {
 
@@ -36,10 +37,9 @@ public class Query extends TagSupport {
 				if (queryName == null || queryName.isEmpty()) {
 					queryName = "_default";
 				}
-				QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName, sourcePath, false);
-				context.setData(rootPath, ro.getDatas());
+				List<?> list = ModelEngine.queryList(context, modelName, queryName, sourcePath);
+				context.setData(rootPath, list);
 			}
-			
 		} catch (Exception e) {
 			ExceptionHandlerFacade.handle(e, request,(HttpServletResponse) pageContext.getResponse());
 			return SKIP_PAGE;

@@ -29,7 +29,7 @@ public class ModelEngine {
 
 	/**
 	 * 查询 返回一个list的Map集合
-	 * 
+	 *
 	 * @param context context
 	 * @param modelName modelName
 	 * @param queryName query name
@@ -40,44 +40,16 @@ public class ModelEngine {
 	}
 
 	/**
-	 * 查询 返回一个list的Map集合
-	 *
-	 * @param context context
-	 * @param modelName modelName
-	 * @param queryName query name
-	 * @param autoPaging 是否分页
-	 * @return QueryResponseObject
-	 */
-	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, boolean autoPaging) {
-		return modelOperator.query(context, modelName, queryName, null, autoPaging, null);
-	}
-
-	/**
-	 * 查询 可以指定当前路径、是否自动分页、返回对象的查询
-	 *
-	 * @param context context
-	 * @param modelName model name
-	 * @param queryName query name
-	 * @param autoPaging auto paging
-	 * @param clazz clazz
-	 * @return T
-	 */
-	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, boolean autoPaging, Class<T> clazz) {
-		return modelOperator.query(context, modelName, queryName, null, autoPaging, clazz);
-	}
-
-	/**
 	 * 可指定当前路径，是否自动分页的查询
 	 *
 	 * @param context context
 	 * @param modelName modelName
 	 * @param queryName query name
 	 * @param sourcePath source path
-	 * @param autoPaging auto paging
 	 * @return QueryResponseObject
 	 */
-	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging) {
-		return modelOperator.query(context, modelName, queryName, sourcePath, autoPaging, null);
+	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, String sourcePath) {
+		return modelOperator.query(context, modelName, queryName, sourcePath, true, null);
 	}
 
 	/**
@@ -87,14 +59,138 @@ public class ModelEngine {
 	 * @param modelName model name
 	 * @param queryName query name
 	 * @param sourcePath source path
-	 * @param autoPaging auto paging
 	 * @param clazz clazz
 	 * @return T
 	 */
-	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging, Class<T> clazz) {
-		return modelOperator.query(context, modelName, queryName, sourcePath, autoPaging, clazz);
+	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, Class<T> clazz) {
+		return modelOperator.query(context, modelName, queryName, sourcePath, true, clazz);
 	}
 
+	/**
+	 * query list
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @return List
+	 */
+	public static List<Map<String,Object>> queryList(Context context, String modelName, String queryName) {
+		QueryResponseObject<Map<String, Object>> object = modelOperator.query(context, modelName, queryName, null, false,null);
+		return object.getDatas();
+	}
+
+	/**
+	 * query list data, return list object
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param class1 entity class
+	 * @param <T> T
+	 * @return list of T
+	 */
+	public static <T> List<T> queryList(Context context, String modelName, String queryName, Class<T> class1) {
+		return modelOperator.query(context, modelName, queryName, null, false, class1).getDatas();
+	}
+
+	/**
+	 * query list
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param sourcePath sourcePath
+	 * @return List
+	 */
+	public static List<Map<String,Object>> queryList(Context context, String modelName, String queryName, String sourcePath) {
+		QueryResponseObject<Map<String, Object>> object = modelOperator.query(context, modelName, queryName, sourcePath, false,null);
+		return object.getDatas();
+	}
+
+	/**
+	 * query list
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param sourcePath sourcePath
+	 * @param clazz entity class
+	 * @return List
+	 */
+	public static <T>  List<T> queryList(Context context, String modelName, String queryName, String sourcePath, Class<T> clazz) {
+		QueryResponseObject<T> object = modelOperator.query(context, modelName, queryName, sourcePath, false, clazz);
+		return object.getDatas();
+	}
+
+	/**
+	 * query one line data, return a object
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @return Map
+	 */
+	public static Map<String,Object> queryOne(Context context, String modelName, String queryName) {
+		List<Map<String,Object>> dataList = queryList(context, modelName, queryName);
+		if (dataList != null && !dataList.isEmpty()) {
+			return dataList.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * query one line data, return a Object T
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param class1 entity class
+	 * @param <T> T
+	 * @return T
+	 */
+	public static <T> T queryOne(Context context, String modelName, String queryName, Class<T> class1) {
+		List<T> dataList = queryList(context, modelName, queryName, class1);
+		if (dataList != null && !dataList.isEmpty()) {
+			return dataList.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * query one line data, return a object
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param sourcePath sourcePath
+	 * @return Map
+	 */
+	public static Map<String,Object> queryOne(Context context, String modelName, String queryName, String sourcePath) {
+		List<Map<String,Object>> dataList = queryList(context, modelName, queryName, sourcePath);
+		if (dataList != null && !dataList.isEmpty()) {
+			return dataList.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * query one line data, return a Object T
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param sourcePath sourcePath
+	 * @param class1 entity class
+	 * @param <T> T
+	 * @return T
+	 */
+	public static <T> T queryOne(Context context, String modelName, String queryName, String sourcePath, Class<T> class1) {
+		List<T> dataList = queryList(context, modelName, queryName, sourcePath, class1);
+		if (dataList != null && !dataList.isEmpty()) {
+			return dataList.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	public static boolean isBatchExecuteRequest(Context context){
+		return context.getData(ModelEngine.defaultBatchPath) instanceof List;
+	}
 
 	public static ResponseObject batchExecute(Context context, String modelName, String executeName) {
 		return modelOperator.batchExecute(context, modelName, executeName, null);

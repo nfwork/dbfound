@@ -33,10 +33,8 @@ public class ExecuteActionHandler extends ActionHandler {
             return null;
         }
 
-        Object gridData = context.getData(ModelEngine.defaultBatchPath);
-
         ResponseObject object = TransactionUtil.execute(context,()->{
-            if (gridData instanceof List) {
+            if (ModelEngine.isBatchExecuteRequest(context)) {
                 return ModelEngine.batchExecute(context, modelName, executeName);
             } else {
                 return ModelEngine.execute(context, modelName, executeName);
