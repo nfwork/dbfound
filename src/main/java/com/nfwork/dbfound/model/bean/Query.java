@@ -168,7 +168,7 @@ public class Query extends SqlEntity {
 			if (pSize == 0 && pagerSize != null) {
 				pSize = pagerSize;
 			}
-			long start = context.getStartWith();
+			long start = context.getPagerStart();
 			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
 				ro.setTotalCounts(datas.size());
 			} else {
@@ -251,9 +251,9 @@ public class Query extends SqlEntity {
 				SqlDialect dialect = context.getConnDialect(provideName);
 				if(dialect instanceof AbstractSqlDialect){
 					AbstractSqlDialect sqlDialect = (AbstractSqlDialect) dialect;
-					querySql = sqlDialect.getPagerSql(querySql, ps, context.getStartWith(),params);
+					querySql = sqlDialect.getPagerSql(querySql, ps, context.getPagerStart(),params);
 				}else{
-					querySql = dialect.getPagerSql(querySql, ps, context.getStartWith());
+					querySql = dialect.getPagerSql(querySql, ps, context.getPagerStart());
 				}
 			}
 		}
@@ -549,7 +549,7 @@ public class Query extends SqlEntity {
 		Map<String,Object> params = context.getParamDatas();
 		Object start = params.get("start");
 		if (DataUtil.isNotNull(start)) {
-			context.setStartWith(Long.parseLong(start.toString()));
+			context.setPagerStart(Long.parseLong(start.toString()));
 		}
 		Object limit = params.get("limit");
 		if (DataUtil.isNotNull(limit)) {
@@ -686,17 +686,14 @@ public class Query extends SqlEntity {
 		}
 		String mName = DataUtil.isNull(modelName) ? currentModel : modelName;
 
-		boolean autoPaging = context.isAutoPaging();
 		try {
-			context.setAutoPaging(false);
-			List data = ModelEngine.query(context, mName, name, exePath, entityClass).getDatas();
+			List data = ModelEngine.queryList(context, mName, name, exePath, entityClass);
 			String setPath = rootPath;
 			if (!ELEngine.isAbsolutePath(setPath)) {
 				setPath = currentPath + "." + setPath;
 			}
 			context.setData(setPath, data);
 		}finally {
-			context.setAutoPaging(autoPaging);
 			context.setCurrentPath(currentPath);
 			context.setCurrentModel(currentModel);
 		}

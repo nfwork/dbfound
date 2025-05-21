@@ -24,7 +24,7 @@ public class ModelEngine {
 	 * @return T
 	 */
 	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, Class<T> clazz) {
-		return modelOperator.query(context, modelName, queryName, null, context.isAutoPaging(), clazz);
+		return modelOperator.query(context, modelName, queryName, null, true, clazz);
 	}
 
 	/**
@@ -36,7 +36,7 @@ public class ModelEngine {
 	 * @return QueryResponseObject
 	 */
 	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName) {
-		return modelOperator.query(context, modelName, queryName, null, context.isAutoPaging(), null);
+		return modelOperator.query(context, modelName, queryName, null, true, null);
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class ModelEngine {
 	 * @return QueryResponseObject
 	 */
 	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, String sourcePath) {
-		return modelOperator.query(context, modelName, queryName, sourcePath, context.isAutoPaging(), null);
+		return modelOperator.query(context, modelName, queryName, sourcePath, true, null);
 	}
 
 	/**
@@ -63,7 +63,129 @@ public class ModelEngine {
 	 * @return T
 	 */
 	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, Class<T> clazz) {
-		return modelOperator.query(context, modelName, queryName, sourcePath, context.isAutoPaging(), clazz);
+		return modelOperator.query(context, modelName, queryName, sourcePath, true, clazz);
+	}
+
+	/**
+	 * query list
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @return List
+	 */
+	public static List<Map<String,Object>> queryList(Context context, String modelName, String queryName) {
+		QueryResponseObject<Map<String, Object>> object = modelOperator.query(context, modelName, queryName, null, false,null);
+		return object.getDatas();
+	}
+
+	/**
+	 * query list data, return list object
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param class1 entity class
+	 * @param <T> T
+	 * @return list of T
+	 */
+	public static <T> List<T> queryList(Context context, String modelName, String queryName, Class<T> class1) {
+		return modelOperator.query(context, modelName, queryName, null, false, class1).getDatas();
+	}
+
+	/**
+	 * query list
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param sourcePath sourcePath
+	 * @return List
+	 */
+	public static List<Map<String,Object>> queryList(Context context, String modelName, String queryName, String sourcePath) {
+		QueryResponseObject<Map<String, Object>> object = modelOperator.query(context, modelName, queryName, sourcePath, false,null);
+		return object.getDatas();
+	}
+
+	/**
+	 * query list
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param sourcePath sourcePath
+	 * @param clazz entity class
+	 * @return List
+	 */
+	public static <T>  List<T> queryList(Context context, String modelName, String queryName, String sourcePath, Class<T> clazz) {
+		QueryResponseObject<T> object = modelOperator.query(context, modelName, queryName, sourcePath, false, clazz);
+		return object.getDatas();
+	}
+
+	/**
+	 * query one line data, return a object
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @return Map
+	 */
+	public static Map<String,Object> queryOne(Context context, String modelName, String queryName) {
+		List<Map<String,Object>> dataList = queryList(context, modelName, queryName);
+		if (dataList != null && !dataList.isEmpty()) {
+			return dataList.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * query one line data, return a Object T
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param class1 entity class
+	 * @param <T> T
+	 * @return T
+	 */
+	public static <T> T queryOne(Context context, String modelName, String queryName, Class<T> class1) {
+		List<T> dataList = queryList(context, modelName, queryName, class1);
+		if (dataList != null && !dataList.isEmpty()) {
+			return dataList.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * query one line data, return a object
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param sourcePath sourcePath
+	 * @return Map
+	 */
+	public static Map<String,Object> queryOne(Context context, String modelName, String queryName, String sourcePath) {
+		List<Map<String,Object>> dataList = queryList(context, modelName, queryName, sourcePath);
+		if (dataList != null && !dataList.isEmpty()) {
+			return dataList.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * query one line data, return a Object T
+	 * @param context context
+	 * @param modelName model name
+	 * @param queryName query name
+	 * @param sourcePath sourcePath
+	 * @param class1 entity class
+	 * @param <T> T
+	 * @return T
+	 */
+	public static <T> T queryOne(Context context, String modelName, String queryName, String sourcePath, Class<T> class1) {
+		List<T> dataList = queryList(context, modelName, queryName, sourcePath, class1);
+		if (dataList != null && !dataList.isEmpty()) {
+			return dataList.get(0);
+		} else {
+			return null;
+		}
 	}
 
 	public static boolean isBatchExecuteRequest(Context context){

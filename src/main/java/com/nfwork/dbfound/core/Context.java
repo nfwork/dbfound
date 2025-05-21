@@ -31,8 +31,7 @@ public class Context {
 	public final HttpServletResponse response;
 
 	private int pagerSize = 0;
-	private long startWith = 0;
-	private boolean autoPaging = true;
+	private long pagerStart = 0;
 	private CountType countType = CountType.REQUIRED;
 
 	private String currentPath;
@@ -139,12 +138,12 @@ public class Context {
 	}
 
 	/**
-	 * set query start with
-	 * @param startWith start with
+	 * set query pager start with
+	 * @param pagerStart start with
 	 * @return Context
 	 */
-	public Context withStartWith(long startWith) {
-		this.startWith = startWith;
+	public Context withPagerStart(long pagerStart) {
+		this.pagerStart = pagerStart;
 		return this;
 	}
 
@@ -155,16 +154,6 @@ public class Context {
 	 */
 	public Context withPagerSize(int pagerSize){
 		this.pagerSize = pagerSize;
-		return this;
-	}
-
-	/**
-	 * Automatic pagination query
-	 * @param autoPaging auto paging
-	 * @return Context
-	 */
-	public Context withAutoPaging(boolean autoPaging) {
-		this.autoPaging = autoPaging;
 		return this;
 	}
 
@@ -657,12 +646,12 @@ public class Context {
 		this.pagerSize = pagerSize;
 	}
 
-	public long getStartWith() {
-		return startWith;
+	public long getPagerStart() {
+		return pagerStart;
 	}
 
-	public void setStartWith(long startWith) {
-		this.startWith = startWith;
+	public void setPagerStart(long pagerStart) {
+		this.pagerStart = pagerStart;
 	}
 
 	public boolean isOutMessage() {
@@ -703,14 +692,6 @@ public class Context {
 
 	public void setTransaction(Transaction transaction) {
 		this.transaction = transaction;
-	}
-
-	public boolean isAutoPaging() {
-		return autoPaging;
-	}
-
-	public void setAutoPaging(boolean autoPaging) {
-		this.autoPaging = autoPaging;
 	}
 
 	private void checkContext(){
