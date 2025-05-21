@@ -62,10 +62,17 @@ public class DataSet extends TagSupport {
 				if (queryName == null || queryName.isEmpty()) {
 					queryName = "_default";
 				}
-				QueryResponseObject<?> ro = ModelEngine.query(context, modelName, queryName, sourcePath);
+				QueryResponseObject<Map<String, Object>> ro ;
+				if(autoCount){
+					ro = ModelEngine.query(context, modelName, queryName, sourcePath);
+				}else{
+					ro = new QueryResponseObject<>();
+					ro.setDatas(ModelEngine.queryList(context, modelName, queryName, sourcePath));
+					ro.setTotalCounts(ro.getDatas().size());
+				}
 				if (ro != null && !ro.getDatas().isEmpty()) {
 					try {
-						Map map0 = (Map) ro.getDatas().get(0);
+						Map<String, Object> map0 = ro.getDatas().get(0);
 						root.put("keySet", map0.keySet());
 					} catch (Exception e) {
 						LogUtil.warn("数据返回格式不是list<map>,自动转化field失败");
