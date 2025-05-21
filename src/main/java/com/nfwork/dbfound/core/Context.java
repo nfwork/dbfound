@@ -30,8 +30,8 @@ public class Context {
 	public final HttpServletRequest request;
 	public final HttpServletResponse response;
 
-	private int pagerSize = 0;
-	private long pagerStart = 0;
+	private int pageLimit = 0;
+	private long pageStart = 0;
 	private CountType countType = CountType.REQUIRED;
 
 	private String currentPath;
@@ -138,22 +138,22 @@ public class Context {
 	}
 
 	/**
-	 * set query pager start with
-	 * @param pagerStart start with
+	 * set query page start with
+	 * @param pageStart start with
 	 * @return Context
 	 */
-	public Context withPagerStart(long pagerStart) {
-		this.pagerStart = pagerStart;
+	public Context withPageStart(long start) {
+		this.pageStart = start;
 		return this;
 	}
 
 	/**
 	 * set query pager size
-	 * @param pagerSize pager size
+	 * @param limit pager size
 	 * @return Context
 	 */
-	public Context withPagerSize(int pagerSize){
-		this.pagerSize = pagerSize;
+	public Context withPageLimit(int limit){
+		this.pageLimit = limit;
 		return this;
 	}
 
@@ -638,20 +638,20 @@ public class Context {
 		return headerDatas;
 	}
 
-	public int getPagerSize() {
-		return pagerSize;
+	public int getPageLimit() {
+		return pageLimit;
 	}
 
-	public void setPagerSize(int pagerSize) {
-		this.pagerSize = pagerSize;
+	public void setPageLimit(int pageLimit) {
+		this.pageLimit = pageLimit;
 	}
 
-	public long getPagerStart() {
-		return pagerStart;
+	public long getPageStart() {
+		return pageStart;
 	}
 
-	public void setPagerStart(long pagerStart) {
-		this.pagerStart = pagerStart;
+	public void setPageStart(long pageStart) {
+		this.pageStart = pageStart;
 	}
 
 	public boolean isOutMessage() {

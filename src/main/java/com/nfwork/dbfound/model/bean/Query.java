@@ -164,11 +164,11 @@ public class Query extends SqlEntity {
 
 		if(context.getCountType() == CountType.REQUIRED) {
 			int dataSize = datas.size();
-			int pSize = context.getPagerSize();
+			int pSize = context.getPageLimit();
 			if (pSize == 0 && pagerSize != null) {
 				pSize = pagerSize;
 			}
-			long start = context.getPagerStart();
+			long start = context.getPageStart();
 			if (!autoPaging || pSize == 0 || (pSize > dataSize && start == 0)) {
 				ro.setTotalCounts(datas.size());
 			} else {
@@ -243,17 +243,17 @@ public class Query extends SqlEntity {
 				}
 			}
 		}else if(autoPaging) {
-			if (context.getPagerSize() > 0 || pagerSize != null) {
-				int ps = context.getPagerSize() > 0 ? context.getPagerSize() : pagerSize;
+			if (context.getPageLimit() > 0 || pagerSize != null) {
+				int ps = context.getPageLimit() > 0 ? context.getPageLimit() : pagerSize;
 				if(maxPagerSize != null && ps > maxPagerSize){
 					throw new DBFoundRuntimeException("pager size can not great than " + maxPagerSize);
 				}
 				SqlDialect dialect = context.getConnDialect(provideName);
 				if(dialect instanceof AbstractSqlDialect){
 					AbstractSqlDialect sqlDialect = (AbstractSqlDialect) dialect;
-					querySql = sqlDialect.getPagerSql(querySql, ps, context.getPagerStart(),params);
+					querySql = sqlDialect.getPagerSql(querySql, ps, context.getPageStart(),params);
 				}else{
-					querySql = dialect.getPagerSql(querySql, ps, context.getPagerStart());
+					querySql = dialect.getPagerSql(querySql, ps, context.getPageStart());
 				}
 			}
 		}
@@ -549,11 +549,11 @@ public class Query extends SqlEntity {
 		Map<String,Object> params = context.getParamDatas();
 		Object start = params.get("start");
 		if (DataUtil.isNotNull(start)) {
-			context.setPagerStart(Long.parseLong(start.toString()));
+			context.setPageStart(Long.parseLong(start.toString()));
 		}
 		Object limit = params.get("limit");
 		if (DataUtil.isNotNull(limit)) {
-			context.setPagerSize(Integer.parseInt(limit.toString()));
+			context.setPageLimit(Integer.parseInt(limit.toString()));
 		}
 		Object count = params.get("count");
 		if(DataUtil.isNotNull(count)) {
