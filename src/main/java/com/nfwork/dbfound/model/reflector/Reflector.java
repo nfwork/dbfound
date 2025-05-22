@@ -381,6 +381,14 @@ public class Reflector {
 		return getMethods.containsKey(propertyName);
 	}
 
+	public Map<String, Invoker> getGetMethods() {
+		return getMethods;
+	}
+
+	public Map<String, Invoker> getSetMethods() {
+		return setMethods;
+	}
+
 	private static final ConcurrentMap<String, Future<Reflector>> REFLECTOR_MAP = new ConcurrentHashMap<>();
 
 	/**
