@@ -40,30 +40,18 @@ public class ModelEngine {
 	}
 
 	/**
-	 * 可指定当前路径，是否自动分页的查询
-	 *
-	 * @param context context
-	 * @param modelName modelName
-	 * @param queryName query name
-	 * @param sourcePath source path
-	 * @return QueryResponseObject
-	 */
-	public static QueryResponseObject<Map<String,Object>> query(Context context, String modelName, String queryName, String sourcePath) {
-		return modelOperator.query(context, modelName, queryName, sourcePath, true, null);
-	}
-
-	/**
 	 * 查询 可以指定当前路径、是否自动分页、返回对象的查询
-	 * 
+	 *
 	 * @param context context
 	 * @param modelName model name
 	 * @param queryName query name
 	 * @param sourcePath source path
+	 * @param autoPaging auto paging
 	 * @param clazz clazz
 	 * @return T
 	 */
-	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, Class<T> clazz) {
-		return modelOperator.query(context, modelName, queryName, sourcePath, true, clazz);
+	public static <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging, Class<T> clazz) {
+		return modelOperator.query(context, modelName, queryName, sourcePath, autoPaging, clazz);
 	}
 
 	/**
@@ -89,33 +77,6 @@ public class ModelEngine {
 	 */
 	public static <T> List<T> queryList(Context context, String modelName, String queryName, Class<T> class1) {
 		return modelOperator.query(context, modelName, queryName, null, false, class1).getDatas();
-	}
-
-	/**
-	 * query list
-	 * @param context context
-	 * @param modelName model name
-	 * @param queryName query name
-	 * @param sourcePath sourcePath
-	 * @return List
-	 */
-	public static List<Map<String,Object>> queryList(Context context, String modelName, String queryName, String sourcePath) {
-		QueryResponseObject<Map<String, Object>> object = modelOperator.query(context, modelName, queryName, sourcePath, false,null);
-		return object.getDatas();
-	}
-
-	/**
-	 * query list
-	 * @param context context
-	 * @param modelName model name
-	 * @param queryName query name
-	 * @param sourcePath sourcePath
-	 * @param clazz entity class
-	 * @return List
-	 */
-	public static <T>  List<T> queryList(Context context, String modelName, String queryName, String sourcePath, Class<T> clazz) {
-		QueryResponseObject<T> object = modelOperator.query(context, modelName, queryName, sourcePath, false, clazz);
-		return object.getDatas();
 	}
 
 	/**
@@ -145,42 +106,6 @@ public class ModelEngine {
 	 */
 	public static <T> T queryOne(Context context, String modelName, String queryName, Class<T> class1) {
 		List<T> dataList = queryList(context, modelName, queryName, class1);
-		if (dataList != null && !dataList.isEmpty()) {
-			return dataList.get(0);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * query one line data, return a object
-	 * @param context context
-	 * @param modelName model name
-	 * @param queryName query name
-	 * @param sourcePath sourcePath
-	 * @return Map
-	 */
-	public static Map<String,Object> queryOne(Context context, String modelName, String queryName, String sourcePath) {
-		List<Map<String,Object>> dataList = queryList(context, modelName, queryName, sourcePath);
-		if (dataList != null && !dataList.isEmpty()) {
-			return dataList.get(0);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * query one line data, return a Object T
-	 * @param context context
-	 * @param modelName model name
-	 * @param queryName query name
-	 * @param sourcePath sourcePath
-	 * @param class1 entity class
-	 * @param <T> T
-	 * @return T
-	 */
-	public static <T> T queryOne(Context context, String modelName, String queryName, String sourcePath, Class<T> class1) {
-		List<T> dataList = queryList(context, modelName, queryName, sourcePath, class1);
 		if (dataList != null && !dataList.isEmpty()) {
 			return dataList.get(0);
 		} else {
