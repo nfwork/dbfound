@@ -139,12 +139,12 @@ public class Context {
 	}
 
 	/**
-	 * Expand objects and assign attributes to context
-	 * @param bean java bean
+	 * put all item to the context
+	 * @param map params
 	 * @return Context
 	 */
-	public Context withMapParam(Map<String,?> bean) {
-		getOutParamDatas().putAll(bean);
+	public Context withMapParam(Map<String,?> map) {
+		getParamDatas().putAll(map);
 		return this;
 	}
 
