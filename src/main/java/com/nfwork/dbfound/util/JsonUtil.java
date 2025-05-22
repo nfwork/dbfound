@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
 import com.nfwork.dbfound.model.reflector.Reflector;
@@ -78,17 +79,15 @@ public class JsonUtil{
 		public void serialize(ResponseObject responseObject, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 			jsonGenerator.writeStartObject();
 			Reflector reflector = Reflector.forClass(responseObject.getClass());
-			String[] properties = reflector.getGetablePropertyNames();
-			for (String property : properties){
-				Object value = null;
+			reflector.getGetMethods().forEach((propertyName, invoker)->{
 				try {
-					value = reflector.getGetInvoker(property).invoke(responseObject,null);
-				} catch (Exception ignored) {
+					Object value  = invoker.invoke(responseObject,null);
+					jsonGenerator.writeFieldName(propertyName);
+					writeObject(jsonGenerator, serializerProvider, value);
+				} catch (Exception e) {
+					throw new DBFoundRuntimeException(e);
 				}
-				//jsonGenerator.writeObjectField(property,value);
-				jsonGenerator.writeFieldName(property);
-				writeObject(jsonGenerator, serializerProvider, value);
-			}
+			});
 			jsonGenerator.writeEndObject();
 		}
 	}

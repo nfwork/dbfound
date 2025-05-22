@@ -687,7 +687,7 @@ public class Query extends SqlEntity {
 		String mName = DataUtil.isNull(modelName) ? currentModel : modelName;
 
 		try {
-			List data = ModelEngine.queryList(context, mName, name, exePath, entityClass);
+			List data = ModelEngine.query(context, mName, name, exePath,false,entityClass).getDatas();
 			String setPath = rootPath;
 			if (!ELEngine.isAbsolutePath(setPath)) {
 				setPath = currentPath + "." + setPath;

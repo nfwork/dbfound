@@ -126,14 +126,24 @@ public class Context {
 	 */
 	public Context withBeanParam(Object bean) {
 		Reflector reflector = Reflector.forClass(bean.getClass());
-		for (String propertyName : reflector.getSetablePropertyNames()) {
-            try {
-                Object value  = reflector.getGetInvoker(propertyName).invoke(bean,null);
+		reflector.getGetMethods().forEach((propertyName, invoker) -> {
+			try {
+				Object value  = invoker.invoke(bean,null);
 				getParamDatas().put(propertyName, value);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new DBFoundRuntimeException(e);
-            }
-        }
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				throw new DBFoundRuntimeException(e);
+			}
+		});
+		return this;
+	}
+
+	/**
+	 * put all item to the context
+	 * @param map params
+	 * @return Context
+	 */
+	public Context withMapParam(Map<String,?> map) {
+		getParamDatas().putAll(map);
 		return this;
 	}
 
