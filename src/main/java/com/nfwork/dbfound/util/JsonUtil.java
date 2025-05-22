@@ -82,8 +82,7 @@ public class JsonUtil{
 			reflector.getGetMethods().forEach((propertyName, invoker)->{
 				try {
 					Object value  = invoker.invoke(responseObject,null);
-					String name = reflector.getFieldName(propertyName);
-					jsonGenerator.writeFieldName(name);
+					jsonGenerator.writeFieldName(propertyName);
 					writeObject(jsonGenerator, serializerProvider, value);
 				} catch (Exception e) {
 					throw new DBFoundRuntimeException(e);

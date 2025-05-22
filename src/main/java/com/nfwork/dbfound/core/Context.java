@@ -129,8 +129,7 @@ public class Context {
 		reflector.getGetMethods().forEach((propertyName, invoker) -> {
 			try {
 				Object value  = invoker.invoke(bean,null);
-				String name = reflector.getFieldName(propertyName);
-				getParamDatas().put(name, value);
+				getParamDatas().put(propertyName, value);
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				throw new DBFoundRuntimeException(e);
 			}
