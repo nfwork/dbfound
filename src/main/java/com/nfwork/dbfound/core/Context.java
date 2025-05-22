@@ -129,11 +129,22 @@ public class Context {
 		for (String propertyName : reflector.getSetablePropertyNames()) {
             try {
                 Object value  = reflector.getGetInvoker(propertyName).invoke(bean,null);
-				getParamDatas().put(propertyName, value);
+				String name = reflector.getFieldName(propertyName);
+				getParamDatas().put(name, value);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new DBFoundRuntimeException(e);
             }
         }
+		return this;
+	}
+
+	/**
+	 * Expand objects and assign attributes to context
+	 * @param bean java bean
+	 * @return Context
+	 */
+	public Context withMapParam(Map<String,?> bean) {
+		getOutParamDatas().putAll(bean);
 		return this;
 	}
 

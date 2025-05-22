@@ -62,7 +62,7 @@ public class DataSet extends TagSupport {
 				if (queryName == null || queryName.isEmpty()) {
 					queryName = "_default";
 				}
-				QueryResponseObject<Map<String, Object>> ro = ModelEngine.getModelOperator().query(context, modelName, queryName, sourcePath,autoCount,null);
+				QueryResponseObject<Map<String, Object>> ro = ModelEngine.query(context, modelName, queryName, sourcePath,autoCount,null);
 				if (ro != null && !ro.getDatas().isEmpty()) {
 					try {
 						Map<String, Object> map0 = ro.getDatas().get(0);

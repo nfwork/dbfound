@@ -37,7 +37,7 @@ public class Query extends TagSupport {
 				if (queryName == null || queryName.isEmpty()) {
 					queryName = "_default";
 				}
-				List<?> list = ModelEngine.queryList(context, modelName, queryName, sourcePath);
+				List<?> list = ModelEngine.query(context, modelName, queryName, sourcePath,false,null).getDatas();
 				context.setData(rootPath, list);
 			}
 		} catch (Exception e) {
