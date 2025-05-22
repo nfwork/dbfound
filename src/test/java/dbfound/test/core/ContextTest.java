@@ -21,6 +21,8 @@ public class ContextTest {
         assert context.getString("param.userName").equals("john");
         assert context.getInt("param.userId") == 1;
         assert context.getData("param.role") == Role.ADMIN;
+        assert context.getData("param.flag") == null;
+        assert context.getData("aaa") == null;
 
         assert context.getString("param.user_name").equals("john");
         assert context.getInt("param.user_id") == 1;

@@ -126,15 +126,15 @@ public class Context {
 	 */
 	public Context withBeanParam(Object bean) {
 		Reflector reflector = Reflector.forClass(bean.getClass());
-		for (String propertyName : reflector.getSetablePropertyNames()) {
-            try {
-                Object value  = reflector.getGetInvoker(propertyName).invoke(bean,null);
+		reflector.getGetMethods().forEach((propertyName, invoker) -> {
+			try {
+				Object value  = invoker.invoke(bean,null);
 				String name = reflector.getFieldName(propertyName);
 				getParamDatas().put(name, value);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new DBFoundRuntimeException(e);
-            }
-        }
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				throw new DBFoundRuntimeException(e);
+			}
+		});
 		return this;
 	}
 
