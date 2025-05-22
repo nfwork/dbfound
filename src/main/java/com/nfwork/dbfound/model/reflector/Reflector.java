@@ -192,10 +192,11 @@ public class Reflector {
 					addGetField(field);
 				}
 			}
-			// 处理g3db_alias注解
+			// 处理alias注解
 			Column alias = field.getAnnotation(Column.class);
 			if (alias != null) {
-				alias_name.put(alias.name(), field.getName());
+				String aliasName = DataUtil.isNull(alias.name())?alias.value(): alias.name();
+				alias_name.put(aliasName, field.getName());
 			}
 		}
 		if (clazz.getSuperclass() != null) {
@@ -412,6 +413,9 @@ public class Reflector {
 	}
 
 	public String getFieldName(String column) {
+		if (alias_name.isEmpty()){
+			return column;
+		}
 		String name = alias_name.get(column);
 		if (name != null) {
 			return name;
