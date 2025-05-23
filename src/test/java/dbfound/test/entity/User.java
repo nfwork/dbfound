@@ -9,6 +9,8 @@ public class User{
     @Column(name = "user_id")
     Integer userId;
     String userName;
+    @Column("user_desc")
+    String userDescription;
     Boolean flag;
     Role role;
     List<String> tags;
@@ -61,5 +63,13 @@ public class User{
 
     public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
+    }
+
+    public String getUserDescription() {
+        return userDescription;
+    }
+
+    public void setUserDescription(String userDescription) {
+        this.userDescription = userDescription;
     }
 }
