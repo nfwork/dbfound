@@ -1,176 +1,674 @@
-################################################################
-声明：
-dbfound2.0在dbfound1.5发布稳定版后，做了很大的代码重构与调整。
-调整后dbfound2 与 之前的版本不能完全兼容，对应表示遗憾。
-################################################################
+dbfound修改记录
 
-主要调整点：
-一、class结构改变，新版本的dbfound以 Context为驱动，运行整个流程。去掉了老版本中的Thread类。
-二、新版本的dbfound提供ModelEngine类，替代掉了之前的WebUtil/ModelUtil类 来进行model的调用。
-三、dbfound框架的初始化进行了调整。支持自动初始化，主要配置信息都在classpath下面的dbfound-conf.xml文件中。运行时可以指定该文件路径。
-四、新版本中去掉了自带的连接池功能，提供对外的ConnectionProvide接口来实现也外面连接池集成。
-五、Model组件filter对象重写 ，重写后继承于param类，具有param的所以属性。取值逻辑与param一致。(老版本中只支持从param中或currentPath中获取)。
-六、UI组件field为combo的时候，在没有hiddenName的情况取值方式改成与name对应，老版本是与valueField。
-七、Model的跟目录改为可配置，默认在classpath下面。
-八、添加Transaction类，进行事务管理。支持事务开启。
-九、异常处理逻辑修改,添加DBFoundPacakgeException来报装异常。
-十、改名model中JavaAction为Java，继承类ActionSupport为JavaSupport。
-十一、修改jsp标签：dataset、query、execute、forword中的name属性为queryName 或executeName。
-十二、修复web应用在war包情况下部署不正常问题。修改FreemarkFactory.java 55行。
+1、excel导出mapper 不支持 值逗号隔开 （已修复）
+2、batchSql 和 batchExecuteSql 不支持 相对路径问题 （已修复）
+3、batchSql 子标签executesql、whensql、batchexecutesql等 如果有 静态赋值，存在赋值异常（已修复）
+4、batchSql执行中 如果调用query和 execute 路径没有设置为 当前路径问题 （已修复）
+5、post请求 filter 数字类型 0不生效问题（已修复）
+6、嵌套query、execute执行后 currentpath和currentmodel变化问题（已修复）
+7、outMessage控制是否输出问题（已修复）
+8、去掉entityclone逻辑，只保留必要的param和filter （已修改）
 
-##############################################################################################################
-{
-2014年4月5日 修改jsonutil.java 修复多维数组解决不成功问题。
-2014年4月11日 修改dbfound-base.js dbfound-grid.js，修复grid行记录_status状态位被篡改问题。
+dbfound 2.5.1 + 2.1.6
 
-dbfound 2.0（稳定版） 继国配置模板环境版本，各项目使用版本
-}
+—————————————————————————————
 
-##############################################################################################################
-{
-2014年4月23日 修复model中java调用 异常处理问题。JavaSupport.java Java.java WebExcepitonHandle.java
-2014年4月23日 添加grid属性selectFirstRow 确定是否默认选中第一行,默认为true， Grid.java grid.ftl dbfound.tld
-2014年4月24日 修复grid鼠标over时，样式不显示问题 dbfound-grid.js
-2014年4月26日 修复在IE10下面 lov控件打开时显示问题 dbfound-base.js
-2014年5月3日 修复param aotoCookie路径问题。ModelEngine.java
-2014年5月4日 添加chart报表valueSuffix属性，用来添加单位barChart.ftl、lineChart.ftl、pieChart.ftl已经对应的java文件。
+1、修复count方法在union和distinct语法下的错误问题
+2、支持单双引号已经嵌套
+3、batchsql添加cursorRootPath属性，来设置数据存储路径
+4、batch对于空字符串设置为null与外部情况保持一致
+5、修复model配置pagerSize获取count错误问题
+6、添加 open-default-controller开关，决定是否开启默认controller
 
-dbfound 2.1（bate版）dbfound demo环境 、广告平台项目、伟峰copy demo环境
-}
+dbfound 2.5.2 + 2.1.7
 
-##############################################################################################################
-{
-2014年6月15日 修复basePath为/时，静态资源加载错误问题，修改IncludeLibrary.java 38行
-2014年6月19日 修复outCookie在basepath为/时，设置不生效问题，修改ModelEngine.java 332行
-2014年8月8日 添加属性设置control为单例模式提升性能，添加ActionBeanFactory.java类
-2014年8月8日 添加DataUtil工具类 实现类型转换
-2014年8月14日12:04:40 添加affectedCountParam参数 返回修改条数
-2014年8月18日17:57:37 添加URLUtil类，对url反斜杠进行处理，兼容jetty处理
-2014年8月18日18:00:28 去掉ehcache，model直接用map进行缓存。
-2014年8月18日18:00:57 添加modelloader类，实现model加载线程安全。
-2014年9月4日17:50:40 添加basePath属性在jsp请求中，修改basePath为http开头的路径，行文件includeLibrary.ftl，includeLibrary.java，DispatcherFilter.java
-2014年9月11日17:40:24 grid属性singleSelect支持el表达式
+—————————————————————————————
 
-dbfound 2.1.1（bate）demo项目,  myerp项目中使用
-}
+1、修复字段为空时 excel导出mapper空指针异常
+2、adapter 支持，声明 queryAdapter 和 executeAdapter
+3、execel导出方法，移到service里面
 
-##############################################################################################################
-{
-2014年10月16日09:54:44 修改事务开启提交策略。DispatcherFilter只负责关闭落网的事务。真正的事务开启与关闭有相对应的类自行开启ActionReflect和WebAction
-2014年10月20日17:56:36 修复datautil类 当传入值为"",intvalue报错
-2014年10月21日18:49:25 修改逻辑在grid column没有指定randerer的时候，才使用默认的。不然使用用户指定的
-
-dbfound 2.1.2（bate）gopushweb ,gopushdispatcher项目中使用
-}
-
-##############################################################################################################
-{
-2014年10月22日13:35:36 添加model查询支持object类型参数
-dbfound 2.2.0（bate）gopushweb ,gopushdispatcher项目中使用
-}
-
-##############################################################################################################
-{
-2014年10月23日18:30:44 添加直线图类型支持line 和spline，添加maxLable属性，maxPoint属性
-2014年10月24日15:46:04 添加ConcurrentMap类在缓存中处理同步问题，提示性能（Modelcache Class DTO cache）
-
-dbfound 2.2.1（bate）gopushweb ,gopushdispatcher项目中使用
-}
-
-##############################################################################################################
-{
-2014年10月25日16:28:41 标签Field添加currentTime属性，来获取当前时间
-2014年10月27日10:37:29 修复chart没有数据时 不重画问题
-2014年10月27日10:57:14 修复barchart在有些doctype显示不正常问题
-2014年10月27日11:21:24 修复ui组件在没有滚动体时，右边留出空白问题。修改调整宽度默认是400
-2014年10月28日10:19:16 添加sql.date类型的支持
-2014年10月29日13:48:57 集成modelTool自动生成model文件
-2014年10月31日10:13:14 去掉tabpanel的$D.isScrolling()判断，解决tab不自动调整宽度问题
-2014年10月31日15:46:21 添加conext对象泛型取值方式context.getData("param.a",String.class);
-2014年10月31日15:46:55 添加datautil分发，支持map到bean的转化
-2014年11月5日16:50:18 将file转化处理转移到DispatcherFilter中进行
-
-dbfound 2.3.0 gopushweb ,gopushdispatcher项目中使用
-}
+dbfound 2.5.3 + 2.1.8
 
 
-##############################################################################################################
-{
-2014年11月11日16:35:09 修复context.getdata指定类型空指针异常
-2014年11月13日10:14:48 加入context夸进程限制
-2014年11月13日13:05:57 修改开启事务或不开启事务，连接的管理方式
+—————————————————————————————
 
-dbfound 2.3.1 wecloudmanger项目中使用
-}
+1、adapter适配 spring ioc，支持从容器中获取
+2、异常回滚机制改为rollback=exception
+3、添加join-chained-transaction属性，决定是否添加到链条事务，默认true
+4、添加provideName重复定义校验
+5、新增dbfoundTransactionManager，并设置为默认值；
 
-
-##############################################################################################################
-{
-2014年12月4日10:11:04 修复表达式中不能有0的问题
-2014年12月17日16:49:00 修复grid 延迟渲染无法选择第一行问题，修改grid.ftl
-2014年12月23日15:51:26 修复number长时 数字显示不全问题。添加css
-	 .x-grid3-body .x-grid3-td-numberer .x-grid3-cell-inner {
-		overflow: visible;
-	 }
-dbfound 2.3.2 wecloudmanger项目中使用
-}
-
-##############################################################################################################
-{
-2015年1月9日09:56:21 dbfound2.3.3版本起，改为maven项目。jar包名称以 dbfound-2.3.3.jar这种格式。log4j日志以dbfound打印，之前是dbfound加上版本号
-2015年1月9日09:56:21 修复部分情况下jsp页面basePath找不到异常
-
-dbfound 2.3.3 myerp项目中使用
-}
-
-##############################################################################################################
-{
-2015年1月15日12:55:38 修改dbfound-base.js 支持html5版本的fullheight
-2015年1月16日11:46:02 修改query.java 支持设置多个#WHERE_CLAUSE# #AND_CLAUSE#
-
-dbfound 2.3.4 myerp项目中使用
-}
-
-##############################################################################################################
-{
-2015年2月11日10:51:34 添加context参数
-	public boolean queryLimit = true;
-	public int queryLimitSize = 5000; 
-	判断是否要现在查询结果集大小
-2015年2月11日12:59:45 添加maxUploadSize控制上传文件大小
-
-dbfound 2.3.5 myerp项目中使用
-}
-
-##############################################################################################################
-{
-2015年9月9日19:35:21 DBFoundConfig.java mvc配置文件 默认读取classpath下面的dbfound-mvc.conf 之前的版本可以不读
-2015年9月9日19:36:50 DispatcherFilter.java 不设置默认classpath为project下面/WEB-INF/classes
-2015年9月10日11:03:26 文件读取方式 添加url的file解决方案，既如果url定位到的是file，优先使用file读取
-2015年9月10日13:42:28 dto反射异常处理逻辑调整
-
-dbfound 2.3.6 
-}
+dbfound 2.5.4 + 2.1.9
 
 
-##############################################################################################################
-{
-2016年4月25日18:15:28 datetimefield 添加属性precision，来控制输入框的精度，H小时，i分钟
-2016年4月25日18:24:09 修改ui标签属性，支持el表达式
+—————————————————————————————
 
-dbfound 2.3.7 
-}
+1、model文件 query配置支持配置 entity属性配置 泛型；
+2、dbfoundel 支持简单类型 value值获取；
+3、adapter添加泛型支持，可以配置entity属性
+4、jdk依赖版本改为1.8
+5、优化异常处理逻辑，只有collisionsql不打印堆栈
 
-##############################################################################################################
-{
-2016年7月22日14:41:31 添加queryTimeout属性，支持慢查询超时资源释放
-2016年8月1日16:25:00 添加对param的date类型支持
+dbfound 2.5.5 + 2.2.0  存在 queryOne  queryAdapter java代码兼容性问题，需要小的改动
 
-dbfound 2.3.8
-}
-##############################################################################################################
-{
-2017年4月1日19:38:49 添加确认弹框配置showConfirm comfirmMessage
+—————————————————————————————
 
-dbfound 2.3.9
-}
+1、batchSql 未自动创建param
+2、querySql 支持自动创建 param，querysql赋值数据类型问题，将query、querysql、batchsql 数据逻辑进行抽离；
+3、El优化性能(简单类型赋值处)
+4、新增setContextData标签
+5、query和execute支持设置currentPath
+
+dbfound 2.5.6 + 2.2.1
+
+—————————————————————————————
+
+1、SimpleDateFormat 线程不安全，每次重复定义 伤性能问题；
+2、setContextData标签添加sourcePath、valueTemplate属性
+3、param和outParam支持多层级数据设置，如果不是觉得路径，都使用相对路径赋值；
+4、context root只包含param、outParam、request和session；其他不允许设置； (存在老版本兼容性问题)
+5、添加printContext标签，用于大约上下文数据；
+
+
+dbfound 2.5.7 + 2.2.2
+
+—————————————————————————————
+
+1、添加boolean类型支持，当类型为number时 boolean转化为 1和0，其他 true和false的字符串；
+2、添加枚举类型支持
+3、修复2.2.2版本中beanutil获取属性 都是string问题；
+4、适配器添加beforeCount功能；
+
+
+dbfound 2.5.8 + 2.2.3
+
+—————————————————————————————
+
+
+1、修复boolean类型 数字0 应该处理为false
+2、修复filter 未添加boolean类型
+
+dbfound 2.5.9 + 2.2.4
+
+—————————————————————————————
+
+1、修复file inputstrean 关闭问题，多个文件时 可能存在问题；
+2、context 处理requestbody数据，添加finally关闭流；
+3、InitProcedure添加catch和finally逻辑
+4、优化file相关util类，去除无用代码
+
+dbfound 2.6.0 + 2.2.5
+
+—————————————————————————————
+
+1、修改el简单类型数组获取不到问题
+2、添加collection参数类型，支持集合取值
+3、日志打印逻辑升级，param参数按需打印
+
+
+dbfound 2.6.1 + 2.2.6
+
+—————————————————————————————
+
+1、优化正则（改为全局static）、提升dbfound el性能，el支持entity驼峰转化取值
+2、添加elcache 提升el性能；
+3、dateformat统一放入到context，避免重复获取；
+
+dbfound 2.6.3 + 2.2.8
+
+—————————————————————————————
+
+1、ModelExecutor batchExecute 方法 list泛型修改；
+2、修复多个query分页相互影响问题；
+
+dbfound 2.6.4 + 2.2.9
+
+—————————————————————————————
+
+1、添加byte[]类型支持，datatype归为file；
+2、context改为根据thread id 进行线程判断；
+3、优化dataType设置错误时的异常处理；
+4、修复collection参数二次取值bug;
+
+dbfound 2.6.5 + 2.3.0
+
+—————————————————————————————
+
+1、优化dbfound el针对于集合取值性能；
+2、升级 excel导出，5万一sheet，支持大于5w数据导出；
+3、excel日期设置格式
+4、优化batchExecuteSql 性能；
+
+dbfound 2.6.6 + 2.3.1
+
+—————————————————————————————
+
+1、修复excel导出parameter为空时空指针异常；
+2、修改依赖版本 freemarker、mysql驱动、common-upload等
+3、去掉log4j依赖
+4、修复excel导出 不支持对象问题；
+
+dbfound 2.6.7 + 2.3.2
+
+—————————————————————————————
+
+1、修复excel导出mapper找不到情况下空指针异常
+
+dbfound 2.6.8 + 2.3.3
+
+—————————————————————————————
+
+1、添加DSql引擎，提升执行性能；
+2、whensql去除多余的空格 换行 退格；
+3、优化mysql分页，使用占位符方式；
+4、el支持size获取大小；
+5、添加响应code
+
+dbfound 3.0.1
+
+—————————————————————————————
+
+1、el 支持length获取字符串长度
+2、excel导出下载添加Content-Length
+3、新增 case when otherwise逻辑
+4、dSql支持like，修复dSql一些bug
+
+dbfound 3.0.2
+
+—————————————————————————————
+
+1、filter 的express fullTrim格式化；
+2、优化json性能，去掉null.*匹配，改为用startwith，stringbuffer改为stringBuilder
+3、model换成优化，添加pkgModel属性 判断是否需要重新加载
+
+dbfound 3.0.3
+
+—————————————————————————————
+
+1、优化sqlserver方言，添加SqlServer方言V2版本；
+2、修复.do请求异常问题；
+3、增强entity属性映射，解决 大小写 as后，找不到属性问题；
+
+dbfound 3.0.5
+
+—————————————————————————————
+
+1、修复 .do请求 ，对于error级别的异常处理情况
+2、修复 inner调用逻辑，避免连接池频繁关闭
+3、事务的隔离级别
+4、filter添加条件判断condition
+
+dbfound 3.1.0
+
+—————————————————————————————
+
+1、对responseObject 添加 get方法，方便获取单个属性或对象；
+
+dbfound 3.1.1
+
+—————————————————————————————
+
+1、对responseObject添加getList方法，方便获取简单list对象；
+2、添加modelExecute无context方法，丰富查询
+
+
+dbfound 3.1.2
+
+—————————————————————————————
+
+
+1、优化jsonutil 序列化性能
+
+dbfound 3.1.3
+
+—————————————————————————————
+
+1、支持json序列化驼峰转下划线；
+2、添加openSession开关，调整openSession设置逻辑；
+3、调整全局配置选项，统一交由DBFoundConfig管理；
+4、移除queryLimit全局配置；
+5、query对象添加exportSize属性，限制导出大小；
+6、默认不开启model文件修改检查；
+7、query对象添加maxPagerSize属性，限制分页大小；
+
+
+dbfound 3.2.0
+
+—————————————————————————————
+
+
+1、优化model调用层次逻辑，Context添加modelDeep监听参数，对非top的调用不进行开始结束日志输出，不进行链接关闭；
+2、QueryResponseObject添加getMap方法；
+
+
+dbfound 3.2.1
+
+—————————————————————————————
+
+1、优化QueryResponseObject代码，采用功能dataUtil进行类型转化；
+2、Param添加getInt getLong getDouble getFloat方法；
+3、QueryResponseObject getMap 对于冲突的情况，采用后值覆盖；
+
+dbfound 3.2.2
+
+—————————————————————————————
+
+
+1、优化Reflector代码,去掉private方法反射调用，去掉无用逻辑 ; 解决jdk11 告警问题
+
+dbfound 3.2.3
+
+—————————————————————————————
+
+
+1、El set属性时 判断错误不应该使用hasgetter
+2、优化reflector是否access判断，仅public可行； 解决3.2.3 public 属性不能get和set问题；
+
+dbfound 3.2.4
+
+—————————————————————————————
+
+1、添加LocalDate支持
+2、优化sql查询类型封装逻辑，不再使用if else，改为resolver方式；
+3、excel导出支持LocalDate
+4、time和localtime支持；
+5、QueryResponseObject添加join方法
+6、去掉context的dateformat
+7、jsonUtil去掉context引用，stringUtil添加缓存
+8、优化array处理逻辑，使用Array.getClass().isArray 和 Array.get(index)优化性能；
+9、优化el cache处理逻辑，支持set等集合类似转为array处理；
+10、对于exception处理和默认service提供接口，去掉链式事务管理，只支持默认的dbfound事务管理
+
+dbfound 3.3.0    2023年06月12日
+
+—————————————————————————————
+
+1、Dsql cache 函数写法优化；
+2、优化datasource provide注册逻辑 ；
+3、添加datasource extension区域；
+
+dbfound 3.3.1   + 4.0.0  2023年06月15日
+
+—————————————————————————————
+
+1、query和execute层面支持设置connectionProvide；
+
+dbfound 3.3.2    2023年06月29日
+
+—————————————————————————————
+
+1、修复excel到处不携带请求column参数问题
+2、executeSql、querySql执行输出参数进行日志打印
+3、DispatcherFilter不再对options请求进行处理；
+
+dbfound 3.3.3     2023年07月01日
+
+dbfound 4.0.1   2023年07月11日
+—————————————————————————————
+
+1、修复启动依赖查询时，dbfound还没初始化问题；
+2、事务管理器支持事务传播特性 ；
+3、mysql驱动默认是用cj版本 ；
+4、事务管理支持只读事务 ；
+5、修复事务结束后conn没有重置问题
+6、修复query没有进入事务问题
+7、连接池添加maxWait属性，默认5000，避免出现等待死循环问题；
+
+dbfound 3.3.4     2023年07月18日
+
+—————————————————————————————
+
+1、query支持简单类型查询
+2、excel导出mapper支持数组数据
+
+dbfound 3.3.5   dbfound 4.0.2   2023年07月20日
+
+—————————————————————————————
+
+1、adapter异常处理优化
+2、数据库方言扩展 优化
+3、添加功能sqlPart
+4、d_p_rm 改为 d_rm
+5、model root path 拼写错误
+6、enum映射添加code属性支持；
+
+dbfound 3.3.6 2023年07月27日
+
+—————————————————————————————
+
+1、修复querySql使用sqlPart时没有自动创建param问题
+
+dbfound 4.0.3 2023年07月28日
+
+—————————————————————————————
+
+1、修复sqlPart创建param时，如果param已经存在则进行告警
+
+dbfound 3.3.7 2023年07月31日
+
+—————————————————————————————
+
+1、调整starter初始化逻辑，条件加载web mvc相关bean，以便支持webFlex或其他项目
+
+
+dbfound 4.0.4 2023年08月3日
+
+—————————————————————————————
+
+1、查询返回类型处理，不再对 .0 的 float、double类型 转化为long、int；
+2、 为空判断改为 getObject；修复querySql没有null判断，而导致int类型null变为0的问题；
+3、优化query分页逻辑，新建count参数判断是否需要执行
+
+
+dbfound 3.3.8  2023年08月07日
+
+—————————————————————————————
+
+1、修复query getSimpleList当class为Integer等包装类型时，null值返回0问题；
+
+dbfound 3.3.9   dbfound 4.0.5    2023年08月08日
+
+—————————————————————————————
+
+1、Sql注释解析支持
+2、Model相关bean继承关系，init逻辑优化
+3、sqlPart在where子句中添加autoCompletion自动填充where或者and功能
+4、修复导出时currentPath为null问题
+5、sql生成规则优化，避免出现连续多个空格
+6、日志逻辑优化，对敏感参数进行脱敏打印
+
+dbfound 3.3.10    2023年08月15日
+
+—————————————————————————————
+
+1、dbfound4 集成common-fileupload2，实现文件上传功能；
+
+dbfound 4.0.6    2023年08月18日
+
+—————————————————————————————
+
+1、修复dbfound3 printContext时，jsonutil如果datas中有fileItem导致error问题；
+2、修复dbfound4 文件上传中 如果有普通文本字段，会乱码问题；
+3、文件上传优化，springboot项目支持dbfound文件上传处理逻辑；
+4、filter执行逻辑调整，判断生效逻辑后置，filter可在adapter设值；
+5、jsonutil功能调整，支持int[]数组json转化，对transient字段不进行json序列化；
+6、文件上传逻辑升级，支持多文件上传，同名多文件使用list处理；
+7、execel导入，对日期类型进行完善，支持time和 datetime
+8、el setData方法支持设置 数组格式，在不存在的情况下 new 一个arrayList
+9、优化sql异常处理，适配spring jdbc的sql异常处理；
+
+
+3.3.11 升级注意点： param在执行adapter前不再进行有效判断过滤，会全部放入到params，所以对param为空判断需要留意；beforeQuery方法；
+
+dbfound 3.3.11    2023年08月29日
+
+—————————————————————————————
+
+1、修复单行注释兼容性问题
+
+dbfound 4.0.7    2023年09月07日
+
+—————————————————————————————
+
+1、sqlPart添加autoClearComma功能；
+
+dbfound 3.3.12   2023年09月15日
+
+—————————————————————————————
+
+1、添加csv导入导出支持； sys/accessLog.export?export_type=csv
+2、batchExecuteSql 优化日志打印，只打印每次执行第一行的参数记录；
+
+dbfound 4.0.8   2023年09月26日
+
+—————————————————————————————
+
+1、csv导出对日期字段 添加格式化处理； 修复导出时没有null判断
+2、重构excel导出导入逻辑，支持自定义 解析器，支持xlsx导出；
+3、去掉自带json，改为使用Jackson；
+4、去掉beanutil包，改用reflect
+5、connection事务执行完后 设置autoCommit为true；
+6、移除jxl，全部使用poi；支持合并单元格；
+7、使用LinkedHashMap保存参数，维持打印参数的顺序；
+8、升级使用hikair连接池；
+9、升级使用slf4j日志；
+10、query导出与最大分页限制设置默认值 50w 和 1w；
+
+
+dbfound 3.4.0   2023年10月11日
+
+—————————————————————————————
+
+1、数据库连接池放入到spring进行管理；
+2、优化excel java api，添加相应的导出方法；
+3、统一bean的命名规范，dbfound统一小写;
+
+dbfound 3.4.1   2023年10月13日
+
+—————————————————————————————
+
+1、优化DataUtil covertMapToBean方法，支持下划线转驼峰；
+2、context添加getMap、getList、getInt、getBoolean等 泛型方法；
+3、优化dbfound EL 逻辑，提升bean反射性能；
+4、优化model，enum泛型实现逻辑；
+5、adapter添加MapQueryAdapter和 ObjectQueryAdapt；
+
+dbfound 4.1.0 2023年10月17日
+dbfound 3.4.2 2023年10月19日
+
+—————————————————————————————
+
+1、Sql执行异常处理优化，错误信息包含  modelName 和  queryName
+2、优化jsonUtil处理逻辑，不直接调用writerObject，提升处理性能；
+
+dbfound 4.1.1 2023年11月7日
+dbfound 3.4.3 2023年11月2日
+
+—————————————————————————————
+
+1、修复excel导入缺失一行问题
+
+dbfound 3.4.4 2023年11月14日
+
+—————————————————————————————
+
+1、添加dbfoundRequestHandleMapping处理请求
+2、去掉openDefaultController参数，改为api-expose-strategy: dbfound_request_handler,  兼容path_pattern_parser
+3、webWriter响应改为application/json
+4、优化Reflector方法多肽处理逻辑
+
+dbfound 4.1.2 2023年11月24日
+
+—————————————————————————————
+
+1、异常处理添加对error基本的处理；
+2、重构dbfound_request_handler处理逻辑，采用HandlerMethod实现；解决advice不生效问题；
+
+
+dbfound 4.1.3 2023年11月29日
+
+—————————————————————————————
+
+1、添加sqlTrim功能，支持去除sql前后多余的逗号；
+2、param添加emptyAsNull属性，解决部分业务需要赋值空字符串情况；
+3、sqlPart支持andClause和whereClause
+
+dbfound 3.4.5 2023年12月8日
+
+—————————————————————————————
+
+1、优化param相关逻辑，新增IOType、FileSaveType枚举类；
+2、优化context将request和Response属性设置为final ；
+3、对OPTIONS请求不进行处理
+
+dbfound 3.4.6 2023年12月22日
+dbfound 4.1.4 2024年01月03日
+—————————————————————————————
+
+1、InitProcedure不再开启事务；解决spring事务管理冲突导致链接不回收问题；
+
+dbfound 3.4.7 2024年01月17日
+dbfound 4.1..5 2024年02月5日
+—————————————————————————————
+
+1、param为File类型时，支持访问本机文件；
+2、文件下载逻辑优化，使用fileDownloadResponseObject进行处理；
+3、file处理逻辑优化，不再将param的value设置为inputstream等需要使用时再转化，只有executeSql支持file类型的param，querySql只支持一个文件下载；
+
+
+dbfound 4.1..6 2024年04月12日
+—————————————————————————————
+
+1、去掉fileSaveType相关逻辑； 去掉FileUploadFolder目录设置；
+2、集合参数支持逗号分割的字符串；
+
+dbfound 4.1..7 2024年04月16日
+dbfound 3.4.8 2024年04月18日
+—————————————————————————————
+
+1、实现sqlPart嵌套逻辑（暂不支持for循环嵌套）；
+2、sqlPart支持item、index设置；
+3、优化query语法文件，param、sql、filter校验顺序；
+4、添加in表达式支持，优化dsql在sql语法不支持的情况下异常处理；
+5、重构model模块代码；
+6、重构mvc模块代码；
+7、mvc支持注解方式@ActionMapping @ActionTransactional
+8、重构UI部分代码；
+9、优化Adapter从springContext获取逻辑，解决父子类依赖找不到bean的问题；
+
+
+dbfound 3.5.0 2024年05月15日
+—————————————————————————————
+
+1、拦截器支持处理option跨域请求；
+2、文件下载和excel导出，expose 改为addHeader方式，解决header覆盖问题；
+3、添加启动监听Listener支持；
+4、异常处理优化，dbfound web支持自定义exceptionHandler；
+
+dbfound 3.5.1 2024年05月27日
+dbfound 4.2.0 2024年05月30日
+—————————————————————————————
+
+1、修复Form表单 multipart方式下，未处理json字符串转化对象问题；
+2、param添加getMapValue和getListValue泛型方法；
+3、修复BatchExecuteSql赋值问题；
+
+
+dbfound 3.5.2  2024年06月05日
+dbfound 4.2.1 2024年06月18日
+—————————————————————————————
+
+1、修复batchExecute日志打印modelName问题；
+2、优化model执行相关代码，减去不必要参数；
+3、batchExecuteSql改为根据paramNameSet进行参数batchAssign处理，与sqlPart一致；
+4、优化sqlPart在for循环下的 if判断逻辑，提升性能；
+5、IF类型的sqlPart支持sourcePath下是否有值判断是否生效
+
+
+dbfound 3.5.3 2024年07月17日
+—————————————————————————————
+
+1、优化dSql  or表达式、and表达式、in表达式 执行逻辑；
+2、修复for类型的sqlPart因if过滤导致为空的情况下异常问题；
+3、修复sqlTrim前置逗号因空格不生效问题；
+
+dbfound 4.2.2 2024年07月24日
+—————————————————————————————
+
+1、添加系统参数logWithParamSql，sql日志打印支持结合param参数一起打印；
+2、优化异常处理逻辑，sql异常不再打印sql到前端；
+3、sqlPart自动补全特性添加是否已经带有and逻辑
+
+dbfound 3.5.4 2024年07月29日
+—————————————————————————————
+
+1、修复sqlPart在for循环下面sourcePath取值异常问题；
+2、query添加Verifier支持参数校验；
+3、dSql支持between and语法；
+4、dSql修复not like不生效问题；
+5、adapter逻辑升级，支持配置多个；
+
+dbfound 3.5.5 2024年08月08日
+—————————————————————————————
+
+1、adapter配置分隔符添加逗号、分号支持，controlle包名配置统一分割逻辑；
+2、batchSql、batchExecuteSql添加item、index支持；
+3、优化sqlPart对应for类型的逻辑优化，只有在有for子节点的情况，params才new一个新的出来;
+
+dbfound 3.5.6 2024年08月20日
+dbfound 4.2.3 2024年08月21日
+—————————————————————————————
+
+1、优化param赋值逻辑，提升执行性能；
+2、修复3.5.6中sqlPart执行异常；
+3、修复在循环逻辑下param默认值不生效问题；
+4、优化cache性能，map的key不再使用class对象，改为string
+5、dsql支持自定义函数
+6、el语法优化支撑多为数组 a[1][2]；
+7、添加ModelCompileException对重命的query和execute进行检查报错；
+8、优化batchExecuteSql执行逻辑，分页时复用param对象；
+9、model语法xsd文件添加unique约束对param、filter、query、execute要求name唯一；
+
+dbfound 3.5.7 2024年08月26日
+dbfound 4.2.4 2024年09月04日
+—————————————————————————————
+
+1、优化静态参数赋值逻辑，执行sql不再调用staticParamParse；
+2、优化countSql执行逻辑；在调用beforeCount前 就将sql生成好，并生成相应的exeParam，该逻辑与原逻辑存在一定兼容问题；
+3、优化sqlEntity、query、sqlEntity正则sql生成相关逻辑（去掉Match相关方法如Matcher.quoteReplacement），使用Iterator替换for；
+4、集合参数允许空集合，null也当成空集合处理，不再对空集合报错；
+
+dbfound 3.5.8 2024年10月09日
+dbfound 4.2.5 2024年11月05日
+—————————————————————————————
+
+1、修复匿名枚举类处理异常问题
+
+dbfound 3.5.9 2025年01月13日
+—————————————————————————————
+
+1、sqlPart添加elseif和else类型；
+2、excel导入加入double自动转long；
+3、修复文件上传，因filter过早context构建，导致文件上传识别异常，request对象问题；
+
+dbfound 3.6.0 2025年02月11日
+dbfound 4.3.0 2025年02月14日
+—————————————————————————————
+
+1、param标签在没有声明类似的情况下，默认改为UNKNOWN
+2、export默认导出大小控制在30万；
+3、修复emptyAsNull逻辑缺陷 ；
+
+dbfound 3.6.1 2025年05月07日
+dbfound 4.3.1 2025年05月09日
+—————————————————————————————
+
+1、重构ModelEngine方法，支持用户设置自定义的ModelOperator；
+2、去掉StartListener，web模块的Listener支持ServletContext参数；
+3、BaseControl改名为 BaseController；
+4、添加NoServletResponseException异常类，在WebWriter没有Response对象的时候抛出；
+5、添加isBatchExecuteRequest方法，优化batchExecute判断逻辑；
+6、添加responseObject.getOutParam(paramName)方法;
+7、添加context.withParam（name，value）、withBeanParam（bean）、withMapParam(map)、withPageStart(0)、withPageLimit(10)方法；
+8、优化modelExecutor、modelEngine简化缩减方法；
+
+
+dbfound 3.6.2 2025年05月22日
+—————————————————————————————
+
+
+
+———— 注意事项 ————
+
+父子项目运行main方法不能访问jsp的，设置 working目录为  $MODULE_WORKING_DIR$
+
+3.3.11 版本，兼容问题，对filter的判断逻辑发生变化；所有filter全部放入到param里面；
+
+3.4.1 版本，导出exportSize生效逻辑调整，只需要context.isExport()就可以生效；不再判断是否autoPager
+
+3.4.5 和 4.1.2 默认采用 dbfound_request_handler 方式提供web api； 可以配置为 dbfound_default_controller;
+
+3.5.8 和 4.2.5 优化countSql执行逻辑；在调用beforeCount前 就将sql生成好，并生成相应的exeParam，该逻辑与原逻辑存在一定兼容问题；
+
+3.6.2 在Context.withBeanParam方法 和 JsonUtil.ResponseObjectSerializer  不支持 @column；
