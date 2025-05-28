@@ -58,16 +58,14 @@ public class XlsxReaderResolver extends ReaderResolver{
         Row header = sheet.getRow(0);
         int colSize = header.getLastCellNum();
 
-        Map<String, String> headerNameMap = new HashMap<>();
+        Map<String, ExcelColumn> columnMap = new HashMap<>();
         if (columns != null) {
-            headerNameMap = columns.stream().collect(Collectors.toMap(ExcelColumn::getTitle, ExcelColumn::getName));
+            columnMap = columns.stream().collect(Collectors.toMap(ExcelColumn::getTitle, column -> column));
         }
 
         String[] metaData = new String[colSize];
         for (int j = 0; j < colSize; j++) {
-            String headerName = header.getCell(j).getStringCellValue().trim();
-            String name = headerNameMap.get(headerName);
-            metaData[j] = name != null ? name : headerName;
+            metaData[j] = header.getCell(j).getStringCellValue().trim();
         }
         List<Map<String,Object>> result = new ArrayList<>();
 
@@ -125,7 +123,17 @@ public class XlsxReaderResolver extends ReaderResolver{
                     default:
                         cellValue = cell.getStringCellValue();
                 }
-                data.put(metaData[j], cellValue);
+                String name = metaData[j];
+                if(!columnMap.isEmpty()) {
+                    ExcelColumn column = columnMap.get(name);
+                    if (column != null) {
+                        name = column.getName();
+                        if(column.getMapper() != null) {
+                            cellValue = getMapperValue(cellValue, column.getMapper());
+                        }
+                    }
+                }
+                data.put(name, cellValue);
             }
         }
         return result;

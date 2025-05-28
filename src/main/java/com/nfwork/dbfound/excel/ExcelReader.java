@@ -54,6 +54,11 @@ public class ExcelReader {
 						String name = DataUtil.stringValue(map.get("name"));
 						String tittle = DataUtil.stringValue(map.get("title"));
 						ExcelColumn excelColumn = new ExcelColumn(name,tittle);
+						Object mapper = map.get("mapper");
+						if (mapper instanceof Map){
+							Map mapperMap = (Map) mapper;
+							excelColumn.setMapper(mapperMap);
+						}
 						columns.add(excelColumn);
 					}
 				}
