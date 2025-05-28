@@ -36,25 +36,28 @@ public class CsvReaderResolver extends ReaderResolver{
             List<Map<String, Object>> list = new ArrayList<>();
             List<String> headers = parse.getHeaderNames();
 
-            Map<String, String> headerNameMap = new HashMap<>();
+            Map<String, ExcelColumn> columnMap = new HashMap<>();
             if (columns != null) {
-                headerNameMap = columns.stream().collect(Collectors.toMap(ExcelColumn::getTitle, ExcelColumn::getName));
-            }
-
-            List<String> headerNames = new ArrayList<>();
-            for (String header : headers) {
-                String name = headerNameMap.get(header);
-                if (name == null) {
-                    name = header;
-                }
-                headerNames.add(name);
+                columnMap = columns.stream().collect(Collectors.toMap(ExcelColumn::getTitle, column -> column));
             }
 
             while (csvRecordIterator.hasNext()) {
                 CSVRecord record = csvRecordIterator.next();
                 Map<String, Object> map = new HashMap<>();
-                for (int i=0; i < headerNames.size();i++) {
-                    map.put(headerNames.get(i), record.get(i));
+                for (int i=0; i < headers.size();i++) {
+                    String name = headers.get(i);
+                    Object value = record.get(i);
+
+                    if(!columnMap.isEmpty()) {
+                        ExcelColumn column = columnMap.get(name);
+                        if (column != null) {
+                            name = column.getName();
+                            if(column.getMapper() != null) {
+                                value = getMapperValue(value, column.getMapper());
+                            }
+                        }
+                    }
+                    map.put(name, value);
                 }
                 list.add(map);
             }
