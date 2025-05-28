@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class XlsxReaderResolver extends ReaderResolver{
 
@@ -18,13 +19,13 @@ public class XlsxReaderResolver extends ReaderResolver{
     }
 
     @Override
-    protected List<List<Map<String, Object>>> read(InputStream input){
+    protected List<List<Map<String, Object>>> read(InputStream input, List<ExcelColumn> columns){
         List<List<Map<String, Object>>> result = new ArrayList<>();
         try (Workbook workbook = getWorkBook(input)){
             int num = workbook.getNumberOfSheets();
             for(int i=0; i< num; i++){
                 Sheet sheet = workbook.getSheetAt(i);
-                List<Map<String,Object>> data = readSheet(sheet);
+                List<Map<String,Object>> data = readSheet(sheet, columns);
                 result.add(data);
             }
         } catch (IOException e) {
@@ -34,13 +35,13 @@ public class XlsxReaderResolver extends ReaderResolver{
     }
 
     @Override
-    protected Map<String, List<Map<String, Object>>> readForMap(InputStream input){
+    protected Map<String, List<Map<String, Object>>> readForMap(InputStream input, List<ExcelColumn> columns){
         Map<String, List<Map<String, Object>>> result = new HashMap<>();
         try (Workbook workbook = getWorkBook(input)){
             int num = workbook.getNumberOfSheets();
             for(int i=0; i< num; i++){
                 Sheet sheet = workbook.getSheetAt(i);
-                List<Map<String,Object>> data = readSheet(sheet);
+                List<Map<String,Object>> data = readSheet(sheet,columns);
                 result.put(sheet.getSheetName(),data);
             }
         } catch (IOException e) {
@@ -49,7 +50,7 @@ public class XlsxReaderResolver extends ReaderResolver{
         return result;
     }
 
-    private List<Map<String,Object>> readSheet(Sheet sheet){
+    private List<Map<String,Object>> readSheet(Sheet sheet, List<ExcelColumn> columns){
         int rowSize = sheet.getLastRowNum() + 1;
         if(rowSize <= 1){
             return new ArrayList<>();
@@ -57,9 +58,16 @@ public class XlsxReaderResolver extends ReaderResolver{
         Row header = sheet.getRow(0);
         int colSize = header.getLastCellNum();
 
+        Map<String, String> headerNameMap = new HashMap<>();
+        if (columns != null) {
+            headerNameMap = columns.stream().collect(Collectors.toMap(ExcelColumn::getTitle, ExcelColumn::getName));
+        }
+
         String[] metaData = new String[colSize];
         for (int j = 0; j < colSize; j++) {
-            metaData[j] = header.getCell(j).getStringCellValue().trim();
+            String headerName = header.getCell(j).getStringCellValue().trim();
+            String name = headerNameMap.get(headerName);
+            metaData[j] = name != null ? name : headerName;
         }
         List<Map<String,Object>> result = new ArrayList<>();
 

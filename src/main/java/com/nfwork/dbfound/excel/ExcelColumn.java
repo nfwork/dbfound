@@ -18,6 +18,11 @@ public class ExcelColumn {
     public ExcelColumn(){
     }
 
+    public ExcelColumn(String name, String title){
+        this.name = name;
+        this.title = title;
+    }
+
     public ExcelColumn(String name, String title, int width){
         this.name = name;
         this.title = title;
