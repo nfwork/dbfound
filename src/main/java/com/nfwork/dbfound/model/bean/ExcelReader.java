@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Map;
 
 import com.nfwork.dbfound.el.ELEngine;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.excel.ExcelColumn;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DataUtil;
@@ -53,12 +55,14 @@ public class ExcelReader extends SqlEntity {
 
 		Object ofile = param.getValue();
 
+		List<ExcelColumn> columnList =  com.nfwork.dbfound.excel.ExcelReader.getColumns(context);
+
 		if(ofile instanceof byte[]){
 			Object object;
 			if("map".equals(requiredDataType)){
-				object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((byte[]) ofile, type);
+				object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap((byte[]) ofile, type, columnList);
 			}else {
-				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((byte[]) ofile, type);
+				object = com.nfwork.dbfound.excel.ExcelReader.readExcel((byte[]) ofile, type, columnList);
 			}
 			context.setData(setPath, object);
 			LogUtil.info("ExcelReader execute success, param value: " + param.getValue() + ", sourcePath: " +param.getSourcePathHistory());
@@ -76,9 +80,9 @@ public class ExcelReader extends SqlEntity {
 				if (inputStream != null) {
 					Object object;
 					if ("map".equals(requiredDataType)) {
-						object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap(inputStream, type);
+						object = com.nfwork.dbfound.excel.ExcelReader.readExcelForMap(inputStream, type, columnList);
 					} else {
-						object = com.nfwork.dbfound.excel.ExcelReader.readExcel(inputStream, type);
+						object = com.nfwork.dbfound.excel.ExcelReader.readExcel(inputStream, type, columnList);
 					}
 					context.setData(setPath, object);
 					LogUtil.info("ExcelReader execute success, param value: " + param.getValue() + ", sourcePath: " +param.getSourcePathHistory());

@@ -10,7 +10,7 @@ public abstract class ReaderResolver {
         ExcelReader.readerResolverMap.put(type,this);
     }
 
-    protected abstract List<List<Map<String,Object>>> read(InputStream input);
+    protected abstract List<List<Map<String,Object>>> read(InputStream input, List<ExcelColumn> columns);
 
-    protected abstract Map<String, List<Map<String,Object>>> readForMap(InputStream input);
+    protected abstract Map<String, List<Map<String,Object>>> readForMap(InputStream input, List<ExcelColumn> columns);
 }
