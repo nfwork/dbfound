@@ -50,7 +50,7 @@ public class Query extends SqlEntity {
 
 	private Integer pagerSize;
 	private Integer maxPagerSize = 10000;
-	private Integer exportSize = 30 * 10000;
+	private Integer exportSize = 20 * 10000;
 	private String adapter;
 	private List<QueryAdapter<?>> queryAdapterList;
 	private String entity;
