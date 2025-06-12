@@ -102,7 +102,7 @@ public class Context {
 		cloneHeaderData(request);
 		cloneCookieData(request);
 		if (DBFoundConfig.isOpenSession()) {
-			cloneSessionData(request.getSession());
+			cloneSessionData(request.getSession(false));
 		}
 		this.request = request;
 		this.response = response;
@@ -202,6 +202,9 @@ public class Context {
 	 * 复制session数据
 	 */
 	public void cloneSessionData(HttpSession session) {
+		if (session == null) {
+			return;
+		}
 		if (!DBFoundConfig.isOpenSession()) {
 			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
 		}
