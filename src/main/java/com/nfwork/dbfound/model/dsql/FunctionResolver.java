@@ -3,7 +3,6 @@ package com.nfwork.dbfound.model.dsql;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.ConnectionProvide;
 import com.nfwork.dbfound.db.ConnectionProvideManager;
-import com.nfwork.dbfound.db.dialect.AbstractSqlDialect;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.model.dfunction.*;
@@ -28,6 +27,7 @@ public class FunctionResolver extends DSqlValueResolver {
         register("lengthb",new LengthB());
         register("nvl",new Nvl());
         register("trim",new Trim());
+        register("substring_index",new SubStringIndex());
     }
     public static void register(String functionName, DSqlFunction function) {
         if (functionMap.containsKey(functionName)) {
