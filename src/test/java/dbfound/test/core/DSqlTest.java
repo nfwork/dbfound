@@ -1,10 +1,11 @@
 package dbfound.test.core;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.db.dialect.MySqlDialect;
+import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.model.dfunction.DSqlFunction;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
-import com.nfwork.dbfound.model.dsql.DSqlFunctionForMysql;
+import com.nfwork.dbfound.model.dsql.FunctionResolver;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -190,13 +191,25 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql("1 = if(null,1,2)",list,"_default", context);
         assert Boolean.FALSE.equals(result);
 
+        result = DSqlEngine.checkWhenSql("1 = nvl(null,1)",list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
         result = DSqlEngine.checkWhenSql("isnull(null)",list,"_default", context);
         assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("!isnull(?)",list,"_default", context);
         assert Boolean.TRUE.equals(result);
 
-        new DSqlFunctionForTest().register(MySqlDialect.class);
+        FunctionResolver.register("say_hello", new DSqlFunction() {
+            @Override
+            public boolean isSupported(SqlDialect sqlDialect) {
+                return true;
+            }
+            @Override
+            public Object apply(List<Object> params, SqlDialect sqlDialect) {
+                return "hello world";
+            }
+        });
         result = DSqlEngine.checkWhenSql("say_hello() = 'hello world' ",list,"_default", context);
         assert Boolean.TRUE.equals(result);
 
@@ -207,6 +220,15 @@ public class DSqlTest {
             flag = 2;
         }
         assert flag ==2;
+
+        list.clear();
+        list.add("小明");
+        result = DSqlEngine.checkWhenSql("length(?)=6", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("char_length(?)=2", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("lengthb(?)=6", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
     }
 
     @Test
@@ -361,16 +383,5 @@ public class DSqlTest {
         BigDecimal a = new BigDecimal("331");
         BigDecimal b = new BigDecimal("447");
         System.out.println(a.divide(b,18, RoundingMode.HALF_UP).doubleValue());
-    }
-
-    static class DSqlFunctionForTest extends DSqlFunctionForMysql {
-        @Override
-        public Object doApply(String functionName, List<Object> params, String provideName, Context context) {
-            if(functionName.equals("say_hello")){
-                return "hello world";
-            }else{
-                return super.doApply(functionName,params, provideName, context);
-            }
-        }
     }
 }
