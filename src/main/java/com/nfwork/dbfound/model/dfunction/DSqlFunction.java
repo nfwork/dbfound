@@ -1,37 +1,18 @@
-package com.nfwork.dbfound.model.dsql;
+package com.nfwork.dbfound.model.dfunction;
 
-import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundPackageException;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
-import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.Function;
+import com.nfwork.dbfound.model.dsql.DSqlEngine;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DSqlFunction {
 
-    public Object apply(Function function, List<Object> sqlParamList, String provideName, Context context){
-        String functionName = function.getMultipartName().get(0).toLowerCase();
-        List<Object> fpList = new ArrayList<>();
-        if(function.getParameters()!=null) {
-            List<Expression> list = function.getParameters().getExpressions();
-            if (list != null) {
-                for (Expression expression : list) {
-                    Object value = DSqlEngine.getExpressionValue(expression, sqlParamList, provideName, context);
-                    fpList.add(value);
-                }
-            }
-        }
-        return doApply(functionName, fpList, provideName, context);
-    }
+    public abstract boolean isSupported(SqlDialect sqlDialect);
 
-    public abstract Object doApply(String functionName, List<Object> param, String provideName, Context context);
-
-    public void register(Class<?> clazz){
-        FunctionResolver.functionMap.put(clazz.getName(), this);
-    }
+    public abstract Object apply(List<Object> params,SqlDialect sqlDialect);
 
     protected Object trim(List<Object> params){
         if (params.size() == 1) {

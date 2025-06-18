@@ -61,7 +61,7 @@ public class DSqlEngine {
         return resolver.getValue(expression,param,provideName,context);
     }
 
-    static boolean getBooleanValue(Object value){
+    public static boolean getBooleanValue(Object value){
         if(value instanceof Boolean){
             return (boolean) value;
         }
