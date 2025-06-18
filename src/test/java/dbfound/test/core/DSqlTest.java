@@ -229,6 +229,17 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("lengthb(?)=6", list,"_default", context);
         assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("substring_index('www.dbfound.com','.',1) = 'www'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index('www.dbfound.com','.',-1) = 'com'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index('one---two---three','---',2) = 'one---two'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index('one---two---three','---',-2) = 'two---three'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index(substring_index('one---two---three', '---', 2), '---', -1) = 'two'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
     }
 
     @Test
