@@ -3,7 +3,7 @@ package dbfound.test.core;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
-import com.nfwork.dbfound.model.dfunction.DSqlFunction;
+import com.nfwork.dbfound.model.dsql.function.DSqlFunction;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.dsql.FunctionResolver;
 import org.junit.Test;

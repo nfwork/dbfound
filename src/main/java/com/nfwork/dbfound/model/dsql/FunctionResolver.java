@@ -5,7 +5,7 @@ import com.nfwork.dbfound.db.ConnectionProvide;
 import com.nfwork.dbfound.db.ConnectionProvideManager;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
-import com.nfwork.dbfound.model.dfunction.*;
+import com.nfwork.dbfound.model.dsql.function.*;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
 

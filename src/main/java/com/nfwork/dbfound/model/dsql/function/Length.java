@@ -1,11 +1,11 @@
-package com.nfwork.dbfound.model.dfunction;
+package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.OracleDialect;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 
 import java.util.List;
 
-public class LengthB extends DSqlFunction {
+public class Length extends DSqlFunction {
 
     @Override
     public boolean isSupported(SqlDialect sqlDialect) {
@@ -14,6 +14,10 @@ public class LengthB extends DSqlFunction {
 
     @Override
     public Object apply(List<Object> params,SqlDialect sqlDialect) {
-        return length(params);
+        if (sqlDialect instanceof OracleDialect){
+            return charLength(params);
+        }else{
+            return length(params);
+        }
     }
 }
