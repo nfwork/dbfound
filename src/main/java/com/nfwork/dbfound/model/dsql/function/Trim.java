@@ -1,10 +1,10 @@
-package com.nfwork.dbfound.model.dfunction;
+package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 
 import java.util.List;
 
-public class CharLength extends DSqlFunction{
+public class Trim extends DSqlFunction {
 
     @Override
     public boolean isSupported(SqlDialect sqlDialect) {
@@ -12,7 +12,7 @@ public class CharLength extends DSqlFunction{
     }
 
     @Override
-    public Object apply(List<Object> params, SqlDialect sqlDialect) {
-        return charLength(params);
+    public Object apply(List<Object> params,SqlDialect sqlDialect) {
+        return trim(params);
     }
 }

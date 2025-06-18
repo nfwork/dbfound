@@ -1,4 +1,4 @@
-package com.nfwork.dbfound.model.dfunction;
+package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
