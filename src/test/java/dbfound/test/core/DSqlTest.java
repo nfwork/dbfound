@@ -257,6 +257,24 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("substr(null,-5) is null", list,"_default", context);
         assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("concat(1,7) = '17'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("concat(1,' ',7) = '1 7'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("concat(1,null,7) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("find_in_set('a','abc,1,a') = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("find_in_set('A','abc,1,a') = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("find_in_set('B','abc,1,a') = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("find_in_set(null,'abc,1,a') is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("find_in_set('a','abc,1, a') = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
     }
 
     @Test
