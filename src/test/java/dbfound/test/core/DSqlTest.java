@@ -241,6 +241,10 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("substring_index(substring_index('one---two---three', '---', 2), '---', -1) = 'two'", list,"_default", context);
         assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index('one---two---three','',1) = ''", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index('','---',-2) = ''", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
 
         list.clear();
         list.add("hello world");
@@ -257,6 +261,8 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql("substr(?,7,100) = 'world'", list,"_default", context);
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("substr(null,-5) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr('',7,100) = ''", list,"_default", context);
         assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("concat(1,7) = '17'", list,"_default", context);
@@ -276,6 +282,8 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("find_in_set('a','abc,1, a') = 0", list,"_default", context);
         assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("find_in_set('','abc,1,,a') = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("instr('abcdef','cde') = 3", list,"_default", context);
         assert Boolean.TRUE.equals(result);
@@ -287,6 +295,8 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("locate('cde','abcdef') = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate(234,12345) = 2", list,"_default", context);
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("locate('cde','abcdef',4) = 0", list,"_default", context);
         assert Boolean.TRUE.equals(result);
