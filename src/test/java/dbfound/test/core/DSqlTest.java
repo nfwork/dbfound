@@ -240,6 +240,23 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("substring_index(substring_index('one---two---three', '---', 2), '---', -1) = 'two'", list,"_default", context);
         assert Boolean.TRUE.equals(result);
+
+        list.clear();
+        list.add("hello world");
+        result = DSqlEngine.checkWhenSql("substring(?,7) = 'world'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring(?,-5) = 'world'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr(?,7,2) = 'wo'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr(?,-5,2) = 'wo'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr(?,20,2) = ''", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr(?,7,100) = 'world'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr(null,-5) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
     }
 
     @Test

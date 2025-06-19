@@ -5,7 +5,7 @@ import com.nfwork.dbfound.exception.DSqlNotSupportException;
 
 import java.util.List;
 
-public class SubStringIndex extends DSqlFunction {
+public class SubstringIndex extends DSqlFunction {
 
     @Override
     public boolean isSupported(SqlDialect sqlDialect) {
