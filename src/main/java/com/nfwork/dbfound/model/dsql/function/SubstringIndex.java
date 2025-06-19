@@ -22,11 +22,11 @@ public class SubstringIndex extends DSqlFunction {
         String delim = DataUtil.stringValue(list.get(1));
         int count = ((Number)list.get(2)).intValue();
 
-        if (str == null || delim == null || delim.isEmpty()) {
+        if (str == null || delim == null ) {
             return null;
         }
 
-        if (count == 0) {
+        if (count == 0 || delim.isEmpty()) {
             return "";
         }
 
