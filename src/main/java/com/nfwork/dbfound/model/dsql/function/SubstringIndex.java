@@ -2,6 +2,7 @@ package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.util.DataUtil;
 
 import java.util.List;
 
@@ -17,8 +18,8 @@ public class SubstringIndex extends DSqlFunction {
         if (list.size() != 3) {
             throw new DSqlNotSupportException();
         }
-        String str = (String)list.get(0);
-        String delim = (String)list.get(1);
+        String str = DataUtil.stringValue(list.get(0));
+        String delim = DataUtil.stringValue(list.get(1));
         int count = ((Number)list.get(2)).intValue();
 
         if (str == null || delim == null || delim.isEmpty()) {

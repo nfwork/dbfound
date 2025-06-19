@@ -2,6 +2,8 @@ package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.util.DataUtil;
+
 import java.util.List;
 
 public class Substring extends DSqlFunction {
@@ -16,7 +18,7 @@ public class Substring extends DSqlFunction {
         if (list.size() < 2 || list.size() > 3) {
             throw new DSqlNotSupportException();
         }
-        String str = (String) list.get(0);
+        String str = DataUtil.stringValue(list.get(0));
         if (str == null) return null;
         int pos = ((Number)list.get(1)).intValue();
         int len;
