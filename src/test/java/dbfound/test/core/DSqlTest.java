@@ -3,6 +3,7 @@ package dbfound.test.core;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.function.DSqlFunction;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.dsql.FunctionResolver;
@@ -301,6 +302,23 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("locate('','abcdef',2) = 2", list,"_default", context);
         assert Boolean.TRUE.equals(result);
+
+        boolean ignoreCase = DSqlConfig.isCompareIgnoreCase();
+        DSqlConfig.setCompareIgnoreCase(false);
+        result = DSqlEngine.checkWhenSql("upper('abc') = 'ABC'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("upper('abc') != 'abc'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("lower('ABc') = 'abc'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("lower('ABc') != 'ABc'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("upper(null) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("lower(null) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        DSqlConfig.setCompareIgnoreCase(ignoreCase);
+
     }
 
     @Test

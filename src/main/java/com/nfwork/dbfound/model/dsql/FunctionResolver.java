@@ -34,6 +34,8 @@ public class FunctionResolver extends DSqlValueResolver {
         register("find_in_set",new FindInSet());
         register("instr",new Instr());
         register("locate",new Locate());
+        register("upper",new Upper());
+        register("lower",new Lower());
     }
     public static void register(String functionName, DSqlFunction function) {
         if (functionMap.containsKey(functionName)) {
