@@ -19,15 +19,17 @@ public class FunctionResolver extends DSqlValueResolver {
     protected static final Map<String, DSqlFunction> functionMap = new ConcurrentHashMap<>();
 
     static {
-        register("char_length", new CharLength());
         register("if",new If());
         register("ifnull",new IfNull());
         register("isnull", new IsNull());
-        register("length", new Length());
-        register("lengthb",new LengthB());
         register("nvl",new Nvl());
         register("trim",new Trim());
-        register("substring_index",new SubStringIndex());
+        register("length", new Length());
+        register("lengthb",new LengthB());
+        register("char_length", new CharLength());
+        register("substring_index",new SubstringIndex());
+        register("substring",new Substring());
+        register("substr",functionMap.get("substring"));
     }
     public static void register(String functionName, DSqlFunction function) {
         if (functionMap.containsKey(functionName)) {
