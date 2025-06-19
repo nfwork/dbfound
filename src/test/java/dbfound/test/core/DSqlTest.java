@@ -303,6 +303,7 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql("locate('','abcdef',2) = 2", list,"_default", context);
         assert Boolean.TRUE.equals(result);
 
+        boolean ignoreCase = DSqlConfig.isCompareIgnoreCase();
         DSqlConfig.setCompareIgnoreCase(false);
         result = DSqlEngine.checkWhenSql("upper('abc') = 'ABC'", list,"_default", context);
         assert Boolean.TRUE.equals(result);
@@ -316,6 +317,8 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("lower(null) is null", list,"_default", context);
         assert Boolean.TRUE.equals(result);
+        DSqlConfig.setCompareIgnoreCase(ignoreCase);
+
     }
 
     @Test
