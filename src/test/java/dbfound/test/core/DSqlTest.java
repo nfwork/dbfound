@@ -275,6 +275,32 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("find_in_set('a','abc,1, a') = 0", list,"_default", context);
         assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("instr('abcdef','cde') = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("instr('abcdef','') = 1", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("instr(12345,34) = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("instr(null,'cde') is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("locate('cde','abcdef') = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('cde','abcdef',4) = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('cde','abcdef',3) = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('cde','abcdef',0) = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('cde','abcdef',-1) = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate(null,'abcdef',0) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('','abcdef') = 1", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('','abcdef',2) = 2", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
     }
 
     @Test
