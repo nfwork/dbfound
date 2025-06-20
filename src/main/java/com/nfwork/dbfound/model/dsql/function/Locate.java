@@ -50,7 +50,7 @@ public class Locate extends DSqlFunction {
         }
 
         // 调整pos为Java的0-based索引（且不小于0）
-        int startIndex = Math.max(0, pos - 1);
+        int startIndex = pos - 1;
         int index = str.indexOf(substr, startIndex);
 
         // 返回1-based位置（找不到时返回0）
