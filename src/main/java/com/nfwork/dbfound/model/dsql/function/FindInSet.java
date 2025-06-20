@@ -3,15 +3,11 @@ package com.nfwork.dbfound.model.dsql.function;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
+import com.nfwork.dbfound.model.dsql.DSqlFunction;
 
 import java.util.List;
 
 public class FindInSet extends DSqlFunction {
-
-    @Override
-    public boolean isSupported(SqlDialect sqlDialect) {
-        return true;
-    }
 
     @Override
     public Object apply(List<Object> list, SqlDialect sqlDialect) {

@@ -2,15 +2,12 @@ package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.util.DataUtil;
 
 import java.util.List;
 
 public class Upper extends DSqlFunction {
-    @Override
-    public boolean isSupported(SqlDialect sqlDialect) {
-        return true;
-    }
 
     @Override
     public Object apply(List<Object> args, SqlDialect sqlDialect) {

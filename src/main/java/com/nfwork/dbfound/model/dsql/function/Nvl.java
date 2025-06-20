@@ -1,17 +1,5 @@
 package com.nfwork.dbfound.model.dsql.function;
 
-import com.nfwork.dbfound.db.dialect.SqlDialect;
+public class Nvl extends IfNull {
 
-import java.util.List;
-
-public class Nvl extends DSqlFunction{
-    @Override
-    public boolean isSupported(SqlDialect sqlDialect) {
-        return true;
-    }
-
-    @Override
-    public Object apply(List<Object> params, SqlDialect sqlDialect) {
-        return ifNull(params);
-    }
 }

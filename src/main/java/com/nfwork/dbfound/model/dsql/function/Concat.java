@@ -2,6 +2,7 @@ package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.util.LocalDateUtil;
 
 import java.time.temporal.Temporal;
@@ -36,8 +37,4 @@ public class Concat extends DSqlFunction {
         return result.toString();
     }
 
-    @Override
-    public boolean isSupported(SqlDialect sqlDialect) {
-        return true;
-    }
 }
