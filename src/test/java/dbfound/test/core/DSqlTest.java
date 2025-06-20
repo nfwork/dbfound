@@ -1,10 +1,11 @@
 package dbfound.test.core;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.db.dialect.MySqlDialect;
+import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.model.dsql.DSqlConfig;
+import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
-import com.nfwork.dbfound.model.dsql.DSqlFunctionForMysql;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -190,13 +191,25 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql("1 = if(null,1,2)",list,"_default", context);
         assert Boolean.FALSE.equals(result);
 
+        result = DSqlEngine.checkWhenSql("1 = nvl(null,1)",list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
         result = DSqlEngine.checkWhenSql("isnull(null)",list,"_default", context);
         assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("!isnull(?)",list,"_default", context);
         assert Boolean.TRUE.equals(result);
 
-        new DSqlFunctionForTest().register(MySqlDialect.class);
+        new DSqlFunction() {
+            @Override
+            public boolean isSupported(SqlDialect sqlDialect) {
+                return true;
+            }
+            @Override
+            public Object apply(List<Object> params, SqlDialect sqlDialect) {
+                return "hello world";
+            }
+        }.register("say_hello");
         result = DSqlEngine.checkWhenSql("say_hello() = 'hello world' ",list,"_default", context);
         assert Boolean.TRUE.equals(result);
 
@@ -207,6 +220,114 @@ public class DSqlTest {
             flag = 2;
         }
         assert flag ==2;
+
+        list.clear();
+        list.add("小明");
+        result = DSqlEngine.checkWhenSql("length(?)=6", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("char_length(?)=2", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("lengthb(?)=6", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("substring_index('www.dbfound.com','.',1) = 'www'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index('www.dbfound.com','.',-1) = 'com'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index('one---two---three','---',2) = 'one---two'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index('one---two---three','---',-2) = 'two---three'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index(substring_index('one---two---three', '---', 2), '---', -1) = 'two'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index('one---two---three','',1) = ''", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring_index('','---',-2) = ''", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
+        list.clear();
+        list.add("hello world");
+        result = DSqlEngine.checkWhenSql("substring(?,7) = 'world'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substring(?,-5) = 'world'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr(?,7,2) = 'wo'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr(?,-5,2) = 'wo'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr(?,20,2) = ''", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr(?,7,100) = 'world'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr(null,-5) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr('',7,100) = ''", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("concat(1,7) = '17'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("concat(1,' ',7) = '1 7'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("concat(1,null,7) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("find_in_set('a','abc,1,a') = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("find_in_set('A','abc,1,a') = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("find_in_set('B','abc,1,a') = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("find_in_set(null,'abc,1,a') is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("find_in_set('a','abc,1, a') = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("find_in_set('','abc,1,,a') = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("instr('abcdef','cde') = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("instr('abcdef','') = 1", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("instr(12345,34) = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("instr(null,'cde') is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
+        result = DSqlEngine.checkWhenSql("locate('cde','abcdef') = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate(234,12345) = 2", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('cde','abcdef',4) = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('cde','abcdef',3) = 3", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('cde','abcdef',0) = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('cde','abcdef',-1) = 0", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate(null,'abcdef',0) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('','abcdef') = 1", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("locate('','abcdef',2) = 2", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+
+        boolean ignoreCase = DSqlConfig.isCompareIgnoreCase();
+        DSqlConfig.setCompareIgnoreCase(false);
+        result = DSqlEngine.checkWhenSql("upper('abc') = 'ABC'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("upper('abc') != 'abc'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("lower('ABc') = 'abc'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("lower('ABc') != 'ABc'", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("upper(null) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("lower(null) is null", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        DSqlConfig.setCompareIgnoreCase(ignoreCase);
+
     }
 
     @Test
@@ -361,16 +482,5 @@ public class DSqlTest {
         BigDecimal a = new BigDecimal("331");
         BigDecimal b = new BigDecimal("447");
         System.out.println(a.divide(b,18, RoundingMode.HALF_UP).doubleValue());
-    }
-
-    static class DSqlFunctionForTest extends DSqlFunctionForMysql {
-        @Override
-        public Object doApply(String functionName, List<Object> params, String provideName, Context context) {
-            if(functionName.equals("say_hello")){
-                return "hello world";
-            }else{
-                return super.doApply(functionName,params, provideName, context);
-            }
-        }
     }
 }
