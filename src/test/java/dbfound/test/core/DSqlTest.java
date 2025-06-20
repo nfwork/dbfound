@@ -263,6 +263,10 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
         result = DSqlEngine.checkWhenSql("substr('',7,100) = ''", list,"_default", context);
         assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr('ke',-3,3) = ''", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
+        result = DSqlEngine.checkWhenSql("substr('ke',3,3) = ''", list,"_default", context);
+        assert Boolean.TRUE.equals(result);
 
         result = DSqlEngine.checkWhenSql("concat(1,7) = '17'", list,"_default", context);
         assert Boolean.TRUE.equals(result);
