@@ -4,9 +4,8 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
-import com.nfwork.dbfound.model.dsql.function.DSqlFunction;
+import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
-import com.nfwork.dbfound.model.dsql.FunctionResolver;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -201,7 +200,7 @@ public class DSqlTest {
         result = DSqlEngine.checkWhenSql("!isnull(?)",list,"_default", context);
         assert Boolean.TRUE.equals(result);
 
-        FunctionResolver.register("say_hello", new DSqlFunction() {
+        new DSqlFunction() {
             @Override
             public boolean isSupported(SqlDialect sqlDialect) {
                 return true;
@@ -210,7 +209,7 @@ public class DSqlTest {
             public Object apply(List<Object> params, SqlDialect sqlDialect) {
                 return "hello world";
             }
-        });
+        }.register("say_hello");
         result = DSqlEngine.checkWhenSql("say_hello() = 'hello world' ",list,"_default", context);
         assert Boolean.TRUE.equals(result);
 

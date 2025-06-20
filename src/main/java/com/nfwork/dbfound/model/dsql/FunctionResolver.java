@@ -37,9 +37,12 @@ public class FunctionResolver extends DSqlValueResolver {
         register("upper",new Upper());
         register("lower",new Lower());
     }
-    public static void register(String functionName, DSqlFunction function) {
-        if (functionMap.containsKey(functionName)) {
-            throw new DBFoundRuntimeException("Function '" + functionName + "' is already registered by " + functionMap.get(functionName).getClass().getName());
+    static void register(String functionName, DSqlFunction function) {
+        DSqlFunction dSqlFunction = functionMap.get(functionName);
+        if (dSqlFunction != null) {
+            if(!dSqlFunction.getClass().isAssignableFrom(function.getClass())) {
+                throw new DBFoundRuntimeException("Function '" + functionName + "' is already registered by " + functionMap.get(functionName).getClass().getName());
+            }
         }
         functionMap.put(functionName, function);
     }

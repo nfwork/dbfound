@@ -2,16 +2,12 @@ package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.util.DataUtil;
 
 import java.util.List;
 
 public class Locate extends DSqlFunction {
-
-    @Override
-    public boolean isSupported(SqlDialect sqlDialect) {
-        return true; // 支持所有SQL方言
-    }
 
     @Override
     public Object apply(List<Object> args, SqlDialect sqlDialect) {
