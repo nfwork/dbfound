@@ -20,7 +20,9 @@ public class StringUtil {
         StringBuilder sb = new StringBuilder();
         sb.append(ss[0]);
         for (int i = 1; i < ss.length; i++) {
-            sb.append(upperFirstCase(ss[i]));
+            if (!ss[i].isEmpty()) {
+                sb.append(upperFirstCase(ss[i]));
+            }
         }
         return sb.toString();
     }
