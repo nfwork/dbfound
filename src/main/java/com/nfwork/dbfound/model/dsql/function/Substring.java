@@ -27,9 +27,10 @@ public class Substring extends DSqlFunction {
     }
 
     private static String substring(String str, int pos, int len) {
-
+        if (Math.abs(pos) > str.length()) {
+            return "";
+        }
         int start = pos > 0 ? pos - 1 : str.length() + pos;
-        start = Math.max(0, Math.min(start, str.length()));
 
         int end =  Math.min(start + len, str.length());
         end = Math.max(end, start);
