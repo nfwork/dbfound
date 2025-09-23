@@ -37,6 +37,7 @@ public class ModelOperator {
             }
             context.modelDeepIncrease();
 
+            modelName = transformModelName(modelName);
             if (DataUtil.isNull(queryName)) {
                 queryName = "_default";
             }
@@ -79,6 +80,7 @@ public class ModelOperator {
             }
             context.modelDeepIncrease();
 
+            modelName = transformModelName(modelName);
             if (DataUtil.isNull(executeName)) {
                 executeName = "addOrUpdate";
             }
@@ -161,6 +163,7 @@ public class ModelOperator {
             }
             context.modelDeepIncrease();
 
+            modelName = transformModelName(modelName);
             if (DataUtil.isNull(executeName)) {
                 executeName = "_default";
             }
@@ -187,5 +190,15 @@ public class ModelOperator {
                 LogUtil.info("-----------------------execute end--------------------------------------");
             }
         }
+    }
+
+    private String transformModelName(String modelName) {
+        if (modelName == null || modelName.isEmpty()) {
+            throw new IllegalArgumentException("modelName is null or empty");
+        }
+        if (modelName.charAt(0) == '/') {
+            modelName = modelName.substring(1);
+        }
+        return modelName;
     }
 }
