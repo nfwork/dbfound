@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.excel;
 
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import java.util.Map;
 
@@ -31,7 +32,9 @@ public class ExcelColumn {
 
     public ExcelColumn(Map<String,Object> data){
         Object name = data.get("name");
-        assert name != null;
+        if (name == null){
+            throw new DBFoundRuntimeException("Excel Column name is null");
+        }
         this.name = name.toString();
 
         Object width = data.get("width");
@@ -43,7 +46,9 @@ public class ExcelColumn {
         if(DataUtil.isNull(title)){
             title = data.get("content"); //兼容老版本协议，3.4后改为title；
         }
-        assert title != null;
+        if(title == null){
+            throw new DBFoundRuntimeException("Excel Column title is null");
+        }
         this.title = title.toString();
 
         Map<String,Object> mapper = (Map)data.get("mapper");
