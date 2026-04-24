@@ -61,6 +61,7 @@
 		<xsd:attribute name="adapter" />
 		<xsd:attribute name="entity" />
 		<xsd:attribute name="connectionProvide" />
+		<xsd:attribute name="printContext" />
 	</xsd:complexType>
 
 	<xsd:complexType name="filter_type">
