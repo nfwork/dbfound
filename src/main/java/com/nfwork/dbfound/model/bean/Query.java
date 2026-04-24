@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nfwork.dbfound.db.dialect.AbstractSqlDialect;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.el.ELEngine;
@@ -57,6 +58,8 @@ public class Query extends SqlEntity {
 	private Class entityClass;
 	private String currentPath;
 	private Sql sql;
+
+	private boolean printContext = false;
 
 	@Override
 	public void doStartTag(Element element) {
@@ -127,6 +130,16 @@ public class Query extends SqlEntity {
 	}
 
 	public <T> QueryResponseObject<T> doQuery(Context context, String currentPath, boolean autoPaging, Class<T> clazz){
+
+		// 是否需要打印Context数据
+		if (printContext){
+			try {
+				LogUtil.info("Context infos:\ncurrentPath: "+context.getCurrentPath()+"\ndata: "
+						+ JsonUtil.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(context.getDatas()));
+			} catch (JsonProcessingException e) {
+				LogUtil.error("printContext failed",e);
+			}
+		}
 
 		// 初始化查询参数param
 		Map<String, Object> elCache = new HashMap<>();
@@ -666,6 +679,14 @@ public class Query extends SqlEntity {
 
 	public List<Verifier> getVerifiers() {
 		return verifiers;
+	}
+
+	public boolean isPrintContext() {
+		return printContext;
+	}
+
+	public void setPrintContext(boolean printContext) {
+		this.printContext = printContext;
 	}
 
 	@Override
