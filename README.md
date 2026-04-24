@@ -188,7 +188,7 @@ List<Map<String, Object>> users = modelExecutor.queryList(context, "sys/user", n
 - [dbfound mvc api](https://github.com/nfwork/dbfound/wiki/dbfound-mvc-api)
 - [dbfound ui api](https://github.com/nfwork/dbfound/wiki/dbfound-ui-api)
 
-如果你维护的是旧版 JSP / MVC 场景，请重点阅读 MVC 相关文档；如果你是在现代 Spring Boot 项目中使用，建议优先关注 `model api` 与 Spring Boot starter。
+如果你维护的是旧版 JSP / MVC 场景，请重点阅读 MVC、UI 相关文档；如果你是在现代 Spring Boot 项目中使用，建议优先关注 `model api` 与 Spring Boot starter。
 
 ## Spring Boot 用户入口
 
