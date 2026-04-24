@@ -110,8 +110,7 @@
 ### Java 调用
 
 ```java
-Context context = new Context();
-context.setParamData("username", "admin");
+Context context = new Context().withParam("username", "admin");
 List<Map<String, Object>> users = modelExecutor.queryList(context, "sys/user", null);
 ```
 
