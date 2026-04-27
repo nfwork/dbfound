@@ -1,6 +1,6 @@
 package com.nfwork.dbfound.model.dsql;
 
-import com.nfwork.dbfound.cache.LruCache;
+import com.nfwork.dbfound.cache.FifoCache;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import net.sf.jsqlparser.expression.*;
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DSqlEngine {
 
-    private static final LruCache<String,Expression> lruCache = new LruCache<>(5000, DSqlEngine::getExpression);
+    private static final FifoCache<String,Expression> expressionCache = new FifoCache<>(5000, DSqlEngine::getExpression);
 
     private static final Map<String,DSqlValueResolver> resolverMap = new ConcurrentHashMap<>();
 
@@ -27,7 +27,7 @@ public class DSqlEngine {
 
     public static boolean checkWhenSql(String sql, List<Object> param, String provideName, Context context){
         try {
-            Expression expression = lruCache.get(sql);
+            Expression expression = expressionCache.get(sql);
             if (expression == NOT_SUPPORT_EXPRESSION) {
                 throw new DSqlNotSupportException();
             }
