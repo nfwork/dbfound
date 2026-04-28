@@ -81,8 +81,7 @@
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<model xmlns="http://dbfound.googlecode.com/model"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model xmlns="http://dbfound.googlecode.com/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://dbfound.googlecode.com/model https://raw.githubusercontent.com/nfwork/dbfound/master/tags/model.xsd">
 
     <query>
@@ -92,8 +91,7 @@
             #WHERE_CLAUSE#
             order by user_id desc
         </sql>
-        <filter name="username" dataType="varchar"
-                express="username like concat('%', ${@username}, '%')"/>
+        <filter name="username" dataType="varchar" express="username like concat('%', ${@username}, '%')"/>
     </query>
 
 </model>
