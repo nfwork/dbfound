@@ -28,6 +28,7 @@ import com.nfwork.dbfound.web.action.ActionEngine;
 import com.nfwork.dbfound.web.DispatcherFilter;
 import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.i18n.MultiLangUtil;
+import com.nfwork.dbfound.web.handler.WebApiPermissionChecker;
 
 public class DBFoundConfig {
 
@@ -288,6 +289,14 @@ public class DBFoundConfig {
 			}
 		}
 
+		// web api allow urls 初始化
+		Element apiAllowUrls = web.element("apiAllowUrls");
+		List<String> allowUrls = apiAllowUrls == null ? Collections.emptyList() : getApiAllowUrls(apiAllowUrls);
+		WebApiPermissionChecker.init(allowUrls);
+		if (!allowUrls.isEmpty()) {
+			info.append("(apiAllowUrls = ").append(allowUrls).append(")");
+		}
+
 		// dbfound mvc controller 初始化
 		Element controllerEl = web.element("controllerPaths");
 		if (controllerEl != null) {
@@ -458,6 +467,18 @@ public class DBFoundConfig {
 		}
 
 		LogUtil.info(info.toString());
+	}
+
+	private static List<String> getApiAllowUrls(Element apiAllowUrls) {
+		List<String> urls = new ArrayList<>();
+		List<Element> urlElements = apiAllowUrls.elements("url");
+		for (Element urlElement : urlElements) {
+			String url = urlElement.getTextTrim();
+			if (DataUtil.isNotNull(url)) {
+				urls.add(url);
+			}
+		}
+		return urls;
 	}
 
 	public static String getRealPath(String value) {
