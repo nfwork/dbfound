@@ -15,6 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 
 public abstract class ActionHandler {
 
+    protected final WebApiPermissionChecker permissionChecker;
+
+    protected ActionHandler(WebApiPermissionChecker permissionChecker) {
+        this.permissionChecker = permissionChecker;
+    }
+
     public void handle(HttpServletRequest request, HttpServletResponse response){
         String requestUrl = request.getServletPath();
         boolean isFileUpload = false;

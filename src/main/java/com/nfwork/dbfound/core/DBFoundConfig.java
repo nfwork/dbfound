@@ -29,11 +29,10 @@ import com.nfwork.dbfound.web.action.ActionEngine;
 import com.nfwork.dbfound.web.DispatcherFilter;
 import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.i18n.MultiLangUtil;
-import com.nfwork.dbfound.web.handler.WebApiPermissionChecker;
 
 public class DBFoundConfig {
 
-	public static final String VERSION = "3.6.8" ;
+	public static final String VERSION = "3.7.0" ;
 
 	private static String listenerClass;
 	private final static List<DataSourceConnectionProvide> dsp = new ArrayList<>();
@@ -62,6 +61,7 @@ public class DBFoundConfig {
 	private static String encoding = "UTF-8";
 	private static Integer maxUploadSize = 10; // 单位M
 	private static String basePath ;
+	private static List<String> apiAllowUrls = Collections.emptyList();
 
 	public static void destroy() {
 		ListenerFacade.destroy();
@@ -291,11 +291,10 @@ public class DBFoundConfig {
 		}
 
 		// web api allow urls 初始化
-		Element apiAllowUrls = web.element("apiAllowUrls");
-		List<String> allowUrls = apiAllowUrls == null ? Collections.emptyList() : StringUtil.splitToList(apiAllowUrls.getTextTrim());
-		WebApiPermissionChecker.init(allowUrls);
-		if (!allowUrls.isEmpty()) {
-			info.append("(apiAllowUrls = ").append(allowUrls).append(")");
+		Element apiAllowUrlsEl = web.element("apiAllowUrls");
+		DBFoundConfig.apiAllowUrls = apiAllowUrlsEl == null ? Collections.emptyList() : StringUtil.splitToList(apiAllowUrlsEl.getTextTrim());
+		if (!DBFoundConfig.apiAllowUrls.isEmpty()) {
+			info.append("(apiAllowUrls = ").append(DBFoundConfig.apiAllowUrls).append(")");
 		}
 
 		// dbfound mvc controller 初始化
@@ -548,6 +547,10 @@ public class DBFoundConfig {
 
 	public static List<DataSourceConnectionProvide> getDsp() {
 		return dsp;
+	}
+
+	public static List<String> getApiAllowUrls() {
+		return apiAllowUrls;
 	}
 
 	public static boolean isUnderscoreToCamelCase() {
