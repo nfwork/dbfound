@@ -28,15 +28,8 @@
 			<xsd:element maxOccurs="1" minOccurs="0" name="basePath" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="jsonStringAutoCover" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="openSession" />
-			<xsd:element maxOccurs="1" minOccurs="0" name="apiAllowUrls"
-						 type="api_allow_urls_type" />
+			<xsd:element maxOccurs="1" minOccurs="0" name="apiAllowUrls" />
 			<xsd:element maxOccurs="1" minOccurs="0" name="controllerPaths" />
-		</xsd:choice>
-	</xsd:complexType>
-
-	<xsd:complexType name="api_allow_urls_type">
-		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element maxOccurs="unbounded" minOccurs="0" name="url" />
 		</xsd:choice>
 	</xsd:complexType>
 

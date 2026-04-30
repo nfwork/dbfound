@@ -24,6 +24,7 @@ import com.nfwork.dbfound.db.JdbcConnectionProvide;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
+import com.nfwork.dbfound.util.StringUtil;
 import com.nfwork.dbfound.web.action.ActionEngine;
 import com.nfwork.dbfound.web.DispatcherFilter;
 import com.nfwork.dbfound.web.InterceptorFacade;
@@ -291,7 +292,7 @@ public class DBFoundConfig {
 
 		// web api allow urls 初始化
 		Element apiAllowUrls = web.element("apiAllowUrls");
-		List<String> allowUrls = apiAllowUrls == null ? Collections.emptyList() : getApiAllowUrls(apiAllowUrls);
+		List<String> allowUrls = apiAllowUrls == null ? Collections.emptyList() : StringUtil.splitToList(apiAllowUrls.getTextTrim());
 		WebApiPermissionChecker.init(allowUrls);
 		if (!allowUrls.isEmpty()) {
 			info.append("(apiAllowUrls = ").append(allowUrls).append(")");
@@ -467,18 +468,6 @@ public class DBFoundConfig {
 		}
 
 		LogUtil.info(info.toString());
-	}
-
-	private static List<String> getApiAllowUrls(Element apiAllowUrls) {
-		List<String> urls = new ArrayList<>();
-		List<Element> urlElements = apiAllowUrls.elements("url");
-		for (Element urlElement : urlElements) {
-			String url = urlElement.getTextTrim();
-			if (DataUtil.isNotNull(url)) {
-				urls.add(url);
-			}
-		}
-		return urls;
 	}
 
 	public static String getRealPath(String value) {
