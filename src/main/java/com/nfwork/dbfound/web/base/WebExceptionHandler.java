@@ -14,9 +14,11 @@ public class WebExceptionHandler {
 		String em = exception.getMessage();
 		String code = null;
 		if(exception instanceof CollisionException){
+			response.setStatus(422);
 			code = ((CollisionException) exception).getCode();
 			LogUtil.info(exception.getClass().getName() + ": " + em);
 		} else {
+			response.setStatus(500);
 			String message = "an exception: "+exception.getClass().getName()+" caused, when request url: "+request.getRequestURI();
 			LogUtil.error(message, exception);
 			if(exception.getCause() instanceof SQLException){
