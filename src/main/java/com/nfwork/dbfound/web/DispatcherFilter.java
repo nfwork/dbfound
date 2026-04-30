@@ -65,10 +65,11 @@ public class DispatcherFilter implements Filter {
 			DBFoundConfig.setConfigFilePath(configFilePath);
 		}
 		DBFoundConfig.init(cf.getServletContext());
-		this.handlerList.add(new QueryActionHandler());
-		this.handlerList.add(new ExecuteActionHandler());
-		this.handlerList.add(new ExportActionHandler());
-		this.handlerList.add(new DoActionHandler());
+		WebApiPermissionChecker permissionChecker = new WebApiPermissionChecker(DBFoundConfig.getApiAllowUrls());
+		this.handlerList.add(new QueryActionHandler(permissionChecker));
+		this.handlerList.add(new ExecuteActionHandler(permissionChecker));
+		this.handlerList.add(new ExportActionHandler(permissionChecker));
+		this.handlerList.add(new DoActionHandler(permissionChecker));
 	}
 
 	/**

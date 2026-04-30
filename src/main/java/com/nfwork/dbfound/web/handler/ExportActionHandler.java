@@ -7,6 +7,10 @@ import com.nfwork.dbfound.web.InterceptorFacade;
 
 public class ExportActionHandler extends ActionHandler {
 
+    public ExportActionHandler(WebApiPermissionChecker permissionChecker) {
+        super(permissionChecker);
+    }
+
     @Override
     public boolean isSupport(String requestPath) {
         return requestPath.endsWith(".export") || requestPath.contains(".export!");
@@ -14,8 +18,8 @@ public class ExportActionHandler extends ActionHandler {
 
     @Override
     protected ResponseObject doHandle(Context context, String requestPath) throws Exception {
-        if (WebApiPermissionChecker.isForbidden(requestPath)) {
-            return WebApiPermissionChecker.forbiddenResponse(context.response, requestPath);
+        if (permissionChecker.isForbidden(requestPath)) {
+            return permissionChecker.forbiddenResponse(context.response, requestPath);
         }
         int modelIndex = requestPath.indexOf(".export!");
         String modelName;

@@ -179,6 +179,8 @@ List<Map<String, Object>> users = modelExecutor.queryList(context, "sys/user", n
 - [dbfound model api](https://github.com/nfwork/dbfound/wiki/dbfound-model-api)
 - [dbfound java api](https://github.com/nfwork/dbfound/wiki/dbfound-java-api)
 - [dbfound model adapter](https://github.com/nfwork/dbfound/wiki/dbfound-model-adapter)
+- [dbfound model collection param](https://github.com/nfwork/dbfound/wiki/dbfound-model-collection-param)
+- [dbfound excel export](https://github.com/nfwork/dbfound/wiki/dbfound-excel-export)
 
 ### 其他文档
 

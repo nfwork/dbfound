@@ -8,9 +8,11 @@ import com.nfwork.dbfound.util.TransactionUtil;
 import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.file.FileDownloadUtil;
 
-import java.util.List;
-
 public class ExecuteActionHandler extends ActionHandler {
+
+    public ExecuteActionHandler(WebApiPermissionChecker permissionChecker) {
+        super(permissionChecker);
+    }
 
     @Override
     public boolean isSupport(String requestPath) {
@@ -19,8 +21,8 @@ public class ExecuteActionHandler extends ActionHandler {
 
     @Override
     protected ResponseObject doHandle(Context context, String requestPath) throws Exception{
-        if (WebApiPermissionChecker.isForbidden(requestPath)) {
-            return WebApiPermissionChecker.forbiddenResponse(context.response, requestPath);
+        if (permissionChecker.isForbidden(requestPath)) {
+            return permissionChecker.forbiddenResponse(context.response, requestPath);
         }
         int modelIndex = requestPath.indexOf(".execute!");
         String modelName;

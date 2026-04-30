@@ -9,12 +9,13 @@ import java.util.Set;
 
 public final class WebApiPermissionChecker {
 
-    private static final Set<String> apiAllowUrlSet = new HashSet<>();
+    private final Set<String> apiAllowUrlSet = new HashSet<>();
 
-    private WebApiPermissionChecker() {
+    public WebApiPermissionChecker(Collection<String> apiAllowUrls) {
+        init(apiAllowUrls);
     }
 
-    public static void init(Collection<String> apiAllowUrls) {
+    private void init(Collection<String> apiAllowUrls) {
         apiAllowUrlSet.clear();
         if (apiAllowUrls == null) {
             return;
@@ -27,14 +28,14 @@ public final class WebApiPermissionChecker {
         }
     }
 
-    public static boolean isForbidden(String requestPath) {
+    public boolean isForbidden(String requestPath) {
         if (apiAllowUrlSet.isEmpty()) {
             return false;
         }
         return !apiAllowUrlSet.contains(requestPath);
     }
 
-    public static ResponseObject forbiddenResponse(HttpServletResponse response, String requestPath) {
+    public ResponseObject forbiddenResponse(HttpServletResponse response, String requestPath) {
         response.setStatus(403);
         ResponseObject object = new ResponseObject();
         object.setSuccess(false);
@@ -42,7 +43,7 @@ public final class WebApiPermissionChecker {
         return object;
     }
 
-    private static String normalizePath(String path) {
+    private String normalizePath(String path) {
         if (path == null) {
             return null;
         }
