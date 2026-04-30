@@ -169,14 +169,14 @@
 			<version>2.3.31</version>
 		</dependency>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.33</version>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>9.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-fileupload2-javax</artifactId>
-			<version>2.0.0-M1</version>
+			<version>2.0.0-M5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.jsqlparser</groupId>
@@ -192,7 +192,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.2.13</version>
+			<version>1.3.15</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -203,7 +203,7 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>4.1.2</version>
+			<version>5.4.1</version>
 		</dependency>
 	</dependencies>
 </project>
