@@ -58,7 +58,9 @@ public class ModelCache {
 	    try {
 	        return future.get();
 	    } catch (Exception e) {
-	    	models.remove(modelName);
+	    	if(DBFoundConfig.isModelModifyCheck()){
+	    		models.remove(modelName, future);
+	    	}
 			if(e instanceof DBFoundRuntimeException){
 				throw (DBFoundRuntimeException)e;
 			}else if(e.getCause() instanceof DBFoundRuntimeException){
