@@ -14,6 +14,9 @@ public class ExportActionHandler extends ActionHandler {
 
     @Override
     protected ResponseObject doHandle(Context context, String requestPath) throws Exception {
+        if (WebApiPermissionChecker.isForbidden(requestPath)) {
+            return WebApiPermissionChecker.forbiddenResponse(context.response, requestPath);
+        }
         int modelIndex = requestPath.indexOf(".export!");
         String modelName;
         String queryName;
