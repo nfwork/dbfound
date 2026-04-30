@@ -19,6 +19,9 @@ public class ExecuteActionHandler extends ActionHandler {
 
     @Override
     protected ResponseObject doHandle(Context context, String requestPath) throws Exception{
+        if (WebApiPermissionChecker.isForbidden(requestPath)) {
+            return WebApiPermissionChecker.forbiddenResponse(context.response, requestPath);
+        }
         int modelIndex = requestPath.indexOf(".execute!");
         String modelName;
         String executeName;

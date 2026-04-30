@@ -14,6 +14,9 @@ public class QueryActionHandler extends ActionHandler {
 
     @Override
     protected ResponseObject doHandle(Context context, String requestPath) throws Exception{
+        if (WebApiPermissionChecker.isForbidden(requestPath)) {
+            return WebApiPermissionChecker.forbiddenResponse(context.response, requestPath);
+        }
         int modelIndex = requestPath.indexOf(".query!");
         String modelName;
         String queryName;
