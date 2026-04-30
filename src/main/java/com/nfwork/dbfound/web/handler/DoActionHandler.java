@@ -15,6 +15,10 @@ public class DoActionHandler extends ActionHandler {
 
     private final ActionReflect actionReflect = new ActionReflect();
 
+    public DoActionHandler(WebApiPermissionChecker permissionChecker) {
+        super(permissionChecker);
+    }
+
     @Override
     public boolean isSupport(String requestPath) {
         return requestPath.endsWith(".do") || requestPath.contains(".do!");
