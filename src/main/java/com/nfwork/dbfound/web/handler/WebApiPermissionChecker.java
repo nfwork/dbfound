@@ -2,7 +2,7 @@ package com.nfwork.dbfound.web.handler;
 
 import com.nfwork.dbfound.dto.ResponseObject;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
