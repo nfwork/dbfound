@@ -26,7 +26,7 @@ public class FileUploadUtil {
 		JakartaServletDiskFileUpload upload = new JakartaServletDiskFileUpload();
 
 		// 设置允许用户上传文件大小,单位:字节
-		upload.setSizeMax(1024L * 1024 * DBFoundConfig.getMaxUploadSize());
+		upload.setMaxSize(1024L * 1024 * DBFoundConfig.getMaxUploadSize());
 
 		List<DiskFileItem> items = upload.parseRequest(context.request);
 		fileItemsLocal.set(items);

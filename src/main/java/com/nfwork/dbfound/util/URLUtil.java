@@ -22,7 +22,7 @@ public class URLUtil {
 
 	public static String clearUrl(String url) {
 		Matcher m = p.matcher(url);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		while (m.find()) {
 			m.appendReplacement(buf, "/");
 		}
