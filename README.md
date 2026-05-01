@@ -211,6 +211,11 @@ List<Map<String, Object>> users = modelExecutor.queryList(context, "sys/user", n
 
 具体最新版本请以仓库 release 或实际发布版本为准。
 
+`jdk`版本说明：
+
+- `3.7.x`及之后的版本最低`jdk`版本要求为 `jdk 11`
+- `3.6.x`及之前的版本最低`jdk`版本要求为`jdk 8`
+
 ## 项目定位变化
 
 `dbfound` 早期除了后端数据接口能力，还包含 UI / JSP 标签式开发能力。随着前后端分离逐渐成为主流，当前更建议将 `dbfound` 主要理解为：
