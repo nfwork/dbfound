@@ -9,14 +9,13 @@ import java.util.Random;
  */
 public class UUIDUtil {
 
-	static StringBuffer buffer = new StringBuffer("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	static StringBuilder builder = new StringBuilder("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 	static Random r = new Random();
-	static int range = buffer.length();
+	static int range = builder.length();
 
 	/**
 	 * 产生一个24的随机字符串 作为dbfound的uuid
-	 * 
-	 * @return
+	 *
 	 */
 	public static String getUUID() {
 		return getRandomString(24);
@@ -24,14 +23,12 @@ public class UUIDUtil {
 
 	/**
 	 * 参数数据字符串
-	 * 
-	 * @param length
-	 * @return
+	 *
 	 */
 	public static String getRandomString(int length) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < length; i++) {
-			sb.append(buffer.charAt(r.nextInt(range)));
+			sb.append(builder.charAt(r.nextInt(range)));
 		}
 		return sb.toString();
 	}
