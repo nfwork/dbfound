@@ -29,7 +29,6 @@ import com.nfwork.dbfound.web.action.ActionEngine;
 import com.nfwork.dbfound.web.DispatcherFilter;
 import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.i18n.MultiLangUtil;
-import com.nfwork.dbfound.web.handler.WebApiPermissionChecker;
 
 public class DBFoundConfig {
 
