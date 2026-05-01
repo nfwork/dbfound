@@ -5,8 +5,8 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.JsonUtil;
 import org.apache.commons.fileupload2.core.DiskFileItem;
-import org.apache.commons.fileupload2.jakarta.JakartaServletDiskFileUpload;
-import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletDiskFileUpload;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 
 import java.io.IOException;
 import java.util.ArrayList;
