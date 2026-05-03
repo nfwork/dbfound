@@ -45,23 +45,23 @@ public abstract class ForEachSupport extends LoopTagSupport {
     protected ForEachSupport.ForEachIterator supportedTypeForEachIterator(Object o) throws JspTagException {
         ForEachSupport.ForEachIterator items;
         if (o instanceof Object[]) {
-            items = this.toForEachIterator((Object[])((Object[])o));
+            items = this.toForEachIterator((Object[])o);
         } else if (o instanceof boolean[]) {
-            items = this.toForEachIterator((boolean[])((boolean[])o));
+            items = this.toForEachIterator((boolean[])o);
         } else if (o instanceof byte[]) {
-            items = this.toForEachIterator((byte[])((byte[])o));
+            items = this.toForEachIterator((byte[])o);
         } else if (o instanceof char[]) {
-            items = this.toForEachIterator((char[])((char[])o));
+            items = this.toForEachIterator((char[])o);
         } else if (o instanceof short[]) {
-            items = this.toForEachIterator((short[])((short[])o));
+            items = this.toForEachIterator((short[])o);
         } else if (o instanceof int[]) {
-            items = this.toForEachIterator((int[])((int[])o));
+            items = this.toForEachIterator((int[])o);
         } else if (o instanceof long[]) {
-            items = this.toForEachIterator((long[])((long[])o));
+            items = this.toForEachIterator((long[])o);
         } else if (o instanceof float[]) {
-            items = this.toForEachIterator((float[])((float[])o));
+            items = this.toForEachIterator((float[])o);
         } else if (o instanceof double[]) {
-            items = this.toForEachIterator((double[])((double[])o));
+            items = this.toForEachIterator((double[])o);
         } else if (o instanceof Collection) {
             items = this.toForEachIterator((Collection)o);
         } else if (o instanceof Iterator) {
@@ -83,7 +83,7 @@ public abstract class ForEachSupport extends LoopTagSupport {
         Integer[] ia = new Integer[this.end + 1];
 
         for(int i = 0; i <= this.end; ++i) {
-            ia[i] = new Integer(i);
+            ia[i] = i;
         }
 
         return new ForEachSupport.SimpleForEachIterator(Arrays.asList(ia).iterator());
@@ -101,7 +101,7 @@ public abstract class ForEachSupport extends LoopTagSupport {
         Boolean[] wrapped = new Boolean[a.length];
 
         for(int i = 0; i < a.length; ++i) {
-            wrapped[i] = new Boolean(a[i]);
+            wrapped[i] = a[i];
         }
 
         return new ForEachSupport.SimpleForEachIterator(Arrays.asList(wrapped).iterator());
@@ -111,7 +111,7 @@ public abstract class ForEachSupport extends LoopTagSupport {
         Byte[] wrapped = new Byte[a.length];
 
         for(int i = 0; i < a.length; ++i) {
-            wrapped[i] = new Byte(a[i]);
+            wrapped[i] = a[i];
         }
 
         return new ForEachSupport.SimpleForEachIterator(Arrays.asList(wrapped).iterator());
@@ -121,7 +121,7 @@ public abstract class ForEachSupport extends LoopTagSupport {
         Character[] wrapped = new Character[a.length];
 
         for(int i = 0; i < a.length; ++i) {
-            wrapped[i] = new Character(a[i]);
+            wrapped[i] = a[i];
         }
 
         return new ForEachSupport.SimpleForEachIterator(Arrays.asList(wrapped).iterator());
@@ -131,7 +131,7 @@ public abstract class ForEachSupport extends LoopTagSupport {
         Short[] wrapped = new Short[a.length];
 
         for(int i = 0; i < a.length; ++i) {
-            wrapped[i] = new Short(a[i]);
+            wrapped[i] = a[i];
         }
 
         return new ForEachSupport.SimpleForEachIterator(Arrays.asList(wrapped).iterator());
@@ -141,7 +141,7 @@ public abstract class ForEachSupport extends LoopTagSupport {
         Integer[] wrapped = new Integer[a.length];
 
         for(int i = 0; i < a.length; ++i) {
-            wrapped[i] = new Integer(a[i]);
+            wrapped[i] = a[i];
         }
 
         return new ForEachSupport.SimpleForEachIterator(Arrays.asList(wrapped).iterator());
@@ -151,7 +151,7 @@ public abstract class ForEachSupport extends LoopTagSupport {
         Long[] wrapped = new Long[a.length];
 
         for(int i = 0; i < a.length; ++i) {
-            wrapped[i] = new Long(a[i]);
+            wrapped[i] = a[i];
         }
 
         return new ForEachSupport.SimpleForEachIterator(Arrays.asList(wrapped).iterator());
@@ -161,7 +161,7 @@ public abstract class ForEachSupport extends LoopTagSupport {
         Float[] wrapped = new Float[a.length];
 
         for(int i = 0; i < a.length; ++i) {
-            wrapped[i] = new Float(a[i]);
+            wrapped[i] = a[i];
         }
 
         return new ForEachSupport.SimpleForEachIterator(Arrays.asList(wrapped).iterator());
@@ -171,7 +171,7 @@ public abstract class ForEachSupport extends LoopTagSupport {
         Double[] wrapped = new Double[a.length];
 
         for(int i = 0; i < a.length; ++i) {
-            wrapped[i] = new Double(a[i]);
+            wrapped[i] = a[i];
         }
 
         return new ForEachSupport.SimpleForEachIterator(Arrays.asList(wrapped).iterator());
@@ -211,7 +211,7 @@ public abstract class ForEachSupport extends LoopTagSupport {
 
     protected ForEachSupport.ForEachIterator toForEachIterator(String s) {
         StringTokenizer st = new StringTokenizer(s, ",");
-        return this.toForEachIterator((Enumeration)st);
+        return this.toForEachIterator(st);
     }
 
     protected class SimpleForEachIterator implements ForEachSupport.ForEachIterator {
