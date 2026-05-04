@@ -1,6 +1,7 @@
 package com.nfwork.dbfound.web.handler;
 
 import com.nfwork.dbfound.dto.ResponseObject;
+import com.nfwork.dbfound.util.LogUtil;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collection;
@@ -40,6 +41,7 @@ public final class WebApiPermissionChecker {
         ResponseObject object = new ResponseObject();
         object.setSuccess(false);
         object.setMessage("URL access is forbidden: " + requestPath);
+        LogUtil.warn(object.getMessage());
         return object;
     }
 
