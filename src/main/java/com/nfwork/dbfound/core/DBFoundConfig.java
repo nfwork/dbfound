@@ -425,9 +425,11 @@ public class DBFoundConfig {
 	}
 
 	public static String getRealPath(String value) {
-		value = value.replace(CLASSPATH, getClasspath());
+		if (value.contains(CLASSPATH)) {
+			value = value.replace(CLASSPATH, getClasspath());
+		}
 		String projectRoot = getProjectRoot();
-		if (projectRoot != null) {
+		if (projectRoot != null && value.contains(PROJECT_ROOT)) {
 			value = value.replace(PROJECT_ROOT, projectRoot);
 		}
 		return value;
@@ -523,13 +525,11 @@ public class DBFoundConfig {
 	public static String getProjectRoot() {
 		if (projectRoot == null || projectRoot.isEmpty()) {
 			File file = new File(getClasspath());
-			if (file.exists()) {
-				try {
-					projectRoot = file.getParentFile().getParentFile().getAbsolutePath();
-				} catch (Exception e) {
-					return null;
-				}
-				projectRoot = PathFormat.format(projectRoot);
+			if (file.exists() && file.getParentFile().exists() && file.getParentFile().getParentFile().exists()) {
+				projectRoot = PathFormat.format(file.getParentFile().getParentFile().getAbsolutePath());
+			}else{
+				// if file not exists, the classpath maybe in a jar, set projectRoot = /
+				projectRoot = "/";
 			}
 		}
 		return projectRoot;
