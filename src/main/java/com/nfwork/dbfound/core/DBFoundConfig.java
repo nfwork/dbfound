@@ -509,14 +509,23 @@ public class DBFoundConfig {
 		if (classpath == null || classpath.isEmpty()) {
 			try {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
-				if (loader == null) {
+				URL url = loader == null ? null : loader.getResource("");
+				if (url == null) {
 					loader = DBFoundConfig.class.getClassLoader();
+					url = loader == null ? null : loader.getResource("");
 				}
-				URL url = loader.getResource("");
+				if (url == null) {
+					url = ClassLoader.getSystemResource("");
+				}
 				if (url == null) {
 					throw new DBFoundRuntimeException("classpath resource not found");
 				}
-				classpath = PathFormat.format(new File(url.toURI()).getAbsolutePath());
+				if ("file".equals(url.getProtocol())) {
+					classpath = new File(url.toURI()).getAbsolutePath();
+				} else {
+					classpath = url.toExternalForm();
+				}
+				classpath = PathFormat.format(classpath);
 			} catch (Exception e) {
 				throw new DBFoundRuntimeException("get classpath failed", e);
 			}
