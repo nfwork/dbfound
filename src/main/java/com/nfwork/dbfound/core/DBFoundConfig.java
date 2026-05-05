@@ -38,6 +38,7 @@ public class DBFoundConfig {
 
 	public static final String CLASSPATH = "${@classpath}";
 	public static final String PROJECT_ROOT = "${@projectRoot}";
+	private static final String PROJECT_ROOT_CANNOT_RESOLVE = "project_root_cannot_resolve";
 	private static final String JVM_PARAM_PREFIX = "dbfound.";
 
 	private static String modelLoadRoot;
@@ -428,8 +429,11 @@ public class DBFoundConfig {
 		if (value.contains(CLASSPATH)) {
 			value = value.replace(CLASSPATH, getClasspath());
 		}
-		String projectRoot = getProjectRoot();
-		if (projectRoot != null && value.contains(PROJECT_ROOT)) {
+		if (value.contains(PROJECT_ROOT) ) {
+			String projectRoot = getProjectRoot();
+			if(projectRoot.equals(PROJECT_ROOT_CANNOT_RESOLVE)){
+				throw new DBFoundRuntimeException(PROJECT_ROOT + " can not be resolved, ths path is '" + value +"'");
+			}
 			value = value.replace(PROJECT_ROOT, projectRoot);
 		}
 		return value;
@@ -528,8 +532,8 @@ public class DBFoundConfig {
 			if (file.exists() && file.getParentFile().exists() && file.getParentFile().getParentFile().exists()) {
 				projectRoot = PathFormat.format(file.getParentFile().getParentFile().getAbsolutePath());
 			}else{
-				// if file not exists, the classpath maybe in a jar, set projectRoot = /
-				projectRoot = "/";
+				// if file not exists, the classpath maybe in a jar
+				projectRoot = PROJECT_ROOT_CANNOT_RESOLVE;
 			}
 		}
 		return projectRoot;
