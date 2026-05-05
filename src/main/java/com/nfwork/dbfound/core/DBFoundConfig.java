@@ -507,28 +507,15 @@ public class DBFoundConfig {
 
 	public static String getClasspath() {
 		if (classpath == null || classpath.isEmpty()) {
-			try {
-				ClassLoader loader = Thread.currentThread().getContextClassLoader();
-				URL url = loader == null ? null : loader.getResource("");
-				if (url == null) {
-					loader = DBFoundConfig.class.getClassLoader();
-					url = loader == null ? null : loader.getResource("");
-				}
-				if (url == null) {
-					url = ClassLoader.getSystemResource("");
-				}
-				if (url == null) {
-					throw new DBFoundRuntimeException("classpath resource not found");
-				}
-				if ("file".equals(url.getProtocol())) {
-					classpath = new File(url.toURI()).getAbsolutePath();
-				} else {
-					classpath = url.toExternalForm();
-				}
-				classpath = PathFormat.format(classpath);
-			} catch (Exception e) {
-				throw new DBFoundRuntimeException("get classpath failed", e);
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			if (loader == null) {
+				loader = DBFoundConfig.class.getClassLoader();
 			}
+			URL url = loader.getResource("");
+			if (url == null) {
+				throw new DBFoundRuntimeException("classpath resource not found");
+			}
+			classpath = PathFormat.format(new File(url.getFile()).getAbsolutePath());
 		}
 		return classpath;
 	}
@@ -536,12 +523,14 @@ public class DBFoundConfig {
 	public static String getProjectRoot() {
 		if (projectRoot == null || projectRoot.isEmpty()) {
 			File file = new File(getClasspath());
-			try {
-				projectRoot = file.getParentFile().getParentFile().getAbsolutePath();
-			} catch (Exception e) {
-				return null;
+			if (file.exists()) {
+				try {
+					projectRoot = file.getParentFile().getParentFile().getAbsolutePath();
+				} catch (Exception e) {
+					return null;
+				}
+				projectRoot = PathFormat.format(projectRoot);
 			}
-			projectRoot = PathFormat.format(projectRoot);
 		}
 		return projectRoot;
 	}
