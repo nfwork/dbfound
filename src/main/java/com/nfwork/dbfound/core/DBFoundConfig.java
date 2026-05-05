@@ -467,9 +467,9 @@ public class DBFoundConfig {
 	}
 
 	private static String getDatabaseConfigValue(String provideName, String key, String xmlValue) {
-		String jvmValue = getJvmParam("database." + provideName + "." + key);
+		String jvmValue = getJvmParam("datasource." + provideName + "." + key);
 		if (DataUtil.isNull(jvmValue) && "_default".equals(provideName)) {
-			jvmValue = getJvmParam("database." + key);
+			jvmValue = getJvmParam("datasource." + key);
 		}
 		return DataUtil.isNotNull(jvmValue) ? jvmValue : xmlValue;
 	}
