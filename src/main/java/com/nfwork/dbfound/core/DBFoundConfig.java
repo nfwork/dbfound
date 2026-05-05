@@ -39,12 +39,6 @@ public class DBFoundConfig {
 	public static final String CLASSPATH = "${@classpath}";
 	public static final String PROJECT_ROOT = "${@projectRoot}";
 	private static final String JVM_PARAM_PREFIX = "dbfound.";
-	private static final String[] SYSTEM_PARAM_KEYS = {"openLog", "logWithParamSql", "underscoreToCamelCase", "camelCaseToUnderscore",
-			"modelRootPath", "modeRootPath", "modelModifyCheck", "dateFormat", "dateTimeFormat", "timeFormat",
-			"sqlCompareIgnoreCase", "openDSql"};
-	private static final String[] WEB_PARAM_KEYS = {"i18nProvide", "encoding", "jsonStringAutoCover", "maxUploadSize",
-			"basePath", "openSession", "apiAllowUrls", "controllerPaths", "mvcConfigFile", "exceptionHandler",
-			"interceptor", "listener"};
 
 	private static String modelLoadRoot;
 
@@ -147,9 +141,7 @@ public class DBFoundConfig {
 
 				// system参数初始化
 				Element system = root.element("system");
-				if (system != null || hasJvmParam("system", SYSTEM_PARAM_KEYS)) {
-					initSystem(system);
-				}
+				initSystem(system);
 
 				// 数据库初始化
 				Element database = root.element("database");
@@ -159,17 +151,9 @@ public class DBFoundConfig {
 
 				// web参数初始化
 				Element web = root.element("web");
-				if (web != null || hasJvmParam("web", WEB_PARAM_KEYS)) {
-					initWeb(web, servletContext);
-				}
+				initWeb(web, servletContext);
 			} else {
 				LogUtil.info("config file init skipped, because file not found. filePath:" + file.getAbsolutePath());
-				if (hasJvmParam("system", SYSTEM_PARAM_KEYS)) {
-					initSystem(null);
-				}
-				if (hasJvmParam("web", WEB_PARAM_KEYS)) {
-					initWeb(null, servletContext);
-				}
 			}
 			LogUtil.info("NFWork dbfound service init success");
 			LogUtil.info("**************************************************************************");
@@ -242,6 +226,7 @@ public class DBFoundConfig {
 	private static void initWeb(Element web,ServletContext servletContext) {
 		StringBuilder info = new StringBuilder();
 		info.append("set web Param:");
+		int infoStartLength = info.length();
 
 		// i18n 初始化
 		String i18nProvide = getConfigValue(web, "web", "i18nProvide");
@@ -331,20 +316,23 @@ public class DBFoundConfig {
 			appendConfigInfo(info, "listener", listener);
 		}
 
-		LogUtil.info(info.toString());
+		if (info.length() > infoStartLength) {
+			LogUtil.info(info.toString());
+		}
 	}
 
 	private static void initSystem(Element system) {
 		StringBuilder info = new StringBuilder();
 		info.append("set system Param:");
+		int infoStartLength = info.length();
 
 		// 设置日志开关
 		String openLog = getConfigValue(system, "system", "openLog");
 		if (DataUtil.isNotNull(openLog)) {
-			if ("false".equals(openLog.trim())) {
+			if ("false".equals(openLog)) {
 				DBFoundConfig.openLog = false;
 				appendConfigInfo(info, "openLog", false);
-			} else if ("true".equals(openLog.trim())) {
+			} else if ("true".equals(openLog)) {
 				DBFoundConfig.openLog = true;
 				appendConfigInfo(info, "openLog", true);
 			}
@@ -352,10 +340,10 @@ public class DBFoundConfig {
 
 		String printParamSql = getConfigValue(system, "system", "logWithParamSql");
 		if (DataUtil.isNotNull(printParamSql)) {
-			if ("false".equals(printParamSql.trim())) {
+			if ("false".equals(printParamSql)) {
 				DBFoundConfig.logWithParamSql = false;
 				appendConfigInfo(info, "logWithParamSql", false);
-			} else if ("true".equals(printParamSql.trim())) {
+			} else if ("true".equals(printParamSql)) {
 				DBFoundConfig.logWithParamSql = true;
 				appendConfigInfo(info, "logWithParamSql", true);
 			}
@@ -364,11 +352,10 @@ public class DBFoundConfig {
 		// 设置驼峰转化开关
 		String underscoreToCamelCase = getConfigValue(system, "system", "underscoreToCamelCase");
 		if (DataUtil.isNotNull(underscoreToCamelCase)) {
-			String open = underscoreToCamelCase;
-			if ("false".equals(open.trim())) {
+			if ("false".equals(underscoreToCamelCase)) {
 				DBFoundConfig.underscoreToCamelCase = false;
 				appendConfigInfo(info, "underscoreToCamelCase", false);
-			} else if ("true".equals(open.trim())) {
+			} else if ("true".equals(underscoreToCamelCase)) {
 				DBFoundConfig.underscoreToCamelCase = true;
 				appendConfigInfo(info, "underscoreToCamelCase", true);
 			}
@@ -377,11 +364,10 @@ public class DBFoundConfig {
 		// 设置下划线转化开关
 		String camelCaseToUnderscore = getConfigValue(system, "system", "camelCaseToUnderscore");
 		if (DataUtil.isNotNull(camelCaseToUnderscore)) {
-			String open = camelCaseToUnderscore;
-			if ("false".equals(open.trim())) {
+			if ("false".equals(camelCaseToUnderscore)) {
 				DBFoundConfig.camelCaseToUnderscore = false;
 				appendConfigInfo(info, "camelCaseToUnderscore", false);
-			} else if ("true".equals(open.trim())) {
+			} else if ("true".equals(camelCaseToUnderscore)) {
 				DBFoundConfig.camelCaseToUnderscore = true;
 				appendConfigInfo(info, "camelCaseToUnderscore", true);
 			}
@@ -433,7 +419,9 @@ public class DBFoundConfig {
 			appendConfigInfo(info, "openDSql", DSqlConfig.isOpenDSql());
 		}
 
-		LogUtil.info(info.toString());
+		if (info.length() > infoStartLength) {
+			LogUtil.info(info.toString());
+		}
 	}
 
 	public static String getRealPath(String value) {
@@ -509,15 +497,6 @@ public class DBFoundConfig {
 		return result.toString();
 	}
 
-	private static boolean hasJvmParam(String group, String... keys) {
-		for (String key : keys) {
-			if (DataUtil.isNotNull(getJvmParam(group + "." + key))) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public static boolean isInited() {
 		return inited;
 	}
@@ -528,10 +507,19 @@ public class DBFoundConfig {
 
 	public static String getClasspath() {
 		if (classpath == null || classpath.isEmpty()) {
-			String cp = Thread.currentThread().getContextClassLoader().getResource("").getFile();
-			File file = new File(cp);
-			classpath = file.getAbsolutePath();
-			classpath = PathFormat.format(classpath);
+			try {
+				ClassLoader loader = Thread.currentThread().getContextClassLoader();
+				if (loader == null) {
+					loader = DBFoundConfig.class.getClassLoader();
+				}
+				URL url = loader.getResource("");
+				if (url == null) {
+					throw new DBFoundRuntimeException("classpath resource not found");
+				}
+				classpath = PathFormat.format(new File(url.toURI()).getAbsolutePath());
+			} catch (Exception e) {
+				throw new DBFoundRuntimeException("get classpath failed", e);
+			}
 		}
 		return classpath;
 	}
