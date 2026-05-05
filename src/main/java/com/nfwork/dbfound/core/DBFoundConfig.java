@@ -34,11 +34,17 @@ public class DBFoundConfig {
 
 	public static final String VERSION = "3.7.0" ;
 
-	private static String listenerClass;
 	private final static List<DataSourceConnectionProvide> dsp = new ArrayList<>();
 
 	public static final String CLASSPATH = "${@classpath}";
 	public static final String PROJECT_ROOT = "${@projectRoot}";
+	private static final String JVM_PARAM_PREFIX = "dbfound.";
+	private static final String[] SYSTEM_PARAM_KEYS = {"openLog", "logWithParamSql", "underscoreToCamelCase", "camelCaseToUnderscore",
+			"modelRootPath", "modeRootPath", "modelModifyCheck", "dateFormat", "dateTimeFormat", "timeFormat",
+			"sqlCompareIgnoreCase", "openDSql"};
+	private static final String[] WEB_PARAM_KEYS = {"i18nProvide", "encoding", "jsonStringAutoCover", "maxUploadSize",
+			"basePath", "openSession", "apiAllowUrls", "controllerPaths", "mvcConfigFile", "exceptionHandler",
+			"interceptor", "listener"};
 
 	private static String modelLoadRoot;
 
@@ -51,7 +57,7 @@ public class DBFoundConfig {
 	private static boolean modelModifyCheck = false;
 	private static boolean jsonStringAutoCover = true;
 	private final static Set<String> jsonStringForceCoverSet = CollectionUtil.asSet("GridData","parameters","columns");
-	private final static Set<String> sensitiveParamSet = CollectionUtil.asSet("password","api_key","secret_key");
+	private final static Set<String> sensitiveParamSet = CollectionUtil.asSet("password","new_password","old_password","api_key","secret_key");
 	private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd";
 	private static String timeFormat = "HH:mm:ss";
@@ -141,7 +147,7 @@ public class DBFoundConfig {
 
 				// system参数初始化
 				Element system = root.element("system");
-				if (system != null) {
+				if (system != null || hasJvmParam("system", SYSTEM_PARAM_KEYS)) {
 					initSystem(system);
 				}
 
@@ -153,11 +159,17 @@ public class DBFoundConfig {
 
 				// web参数初始化
 				Element web = root.element("web");
-				if (web != null) {
+				if (web != null || hasJvmParam("web", WEB_PARAM_KEYS)) {
 					initWeb(web, servletContext);
 				}
 			} else {
 				LogUtil.info("config file init skipped, because file not found. filePath:" + file.getAbsolutePath());
+				if (hasJvmParam("system", SYSTEM_PARAM_KEYS)) {
+					initSystem(null);
+				}
+				if (hasJvmParam("web", WEB_PARAM_KEYS)) {
+					initWeb(null, servletContext);
+				}
 			}
 			LogUtil.info("NFWork dbfound service init success");
 			LogUtil.info("**************************************************************************");
@@ -176,14 +188,14 @@ public class DBFoundConfig {
 		List<Element> jdbcProvides = database.elements("jdbcConnectionProvide");
 		for (Element element : jdbcProvides) {
 			String provideName = getString(element, "provideName");
-			String url = getString(element, "url");
-			String driverClass = getString(element, "driverClass");
-			String username = getString(element, "username");
-			String password = getString(element, "password");
-			String dialect = getString(element, "dialect");
 			if (provideName == null || provideName.isEmpty()) {
 				provideName = "_default";
 			}
+			String url = getDatabaseConfigValue(provideName, "url", getString(element, "url"));
+			String driverClass = getDatabaseConfigValue(provideName, "driverClass", getString(element, "driverClass"));
+			String username = getDatabaseConfigValue(provideName, "username", getString(element, "username"));
+			String password = getDatabaseConfigValue(provideName, "password", getString(element, "password"));
+			String dialect = getDatabaseConfigValue(provideName, "dialect", getString(element, "dialect"));
 			if (dialect != null && url != null && driverClass != null && username != null && !dialect.isEmpty()
 					&& !driverClass.isEmpty() && !url.isEmpty() && !username.isEmpty()) {
 				ConnectionProvide provide = new JdbcConnectionProvide(provideName, url, driverClass, dialect, username,
@@ -198,12 +210,12 @@ public class DBFoundConfig {
 		List<Element> dataSourceProvides = database.elements("dataSourceConnectionProvide");
 		for (Element element : dataSourceProvides) {
 			String provideName = getString(element, "provideName");
-			String dataSource = getString(element, "dataSource");
-			String dialect = getString(element, "dialect");
-			String className = getString(element, "className");
 			if (provideName == null || provideName.isEmpty()) {
 				provideName = "_default";
 			}
+			String dataSource = getDatabaseConfigValue(provideName, "dataSource", getString(element, "dataSource"));
+			String dialect = getDatabaseConfigValue(provideName, "dialect", getString(element, "dialect"));
+			String className = getDatabaseConfigValue(provideName, "className", getString(element, "className"));
 			if (dialect != null && dataSource != null && !dialect.isEmpty() && !dataSource.isEmpty()) {
 				ConnectionProvide provide = new DataSourceConnectionProvide(provideName, dataSource, dialect);
 				provide.register();
@@ -214,7 +226,9 @@ public class DBFoundConfig {
 
 				Reflector reflector = Reflector.forClass(ds.getClass());
 				for (Element property : properties) {
-					reflector.setProperty(ds, property.attributeValue("name"), property.attributeValue("value"));
+					String name = property.attributeValue("name");
+					String value = getDatabaseConfigValue(provideName, name, property.attributeValue("value"));
+					reflector.setProperty(ds, name, value);
 				}
 				DataSourceConnectionProvide provide = new DataSourceConnectionProvide(provideName, ds, dialect);
 				provide.register();
@@ -230,121 +244,91 @@ public class DBFoundConfig {
 		info.append("set web Param:");
 
 		// i18n 初始化
-		Element provide = web.element("i18nProvide");
-		if (provide != null) {
-			String className = provide.getTextTrim();
-			if (!"".equals(className)) {
-				MultiLangUtil.init(className);
-				info.append("(i18nProvide = ").append(className).append(")");
-			}
+		String i18nProvide = getConfigValue(web, "web", "i18nProvide");
+		if (DataUtil.isNotNull(i18nProvide)) {
+			MultiLangUtil.init(i18nProvide);
+			appendConfigInfo(info, "i18nProvide", i18nProvide);
 		}
 
 		// 编码初始化
-		Element enco = web.element("encoding");
-		if (enco != null) {
-			String encoding = enco.getTextTrim();
-			if (!"".equals(encoding)) {
-				DBFoundConfig.encoding = encoding;
-				info.append("(encoding = ").append(encoding).append(")");
-			}
+		String encoding = getConfigValue(web, "web", "encoding");
+		if (DataUtil.isNotNull(encoding)) {
+			DBFoundConfig.encoding = encoding;
+			appendConfigInfo(info, "encoding", encoding);
 		}
 
 		// jsonStringAutoCover 初始化
-		Element jsonElement = web.element("jsonStringAutoCover");
-		if (jsonElement != null) {
-			String autoCover = jsonElement.getTextTrim();
-            jsonStringAutoCover = "true".equals(autoCover);
-			info.append("(jsonStringAutoCover = ").append(jsonStringAutoCover).append(")");
+		String autoCover = getConfigValue(web, "web", "jsonStringAutoCover");
+		if (DataUtil.isNotNull(autoCover)) {
+			jsonStringAutoCover = "true".equals(autoCover);
+			appendConfigInfo(info, "jsonStringAutoCover", jsonStringAutoCover);
 		}
 
 		// 文件上传大小
-		Element size = web.element("maxUploadSize");
-		if (size != null) {
-			String maxUploadSize = size.getTextTrim();
-			if (DataUtil.isNotNull(maxUploadSize)) {
-				DBFoundConfig.maxUploadSize = DataUtil.intValue(maxUploadSize);
-				info.append("(maxUploadSize = ").append(DBFoundConfig.maxUploadSize).append(")");
-			}
+		String maxUploadSize = getConfigValue(web, "web", "maxUploadSize");
+		if (DataUtil.isNotNull(maxUploadSize)) {
+			DBFoundConfig.maxUploadSize = DataUtil.intValue(maxUploadSize);
+			appendConfigInfo(info, "maxUploadSize", DBFoundConfig.maxUploadSize);
 		}
 
 		// basePath 初始化
-		Element basePathEl = web.element("basePath");
-		if (basePathEl != null) {
-			String basePath = basePathEl.getTextTrim();
-			if (!"".equals(basePath)) {
-				DBFoundConfig.basePath = basePath;
-				info.append("(basePath = ").append(basePath).append(")");
-			}
+		String basePath = getConfigValue(web, "web", "basePath");
+		if (DataUtil.isNotNull(basePath)) {
+			DBFoundConfig.basePath = basePath;
+			appendConfigInfo(info, "basePath", basePath);
 		}
 
 		// openSession 初始化
-		Element openSession = web.element("openSession");
-		if (openSession != null) {
-			String open = openSession.getTextTrim();
+		String open = getConfigValue(web, "web", "openSession");
+		if (DataUtil.isNotNull(open)) {
 			if ("true".equals(open)) {
 				DBFoundConfig.openSession = true;
-				info.append("(openSession = true)");
+				appendConfigInfo(info, "openSession", true);
 			}else{
 				DBFoundConfig.openSession = false;
-				info.append("(openSession = false)");
+				appendConfigInfo(info, "openSession", false);
 			}
 		}
 
 		// web api allow urls 初始化
-		Element apiAllowUrlsEl = web.element("apiAllowUrls");
-		DBFoundConfig.apiAllowUrls = apiAllowUrlsEl == null ? Collections.emptyList() : StringUtil.splitToList(apiAllowUrlsEl.getTextTrim());
+		String apiAllowUrls = getConfigValue(web, "web", "apiAllowUrls");
+		DBFoundConfig.apiAllowUrls = DataUtil.isNull(apiAllowUrls) ? Collections.emptyList() : StringUtil.splitToList(apiAllowUrls);
 		if (!DBFoundConfig.apiAllowUrls.isEmpty()) {
-			info.append("(apiAllowUrls = ").append(DBFoundConfig.apiAllowUrls).append(")");
+			appendConfigInfo(info, "apiAllowUrls", DBFoundConfig.apiAllowUrls);
 		}
 
 		// dbfound mvc controller 初始化
-		Element controllerEl = web.element("controllerPaths");
-		if (controllerEl != null) {
-			String controllerPaths = controllerEl.getTextTrim();
-			if (!"".equals(controllerPaths)) {
-				ActionEngine.initMappings(controllerPaths);
-			}
+		String controllerPaths = getConfigValue(web, "web", "controllerPaths");
+		if (DataUtil.isNotNull(controllerPaths)) {
+			ActionEngine.initMappings(controllerPaths);
 		}
 
 		// 初始化dbfound mvc
-		Element mvc = web.element("mvcConfigFile");
-		String mvcFile = null;
-		if(mvc != null){
-			mvcFile = mvc.getTextTrim();
-		}
+		String mvcFile = getConfigValue(web, "web", "mvcConfigFile");
 		if (mvcFile == null || mvcFile.isEmpty()) {
 			mvcFile = CLASSPATH + "/dbfound-mvc.xml";
 		}
 		ActionEngine.init(mvcFile);
 
 		// interceptor 初始化
-		Element handler = web.element("exceptionHandler");
-		if (handler != null) {
-			String className = handler.getTextTrim();
-			if (!"".equals(className)) {
-				ExceptionHandlerFacade.initExceptionHandler(className);
-				info.append("(exceptionHandler = ").append(className).append(")");
-			}
+		String exceptionHandler = getConfigValue(web, "web", "exceptionHandler");
+		if (DataUtil.isNotNull(exceptionHandler)) {
+			ExceptionHandlerFacade.initExceptionHandler(exceptionHandler);
+			appendConfigInfo(info, "exceptionHandler", exceptionHandler);
 		}
 
 		// interceptor 初始化
-		Element filter = web.element("interceptor");
-		if (filter != null) {
-			String className = filter.getTextTrim();
-			if (!"".equals(className)) {
-				InterceptorFacade.init(className);
-				info.append("(interceptor = ").append(className).append(")");
-			}
+		String interceptor = getConfigValue(web, "web", "interceptor");
+		if (DataUtil.isNotNull(interceptor)) {
+			InterceptorFacade.init(interceptor);
+			appendConfigInfo(info, "interceptor", interceptor);
 		}
 
 		//listener 初始化
-		Element listener = web.element("listener");
-		if (listener != null) {
-			String className = listener.getTextTrim();
-			if (!"".equals(className)) {
-				ListenerFacade.init(className, servletContext);
-				info.append("(listener = ").append(className).append(")");
-			}
+		String listener = getConfigValue(web, "web", "listener");
+		if (DataUtil.isNotNull(listener)) {
+			ListenerFacade.init(listener, servletContext);
+			appendConfigInfo(info, "listener", listener);
 		}
 
 		LogUtil.info(info.toString());
@@ -355,115 +339,98 @@ public class DBFoundConfig {
 		info.append("set system Param:");
 
 		// 设置日志开关
-		Element log = system.element("openLog");
-		if (log != null) {
-			String openLog = log.getTextTrim();
+		String openLog = getConfigValue(system, "system", "openLog");
+		if (DataUtil.isNotNull(openLog)) {
 			if ("false".equals(openLog.trim())) {
 				DBFoundConfig.openLog = false;
-				info.append("(openLog=false) ");
+				appendConfigInfo(info, "openLog", false);
 			} else if ("true".equals(openLog.trim())) {
 				DBFoundConfig.openLog = true;
-				info.append("(openLog=true) ");
+				appendConfigInfo(info, "openLog", true);
 			}
 		}
 
-		Element paramSql = system.element("logWithParamSql");
-		if (paramSql != null) {
-			String printParamSql = paramSql.getTextTrim();
+		String printParamSql = getConfigValue(system, "system", "logWithParamSql");
+		if (DataUtil.isNotNull(printParamSql)) {
 			if ("false".equals(printParamSql.trim())) {
 				DBFoundConfig.logWithParamSql = false;
-				info.append("(logWithParamSql=false) ");
+				appendConfigInfo(info, "logWithParamSql", false);
 			} else if ("true".equals(printParamSql.trim())) {
 				DBFoundConfig.logWithParamSql = true;
-				info.append("(logWithParamSql=true) ");
+				appendConfigInfo(info, "logWithParamSql", true);
 			}
 		}
 
 		// 设置驼峰转化开关
-		Element underscoreToCamelCase = system.element("underscoreToCamelCase");
-		if (underscoreToCamelCase != null) {
-			String open = underscoreToCamelCase.getTextTrim();
+		String underscoreToCamelCase = getConfigValue(system, "system", "underscoreToCamelCase");
+		if (DataUtil.isNotNull(underscoreToCamelCase)) {
+			String open = underscoreToCamelCase;
 			if ("false".equals(open.trim())) {
 				DBFoundConfig.underscoreToCamelCase = false;
-				info.append("(underscoreToCamelCase=false) ");
+				appendConfigInfo(info, "underscoreToCamelCase", false);
 			} else if ("true".equals(open.trim())) {
 				DBFoundConfig.underscoreToCamelCase = true;
-				info.append("(underscoreToCamelCase=true) ");
+				appendConfigInfo(info, "underscoreToCamelCase", true);
 			}
 		}
 
 		// 设置下划线转化开关
-		Element camelCaseToUnderscore = system.element("camelCaseToUnderscore");
-		if (camelCaseToUnderscore != null) {
-			String open = camelCaseToUnderscore.getTextTrim();
+		String camelCaseToUnderscore = getConfigValue(system, "system", "camelCaseToUnderscore");
+		if (DataUtil.isNotNull(camelCaseToUnderscore)) {
+			String open = camelCaseToUnderscore;
 			if ("false".equals(open.trim())) {
 				DBFoundConfig.camelCaseToUnderscore = false;
-				info.append("(camelCaseToUnderscore=false) ");
+				appendConfigInfo(info, "camelCaseToUnderscore", false);
 			} else if ("true".equals(open.trim())) {
 				DBFoundConfig.camelCaseToUnderscore = true;
-				info.append("(camelCaseToUnderscore=true) ");
+				appendConfigInfo(info, "camelCaseToUnderscore", true);
 			}
 		}
 
-		// 设置model跟目录
-		Element modeRoot = system.element("modeRootPath");
-		if (modeRoot != null) {
-			String modeRootPath = modeRoot.getTextTrim();
-			if (!"".equals(modeRootPath)) {
-				DBFoundConfig.modelLoadRoot = modeRootPath;
-				info.append("(modeRootPath = ").append(modeRootPath).append(")");
-			}
+		// 设置model根目录
+		String modelRootPath = getConfigValue(system, "system", "modelRootPath");
+		if (DataUtil.isNull(modelRootPath)) {
+			modelRootPath = getConfigValue(system, "system", "modeRootPath");
+		}
+		if (DataUtil.isNotNull(modelRootPath)) {
+			DBFoundConfig.modelLoadRoot = modelRootPath;
+			appendConfigInfo(info, "modelRootPath", modelRootPath);
 		}
 
-		// 设置启动监听类
-		Element listener = system.element("startListener");
-		if (listener != null) {
-			String className = listener.getTextTrim();
-			if (!"".equals(className)) {
-				listenerClass = className;
-				info.append("(listenerClass = ").append(listenerClass).append(")");
-			}
+		String modelModifyCheckConfig = getConfigValue(system, "system", "modelModifyCheck");
+		if (DataUtil.isNotNull(modelModifyCheckConfig)) {
+			modelModifyCheck = "true".equals(modelModifyCheckConfig);
+			appendConfigInfo(info, "modelModifyCheck", modelModifyCheck);
 		}
 
-		Element modelModifyCheckElement = system.element("modelModifyCheck");
-		if (modelModifyCheckElement != null) {
-			String modelModifyCheckConfig = modelModifyCheckElement.getTextTrim();
-			if (!"".equals(modelModifyCheckConfig)) {
-                modelModifyCheck = "true".equals(modelModifyCheckConfig);
-				info.append("(modelModifyCheck = ").append(modelModifyCheckConfig).append(")");
-			}
+		String dateFormatConfig = getConfigValue(system, "system", "dateFormat");
+		if (DataUtil.isNotNull(dateFormatConfig)) {
+			dateFormat = dateFormatConfig;
+			appendConfigInfo(info, "dateFormat", dateFormatConfig);
 		}
 
-		Element dateFormatElement = system.element("dateFormat");
-		if (dateFormatElement != null) {
-			String dateFormatConfig = dateFormatElement.getTextTrim();
-			if (!"".equals(dateFormatConfig)) {
-				dateFormat = dateFormatConfig;
-				info.append("(dateFormat = ").append(dateFormatConfig).append(")");
-			}
+		String dateTimeFormatConfig = getConfigValue(system, "system", "dateTimeFormat");
+		if (DataUtil.isNotNull(dateTimeFormatConfig)) {
+			dateTimeFormat = dateTimeFormatConfig;
+			appendConfigInfo(info, "dateTimeFormat", dateTimeFormatConfig);
 		}
 
-		Element dateTimeFormatElement = system.element("dateTimeFormat");
-		if (dateTimeFormatElement != null) {
-			String dateTimeFormatConfig = dateTimeFormatElement.getTextTrim();
-			if (!"".equals(dateTimeFormatConfig)) {
-				dateTimeFormat = dateTimeFormatConfig;
-				info.append("(dateTimeFormat = ").append(dateTimeFormatConfig).append(")");
-			}
+		String timeFormatConfig = getConfigValue(system, "system", "timeFormat");
+		if (DataUtil.isNotNull(timeFormatConfig)) {
+			timeFormat = timeFormatConfig;
+			appendConfigInfo(info, "timeFormat", timeFormatConfig);
 		}
 
-		Element compareIgnoreCase = system.element("sqlCompareIgnoreCase");
-		if (compareIgnoreCase != null) {
-			String compareIgnoreCaseConfig = compareIgnoreCase.getTextTrim();
+		String compareIgnoreCaseConfig = getConfigValue(system, "system", "sqlCompareIgnoreCase");
+		if (DataUtil.isNotNull(compareIgnoreCaseConfig)) {
 			DSqlConfig.setCompareIgnoreCase("true".equals(compareIgnoreCaseConfig));
-			info.append("(sqlEqualsIgnoreCase = ").append(DSqlConfig.isCompareIgnoreCase()).append(")");
+			appendConfigInfo(info, "sqlCompareIgnoreCase", DSqlConfig.isCompareIgnoreCase());
 		}
 
-		Element openDSql = system.element("openDSql");
-		if (openDSql != null) {
-			String openDSqlConfig = openDSql.getTextTrim();
+		String openDSqlConfig = getConfigValue(system, "system", "openDSql");
+		if (DataUtil.isNotNull(openDSqlConfig)) {
 			DSqlConfig.setOpenDSql("true".equals(openDSqlConfig));
-			info.append("(openDSql = ").append(DSqlConfig.isOpenDSql()).append(")");
+			appendConfigInfo(info, "openDSql", DSqlConfig.isOpenDSql());
 		}
 
 		LogUtil.info(info.toString());
@@ -480,6 +447,75 @@ public class DBFoundConfig {
 
 	private static String getString(Element element, String key) {
 		return element.attributeValue(key);
+	}
+
+	private static String getConfigValue(Element parent, String group, String key) {
+		String value = null;
+		Element element = parent == null ? null : parent.element(key);
+		if (element != null) {
+			value = element.getTextTrim();
+		}
+		String jvmValue = getJvmParam(group + "." + key);
+		if (DataUtil.isNotNull(jvmValue)) {
+			value = jvmValue;
+		}
+		return value;
+	}
+
+	private static void appendConfigInfo(StringBuilder info, String key, Object value) {
+		info.append(" (").append(key).append(" = ").append(value).append(")");
+	}
+
+	private static String getDatabaseConfigValue(String provideName, String key, String xmlValue) {
+		String jvmValue = getJvmParam("database." + provideName + "." + key);
+		if (DataUtil.isNull(jvmValue) && "_default".equals(provideName)) {
+			jvmValue = getJvmParam("database." + key);
+		}
+		return DataUtil.isNotNull(jvmValue) ? jvmValue : xmlValue;
+	}
+
+	private static String getJvmParam(String key) {
+		String value = System.getProperty(JVM_PARAM_PREFIX + key);
+		if (value == null) {
+			String kebabKey = camelToKebabCase(key);
+			if (!Objects.equals(kebabKey, key)) {
+				value = System.getProperty(JVM_PARAM_PREFIX + kebabKey);
+			}
+		}
+		return value == null ? null : value.trim();
+	}
+
+	private static String camelToKebabCase(String value) {
+		int firstUpperCaseIndex = -1;
+		for (int i = 0; i < value.length(); i++) {
+			if (Character.isUpperCase(value.charAt(i))) {
+				firstUpperCaseIndex = i;
+				break;
+			}
+		}
+		if (firstUpperCaseIndex == -1) {
+			return value;
+		}
+		StringBuilder result = new StringBuilder();
+		result.append(value, 0, firstUpperCaseIndex);
+		for (int i = firstUpperCaseIndex; i < value.length(); i++) {
+			char c = value.charAt(i);
+			if (Character.isUpperCase(c)) {
+				result.append('-').append(Character.toLowerCase(c));
+			} else {
+				result.append(c);
+			}
+		}
+		return result.toString();
+	}
+
+	private static boolean hasJvmParam(String group, String... keys) {
+		for (String key : keys) {
+			if (DataUtil.isNotNull(getJvmParam(group + "." + key))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean isInited() {
@@ -535,14 +571,6 @@ public class DBFoundConfig {
 
 	public static void setProjectRoot(String projectRoot) {
 		DBFoundConfig.projectRoot = PathFormat.format(projectRoot);
-	}
-
-	public static String getListenerClass() {
-		return listenerClass;
-	}
-
-	public static void setListenerClass(String listenerClass) {
-		DBFoundConfig.listenerClass = listenerClass;
 	}
 
 	public static List<DataSourceConnectionProvide> getDsp() {
