@@ -329,10 +329,10 @@ public class DBFoundConfig {
 		// 设置日志开关
 		String openLog = getConfigValue(system, "system", "openLog");
 		if (DataUtil.isNotNull(openLog)) {
-			if ("false".equals(openLog.trim())) {
+			if ("false".equals(openLog)) {
 				DBFoundConfig.openLog = false;
 				appendConfigInfo(info, "openLog", false);
-			} else if ("true".equals(openLog.trim())) {
+			} else if ("true".equals(openLog)) {
 				DBFoundConfig.openLog = true;
 				appendConfigInfo(info, "openLog", true);
 			}
@@ -340,10 +340,10 @@ public class DBFoundConfig {
 
 		String printParamSql = getConfigValue(system, "system", "logWithParamSql");
 		if (DataUtil.isNotNull(printParamSql)) {
-			if ("false".equals(printParamSql.trim())) {
+			if ("false".equals(printParamSql)) {
 				DBFoundConfig.logWithParamSql = false;
 				appendConfigInfo(info, "logWithParamSql", false);
-			} else if ("true".equals(printParamSql.trim())) {
+			} else if ("true".equals(printParamSql)) {
 				DBFoundConfig.logWithParamSql = true;
 				appendConfigInfo(info, "logWithParamSql", true);
 			}
@@ -352,11 +352,10 @@ public class DBFoundConfig {
 		// 设置驼峰转化开关
 		String underscoreToCamelCase = getConfigValue(system, "system", "underscoreToCamelCase");
 		if (DataUtil.isNotNull(underscoreToCamelCase)) {
-			String open = underscoreToCamelCase;
-			if ("false".equals(open.trim())) {
+			if ("false".equals(underscoreToCamelCase)) {
 				DBFoundConfig.underscoreToCamelCase = false;
 				appendConfigInfo(info, "underscoreToCamelCase", false);
-			} else if ("true".equals(open.trim())) {
+			} else if ("true".equals(underscoreToCamelCase)) {
 				DBFoundConfig.underscoreToCamelCase = true;
 				appendConfigInfo(info, "underscoreToCamelCase", true);
 			}
@@ -365,11 +364,10 @@ public class DBFoundConfig {
 		// 设置下划线转化开关
 		String camelCaseToUnderscore = getConfigValue(system, "system", "camelCaseToUnderscore");
 		if (DataUtil.isNotNull(camelCaseToUnderscore)) {
-			String open = camelCaseToUnderscore;
-			if ("false".equals(open.trim())) {
+			if ("false".equals(camelCaseToUnderscore)) {
 				DBFoundConfig.camelCaseToUnderscore = false;
 				appendConfigInfo(info, "camelCaseToUnderscore", false);
-			} else if ("true".equals(open.trim())) {
+			} else if ("true".equals(camelCaseToUnderscore)) {
 				DBFoundConfig.camelCaseToUnderscore = true;
 				appendConfigInfo(info, "camelCaseToUnderscore", true);
 			}
@@ -509,10 +507,19 @@ public class DBFoundConfig {
 
 	public static String getClasspath() {
 		if (classpath == null || classpath.isEmpty()) {
-			String cp = Thread.currentThread().getContextClassLoader().getResource("").getFile();
-			File file = new File(cp);
-			classpath = file.getAbsolutePath();
-			classpath = PathFormat.format(classpath);
+			try {
+				ClassLoader loader = Thread.currentThread().getContextClassLoader();
+				if (loader == null) {
+					loader = DBFoundConfig.class.getClassLoader();
+				}
+				URL url = loader.getResource("");
+				if (url == null) {
+					throw new DBFoundRuntimeException("classpath resource not found");
+				}
+				classpath = PathFormat.format(new File(url.toURI()).getAbsolutePath());
+			} catch (Exception e) {
+				throw new DBFoundRuntimeException("get classpath failed", e);
+			}
 		}
 		return classpath;
 	}
