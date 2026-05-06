@@ -12,8 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import com.nfwork.dbfound.db.ConnectionProvide;
-import com.nfwork.dbfound.db.ConnectionProvideManager;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.el.ELEngine;
@@ -36,7 +34,7 @@ public class Context {
 
 	private String currentPath;
 	private String currentModel;
-	private Map<String, ConnObject> connMap;
+	private ConnectionManager connectionManager;
 	private final Map<String, Object> rootDatas;
 	private Map<String, Object> paramDatas;
 	private Map<String, Object> outParamDatas;
@@ -470,35 +468,14 @@ public class Context {
 	 * @return Connection
 	 */
 	public Connection getConn(String provideName) {
-
 		checkContext();
-
 		if (transaction !=null && transaction.isOpen()) {
-			if (transaction.connMap == null) {
-				transaction.connMap = new HashMap<String, ConnObject>();
-			}
-			ConnObject connObject = transaction.connMap.get(provideName);
-			if (connObject == null) {
-				ConnectionProvide provide = ConnectionProvideManager.getConnectionProvide(provideName);
-				Connection conn = provide.getConnection();
-
-				DBUtil.prepareTransaction(conn, transaction);
-				connObject = new ConnObject(provide, conn);
-				transaction.connMap.put(provideName, connObject);
-			}
-			return connObject.connection;
+			return transaction.getConn(provideName);
 		} else {
-			if (connMap == null) {
-				connMap = new HashMap<String, ConnObject>();
+			if (connectionManager == null) {
+				connectionManager = new ConnectionManager();
 			}
-			ConnObject connObject = connMap.get(provideName);
-			if (connObject == null) {
-				ConnectionProvide provide = ConnectionProvideManager.getConnectionProvide(provideName);
-				Connection conn = provide.getConnection();
-				connObject = new ConnObject(provide, conn);
-				connMap.put(provideName, connObject);
-			}
-			return connObject.connection;
+			return connectionManager.getConnection(provideName);
 		}
 	}
 
@@ -513,13 +490,11 @@ public class Context {
 
 	public SqlDialect getConnDialect(String provideName) {
 		checkContext();
-		ConnectionProvide provide;
 		if (transaction !=null && transaction.isOpen()) {
-			provide = transaction.connMap.get(provideName).provide;
+			return transaction.getConnDialect(provideName);
 		} else {
-			provide = connMap.get(provideName).provide;
+			return connectionManager.getSqlDialect(provideName);
 		}
-		return provide.getSqlDialect();
 	}
 
 	/**
@@ -527,20 +502,9 @@ public class Context {
 	 */
 	public void closeConns() {
 		checkContext();
-		if (connMap == null || connMap.isEmpty()) {
-			return;
+		if (connectionManager != null) {
+			connectionManager.closeConnections();
 		}
-		Collection<ConnObject> connObjects = connMap.values();
-		for (ConnObject connObject : connObjects) {
-			try {
-				ConnectionProvide provide = connObject.provide;
-				Connection connection = connObject.connection;
-				provide.closeConnection(connection);
-			} catch (Exception e) {
-				LogUtil.error("database connection close exception:" + e.getMessage(), e);
-			}
-		}
-		connMap.clear();
 	}
 
 	public String getCurrentPath() {
@@ -718,15 +682,5 @@ public class Context {
 
 	static {
 		DBFoundConfig.init();
-	}
-
-	static class ConnObject {
-		Connection connection;
-		ConnectionProvide provide;
-
-		ConnObject(ConnectionProvide provide, Connection connection) {
-			this.connection = connection;
-			this.provide = provide;
-		}
 	}
 }
