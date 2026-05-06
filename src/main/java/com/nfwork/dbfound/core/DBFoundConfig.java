@@ -40,7 +40,7 @@ public class DBFoundConfig {
 	public static final String PROJECT_ROOT = "${@projectRoot}";
 	private static final String JVM_PARAM_PREFIX = "dbfound.";
 
-	private static String modelLoadRoot;
+	private static String modelRootPath;
 
 	private static boolean inited = false;
 	private static String configFilePath;
@@ -379,7 +379,7 @@ public class DBFoundConfig {
 			modelRootPath = getConfigValue(system, "system", "modeRootPath");
 		}
 		if (DataUtil.isNotNull(modelRootPath)) {
-			DBFoundConfig.modelLoadRoot = modelRootPath;
+			DBFoundConfig.modelRootPath = modelRootPath;
 			appendConfigInfo(info, "modelRootPath", modelRootPath);
 		}
 
@@ -639,14 +639,14 @@ public class DBFoundConfig {
 	}
 
 	public static String getModelLoadRoot() {
-		if (DataUtil.isNull(modelLoadRoot)) {
-			modelLoadRoot = DBFoundConfig.CLASSPATH + "/model";
+		if (DataUtil.isNull(modelRootPath)) {
+			modelRootPath = DBFoundConfig.CLASSPATH + "/model";
 		}
-		return modelLoadRoot;
+		return modelRootPath;
 	}
 
-	public static void setModelLoadRoot(String modelLoadRoot) {
-		DBFoundConfig.modelLoadRoot = modelLoadRoot;
+	public static void setModelRootPath(String modelLoadRoot) {
+		DBFoundConfig.modelRootPath = modelLoadRoot;
 	}
 
 	public static String getEncoding() {
