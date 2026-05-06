@@ -1,6 +1,6 @@
 package com.nfwork.dbfound.exception;
 
-public class NoServletResponseException extends RuntimeException {
+public class NoServletResponseException extends DBFoundRuntimeException {
 
     private String content;
 

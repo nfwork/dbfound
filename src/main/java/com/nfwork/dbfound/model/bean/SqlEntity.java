@@ -248,7 +248,7 @@ public abstract class SqlEntity extends Entity {
 					statement.setBinaryStream(cursor, inputStream);
 					files.add(inputStream);
 				}else{
-					throw new DBFoundRuntimeException("the file param can be only used in ExecuteSql");
+					throw new DBFoundRuntimeException("the file param can only be used in ExecuteSql");
 				}
 			} else if (value instanceof File) {
 				if(files != null){
@@ -257,14 +257,14 @@ public abstract class SqlEntity extends Entity {
 					statement.setBinaryStream(cursor, inputStream);
 					files.add(inputStream);
 				}else{
-					throw new DBFoundRuntimeException("the file param can be only used in ExecuteSql");
+					throw new DBFoundRuntimeException("the file param can only be used in ExecuteSql");
 				}
 			} else if (value instanceof InputStream) {
 				if(files != null){
 					statement.setBinaryStream(cursor, (InputStream) value);
 					files.add((InputStream) value);
 				}else{
-					throw new DBFoundRuntimeException("the file param only can be only used in ExecuteSql");
+					throw new DBFoundRuntimeException("the file param can only be used in ExecuteSql");
 				}
 			} else if (value instanceof byte[]) {
 				statement.setBytes(cursor, (byte[]) value);
@@ -381,7 +381,7 @@ public abstract class SqlEntity extends Entity {
 	protected void initParamValue(Param nfParam){
 
 		if(nfParam.getDataType() == null){
-			throw new DBFoundRuntimeException("dataType can not be null, it only can be one of varchar, number, boolean, date, file or collection");
+			throw new DBFoundRuntimeException("dataType cannot be null, it only can be one of varchar, number, boolean, date, file or collection");
 		}
 
 		if(nfParam.getValue() instanceof Enum){
@@ -425,7 +425,7 @@ public abstract class SqlEntity extends Entity {
 						nfParam.setValue(Double.parseDouble(paramValue));
 					}
 				} else {
-					throw new DBFoundRuntimeException("can not cost "+ nfParam.getValue().getClass() +" to number");
+					throw new DBFoundRuntimeException("cannot cast "+ nfParam.getValue().getClass() +" to number");
 				}
 			}
 		}else if (nfParam.getDataType() == DataType.VARCHAR) {
@@ -471,7 +471,7 @@ public abstract class SqlEntity extends Entity {
 						}
 					}
 				} else {
-					throw new DBFoundRuntimeException("can not cost "+ nfParam.getValue().getClass() +" to date");
+					throw new DBFoundRuntimeException("cannot cast "+ nfParam.getValue().getClass() +" to date");
 				}
 			}
 		}else if (nfParam.getDataType() == DataType.FILE)  {
@@ -516,7 +516,7 @@ public abstract class SqlEntity extends Entity {
 				nfParam.setValue(new SimpleItemList());
 				return;
 			}else if(length == -1){
-				throw new DBFoundRuntimeException("can not convert ‘" + value.getClass() + "’ to a collection, param name: " + nfParam.getName() +", param value: " + value);
+				throw new DBFoundRuntimeException("cannot convert ‘" + value.getClass() + "’ to a collection, param name: " + nfParam.getName() +", param value: " + value);
 			}
 
 			SimpleItemList itemList = new SimpleItemList(length);

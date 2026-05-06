@@ -11,7 +11,7 @@ import java.util.Map;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
@@ -29,7 +29,7 @@ public class WhenSql extends Sqls {
 	public void doEndTag() {
 		super.doEndTag();
 		if(DataUtil.isNull(when)){
-			initError = "WhenSql attribute when can not be null";
+			initError = "WhenSql attribute when cannot be null";
 			return;
 		}
 		when = StringUtil.sqlFullTrim(when);
@@ -65,7 +65,7 @@ public class WhenSql extends Sqls {
 				boolean result  = DSqlEngine.checkWhenSql(eSql,exeParam,provideName,context);
 				log("when dSql", "select " + eSql, params, exeParam);
 				return result;
-			}catch (DSqlNotSupportException ignore){
+			}catch (DSqlUnsupportedException ignore){
 			}
 		}
 

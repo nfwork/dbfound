@@ -52,7 +52,7 @@ public class ModelOperator {
 
             Query query = model.getQuery(queryName);
             if (query == null) {
-                throw new QueryNotFoundException("can not found Query:" + queryName + ", on Model:" + modelName);
+                throw new QueryNotFoundException("cannot find Query:" + queryName + ", on Model:" + modelName);
             }
             return query.doQuery(context, sourcePath, autoPaging, clazz);
         } finally {
@@ -120,14 +120,14 @@ public class ModelOperator {
                         } else if ("OLD".equals(status)) {
                             en = "update";
                         } else {
-                            throw new ExecuteNotFoundException("cant not found (_status) field, can not found Execute");
+                            throw new ExecuteNotFoundException("cannot find (_status) field, cannot find Execute");
                         }
                     } else {
                         en = executeName;
                     }
                     Execute execute = model.getExecute(en);
                     if (execute == null) {
-                        throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
+                        throw new ExecuteNotFoundException("cannot find Execute:" + executeName + ", on Model:" + modelName);
                     }
                     ro = execute.doExecute(context, currentPath, currentData, elCache);
                 }
@@ -174,7 +174,7 @@ public class ModelOperator {
             Model model = modelCache.getModel(modelName);
             Execute execute = model.getExecute(executeName);
             if (execute == null) {
-                throw new ExecuteNotFoundException("can not found Execute:" + executeName + ", on Model:" + modelName);
+                throw new ExecuteNotFoundException("cannot find Execute:" + executeName + ", on Model:" + modelName);
             }
             // 把model、currentPath对象放入到 当前线程里
             context.setCurrentPath(sourcePath);

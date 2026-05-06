@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.util.DataUtil;
 
@@ -13,7 +13,7 @@ public class Locate extends DSqlFunction {
     public Object apply(List<Object> args, SqlDialect sqlDialect) {
         // 参数校验：至少需要 substr 和 str，最多加上 pos
         if (args.size() < 2 || args.size() > 3) {
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
 
         // 解析参数

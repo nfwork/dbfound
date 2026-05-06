@@ -187,7 +187,7 @@ public class DBFoundConfig {
 				provide.register();
 				LogUtil.info( "register jdbcConnProvide success, provideName:" + provideName);
 			} else {
-				throw new DBFoundRuntimeException("user jdbc type, url driverClass username dialect can not be null");
+				throw new DBFoundRuntimeException("user jdbc type, url driverClass username dialect cannot be null");
 			}
 		}
 
@@ -218,7 +218,7 @@ public class DBFoundConfig {
 				provide.register();
 				LogUtil.info("register dataSourceConnProvide success, provideName:"+ provideName);
 			} else {
-				throw new DBFoundRuntimeException("user dataSource type, dataSource dialect can not null");
+				throw new DBFoundRuntimeException("user dataSource type, dataSource dialect cannot null");
 			}
 		}
 	}
@@ -528,7 +528,7 @@ public class DBFoundConfig {
 			if (file.exists() && file.getParentFile().exists() && file.getParentFile().getParentFile().exists()) {
 				projectRoot = PathFormat.format(file.getParentFile().getParentFile().getAbsolutePath());
 			}else{
-				throw new DBFoundRuntimeException(PROJECT_ROOT + " can not resolve by classpath, ths classpath is '" + cp +"'");
+				throw new DBFoundRuntimeException(PROJECT_ROOT + " cannot resolve by classpath, this classpath is '" + cp +"'");
 			}
 		}
 		return projectRoot;

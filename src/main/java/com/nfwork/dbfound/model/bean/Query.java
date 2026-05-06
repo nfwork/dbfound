@@ -259,7 +259,7 @@ public class Query extends SqlEntity {
 			if (context.getPageLimit() > 0 || pagerSize != null) {
 				int ps = context.getPageLimit() > 0 ? context.getPageLimit() : pagerSize;
 				if(maxPagerSize != null && ps > maxPagerSize){
-					throw new DBFoundRuntimeException("pager size can not great than " + maxPagerSize);
+					throw new DBFoundRuntimeException("pager size cannot great than " + maxPagerSize);
 				}
 				SqlDialect dialect = context.getConnDialect(provideName);
 				if(dialect instanceof AbstractSqlDialect){
@@ -692,7 +692,7 @@ public class Query extends SqlEntity {
 	@Override
 	public void execute(Context context, Map<String, Param> params, String provideName) {
 		if(DataUtil.isNull(rootPath)){
-			throw new DBFoundRuntimeException("rootPath can not be null");
+			throw new DBFoundRuntimeException("rootPath cannot be null");
 		}
 		final String currentPath = context.getCurrentPath();
 		final String currentModel = context.getCurrentModel();

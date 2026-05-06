@@ -44,7 +44,7 @@ public class DoActionHandler extends ActionHandler {
                 object = actionReflect.reflect(context, actionBean.getClassName(), methodName, actionBean.isSingleton());
             }
         } else {
-            String message = "cant not found url:" + requestPath.substring(1) + " mapping class, please check config";
+            String message = "cannot find url:" + requestPath.substring(1) + " mapping class, please check config";
             throw new DBFoundRuntimeException(message);
         }
         if (object instanceof FileDownloadResponseObject) {

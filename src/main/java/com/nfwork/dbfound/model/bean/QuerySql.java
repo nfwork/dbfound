@@ -26,7 +26,7 @@ public class QuerySql extends Sql {
 	public void doEndTag() {
 		super.doEndTag();
 		if(DataUtil.isNull(sql)){
-			initError = "QuerySql content sql can not be null";
+			initError = "QuerySql content sql cannot be null";
 			return;
 		}
 		autoCreateParam(sql,this);

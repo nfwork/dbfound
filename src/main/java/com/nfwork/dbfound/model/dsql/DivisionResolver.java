@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.arithmetic.Division;
 
@@ -24,7 +24,7 @@ public class DivisionResolver extends DSqlValueResolver {
             BigDecimal right = getBigDecimal(rightValue);
             return left.divide(right,18, RoundingMode.HALF_UP).stripTrailingZeros() ;
         }else{
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
     }
 }

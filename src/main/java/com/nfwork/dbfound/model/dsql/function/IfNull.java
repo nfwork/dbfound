@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class IfNull extends DSqlFunction {
             Object p1 = params.get(1);
             return p0 == null ? p1 : p0;
         }else{
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
     }
 }

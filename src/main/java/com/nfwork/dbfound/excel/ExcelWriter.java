@@ -39,7 +39,7 @@ public class ExcelWriter {
 	public static List<ExcelColumn> getColumns(Context context){
 		List<Map<String,Object>> columns = context.getList("param.columns");
 		if(columns == null){
-			throw new DBFoundRuntimeException("can not found param columns");
+			throw new DBFoundRuntimeException("cannot find param columns");
 		}
 		List<ExcelColumn> excelColumns = new ArrayList<>(columns.size());
 		columns.forEach(map -> excelColumns.add(new ExcelColumn(map)));

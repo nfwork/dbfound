@@ -171,7 +171,7 @@ public class DBFoundEL extends PropertyTransfer{
 					} else if (DataUtil.isArray(nextObj)) {
 						Array.set(nextObj, index, value);
 					} else {
-						throw new DBFoundRuntimeException("dbfoundEl setData failed, can not set array data into " + nextObj.getClass());
+						throw new DBFoundRuntimeException("dbfoundEl setData failed, cannot set array data into " + nextObj.getClass());
 					}
 				}
 				return;
@@ -202,7 +202,7 @@ public class DBFoundEL extends PropertyTransfer{
 				} else if (DataUtil.isArray(nextObj)) {
 					currentObj = Array.get(nextObj, index);
 				} else {
-					throw new RuntimeException("can not set array data into " + nextObj.getClass());
+					throw new RuntimeException("cannot set array data into " + nextObj.getClass());
 				}
 			} else {
 				if(nextObj == null) {

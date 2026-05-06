@@ -2,7 +2,7 @@ package dbfound.test.core;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
@@ -216,7 +216,7 @@ public class DSqlTest {
         int flag = 1;
         try {
             DSqlEngine.checkWhenSql("isnull.abc(?)", list, "_default", context);
-        }catch (DSqlNotSupportException e){
+        }catch (DSqlUnsupportedException e){
             flag = 2;
         }
         assert flag ==2;

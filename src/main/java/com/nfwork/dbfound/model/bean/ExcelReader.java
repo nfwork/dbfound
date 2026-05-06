@@ -31,7 +31,7 @@ public class ExcelReader extends SqlEntity {
 			throw new ParamNotFoundException("param: " + sourceParam + " not defined");
 		}
 		if(DataUtil.isNull(rootPath)){
-			throw new DBFoundRuntimeException("rootPath can not be null");
+			throw new DBFoundRuntimeException("rootPath cannot be null");
 		}
 		String setPath = rootPath;
 		if(!ELEngine.isAbsolutePath(setPath)){

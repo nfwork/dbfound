@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.util.DataUtil;
 
@@ -12,7 +12,7 @@ public class Substring extends DSqlFunction {
     @Override
     public Object apply(List<Object> list, SqlDialect sqlDialect) {
         if (list.size() < 2 || list.size() > 3) {
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
         String str = DataUtil.stringValue(list.get(0));
         if (str == null) return null;

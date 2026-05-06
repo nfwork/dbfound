@@ -55,7 +55,7 @@ public class DataSourceConnectionProvide extends ConnectionProvide {
 		try {
 			return dataSource.getConnection();
 		} catch (SQLException e) {
-			throw new DBFoundWrappedException("create connection excepiton:" + e.getMessage(), e);
+			throw new DBFoundWrappedException("create connection exception: " + e.getMessage(), e);
 		}
 	}
 

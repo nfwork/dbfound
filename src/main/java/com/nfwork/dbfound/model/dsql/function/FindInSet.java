@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 
@@ -13,7 +13,7 @@ public class FindInSet extends DSqlFunction {
     public Object apply(List<Object> list, SqlDialect sqlDialect) {
         // FIND_IN_SET 需要2个参数：要查找的字符串和逗号分隔的字符串集合
         if (list.size() != 2) {
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
         
         Object searchObj = list.get(0);

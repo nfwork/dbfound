@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.util.LocalDateUtil;
 
@@ -16,7 +16,7 @@ public class Concat extends DSqlFunction {
     public Object apply(List<Object> list, SqlDialect sqlDialect) {
         // CONCAT 需要至少一个参数
         if (list.isEmpty()) {
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
         StringBuilder result = new StringBuilder();
         

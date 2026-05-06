@@ -152,7 +152,7 @@ public class XlsxWriterResolver extends WriterResolver {
         ClassLoader loader = XlsxWriterResolver.class.getClassLoader();
         URL url = loader.getResource("templates/dbfound_export.xlsx");
         if(url == null){
-            throw new DBFoundRuntimeException("cant not found xlsx templates 'templates/dbfound_export.xlsx'");
+            throw new DBFoundRuntimeException("cannot find xlsx templates 'templates/dbfound_export.xlsx'");
         }
         return url.openStream();
     }

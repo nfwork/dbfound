@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
@@ -19,7 +19,7 @@ public class InResolver extends DSqlValueResolver {
             return null;
         }
         if(!isEqualsSupport(leftValue)){
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
         if(inExpression.getRightItemsList() instanceof ExpressionList){
             ExpressionList expressionList = (ExpressionList) inExpression.getRightItemsList();
@@ -41,7 +41,7 @@ public class InResolver extends DSqlValueResolver {
                         }
                     }
                 }else{
-                    throw new DSqlNotSupportException();
+                    throw new DSqlUnsupportedException();
                 }
             }
             if(hasNull){
@@ -53,7 +53,7 @@ public class InResolver extends DSqlValueResolver {
                 return false;
             }
         }else{
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
     }
 }
