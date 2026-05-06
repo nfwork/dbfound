@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
-import com.nfwork.dbfound.core.Context.ConnObject;
 import com.nfwork.dbfound.db.ConnectionProvide;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DBUtil;
@@ -13,7 +12,7 @@ import com.nfwork.dbfound.util.LogUtil;
 
 public class Transaction {
 
-	Map<String, ConnObject> connMap;
+	Map<String, ConnectionResource> connMap;
 
 	private boolean open = false;
 
@@ -48,8 +47,8 @@ public class Transaction {
 		}
 
 		if (connMap != null && !connMap.isEmpty()) {
-			Collection<ConnObject> connObjects = connMap.values();
-			for (ConnObject connObject : connObjects) {
+			Collection<ConnectionResource> connObjects = connMap.values();
+			for (ConnectionResource connObject : connObjects) {
 				try {
 					ConnectionProvide provide = connObject.provide;
 					Connection connection = connObject.connection;
@@ -69,8 +68,8 @@ public class Transaction {
 		if (!open || connMap == null || connMap.isEmpty()) {
 			return;
 		}
-		Collection<ConnObject> connObjects = connMap.values();
-		for (ConnObject connObject : connObjects) {
+		Collection<ConnectionResource> connObjects = connMap.values();
+		for (ConnectionResource connObject : connObjects) {
 			try {
 				connObject.connection.commit();
 			} catch (SQLException e) {
@@ -87,8 +86,8 @@ public class Transaction {
 		if (!open || connMap == null || connMap.isEmpty()) {
 			return;
 		}
-		Collection<ConnObject> connObjects = connMap.values();
-		for (ConnObject connObject : connObjects) {
+		Collection<ConnectionResource> connObjects = connMap.values();
+		for (ConnectionResource connObject : connObjects) {
 			try {
 				connObject.connection.rollback();
 			} catch (Throwable throwable) {

@@ -36,7 +36,7 @@ public class Context {
 
 	private String currentPath;
 	private String currentModel;
-	private Map<String, ConnObject> connMap;
+	private Map<String, ConnectionResource> connMap;
 	private final Map<String, Object> rootDatas;
 	private Map<String, Object> paramDatas;
 	private Map<String, Object> outParamDatas;
@@ -475,27 +475,27 @@ public class Context {
 
 		if (transaction !=null && transaction.isOpen()) {
 			if (transaction.connMap == null) {
-				transaction.connMap = new HashMap<String, ConnObject>();
+				transaction.connMap = new HashMap<>();
 			}
-			ConnObject connObject = transaction.connMap.get(provideName);
+			ConnectionResource connObject = transaction.connMap.get(provideName);
 			if (connObject == null) {
 				ConnectionProvide provide = ConnectionProvideManager.getConnectionProvide(provideName);
 				Connection conn = provide.getConnection();
 
 				DBUtil.prepareTransaction(conn, transaction);
-				connObject = new ConnObject(provide, conn);
+				connObject = new ConnectionResource(provide, conn);
 				transaction.connMap.put(provideName, connObject);
 			}
 			return connObject.connection;
 		} else {
 			if (connMap == null) {
-				connMap = new HashMap<String, ConnObject>();
+				connMap = new HashMap<>();
 			}
-			ConnObject connObject = connMap.get(provideName);
+			ConnectionResource connObject = connMap.get(provideName);
 			if (connObject == null) {
 				ConnectionProvide provide = ConnectionProvideManager.getConnectionProvide(provideName);
 				Connection conn = provide.getConnection();
-				connObject = new ConnObject(provide, conn);
+				connObject = new ConnectionResource(provide, conn);
 				connMap.put(provideName, connObject);
 			}
 			return connObject.connection;
@@ -530,8 +530,8 @@ public class Context {
 		if (connMap == null || connMap.isEmpty()) {
 			return;
 		}
-		Collection<ConnObject> connObjects = connMap.values();
-		for (ConnObject connObject : connObjects) {
+		Collection<ConnectionResource> connObjects = connMap.values();
+		for (ConnectionResource connObject : connObjects) {
 			try {
 				ConnectionProvide provide = connObject.provide;
 				Connection connection = connObject.connection;
@@ -718,15 +718,5 @@ public class Context {
 
 	static {
 		DBFoundConfig.init();
-	}
-
-	static class ConnObject {
-		Connection connection;
-		ConnectionProvide provide;
-
-		ConnObject(ConnectionProvide provide, Connection connection) {
-			this.connection = connection;
-			this.provide = provide;
-		}
 	}
 }
