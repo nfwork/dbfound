@@ -8,12 +8,12 @@ public class DBFoundRuntimeException extends RuntimeException {
 		super(message);
 	}
 
-	public DBFoundRuntimeException(Exception e) {
-		super(e);
+	public DBFoundRuntimeException(Throwable cause) {
+		super(cause);
 	}
 
-	public DBFoundRuntimeException(String message, Exception e) {
-		super(message, e);
+	public DBFoundRuntimeException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }

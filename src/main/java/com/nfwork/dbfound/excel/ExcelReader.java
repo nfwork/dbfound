@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.web.file.FilePart;
@@ -76,7 +76,7 @@ public class ExcelReader {
 		try (InputStream stream = filePart.inputStream()) {
 			return readExcel(stream, getType(filePart),columns);
 		} catch (IOException e) {
-			throw new DBFoundPackageException("excel reader exception:" + e.getMessage(),e);
+			throw new DBFoundWrappedException("excel reader exception:" + e.getMessage(),e);
 		}
 	}
 
@@ -88,7 +88,7 @@ public class ExcelReader {
 		try (InputStream stream = new ByteArrayInputStream(bytes)) {
 			return readExcel(stream,type,columns);
 		} catch (IOException e) {
-			throw new DBFoundPackageException("excel reader exception:" + e.getMessage(),e);
+			throw new DBFoundWrappedException("excel reader exception:" + e.getMessage(),e);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class ExcelReader {
 		try (InputStream stream = filePart.inputStream()) {
 			return readExcelForMap(stream, getType(filePart),columns);
 		} catch (IOException e) {
-			throw new DBFoundPackageException("excel reader exception:" + e.getMessage(),e);
+			throw new DBFoundWrappedException("excel reader exception:" + e.getMessage(),e);
 		}
 	}
 
@@ -121,7 +121,7 @@ public class ExcelReader {
 		try (InputStream stream = new ByteArrayInputStream(bytes)) {
 			return readExcelForMap(stream, type, columns);
 		} catch (IOException e) {
-			throw new DBFoundPackageException("excel reader exception:" + e.getMessage(),e);
+			throw new DBFoundWrappedException("excel reader exception:" + e.getMessage(),e);
 		}
 	}
 

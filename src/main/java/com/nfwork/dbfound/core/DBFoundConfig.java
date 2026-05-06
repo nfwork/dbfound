@@ -38,10 +38,9 @@ public class DBFoundConfig {
 
 	public static final String CLASSPATH = "${@classpath}";
 	public static final String PROJECT_ROOT = "${@projectRoot}";
-	private static final String PROJECT_ROOT_CANNOT_RESOLVE = "project_root_cannot_resolve";
 	private static final String JVM_PARAM_PREFIX = "dbfound.";
 
-	private static String modelLoadRoot;
+	private static String modelRootPath;
 
 	private static boolean inited = false;
 	private static String configFilePath;
@@ -61,7 +60,7 @@ public class DBFoundConfig {
 	private static boolean logWithParamSql = false;
 	private static String encoding = "UTF-8";
 	private static Integer maxUploadSize = 10; // 单位M
-	private static String basePath ;
+	private static String basePath = "${@contextPath}";
 	private static List<String> apiAllowUrls = Collections.emptyList();
 
 	public static void destroy() {
@@ -380,7 +379,7 @@ public class DBFoundConfig {
 			modelRootPath = getConfigValue(system, "system", "modeRootPath");
 		}
 		if (DataUtil.isNotNull(modelRootPath)) {
-			DBFoundConfig.modelLoadRoot = modelRootPath;
+			DBFoundConfig.modelRootPath = modelRootPath;
 			appendConfigInfo(info, "modelRootPath", modelRootPath);
 		}
 
@@ -430,11 +429,7 @@ public class DBFoundConfig {
 			value = value.replace(CLASSPATH, getClasspath());
 		}
 		if (value.contains(PROJECT_ROOT) ) {
-			String projectRoot = getProjectRoot();
-			if(projectRoot.equals(PROJECT_ROOT_CANNOT_RESOLVE)){
-				throw new DBFoundRuntimeException(PROJECT_ROOT + " can not be resolved, ths path is '" + value +"'");
-			}
-			value = value.replace(PROJECT_ROOT, projectRoot);
+			value = value.replace(PROJECT_ROOT, getProjectRoot());
 		}
 		return value;
 	}
@@ -528,12 +523,12 @@ public class DBFoundConfig {
 
 	public static String getProjectRoot() {
 		if (projectRoot == null || projectRoot.isEmpty()) {
-			File file = new File(getClasspath());
+			String cp = getClasspath();
+			File file = new File(cp);
 			if (file.exists() && file.getParentFile().exists() && file.getParentFile().getParentFile().exists()) {
 				projectRoot = PathFormat.format(file.getParentFile().getParentFile().getAbsolutePath());
 			}else{
-				// if file not exists, the classpath maybe in a jar
-				projectRoot = PROJECT_ROOT_CANNOT_RESOLVE;
+				throw new DBFoundRuntimeException(PROJECT_ROOT + " can not resolve by classpath, ths classpath is '" + cp +"'");
 			}
 		}
 		return projectRoot;
@@ -546,7 +541,7 @@ public class DBFoundConfig {
 				configFilePath = PathFormat.format(configFilePath);
 			}
 			return configFilePath;
-		} catch (Throwable e) {
+		} catch (Throwable ignored) {
 			return null;
 		}
 	}
@@ -644,14 +639,14 @@ public class DBFoundConfig {
 	}
 
 	public static String getModelLoadRoot() {
-		if (DataUtil.isNull(modelLoadRoot)) {
-			modelLoadRoot = DBFoundConfig.CLASSPATH + "/model";
+		if (DataUtil.isNull(modelRootPath)) {
+			modelRootPath = DBFoundConfig.CLASSPATH + "/model";
 		}
-		return modelLoadRoot;
+		return modelRootPath;
 	}
 
-	public static void setModelLoadRoot(String modelLoadRoot) {
-		DBFoundConfig.modelLoadRoot = modelLoadRoot;
+	public static void setModelRootPath(String modelLoadRoot) {
+		DBFoundConfig.modelRootPath = modelLoadRoot;
 	}
 
 	public static String getEncoding() {

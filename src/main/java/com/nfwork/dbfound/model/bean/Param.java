@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.model.base.IOType;
 import com.nfwork.dbfound.util.DataUtil;
@@ -49,7 +49,7 @@ public class Param extends Entity implements Cloneable{
 		try {
 			return clone();
 		} catch (CloneNotSupportedException e) {
-			throw new DBFoundPackageException("entity克隆异常:" + e.getMessage(), e);
+			throw new DBFoundWrappedException("entity克隆异常:" + e.getMessage(), e);
 		}
 	}
 

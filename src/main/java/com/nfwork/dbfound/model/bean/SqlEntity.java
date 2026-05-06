@@ -22,7 +22,7 @@ import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.el.ELEngine;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.*;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
@@ -180,7 +180,7 @@ public abstract class SqlEntity extends Entity {
 		try {
 			initParam(statement, exeParam, null);
 		}catch (IOException exception){
-			throw new DBFoundPackageException("init param failed", exception);
+			throw new DBFoundWrappedException("init param failed", exception);
 		}
 	}
 

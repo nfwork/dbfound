@@ -3,7 +3,6 @@ package com.nfwork.dbfound.web.handler;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.dto.ResponseObject;
-import com.nfwork.dbfound.exception.DBFoundErrorException;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.ExceptionHandlerFacade;
@@ -45,13 +44,7 @@ public abstract class ActionHandler {
                 WebWriter.jsonWriter(response, JsonUtil.toJson(responseObject));
             }
         } catch (Throwable throwable) {
-            Exception exception;
-            if(throwable instanceof Exception){
-                exception = (Exception) throwable;
-            }else{
-                exception = new DBFoundErrorException("dbfound execute error, cause by "+ throwable.getMessage(), throwable);
-            }
-            ExceptionHandlerFacade.handle(exception, request, response);
+            ExceptionHandlerFacade.handle(throwable, request, response);
         }finally {
             if(isFileUpload){
                 FileUploadUtil.clearFileItemLocal();

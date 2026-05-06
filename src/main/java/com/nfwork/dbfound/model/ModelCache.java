@@ -8,7 +8,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.bean.Model;
 
@@ -66,7 +66,7 @@ public class ModelCache {
 			}else if(e.getCause() instanceof DBFoundRuntimeException){
 				throw (DBFoundRuntimeException)e.getCause();
 			}else{
-				throw new DBFoundPackageException(e);
+				throw new DBFoundWrappedException(e);
 			}
 	    }
 	}

@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.base.DataType;
@@ -145,7 +145,7 @@ public class QuerySql extends Sql {
 				}
 			}
 		} catch (Exception e) {
-			throw new DBFoundPackageException("lob field execute exception:" + e.getMessage(), e);
+			throw new DBFoundWrappedException("lob field execute exception:" + e.getMessage(), e);
 		}
 	}
 }

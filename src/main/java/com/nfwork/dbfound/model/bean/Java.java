@@ -5,7 +5,7 @@ import java.util.Map;
 import com.nfwork.dbfound.model.reflector.Reflector;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.JavaSupport;
 import com.nfwork.dbfound.model.base.ContextAware;
@@ -56,13 +56,13 @@ public class Java extends SqlEntity {
 			throw new DBFoundRuntimeException("class:" + className + " not found");
 		} catch (Exception ee) {
 			Throwable throwable = ee.getCause();
-			if (throwable instanceof Exception) {
+			if (throwable != null) {
 				if (throwable instanceof RuntimeException) {
 					throw (RuntimeException)throwable;
 				}
-				throw new DBFoundPackageException((Exception) throwable);
+				throw new DBFoundWrappedException(throwable);
 			}
-			throw new DBFoundPackageException(ee);
+			throw new DBFoundWrappedException(ee);
 		}
 	}
 

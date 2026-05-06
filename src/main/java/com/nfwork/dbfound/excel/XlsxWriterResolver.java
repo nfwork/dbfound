@@ -2,7 +2,7 @@ package com.nfwork.dbfound.excel;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import org.apache.poi.ss.usermodel.*;
@@ -42,7 +42,7 @@ public class XlsxWriterResolver extends WriterResolver {
                 workbook.write(fos);
                 fos.flush();
             } catch (IOException exception) {
-                throw new DBFoundPackageException("xlsx writer failed, " + exception.getMessage(), exception);
+                throw new DBFoundWrappedException("xlsx writer failed, " + exception.getMessage(), exception);
             } finally {
                 workbook.dispose();
             }
