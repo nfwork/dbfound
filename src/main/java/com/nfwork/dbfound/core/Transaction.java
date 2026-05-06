@@ -1,18 +1,11 @@
 package com.nfwork.dbfound.core;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
-
-import com.nfwork.dbfound.db.ConnectionProvide;
-import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.util.DBUtil;
-import com.nfwork.dbfound.util.LogUtil;
+import com.nfwork.dbfound.db.dialect.SqlDialect;
 
 public class Transaction {
 
-	Map<String, ConnectionResource> connMap;
+	private ConnectionManager connectionManager;
 
 	private boolean open = false;
 
@@ -36,6 +29,17 @@ public class Transaction {
 		return open;
 	}
 
+	Connection getConn(String provideName) {
+		if (connectionManager == null) {
+			connectionManager = new ConnectionManager();
+		}
+		return connectionManager.getTransactionConnection(provideName, this);
+	}
+
+	SqlDialect getConnDialect(String provideName) {
+		return connectionManager.getSqlDialect(provideName);
+	}
+
 	/**
 	 * 事务结束
 	 */
@@ -45,19 +49,8 @@ public class Transaction {
 		} else {
 			open = false;
 		}
-
-		if (connMap != null && !connMap.isEmpty()) {
-			Collection<ConnectionResource> connObjects = connMap.values();
-			for (ConnectionResource connObject : connObjects) {
-				try {
-					ConnectionProvide provide = connObject.provide;
-					Connection connection = connObject.connection;
-					provide.closeConnection(connection);
-				} catch (Throwable throwable) {
-					LogUtil.error("transaction close exception:" + throwable.getMessage(), throwable);
-				}
-			}
-			connMap.clear();
+		if (connectionManager != null) {
+			connectionManager.closeTransactionConnections();
 		}
 	}
 
@@ -65,36 +58,20 @@ public class Transaction {
 	 * 提交事务
 	 */
 	public void commit() {
-		if (!open || connMap == null || connMap.isEmpty()) {
+		if (!open || connectionManager == null) {
 			return;
 		}
-		Collection<ConnectionResource> connObjects = connMap.values();
-		for (ConnectionResource connObject : connObjects) {
-			try {
-				connObject.connection.commit();
-			} catch (SQLException e) {
-				throw new DBFoundRuntimeException("transaction commit exception: " +e.getMessage(), e);
-			}
-			DBUtil.resetTransaction(connObject.connection,this);
-		}
+		connectionManager.commit(this);
 	}
 
 	/**
 	 * 回滚事务
 	 */
 	public void rollback() {
-		if (!open || connMap == null || connMap.isEmpty()) {
+		if (!open || connectionManager == null) {
 			return;
 		}
-		Collection<ConnectionResource> connObjects = connMap.values();
-		for (ConnectionResource connObject : connObjects) {
-			try {
-				connObject.connection.rollback();
-			} catch (Throwable throwable) {
-				LogUtil.error("transaction rollback exception:" + throwable.getMessage(), throwable);
-			}
-			DBUtil.resetTransaction(connObject.connection,this);
-		}
+		connectionManager.rollback(this);
 	}
 
 	public boolean isReadOnly() {
