@@ -54,8 +54,8 @@ public class Transaction {
 					ConnectionProvide provide = connObject.provide;
 					Connection connection = connObject.connection;
 					provide.closeConnection(connection);
-				} catch (Throwable e) {
-					LogUtil.error("transaction close exception:" + e.getMessage(), e);
+				} catch (Throwable throwable) {
+					LogUtil.error("transaction close exception:" + throwable.getMessage(), throwable);
 				}
 			}
 			connMap.clear();
@@ -91,8 +91,8 @@ public class Transaction {
 		for (ConnObject connObject : connObjects) {
 			try {
 				connObject.connection.rollback();
-			} catch (Throwable e) {
-				LogUtil.error("transaction rollback exception:" + e.getMessage(), e);
+			} catch (Throwable throwable) {
+				LogUtil.error("transaction rollback exception:" + throwable.getMessage(), throwable);
 			}
 			DBUtil.resetTransaction(connObject.connection,this);
 		}

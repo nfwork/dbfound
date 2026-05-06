@@ -7,7 +7,7 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.dto.ResponseObject;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.web.base.WebExceptionHandler;
 
 public final class ExceptionHandlerFacade {
@@ -22,24 +22,24 @@ public final class ExceptionHandlerFacade {
 		}
 	}
 
-	public static void handle(Exception exception, HttpServletRequest request, HttpServletResponse response) {
+	public static void handle(Throwable throwable, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			exception = getException(exception);
-			ResponseObject ro = exceptionHandler.handle(exception, request, response);
+			throwable = unwrapException(throwable);
+			ResponseObject ro = exceptionHandler.handle(throwable, request, response);
 			WebWriter.jsonWriter(response, JsonUtil.toJson(ro));
 		} catch (Exception e) {
 			LogUtil.error(e.getMessage(), e);
 		}
 	}
 
-	private static Exception getException(Exception exception) {
-		if (exception instanceof DBFoundPackageException) {
-			Throwable throwable = exception.getCause();
-			if (throwable instanceof Exception) {
-				return (Exception) throwable;
+	private static Throwable unwrapException(Throwable throwable) {
+		if (throwable instanceof DBFoundWrappedException) {
+			Throwable cause = throwable.getCause();
+			if (cause != null) {
+				return cause;
 			}
 		}
-		return exception;
+		return throwable;
 	}
 
 }

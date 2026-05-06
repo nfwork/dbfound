@@ -7,7 +7,7 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.Tag;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.TagLocationException;
 
 public class ToolBar extends TagSupport implements Cloneable {
@@ -31,7 +31,7 @@ public class ToolBar extends TagSupport implements Cloneable {
 				ToolBar toolBar = (ToolBar) this.clone();
 				parent.setToolBar(toolBar);
 			} catch (CloneNotSupportedException e) {
-				throw new DBFoundPackageException(e.getMessage(), e);
+				throw new DBFoundWrappedException(e.getMessage(), e);
 			}
 			return EVAL_PAGE;
 		} else {
@@ -40,7 +40,7 @@ public class ToolBar extends TagSupport implements Cloneable {
 				ToolBar toolBar = (ToolBar) this.clone();
 				parent.setToolBar(toolBar);
 			} catch (CloneNotSupportedException e) {
-				throw new DBFoundPackageException(e.getMessage(), e);
+				throw new DBFoundWrappedException(e.getMessage(), e);
 			}
 			return EVAL_PAGE;
 		}

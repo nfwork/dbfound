@@ -9,7 +9,7 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.DBUtil;
 
@@ -55,7 +55,7 @@ public class DataSourceConnectionProvide extends ConnectionProvide {
 		try {
 			return dataSource.getConnection();
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("create connection excepiton:" + e.getMessage(), e);
+			throw new DBFoundWrappedException("create connection excepiton:" + e.getMessage(), e);
 		}
 	}
 

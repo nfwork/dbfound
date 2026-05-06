@@ -3,7 +3,7 @@ package com.nfwork.dbfound.model.dsql.function;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.db.dialect.OracleDialect;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DSqlNotSupportException;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 
@@ -30,7 +30,7 @@ public class Length extends DSqlFunction {
             try {
                 return p0.toString().getBytes(DBFoundConfig.getEncoding()).length;
             } catch (Exception exception) {
-                throw new DBFoundPackageException(exception);
+                throw new DBFoundWrappedException(exception);
             }
         }else{
             throw new DSqlNotSupportException();

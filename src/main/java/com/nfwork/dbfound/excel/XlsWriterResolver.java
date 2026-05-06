@@ -1,6 +1,6 @@
 package com.nfwork.dbfound.excel;
 
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -43,7 +43,7 @@ public class XlsWriterResolver extends XlsxWriterResolver{
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 workbook.write(fos);
             } catch (IOException exception) {
-                throw new DBFoundPackageException("xls writer failed, " + exception.getMessage(), exception);
+                throw new DBFoundWrappedException("xls writer failed, " + exception.getMessage(), exception);
             }
         }catch (IOException ignore){}
     }

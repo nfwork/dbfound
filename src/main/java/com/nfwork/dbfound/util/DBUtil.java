@@ -2,7 +2,7 @@
 package com.nfwork.dbfound.util;
 
 import com.nfwork.dbfound.core.Transaction;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -15,8 +15,8 @@ public class DBUtil {
 		if( conn == null) return;
 		try{
 			conn.close();
-		} catch(Throwable ex){
-			LogUtil.warn(ex.getMessage());
+		} catch(Throwable throwable){
+			LogUtil.warn(throwable.getMessage());
 		}
 	}
 	
@@ -24,8 +24,8 @@ public class DBUtil {
 		if( rs == null) return;
 		try{
 			rs.close();
-		} catch(Throwable ex){
-			LogUtil.warn(ex.getMessage());
+		} catch(Throwable throwable){
+			LogUtil.warn(throwable.getMessage());
 		}
 	}
 	
@@ -33,8 +33,8 @@ public class DBUtil {
 		if( stmt == null) return;
 		try{
 			stmt.close();
-		} catch(Throwable ex){
-			LogUtil.warn(ex.getMessage());
+		} catch(Throwable throwable){
+			LogUtil.warn(throwable.getMessage());
 		}
 	}
 
@@ -56,7 +56,7 @@ public class DBUtil {
 				con.setAutoCommit(false);
 			}
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("prepareTransaction failed:"+ e.getMessage(), e);
+			throw new DBFoundWrappedException("prepareTransaction failed:"+ e.getMessage(), e);
 		}
 	}
 
@@ -72,8 +72,8 @@ public class DBUtil {
 			if(!con.getAutoCommit()){
 				con.setAutoCommit(true);
 			}
-		} catch (Throwable e) {
-			LogUtil.error("resetTransaction failed:"+ e.getMessage(), e);
+		} catch (Throwable throwable) {
+			LogUtil.error("resetTransaction failed:"+ throwable.getMessage(), throwable);
 		}
 	}
     

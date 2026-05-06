@@ -12,7 +12,7 @@ import org.dom4j.io.SAXReader;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.core.PathFormat;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.bean.Entity;
 import com.nfwork.dbfound.model.bean.Model;
@@ -42,7 +42,7 @@ public class ModelReader {
 				doc = reader.read(inputStream);
 			} catch (Exception e) {
 				String message = "modelReader exception, file: " + fileLocation;
-				throw new DBFoundPackageException(message, e);
+				throw new DBFoundWrappedException(message, e);
 			}
 		} else {
 			if (filePath.startsWith(DBFoundConfig.CLASSPATH)) {
@@ -61,7 +61,7 @@ public class ModelReader {
 							doc = reader.read(inputStream);
 						} catch (Exception e) {
 							String message = "modelReader exception, file: " + fileLocation;
-							throw new DBFoundPackageException(message, e);
+							throw new DBFoundWrappedException(message, e);
 						}
 					} else {
 						fileLocation = url.getFile();
@@ -70,7 +70,7 @@ public class ModelReader {
 							doc = reader.read(inputStream);
 						} catch (Exception e) {
 							String message = "modelReader exception, url: " + fileLocation;
-							throw new DBFoundPackageException(message, e);
+							throw new DBFoundWrappedException(message, e);
 						}
 					}
 				} else {
@@ -116,7 +116,7 @@ public class ModelReader {
 					throw (DBFoundRuntimeException)e;
 				}else{
 					String message = "ModelReader exception:" + e.getMessage();
-					throw new DBFoundPackageException(message, e);
+					throw new DBFoundWrappedException(message, e);
 				}
 			}
 		}

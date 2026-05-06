@@ -4,7 +4,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.csv.CSVFormat;
 import com.nfwork.dbfound.csv.CSVPrinter;
 import com.nfwork.dbfound.el.DBFoundEL;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.util.LocalDateUtil;
 
 import java.io.File;
@@ -56,7 +56,7 @@ public class CsvWriterResolver extends WriterResolver{
             }
             printer.flush();
         }catch (IOException exception){
-            throw new DBFoundPackageException("csv writer failed, "+ exception.getMessage(), exception);
+            throw new DBFoundWrappedException("csv writer failed, "+ exception.getMessage(), exception);
         }
     }
 }

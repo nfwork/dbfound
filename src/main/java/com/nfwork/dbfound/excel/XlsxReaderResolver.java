@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.excel;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -29,7 +29,7 @@ public class XlsxReaderResolver extends ReaderResolver{
                 result.add(data);
             }
         } catch (IOException e) {
-            throw new DBFoundPackageException("workbook reader failed, "+ e.getMessage(),e);
+            throw new DBFoundWrappedException("workbook reader failed, "+ e.getMessage(),e);
         }
         return result;
     }
@@ -45,7 +45,7 @@ public class XlsxReaderResolver extends ReaderResolver{
                 result.put(sheet.getSheetName(),data);
             }
         } catch (IOException e) {
-            throw new DBFoundPackageException("workbook reader failed, "+ e.getMessage(),e);
+            throw new DBFoundWrappedException("workbook reader failed, "+ e.getMessage(),e);
         }
         return result;
     }

@@ -10,21 +10,21 @@ import java.sql.SQLException;
 
 public class WebExceptionHandler {
 
-	public ResponseObject handle(Exception exception, HttpServletRequest request, HttpServletResponse response) {
-		String em = exception.getMessage();
+	public ResponseObject handle(Throwable throwable, HttpServletRequest request, HttpServletResponse response) {
+		String em = throwable.getMessage();
 		String code = null;
-		if(exception instanceof CollisionException){
+		if(throwable instanceof CollisionException){
 			response.setStatus(422);
-			code = ((CollisionException) exception).getCode();
-			LogUtil.info(exception.getClass().getName() + ": " + em);
+			code = ((CollisionException) throwable).getCode();
+			LogUtil.info(throwable.getClass().getName() + ": " + em);
 		} else {
 			response.setStatus(500);
-			String message = "an exception: "+exception.getClass().getName()+" caused, when request url: "+request.getRequestURI();
-			LogUtil.error(message, exception);
-			if(exception.getCause() instanceof SQLException){
-				em = exception.getCause().getMessage();
+			String message = "an exception: "+throwable.getClass().getName()+" caused, when request url: "+request.getRequestURI();
+			LogUtil.error(message, throwable);
+			if(throwable.getCause() instanceof SQLException){
+				em = throwable.getCause().getMessage();
 			}
-			em =  exception.getClass().getName() +": " + em;
+			em =  throwable.getClass().getName() +": " + em;
 		}
 		ResponseObject ro = new ResponseObject();
 		ro.setSuccess(false);

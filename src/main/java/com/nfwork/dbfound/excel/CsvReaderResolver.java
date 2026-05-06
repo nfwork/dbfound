@@ -4,7 +4,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.csv.CSVFormat;
 import com.nfwork.dbfound.csv.CSVParser;
 import com.nfwork.dbfound.csv.CSVRecord;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,7 +63,7 @@ public class CsvReaderResolver extends ReaderResolver{
             }
             return list;
         }catch (IOException e){
-            throw new DBFoundPackageException("csv reader failed, "+e.getMessage(), e);
+            throw new DBFoundWrappedException("csv reader failed, "+e.getMessage(), e);
         }
     }
 }

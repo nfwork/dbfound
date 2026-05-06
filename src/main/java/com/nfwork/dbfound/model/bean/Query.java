@@ -29,7 +29,7 @@ import org.dom4j.Element;
 
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.model.reflector.ReflectorUtil;
 
 public class Query extends SqlEntity {
@@ -87,7 +87,7 @@ public class Query extends SqlEntity {
 				entityClass = Class.forName(entity);
 			}catch (Exception exception){
 				String message = "entity init failed";
-				throw new DBFoundPackageException(message,exception);
+				throw new DBFoundWrappedException(message,exception);
 			}
 		}
 

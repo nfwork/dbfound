@@ -541,7 +541,7 @@ public class DBFoundConfig {
 				configFilePath = PathFormat.format(configFilePath);
 			}
 			return configFilePath;
-		} catch (Throwable e) {
+		} catch (Throwable ignored) {
 			return null;
 		}
 	}

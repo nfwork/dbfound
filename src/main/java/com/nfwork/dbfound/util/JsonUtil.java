@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.dto.ResponseObject;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.enums.EnumTypeHandler;
@@ -49,7 +49,7 @@ public class JsonUtil{
 		try {
 			return objectMapper.writeValueAsString(bean);
 		} catch (JsonProcessingException e) {
-			throw new DBFoundPackageException(e.getMessage(), e);
+			throw new DBFoundWrappedException(e.getMessage(), e);
 		}
 	}
 
@@ -57,7 +57,7 @@ public class JsonUtil{
 		try {
 			return objectMapper.readValue(json, List.class);
 		} catch (JsonProcessingException e) {
-			throw new DBFoundPackageException(e.getMessage(), e);
+			throw new DBFoundWrappedException(e.getMessage(), e);
 		}
 	}
 
@@ -65,7 +65,7 @@ public class JsonUtil{
 		try {
 			return objectMapper.readValue(json, Map.class);
 		} catch (JsonProcessingException e) {
-			throw new DBFoundPackageException(e.getMessage(), e);
+			throw new DBFoundWrappedException(e.getMessage(), e);
 		}
 	}
 

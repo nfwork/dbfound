@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import com.nfwork.dbfound.util.DBUtil;
 import com.nfwork.dbfound.db.ConnectionProvide;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 
 public class JdbcConnectionProvide extends ConnectionProvide {
 
@@ -44,9 +44,9 @@ public class JdbcConnectionProvide extends ConnectionProvide {
 			Class.forName(driverClass);
 			return DriverManager.getConnection(url, username, password);
 		} catch (SQLException e) {
-			throw new DBFoundPackageException("create connection exception: " + e.getMessage(), e);
+			throw new DBFoundWrappedException("create connection exception: " + e.getMessage(), e);
 		} catch (ClassNotFoundException ee) {
-			throw new DBFoundPackageException(
+			throw new DBFoundWrappedException(
 					"jdbc driver not found: " + ee.getMessage(), ee);
 		}
 	}

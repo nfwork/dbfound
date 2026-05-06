@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.util.DataUtil;
@@ -416,7 +416,7 @@ public class Reflector {
 			return future.get();
 		} catch (Exception e) {
 			REFLECTOR_MAP.remove(clazz.getName());
-			throw new DBFoundPackageException(e);
+			throw new DBFoundWrappedException(e);
 		}
 	}
 

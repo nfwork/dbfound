@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.el.DBFoundEL;
-import com.nfwork.dbfound.exception.DBFoundPackageException;
+import com.nfwork.dbfound.exception.DBFoundWrappedException;
 
 /**
  * 数据转化工具类
@@ -33,7 +33,7 @@ public class DataUtil {
 			try {
 				obj = clazz.getDeclaredConstructor().newInstance();
 			} catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
-				throw new DBFoundPackageException(e.getMessage(),e);
+				throw new DBFoundWrappedException(e.getMessage(),e);
 			}
 			for (Entry<String,Object> entry : columns) {
 				if(entry.getValue() != null) {
@@ -81,7 +81,7 @@ public class DataUtil {
 			try {
 				return format.parse(o.toString());
 			} catch (ParseException e) {
-				throw new DBFoundPackageException(e);
+				throw new DBFoundWrappedException(e);
 			}
 		}
 	}
