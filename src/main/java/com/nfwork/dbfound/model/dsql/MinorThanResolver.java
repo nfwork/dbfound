@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.relational.MinorThan;
 
@@ -21,7 +21,7 @@ public class MinorThanResolver extends DSqlValueResolver {
         if(isCompareSupport(left,right)) {
             return compareTo(left, right) < 0;
         }else{
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
     }
 }

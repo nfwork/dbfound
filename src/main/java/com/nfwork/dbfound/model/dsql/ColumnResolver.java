@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Column;
 
@@ -16,7 +16,7 @@ public class ColumnResolver extends DSqlValueResolver {
         }else if(column.getColumnName().equalsIgnoreCase("false")){
             return false;
         }else{
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
     }
 }

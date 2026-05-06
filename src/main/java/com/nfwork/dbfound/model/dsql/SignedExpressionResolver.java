@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.SignedExpression;
 import java.util.List;
@@ -16,7 +16,7 @@ public class SignedExpressionResolver extends DSqlValueResolver {
         }else if(signedExpression.getSign() == '+'){
             return value;
         }else{
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
     }
 }

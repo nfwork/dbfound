@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 
@@ -22,7 +22,7 @@ public class If extends DSqlFunction {
             Object p2 = params.get(2);
             return p0 ? p1 : p2;
         }else{
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
     }
 }

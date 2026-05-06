@@ -12,7 +12,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.CollisionException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.exception.SqlExecuteException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.dsql.DSqlEngine;
@@ -37,7 +37,7 @@ public class CollisionSql extends SqlEntity {
 	public void doEndTag() {
 		super.doEndTag();
 		if(DataUtil.isNull(where) || DataUtil.isNull(message)){
-			initError = "CollisionSql attribute where and message can not be null";
+			initError = "CollisionSql attribute where and message cannot be null";
 			return;
 		}
 		where = StringUtil.sqlFullTrim(where);
@@ -63,7 +63,7 @@ public class CollisionSql extends SqlEntity {
 				}else{
 					return;
 				}
-			}catch (DSqlNotSupportException ignore){
+			}catch (DSqlUnsupportedException ignore){
 			}
 		}
 

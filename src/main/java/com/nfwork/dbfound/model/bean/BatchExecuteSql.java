@@ -46,11 +46,11 @@ public class BatchExecuteSql extends Sql {
 		super.doEndTag();
 
 		if(DataUtil.isNull(sourcePath)){
-			initError = "BatchExecuteSql attribute sourcePath can not be null";
+			initError = "BatchExecuteSql attribute sourcePath cannot be null";
 			return;
 		}
 		if(DataUtil.isNull(sql)){
-			initError = "BatchExecuteSql content sql can not be null";
+			initError = "BatchExecuteSql content sql cannot be null";
 			return;
 		}
 

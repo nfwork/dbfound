@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.util.DataUtil;
 
@@ -12,7 +12,7 @@ public class Lower extends DSqlFunction {
     @Override
     public Object apply(List<Object> args, SqlDialect sqlDialect) {
         if (args.size() != 1) {
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
         String str = DataUtil.stringValue(args.get(0)) ;
         return str != null ? str.toLowerCase() : null;

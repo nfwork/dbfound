@@ -14,7 +14,7 @@ public class Verifier extends Entity{
     @Override
     public void doEndTag() {
         if(DataUtil.isNull(express) || DataUtil.isNull(message)){
-            throw new DBFoundRuntimeException("Verifier attribute express and message can not be null");
+            throw new DBFoundRuntimeException("Verifier attribute express and message cannot be null");
         }
         if (getParent() instanceof Query) {
             Query query = (Query) getParent();

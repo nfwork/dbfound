@@ -4,7 +4,7 @@ import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.db.dialect.OracleDialect;
 import com.nfwork.dbfound.db.dialect.SqlDialect;
 import com.nfwork.dbfound.exception.DBFoundWrappedException;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class Length extends DSqlFunction {
                 throw new DBFoundWrappedException(exception);
             }
         }else{
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
     }
 
@@ -45,7 +45,7 @@ public class Length extends DSqlFunction {
             }
             return p0.toString().length();
         }else{
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
     }
 }

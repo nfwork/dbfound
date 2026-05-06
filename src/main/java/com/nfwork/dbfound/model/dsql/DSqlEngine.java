@@ -2,7 +2,7 @@ package com.nfwork.dbfound.model.dsql;
 
 import com.nfwork.dbfound.cache.FifoCache;
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.arithmetic.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
@@ -29,7 +29,7 @@ public class DSqlEngine {
         try {
             Expression expression = expressionCache.get(sql);
             if (expression == NOT_SUPPORT_EXPRESSION) {
-                throw new DSqlNotSupportException();
+                throw new DSqlUnsupportedException();
             }
             Object result = getExpressionValue(expression, param, provideName, context);
             if(result == null){
@@ -37,9 +37,8 @@ public class DSqlEngine {
             }else {
                 return getBooleanValue(result);
             }
-        }catch (DSqlNotSupportException exception){
-            exception.setMessage("sql grammar or sql param type is not supported, sql: " + sql + ", param: " + param);
-            throw exception;
+        }catch (DSqlUnsupportedException exception){
+            throw new DSqlUnsupportedException("sql grammar or sql param type is not supported, sql: " + sql + ", param: " + param);
         }
     }
 
@@ -56,7 +55,7 @@ public class DSqlEngine {
     static Object getExpressionValue(Expression expression , List<Object> param, String provideName, Context context){
         DSqlValueResolver resolver = resolverMap.get(expression.getClass().getName());
         if(resolver == null){
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
         return resolver.getValue(expression,param,provideName,context);
     }
@@ -72,7 +71,7 @@ public class DSqlEngine {
             int d = Integer.parseInt((String) value);
             return d != 0;
         }
-        throw new DSqlNotSupportException();
+        throw new DSqlUnsupportedException();
     }
 
     static {

@@ -30,7 +30,7 @@ public class ExecuteSql extends Sql {
 	public void doEndTag() {
 		super.doEndTag();
 		if(DataUtil.isNull(sql)){
-			initError = "ExecuteSql content sql can not be null";
+			initError = "ExecuteSql content sql cannot be null";
 			return;
 		}
 		autoCreateParam(sql,this);

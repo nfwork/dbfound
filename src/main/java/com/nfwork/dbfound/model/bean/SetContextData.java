@@ -27,7 +27,7 @@ public class SetContextData extends SqlEntity{
     @Override
     public void execute(Context context, Map<String, Param> params, String provideName) {
         if(DataUtil.isNull(name)){
-            throw new DBFoundRuntimeException("attribute name can not be null in setContextData tag");
+            throw new DBFoundRuntimeException("attribute name cannot be null in setContextData tag");
         }
 
         String setPath = scope;
@@ -35,7 +35,7 @@ public class SetContextData extends SqlEntity{
             setPath = context.getCurrentPath();
         }
         if(DataUtil.isNull(setPath)){
-            throw new DBFoundRuntimeException("path can not be null in setContextData tag");
+            throw new DBFoundRuntimeException("path cannot be null in setContextData tag");
         }
 
         Object valueObj = value;
@@ -78,7 +78,7 @@ public class SetContextData extends SqlEntity{
                 return currentPath.substring(index);
             }
         }
-        throw new DBFoundRuntimeException("SetContextData cant not found index in currentPath");
+        throw new DBFoundRuntimeException("SetContextData cannot find index in currentPath");
     }
 
     public String getValue() {

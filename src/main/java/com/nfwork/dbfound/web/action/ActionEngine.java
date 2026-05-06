@@ -76,7 +76,7 @@ public class ActionEngine {
 				}
 			}
 		} catch (DocumentException e) {
-			throw new DBFoundRuntimeException("actionEngine init mvcFile failed, cause by "+ e.getMessage(),e);
+			throw new DBFoundRuntimeException("actionEngine init mvcFile failed, caused by "+ e.getMessage(),e);
         }
     }
 

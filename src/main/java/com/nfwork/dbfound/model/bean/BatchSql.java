@@ -37,7 +37,7 @@ public class BatchSql extends Sqls {
 	public void doEndTag() {
 		super.doEndTag();
 		if(DataUtil.isNull(sourcePath) && DataUtil.isNull(cursor)){
-			initError = "BatchSql attribute sourcePath and cursor, can not be null on the same time";
+			initError = "BatchSql attribute sourcePath and cursor, cannot be null on the same time";
 			return;
 		}
 		if(DataUtil.isNotNull(cursor)) {
@@ -62,7 +62,7 @@ public class BatchSql extends Sqls {
 			List<Map<String,Object>> cursorValues = new ArrayList<>();
 			executeCursor(context, params, provideName, cursorValues);
 			if(DataUtil.isNull(cursorRootPath)){
-				throw new DBFoundRuntimeException("cursorRootPath can not be null");
+				throw new DBFoundRuntimeException("cursorRootPath cannot be null");
 			}
 			exeSourcePath = cursorRootPath;
 			if(!ELEngine.isAbsolutePath(exeSourcePath)) {

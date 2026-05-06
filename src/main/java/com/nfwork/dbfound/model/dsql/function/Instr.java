@@ -1,7 +1,7 @@
 package com.nfwork.dbfound.model.dsql.function;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.DSqlFunction;
 import com.nfwork.dbfound.util.DataUtil;
 
@@ -13,7 +13,7 @@ public class Instr extends DSqlFunction {
     public Object apply(List<Object> list, SqlDialect sqlDialect) {
         // INSTR函数需要2个参数：主字符串和要查找的子字符串
         if (list.size() != 2) {
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
         
         String str = DataUtil.stringValue(list.get(0));

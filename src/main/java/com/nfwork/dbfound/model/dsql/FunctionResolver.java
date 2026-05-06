@@ -4,7 +4,7 @@ import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.db.ConnectionProvide;
 import com.nfwork.dbfound.db.ConnectionProvideManager;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.exception.DSqlNotSupportException;
+import com.nfwork.dbfound.exception.DSqlUnsupportedException;
 import com.nfwork.dbfound.model.dsql.function.*;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
@@ -52,16 +52,16 @@ public class FunctionResolver extends DSqlValueResolver {
         ConnectionProvide provide = ConnectionProvideManager.getConnectionProvide(provideName);
         Function function = (Function)expression;
         if(function.getMultipartName().size()!=1){
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
 
         String functionName = function.getMultipartName().get(0).toLowerCase();
         DSqlFunction dSqlFunction = functionMap.get(functionName);
         if(dSqlFunction == null){
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
         if (!dSqlFunction.isSupported(provide.getSqlDialect())){
-            throw new DSqlNotSupportException();
+            throw new DSqlUnsupportedException();
         }
 
         List<Object> fpList = new ArrayList<>();

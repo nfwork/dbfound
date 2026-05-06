@@ -206,7 +206,7 @@ public class Context {
 			return;
 		}
 		if (!DBFoundConfig.isOpenSession()) {
-			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
+			throw new DBFoundRuntimeException("session is not opened, cannot set data to session ");
 		}
 		Enumeration<String> enumeration = session.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
@@ -381,7 +381,7 @@ public class Context {
 
 	public void setData(String name, Object object) {
 		if(DataUtil.isNull(name)){
-			throw new DBFoundRuntimeException("name can not be null");
+			throw new DBFoundRuntimeException("name cannot be null");
 		}
 		if (name.startsWith(ELEngine.paramScope)) {
 			name = name.substring(6);
@@ -436,7 +436,7 @@ public class Context {
 	 */
 	public void setRequestData(String name, Object value) {
 		if (name.contains(".") || name.contains("[")) {
-			throw new DBFoundRuntimeException("on request scope, the name can not be contain '.' or '[' :" + name);
+			throw new DBFoundRuntimeException("on request scope, the name cannot contain '.' or '[' :" + name);
 		}
 		if (request != null) {
 			request.setAttribute(name, value);
@@ -452,10 +452,10 @@ public class Context {
 	 */
 	public void setSessionData(String name, Object value) {
 		if (!DBFoundConfig.isOpenSession()) {
-			throw new DBFoundRuntimeException("session is not opened, can not set data to session ");
+			throw new DBFoundRuntimeException("session is not opened, cannot set data to session ");
 		}
 		if (name.contains(".") || name.contains("[")) {
-			throw new DBFoundRuntimeException("on session scope, the name can not be contain '.' or '[' :" + name);
+			throw new DBFoundRuntimeException("on session scope, the name cannot contain '.' or '[' :" + name);
 		}
 		if (request != null) {
 			request.getSession().setAttribute(name, value);
@@ -611,7 +611,7 @@ public class Context {
 
 	public Map<String, Object> getSessionDatas() {
 		if (!DBFoundConfig.isOpenSession()) {
-			throw new DBFoundRuntimeException("session is not opened, can not get data from session ");
+			throw new DBFoundRuntimeException("session is not opened, cannot get data from session ");
 		}
 		if (sessionDatas == null) {
 			Object o = rootDatas.get("session");
@@ -710,7 +710,7 @@ public class Context {
 	private void checkContext(){
 		long runThread = Thread.currentThread().getId();
 		if (runThread != createThread) {
-			throw new DBFoundRuntimeException("Context can not be user by different thread, create thread id:"+
+			throw new DBFoundRuntimeException("Context cannot be used by different thread, create thread id:"+
 					createThread + ", run thread id:" + runThread);
 		}
 	}
