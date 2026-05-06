@@ -60,7 +60,7 @@ public class DBFoundConfig {
 	private static boolean logWithParamSql = false;
 	private static String encoding = "UTF-8";
 	private static Integer maxUploadSize = 10; // 单位M
-	private static String basePath ;
+	private static String basePath = "${@contextPath}";
 	private static List<String> apiAllowUrls = Collections.emptyList();
 
 	public static void destroy() {
