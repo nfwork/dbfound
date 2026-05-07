@@ -73,7 +73,7 @@ public class ReflectorUtil extends PropertyTransfer {
 			Calendar defaultCalendar = Calendar.getInstance();
 			while (rs.next()) {
 				Object value = TypeResolverTool.getValue(clazz, rs, 1, defaultCalendar);
-				if (rs.wasNull()) {
+				if (rs.wasNull() && !clazz.isPrimitive()) {
 					value = null;
 				}
 				list.add((T) value);
