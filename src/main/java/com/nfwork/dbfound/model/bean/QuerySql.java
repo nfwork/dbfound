@@ -103,11 +103,7 @@ public class QuerySql extends Sql {
 							fileSize = 1;
 						}
 					}else{
-						if (dataset.getObject(i) == null) {
-							param.setValue(null);
-						}else{
-							param.setValue(getData(columnType,dataset,i,defaultCalendar));
-						}
+						param.setValue(getData(columnType,dataset,i,defaultCalendar));
 					}
 					param.setSourcePathHistory("set_by_querySql");
 					param.setRequireLog(true);

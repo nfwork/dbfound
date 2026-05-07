@@ -10,6 +10,11 @@ import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LocalDateUtil;
 import org.junit.Test;
 
+import java.lang.reflect.Proxy;
+import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -180,6 +185,83 @@ public class SqlEntityTest extends SqlEntity {
         assert result.equals("field in (?,?,?,?,?)");
         result = getExecuteSql("find_in_set(fields,'#{@fields}')",params, new ArrayList<>());
         assert result.equals("find_in_set(fields,'1,2,3,5')");
+    }
+
+    @Test
+    public void testInitParamSetNull() throws Exception {
+        List<Object> calls = new ArrayList<>();
+        PreparedStatement statement = (PreparedStatement) Proxy.newProxyInstance(
+                PreparedStatement.class.getClassLoader(),
+                new Class[]{PreparedStatement.class},
+                (proxy, method, args) -> {
+                    if ("setNull".equals(method.getName())) {
+                        calls.add(args[0]);
+                        calls.add(args[1]);
+                    }
+                    return null;
+                });
+
+        initParam(statement, Collections.singletonList(null));
+
+        assert calls.size() == 2;
+        assert Objects.equals(1, calls.get(0));
+        assert Objects.equals(Types.NULL, calls.get(1));
+    }
+
+    @Test
+    public void testGetDataBigDecimalAndNull() throws Exception {
+        BigDecimal decimal = new BigDecimal("1234567890.123456789");
+        ResultSet decimalResultSet = resultSet(decimal);
+        Object value = getData(Types.NUMERIC, decimalResultSet, 1, Calendar.getInstance());
+        assert value instanceof BigDecimal;
+        assert decimal.equals(value);
+
+        ResultSet nullResultSet = resultSet(null);
+        value = getData(Types.INTEGER, nullResultSet, 1, Calendar.getInstance());
+        assert value == null;
+    }
+
+    private ResultSet resultSet(Object value) {
+        return (ResultSet) Proxy.newProxyInstance(
+                ResultSet.class.getClassLoader(),
+                new Class[]{ResultSet.class},
+                new java.lang.reflect.InvocationHandler() {
+                    boolean wasNull;
+
+                    @Override
+                    public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) {
+                        String name = method.getName();
+                        if ("wasNull".equals(name)) {
+                            return wasNull;
+                        }
+                        if ("getBigDecimal".equals(name)) {
+                            wasNull = value == null;
+                            return value;
+                        }
+                        if ("getInt".equals(name)) {
+                            wasNull = value == null;
+                            return value == null ? 0 : ((Number) value).intValue();
+                        }
+                        if ("getString".equals(name)) {
+                            wasNull = value == null;
+                            return value == null ? null : value.toString();
+                        }
+                        return defaultValue(method.getReturnType());
+                    }
+                });
+    }
+
+    private Object defaultValue(Class<?> type) {
+        if (!type.isPrimitive()) {
+            return null;
+        }
+        if (type == boolean.class) {
+            return false;
+        }
+        if (type == void.class) {
+            return null;
+        }
+        return 0;
     }
 
     @Override

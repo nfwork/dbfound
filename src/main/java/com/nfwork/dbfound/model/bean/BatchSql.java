@@ -170,10 +170,6 @@ public class BatchSql extends Sqls {
 				Map<String, Object> mapdata = new HashMap<>();
 				for (int i = 1; i <= colNames.length; i++) {
 					String columnName = colNames[i-1];
-					if (dataset.getObject(i) == null) {
-						mapdata.put(columnName, null);
-						continue;
-					}
 					int columnType = metaset.getColumnType(i);
 					mapdata.put(columnName,getData(columnType,dataset,i,defaultCalendar));
 				}

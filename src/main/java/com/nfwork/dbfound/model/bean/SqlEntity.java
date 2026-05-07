@@ -195,7 +195,7 @@ public abstract class SqlEntity extends Entity {
 		int cursor = 1;
 		for (Object value : exeParam){
 			if(value == null){
-				statement.setString(cursor,null);
+				statement.setNull(cursor, Types.NULL);
 			}else if(value instanceof String){
 				statement.setString(cursor,(String)value);
 			}else if(value instanceof Number){
@@ -584,9 +584,11 @@ public abstract class SqlEntity extends Entity {
 				result = dataset.getFloat(index);
 				break;
 			case Types.DOUBLE:
+				result = dataset.getDouble(index);
+				break;
 			case Types.DECIMAL:
 			case Types.NUMERIC:
-				result = dataset.getDouble(index);
+				result = dataset.getBigDecimal(index);
 				break;
 			case Types.DATE:
 				result = dataset.getDate(index, defaultCalendar);
@@ -603,7 +605,7 @@ public abstract class SqlEntity extends Entity {
 			default:
 				result = dataset.getString(index);
 		}
-		return result;
+		return dataset.wasNull() ? null : result;
 	}
 
 	protected Boolean checkCondition(String condition,  Map<String, Param> params, Context context, String provideName){

@@ -37,19 +37,21 @@ public class ReflectorUtil extends PropertyTransfer {
 					}
 
 					if (reflector.hasSetter(propertyName)) {
-						Object columnValue = rs.getObject(i);
-						if (columnValue != null) {
-							Class<?> fieldType = reflector.getSetterType(propertyName);
+						Class<?> fieldType = reflector.getSetterType(propertyName);
+						Object columnValue;
 
-							if (EnumHandlerFactory.isEnum(fieldType)){
-								String stringValue = rs.getString(i);
-								if(stringValue!=null) {
-									columnValue = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(stringValue);
-								}
-							} else {
-								columnValue = TypeResolverTool.getValue(fieldType,rs,i,defaultCalendar);
+						if (EnumHandlerFactory.isEnum(fieldType)){
+							String stringValue = rs.getString(i);
+							if(stringValue != null) {
+								columnValue = EnumHandlerFactory.getEnumHandler(fieldType).locateEnum(stringValue);
+							}else{
+								columnValue = null;
 							}
+						} else {
+							columnValue = TypeResolverTool.getValue(fieldType,rs,i,defaultCalendar);
+						}
 
+						if (!rs.wasNull()) {
 							try {
 								reflector.getSetInvoker(propertyName).invoke(obj, new Object[] { columnValue });
 							} catch (Exception e) {
@@ -70,9 +72,9 @@ public class ReflectorUtil extends PropertyTransfer {
 		if (rs != null) {
 			Calendar defaultCalendar = Calendar.getInstance();
 			while (rs.next()) {
-				Object value =  rs.getObject(1);
-				if(value != null || clazz.isPrimitive()){
-					value = TypeResolverTool.getValue(clazz, rs, 1, defaultCalendar);
+				Object value = TypeResolverTool.getValue(clazz, rs, 1, defaultCalendar);
+				if (rs.wasNull()) {
+					value = null;
 				}
 				list.add((T) value);
 			}
