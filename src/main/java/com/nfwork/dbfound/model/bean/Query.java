@@ -306,10 +306,6 @@ public class Query extends SqlEntity {
 					if ("d_rm".equals(columnName)) {// 分页参数 不放入map
 						continue;
 					}
-					if (dataset.getObject(i) == null) {
-						mapdata.put(columnName, null);
-						continue;
-					}
 					int columnType = metaset.getColumnType(i);
 					mapdata.put(columnName,getData(columnType,dataset,i,defaultCalendar));
 				}

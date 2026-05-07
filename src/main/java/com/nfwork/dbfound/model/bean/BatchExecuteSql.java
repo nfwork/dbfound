@@ -53,6 +53,10 @@ public class BatchExecuteSql extends Sql {
 			initError = "BatchExecuteSql content sql cannot be null";
 			return;
 		}
+		if(batchSize == null || batchSize <= 0){
+			initError = "BatchExecuteSql attribute batchSize must be greater than 0";
+			return;
+		}
 
 		autoCreateParam(sql,this);
 
