@@ -18,12 +18,16 @@ public class ReflectorUtilTest {
     @Test
     public void testParseSimpleListNull() throws Exception {
         ResultSet rs = resultSet(new Object[][]{{null}, {5}}, "value");
-
         List<Integer> values = ReflectorUtil.parseSimpleList(Integer.class, rs);
-
         assert values.size() == 2;
         assert values.get(0) == null;
         assert values.get(1) == 5;
+
+        rs = resultSet(new Object[][]{{null}, {5}}, "value");
+        List<?> nums = ReflectorUtil.parseSimpleList(int.class, rs);
+        assert nums.size() == 2;
+        assert nums.get(0).equals(0);
+        assert nums.get(1).equals(5);
     }
 
     @Test
