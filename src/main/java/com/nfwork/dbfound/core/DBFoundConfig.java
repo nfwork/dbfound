@@ -375,9 +375,6 @@ public class DBFoundConfig {
 
 		// 设置model根目录
 		String modelRootPath = getConfigValue(system, "system", "modelRootPath");
-		if (DataUtil.isNull(modelRootPath)) {
-			modelRootPath = getConfigValue(system, "system", "modeRootPath");
-		}
 		if (DataUtil.isNotNull(modelRootPath)) {
 			DBFoundConfig.modelRootPath = modelRootPath;
 			appendConfigInfo(info, "modelRootPath", modelRootPath);
