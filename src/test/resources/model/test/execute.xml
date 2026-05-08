@@ -262,4 +262,13 @@
         </sqls>
     </execute>
 
+    <execute name="handleAdapter" adapter="dbfound.test.adapter.HandleExecuteTestAdapter">
+        <param name="skip_execute" dataType="varchar" />
+        <sqls>
+            <querySql>
+                select 1 as user_id
+            </querySql>
+        </sqls>
+    </execute>
+
 </model>

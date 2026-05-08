@@ -182,6 +182,31 @@ public class QueryTest {
     }
 
     @Test
+    public void testHandleQuery() {
+        // handleQuery 返回非 null，提前返回，不执行 beforeQuery、afterQuery 和实际 SQL
+        Context context = new Context();
+        context.setParamData("use_cache", "true");
+        QueryResponseObject<Map<String, Object>> responseObject = ModelEngine.query(context, "test/query", "handleAdapter");
+        assert responseObject.getDatas().size() == 1;
+        assert responseObject.get().get("user_name").equals("cached_user");
+        assert Objects.equals(responseObject.get().get("user_id"), 0);
+        assert responseObject.getMessage().equals("from cache");
+        assert context.getInt("param.handled") == 1;
+        assert context.getInt("param.before") == null;
+        assert context.getInt("param.after") == null;
+
+        // handleQuery 返回 null，正常执行 beforeQuery + SQL + afterQuery
+        context = new Context();
+        responseObject = ModelEngine.query(context, "test/query", "handleAdapter");
+        assert responseObject.getDatas().size() == 1;
+        assert responseObject.get().get("user_name").equals("lily");
+        assert Objects.equals(responseObject.get().get("user_id"), 1L);
+        assert context.getInt("param.handled") == null;
+        assert context.getInt("param.before") == 1;
+        assert context.getInt("param.after") == 1;
+    }
+
+    @Test
     public void testFilter(){
         Context context = new Context();
         QueryResponseObject<User> responseObject = ModelEngine.query(context, "test/query", "filter", User.class);

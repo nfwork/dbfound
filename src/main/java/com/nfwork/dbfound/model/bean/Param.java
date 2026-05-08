@@ -1,5 +1,6 @@
 package com.nfwork.dbfound.model.bean;
 
+import java.math.BigDecimal;
 import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.List;
@@ -111,6 +112,10 @@ public class Param extends Entity implements Cloneable{
 
 	public Double getDoubleValue(){
 		return DataUtil.doubleValue(value);
+	}
+
+	public BigDecimal getBigDecimalValue(){
+		return DataUtil.bigDecimalValue(value);
 	}
 
 	public String getStringValue() {

@@ -2,6 +2,7 @@ package com.nfwork.dbfound.util;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -123,6 +124,16 @@ public class DataUtil {
 			return (Boolean) o;
 		} else {
 			return Boolean.valueOf(o.toString());
+		}
+	}
+
+	public static BigDecimal bigDecimalValue(Object o) {
+		if (isNull(o)) {
+			return null;
+		} else if (o instanceof BigDecimal) {
+			return (BigDecimal) o;
+		} else {
+			return new BigDecimal(o.toString());
 		}
 	}
 

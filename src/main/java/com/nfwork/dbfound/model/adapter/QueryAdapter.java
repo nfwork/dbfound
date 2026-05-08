@@ -11,6 +11,10 @@ import java.util.Map;
 
 public interface QueryAdapter<T> {
 
+    default QueryResponseObject<T> handleQuery(Context context, Map<String, Param> params){
+        return null;
+    }
+    
     default void beforeQuery(Context context, Map<String, Param> params){
 
     }

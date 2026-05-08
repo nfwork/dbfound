@@ -74,6 +74,12 @@ public class Execute extends SqlEntity {
 
 		if(executeAdapterList!=null){
 			for(ExecuteAdapter executeAdapter : executeAdapterList) {
+				ResponseObject result = executeAdapter.handleExecute(context, params);
+				if (result != null) {
+					return result;
+				}
+			}
+			for(ExecuteAdapter executeAdapter : executeAdapterList) {
 				executeAdapter.beforeExecute(context, params);
 			}
 		}
