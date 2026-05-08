@@ -118,6 +118,27 @@ public class ExecuteTest {
     }
 
     @Test
+    public void testHandleExecute() {
+        // handleExecute 返回非 null，提前返回，不执行 beforeExecute、afterExecute 和实际 SQL
+        Context context = new Context();
+        context.setParamData("skip_execute", "true");
+        ResponseObject responseObject = ModelEngine.execute(context, "test/execute", "handleAdapter");
+        assert responseObject.isSuccess();
+        assert responseObject.getMessage().equals("handled");
+        assert context.getInt("param.handled") == 1;
+        assert context.getInt("param.before") == null;
+        assert context.getInt("param.after") == null;
+
+        // handleExecute 返回 null，正常执行 beforeExecute + SQL + afterExecute
+        context = new Context();
+        responseObject = ModelEngine.execute(context, "test/execute", "handleAdapter");
+        assert responseObject.isSuccess();
+        assert context.getInt("param.handled") == null;
+        assert context.getInt("param.before") == 1;
+        assert context.getInt("param.after") == 1;
+    }
+
+    @Test
     public void testGeneratedKey() throws Exception {
         Context context = new Context();
         TransactionUtil.executeWithoutResult(context,()->{

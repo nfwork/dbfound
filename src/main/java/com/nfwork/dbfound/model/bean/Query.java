@@ -158,6 +158,12 @@ public class Query extends SqlEntity {
 
 		if(queryAdapterList != null){
 			for (QueryAdapter<?> queryAdapter: queryAdapterList){
+				QueryResponseObject result = queryAdapter.handleQuery(context, params);
+				if (result != null) {
+					return (QueryResponseObject<T>) result;
+				}
+			}
+			for (QueryAdapter<?> queryAdapter: queryAdapterList){
 				queryAdapter.beforeQuery(context, params);
 			}
 		}

@@ -191,4 +191,11 @@
         <filter name="ids" dataType="collection" express="user_id in (${@ids})" />
     </query>
 
+    <query name="handleAdapter" adapter="dbfound.test.adapter.HandleQueryTestAdapter">
+        <param name="use_cache" dataType="varchar" />
+        <sql>
+            select 1 as user_id, 'lily' as user_name
+        </sql>
+    </query>
+
 </model>
