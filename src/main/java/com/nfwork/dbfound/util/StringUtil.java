@@ -222,14 +222,29 @@ public class StringUtil {
     }
 
     public static boolean containsIgnoreCase(String source, String target) {
+        return indexOfIgnoreCase(source, target) != -1;
+    }
+
+    public static int indexOfIgnoreCase(String source, String target) {
         int targetLen = target.length();
         int max = source.length() - targetLen;
         for (int i = 0; i <= max; i++) {
             if (source.regionMatches(true, i, target, 0, targetLen)) {
-                return true;
+                return i;
             }
         }
-        return false;
+        return -1;
+    }
+
+    public static int lastIndexOfIgnoreCase(String source, String target) {
+        int targetLen = target.length();
+        int max = source.length() - targetLen;
+        for (int i = max; i >= 0; i--) {
+            if (source.regionMatches(true, i, target, 0, targetLen)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static boolean isBeginAnd(String value){
