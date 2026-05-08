@@ -61,57 +61,69 @@ public class StringUtil {
         if(value == null){
             return null;
         }
-        char [] chars = value.toCharArray();
-        if(chars.length == 0){
+        int len = value.length();
+        if(len == 0){
             return value;
         }
 
         boolean lastIsBlank = true;
         int dyh = 0;
         int syh = 0;
+        int backslashCount = 0;
 
         boolean commentBasic = false;
         boolean commentMulti = false;
 
-        StringBuilder buffer = new StringBuilder();
+        StringBuilder buffer = new StringBuilder(len);
 
-        for(int i=0; i< chars.length; i++){
+        for(int i=0; i< len; i++){
+            char c = value.charAt(i);
 
             // 注释处理
             if(commentBasic){
-                if(chars[i] == '\n'){
+                if(c == '\n' || c == '\r'){
                     commentBasic = false;
-                }else{
-                    continue;
+                    if(!lastIsBlank){
+                        buffer.append(' ');
+                        lastIsBlank = true;
+                    }
                 }
+                continue;
             }
             if(commentMulti){
-                if(chars[i] == '/' && chars[i-1] == '*'){
+                if(c == '/' && value.charAt(i-1) == '*'){
                     commentMulti = false;
                     if(!lastIsBlank){
-                        buffer.append(" ");
+                        buffer.append(' ');
                         lastIsBlank = true;
                     }
                 }
                 continue;
             }
 
-            if (chars[i] == '\'' && (i==0 || chars[i-1] != '\\') && syh==0) {
+            boolean escaped = c != '\\' && (backslashCount % 2 != 0);
+            if (c == '\\') {
+                backslashCount++;
+            } else {
+                backslashCount = 0;
+            }
+
+            if (c == '\'' && !escaped && syh==0) {
                 dyh = dyh ^ 1;
-            }else if (chars[i] == '\"' && (i==0 || chars[i-1] != '\\') && dyh==0) {
+            }else if (c == '\"' && !escaped && dyh==0) {
                 syh = syh ^ 1;
             }else if (dyh == 0 && syh ==0) {
 
                 // 注释处理
-                if (chars[i] == '-' && i < chars.length - 2 && chars[i + 1] == '-' && (chars[i + 2] == ' ' || chars[i+2] == '\t' || chars[i+2] == '\n')) {
+                if (c == '-' && i < len - 2 && value.charAt(i + 1) == '-' && (value.charAt(i + 2) == ' ' || value.charAt(i+2) == '\t' || value.charAt(i+2) == '\n')) {
                     commentBasic = true;
                     continue;
-                } else if (chars[i] == '/' && i < chars.length -1 && chars[i + 1] == '*') {
+                } else if (c == '/' && i < len -1 && value.charAt(i + 1) == '*') {
                     commentMulti = true;
                     continue;
                 }
 
-                if (chars[i] == ' ' || chars[i] == '\t' || chars[i] == '\n') {
+                if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
                     if (!lastIsBlank) {
                         buffer.append(' ');
                         lastIsBlank = true;
@@ -119,48 +131,61 @@ public class StringUtil {
                     continue;
                 }
             }
-            buffer.append(chars[i]);
+            buffer.append(c);
             lastIsBlank = false;
         }
         if(lastIsBlank && buffer.length() > 0){
-            buffer.deleteCharAt(buffer.length()-1);
+            buffer.setLength(buffer.length()-1);
         }
         return buffer.toString();
     }
 
     public static String getParamSql(String sql, List<Object> exeParam){
-        char [] chars = sql.toCharArray();
+        int len = sql.length();
         int dyh = 0;
         int syh = 0;
+        int backslashCount = 0;
 
         int paramIndex = 0;
+        int paramSize = exeParam.size();
         int start = 0;
-        StringBuilder buffer = new StringBuilder();
-        for(int i=0; i< chars.length; i++){
-            if (chars[i] == '\'') {
-                if((i==0 || chars[i-1] != '\\') && syh==0) {
+        StringBuilder buffer = new StringBuilder(len + 64);
+        for(int i=0; i< len; i++){
+            char c = sql.charAt(i);
+
+            boolean escaped = c != '\\' && (backslashCount % 2 != 0);
+            if (c == '\\') {
+                backslashCount++;
+            } else {
+                backslashCount = 0;
+            }
+
+            if (c == '\'') {
+                if(!escaped && syh==0) {
                     dyh = dyh ^ 1;
                 }
-            }else if (chars[i] == '\"') {
-                if((i==0 || chars[i-1] != '\\') && dyh==0) {
+            }else if (c == '\"') {
+                if(!escaped && dyh==0) {
                     syh = syh ^ 1;
                 }
-            }else if(chars[i] == '?'){
+            }else if(c == '?'){
                 if (dyh == 0 && syh ==0) {
-                    buffer.append(chars, start, i - start);
+                    buffer.append(sql, start, i);
                     start = i + 1;
 
+                    if(paramIndex >= paramSize){
+                        buffer.append('?');
+                        continue;
+                    }
                     Object value = exeParam.get(paramIndex++);
                     if(value == null){
                         buffer.append("null");
                     }else if (value instanceof Number){
                         buffer.append(value);
                     }else if(value instanceof String){
-                        String sValue = (String) value;
-                        if(sValue.contains("'")){
-                            sValue = sValue.replace("'","\\'");
-                        }
-                        buffer.append("'").append(sValue).append("'");
+                        buffer.append('\'');
+                        appendEscapedSqlString(buffer, (String) value);
+                        buffer.append('\'');
                     } else if (value instanceof Date) {
                         buffer.append("'").append(LocalDateUtil.formatDate((Date) value)).append("'");
                     } else if (value instanceof Temporal) {
@@ -173,10 +198,27 @@ public class StringUtil {
                 }
             }
         }
-        if(start < chars.length){
-            buffer.append(chars,start, chars.length-start);
+        if(start < len){
+            buffer.append(sql, start, len);
         }
         return buffer.toString();
+    }
+
+    private static void appendEscapedSqlString(StringBuilder buffer, String value) {
+        if (value.indexOf('\'') < 0 && value.indexOf('\\') < 0) {
+            buffer.append(value);
+            return;
+        }
+        for (int i = 0, len = value.length(); i < len; i++) {
+            char c = value.charAt(i);
+            if (c == '\'') {
+                buffer.append('\\').append('\'');
+            } else if (c == '\\') {
+                buffer.append('\\').append('\\');
+            } else {
+                buffer.append(c);
+            }
+        }
     }
 
     public static boolean isBeginAnd(String value){
