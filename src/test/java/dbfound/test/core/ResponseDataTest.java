@@ -3,6 +3,7 @@ package dbfound.test.core;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class ResponseDataTest {
@@ -38,6 +39,8 @@ public class ResponseDataTest {
         assert Objects.equals(object.getString("user_id"),"1");
         assert Objects.equals(object.getDouble("user_id"),1d);
         assert Objects.equals(object.getFloat("user_id"),1f);
+        assert Objects.equals(object.getBigDecimal("user_id"), new BigDecimal("1"));
+        assert Objects.equals(object.getBigDecimalList("user_id").get(1), new BigDecimal("2"));
     }
 
     @Test

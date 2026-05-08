@@ -3,6 +3,7 @@ package com.nfwork.dbfound.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.util.*;
@@ -324,6 +325,8 @@ public class Context {
 				object = DataUtil.doubleValue(object);
 			} else if (class1.equals(Boolean.class) || class1.equals(boolean.class)) {
 				object = DataUtil.booleanValue(object);
+			} else if (class1.equals(BigDecimal.class)) {
+				object = DataUtil.bigDecimalValue(object);
 			} else if (class1.equals(Date.class)) {
 				object = DataUtil.dateValue(object);
 			} else if (class1.equals(Short.class) || class1.equals(short.class)) {
@@ -362,6 +365,11 @@ public class Context {
 	public Double getDouble(String express){
 		Object object = getData(express);
 		return DataUtil.doubleValue(object);
+	}
+
+	public BigDecimal getBigDecimal(String express){
+		Object object = getData(express);
+		return DataUtil.bigDecimalValue(object);
 	}
 
 	public Boolean getBoolean(String express){

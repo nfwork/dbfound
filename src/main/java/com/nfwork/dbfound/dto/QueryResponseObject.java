@@ -3,6 +3,7 @@ package com.nfwork.dbfound.dto;
 import com.nfwork.dbfound.el.DBFoundEL;
 import com.nfwork.dbfound.util.DataUtil;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -70,6 +71,11 @@ public class QueryResponseObject<T> extends ResponseObject{
 		return DataUtil.doubleValue(value);
 	}
 
+	public BigDecimal getBigDecimal(String propertyName){
+		Object value = getProperty(propertyName);
+		return DataUtil.bigDecimalValue(value);
+	}
+
 	public Float getFloat(String propertyName){
 		Object value = getProperty(propertyName);
 		return DataUtil.floatValue(value);
@@ -108,6 +114,13 @@ public class QueryResponseObject<T> extends ResponseObject{
 			return null;
 		}
 		return datas.stream().map(value -> DataUtil.doubleValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
+	}
+
+	public List<BigDecimal> getBigDecimalList(String propertyName){
+		if(datas == null ){
+			return null;
+		}
+		return datas.stream().map(value -> DataUtil.bigDecimalValue(DBFoundEL.getData(propertyName, value))).collect(Collectors.toList());
 	}
 
 	public List<Float> getFloatList(String propertyName){

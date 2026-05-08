@@ -6,6 +6,7 @@ import dbfound.test.entity.Role;
 import dbfound.test.entity.User;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class ContextTest {
@@ -41,5 +42,20 @@ public class ContextTest {
         assert Objects.equals(context.getString("param.user.userDescription"), "john desc");
         assert Objects.equals(context.getString("param.user.user_description"), "john desc");
         assert Objects.equals(context.getString("param.user.user_desc"), "john desc");
+    }
+
+    @Test
+    public void testGetBigDecimal() {
+        Context context = new Context()
+                .withParam("amount", "123.45")
+                .withParam("count", 100)
+                .withParam("price", new BigDecimal("99.99"))
+                .withParam("empty", null);
+
+        assert Objects.equals(context.getBigDecimal("param.amount"), new BigDecimal("123.45"));
+        assert Objects.equals(context.getBigDecimal("param.count"), new BigDecimal("100"));
+        assert Objects.equals(context.getBigDecimal("param.price"), new BigDecimal("99.99"));
+        assert context.getBigDecimal("param.empty") == null;
+        assert Objects.equals(context.getData("param.amount", BigDecimal.class), new BigDecimal("123.45"));
     }
 }
