@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.nfwork.dbfound.db.dialect.AbstractSqlDialect;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.el.ELEngine;
@@ -60,6 +61,7 @@ public class Query extends SqlEntity {
 	private Sql sql;
 
 	private boolean printContext = false;
+	private static final ObjectWriter PRETTY_WRITER = JsonUtil.getObjectMapper().writerWithDefaultPrettyPrinter();
 
 	@Override
 	public void doStartTag(Element element) {
@@ -135,7 +137,7 @@ public class Query extends SqlEntity {
 		if (printContext){
 			try {
 				LogUtil.info("Context infos:\ncurrentPath: "+context.getCurrentPath()+"\ndata: "
-						+ JsonUtil.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(context.getDatas()));
+						+ PRETTY_WRITER.writeValueAsString(context.getDatas()));
 			} catch (JsonProcessingException e) {
 				LogUtil.error("printContext failed",e);
 			}
@@ -239,6 +241,7 @@ public class Query extends SqlEntity {
 		return initFilterAndSqlPart(sql.getSql(), params, context, provideName);
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> List<T> doExecuteQuery(Context context, String querySql, Map<String, Param> params, String provideName, Class<T> clazz, boolean autoPaging) {
 		Connection conn = context.getConn(provideName);
 
@@ -298,16 +301,21 @@ public class Query extends SqlEntity {
 				}
 			}
 			String[] colNames = getColNames(metaset);
+			int colCount = colNames.length;
+			int[] columnTypes = new int[colCount];
+			for (int i = 0; i < colCount; i++) {
+				columnTypes[i] = metaset.getColumnType(i + 1);
+			}
+			int mapCapacity = (int)(colCount / 0.75) + 1;
 			Calendar defaultCalendar = Calendar.getInstance();
 			while (dataset.next()) {
-				Map<String, Object> mapdata = new HashMap<>();
-				for (int i = 1; i <= colNames.length; i++) {
+				Map<String, Object> mapdata = new HashMap<>(mapCapacity);
+				for (int i = 1; i <= colCount; i++) {
 					String columnName = colNames[i-1];
-					if ("d_rm".equals(columnName)) {// 分页参数 不放入map
+					if ("d_rm".equals(columnName)) {
 						continue;
 					}
-					int columnType = metaset.getColumnType(i);
-					mapdata.put(columnName,getData(columnType,dataset,i,defaultCalendar));
+					mapdata.put(columnName,getData(columnTypes[i-1],dataset,i,defaultCalendar));
 				}
 				data.add(mapdata);
 			}
@@ -456,10 +464,18 @@ public class Query extends SqlEntity {
 				kh++;
 			} else if (sqlChars[i] == ')' && dyh == 0 && syh == 0) {
 				kh--;
-			} else if (sqlChars[i] == '\'' && sqlChars[i-1] != '\\' && syh == 0) {
-				dyh = dyh ^ 1;
-			} else if (sqlChars[i] == '\"' && sqlChars[i-1] != '\\' && dyh == 0) {
-				syh = syh ^ 1;
+			} else if (sqlChars[i] == '\'' && syh == 0) {
+				if (dyh == 1 && i + 1 < sqlChars.length && sqlChars[i + 1] == '\'') {
+					i++;
+				} else if (sqlChars[i-1] != '\\') {
+					dyh = dyh ^ 1;
+				}
+			} else if (sqlChars[i] == '\"' && dyh == 0) {
+				if (syh == 1 && i + 1 < sqlChars.length && sqlChars[i + 1] == '\"') {
+					i++;
+				} else if (sqlChars[i-1] != '\\') {
+					syh = syh ^ 1;
+				}
 			}
 			if (sqlChars[i] == ' ' || sqlChars[i] == '\n' || sqlChars[i] == '\t' || sqlChars[i] == ')' ) {
 				if (kh == 0 && dyh == 0 && syh == 0) {
@@ -468,11 +484,11 @@ public class Query extends SqlEntity {
 						from_hold = index;
 					}else if(distinct_hold == 0 && sqlMatch(sqlChars, index , DISTINCT)){
 						distinct_hold = index;
-					}else if(group_hold == 0 && sqlMatch(sqlChars, index , GROUP)){
+					}else if(from_hold > 0 && group_hold == 0 && sqlMatch(sqlChars, index , GROUP)){
 						group_hold = index;
 					}else if(union_hold == 0 && sqlMatch(sqlChars, index , UNION)){
 						union_hold = index;
-					}else if(order_hold == 0 && sqlMatch(sqlChars, index , ORDER)){
+					}else if(from_hold > 0 && order_hold == 0 && sqlMatch(sqlChars, index , ORDER)){
 						order_hold = index;
 					}
 				}
@@ -484,25 +500,24 @@ public class Query extends SqlEntity {
 			return count; // 没有找到from return 1
 		}
 
-		String cSql = "";
-		if(distinct_hold > 0 || union_hold > 0){
+		if (order_hold > 0 && order_hold < from_hold) {
+			order_hold = 0;
+		}
+		if (group_hold > 0 && group_hold < from_hold) {
+			group_hold = 0;
+		}
+
+		String cSql;
+		if(distinct_hold > 0 || union_hold > 0 || group_hold > 0){
 			if(order_hold > 0){
 				cSql = "select count(1) from (" + querySql.substring(0, order_hold) + ") v";
 			}else{
 				cSql = "select count(1) from (" + querySql + ") v";
 			}
-		}else if (order_hold == 0) {
-			if (group_hold > 0) {
-				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold) + ") v";
-			} else {
-				cSql = "select count(1) " + querySql.substring(from_hold);
-			}
-		} else if(order_hold > 0){
-			if (group_hold > 0) {
-				cSql = "select count(1) from (select 1 " + querySql.substring(from_hold, order_hold) + ") v";
-			} else {
-				cSql = "select count(1) " + querySql.substring(from_hold, order_hold);
-			}
+		} else if (order_hold > 0) {
+			cSql = "select count(1) " + querySql.substring(from_hold, order_hold);
+		} else {
+			cSql = "select count(1) " + querySql.substring(from_hold);
 		}
 
 		List<Object> sqlParams = new ArrayList<>();
@@ -531,8 +546,9 @@ public class Query extends SqlEntity {
 			// 参数设定
 			initParam(statement, count.getSqlParams());
 			dataset = statement.executeQuery();
-			dataset.next();
-			count.setTotalCounts( dataset.getLong(1));
+			if (dataset.next()) {
+				count.setTotalCounts(dataset.getLong(1));
+			}
 		} catch (SQLException e) {
 			throw new SqlExecuteException(provideName, getSqlTask(context,"QueryCount"), cSql, e.getMessage(), e);
 		} finally {
@@ -558,11 +574,19 @@ public class Query extends SqlEntity {
 		Map<String,Object> params = context.getParamDatas();
 		Object start = params.get("start");
 		if (DataUtil.isNotNull(start)) {
-			context.setPageStart(Long.parseLong(start.toString()));
+			try {
+				context.setPageStart(Long.parseLong(start.toString()));
+			} catch (NumberFormatException e) {
+				throw new DBFoundRuntimeException("invalid pager start value: " + start, e);
+			}
 		}
 		Object limit = params.get("limit");
 		if (DataUtil.isNotNull(limit)) {
-			context.setPageLimit(Integer.parseInt(limit.toString()));
+			try {
+				context.setPageLimit(Integer.parseInt(limit.toString()));
+			} catch (NumberFormatException e) {
+				throw new DBFoundRuntimeException("invalid pager limit value: " + limit, e);
+			}
 		}
 		Object count = params.get("count");
 		if(DataUtil.isNotNull(count)) {
