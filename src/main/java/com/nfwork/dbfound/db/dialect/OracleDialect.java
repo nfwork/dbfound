@@ -6,7 +6,7 @@ public class OracleDialect extends AbstractSqlDialect {
 	public String getPagerSql(String sql, String limitHold, String startHold) {
 		return "select * from (select v.*, rownum d_rm from (" + sql
 				+ ") v where rownum <= " + startHold + " + " + limitHold
-				+ ") where d_rm >= " + startHold + " + 1";
+				+ ") where d_rm > " + startHold;
 	}
 
 	@Override

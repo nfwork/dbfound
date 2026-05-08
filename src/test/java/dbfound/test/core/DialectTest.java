@@ -51,7 +51,7 @@ public class DialectTest {
 
         Assert.assertEquals(
                 "select * from (select row_number() over(order by id desc) d_rm, id, name from users ) v"
-                        + " where d_rm <= ${@start} + ${@limit} and d_rm >= ${@start} + 1",
+                        + " where d_rm <= ${@start} + ${@limit} and d_rm > ${@start}",
                 result);
     }
 
@@ -63,7 +63,7 @@ public class DialectTest {
 
         Assert.assertEquals(
                 "select * from (select row_number() over(order by getdate()) d_rm, id, name from users) v"
-                        + " where d_rm <= ${@start} + ${@limit} and d_rm >= ${@start} + 1",
+                        + " where d_rm <= ${@start} + ${@limit} and d_rm > ${@start}",
                 result);
     }
 
@@ -118,7 +118,7 @@ public class DialectTest {
 
         Assert.assertEquals(
                 "select * from (select v.*, rownum d_rm from (select id, name from users) v"
-                        + " where rownum <= ${@start} + ${@limit}) where d_rm >= ${@start} + 1",
+                        + " where rownum <= ${@start} + ${@limit}) where d_rm > ${@start}",
                 result);
     }
 

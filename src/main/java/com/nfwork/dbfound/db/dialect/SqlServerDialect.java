@@ -15,7 +15,7 @@ public class SqlServerDialect extends AbstractSqlDialect {
 				+ eSql.substring(selectIndex + 6);
 
 		return "select * from (" + eSql + ") v where d_rm <= " + startHold + " + " + limitHold
-				+ " and d_rm >= " + startHold + " + 1";
+				+ " and d_rm > " + startHold;
 	}
 
 	@Override
