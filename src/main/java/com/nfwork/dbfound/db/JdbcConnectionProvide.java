@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import com.nfwork.dbfound.util.DBUtil;
-import com.nfwork.dbfound.db.ConnectionProvide;
 import com.nfwork.dbfound.exception.DBFoundWrappedException;
 
 public class JdbcConnectionProvide extends ConnectionProvide {

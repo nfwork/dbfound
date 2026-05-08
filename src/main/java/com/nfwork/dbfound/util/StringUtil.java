@@ -221,6 +221,17 @@ public class StringUtil {
         }
     }
 
+    public static boolean containsIgnoreCase(String source, String target) {
+        int targetLen = target.length();
+        int max = source.length() - targetLen;
+        for (int i = 0; i <= max; i++) {
+            if (source.regionMatches(true, i, target, 0, targetLen)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean isBeginAnd(String value){
         if(value.length() < 3){
             return false;
