@@ -184,6 +184,14 @@ public class SqlEntityTest extends SqlEntity {
         initParamValue(param);
         Assert.assertEquals(new BigDecimal("12.9"), param.getValue());
 
+        param.setValue("-12");
+        initParamValue(param);
+        Assert.assertEquals(-12L, param.getValue());
+
+        param.setValue("-12.9");
+        initParamValue(param);
+        Assert.assertEquals(new BigDecimal("-12.9"), param.getValue());
+
         param.setValue("9223372036854775808");
         initParamValue(param);
         Assert.assertEquals(new BigDecimal("9223372036854775808"), param.getValue());
