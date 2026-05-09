@@ -236,7 +236,34 @@ public class QueryGetCountTest {
                 "with cte as (select * from t1) select * from cte where id > 0 ");
         assert count.isExecuteCount();
         assert count.getCountSql().equals(
-                "select count(1) from cte where id > 0 ");
+                "with cte as (select * from t1) select count(1) from cte where id > 0 ");
+    }
+
+    @Test
+    public void testGetCount_withCTEAndGroupByInside() throws Exception {
+        Count count = invokeGetCount(
+                "WITH model_nums AS (select f.function_module, count(1) as nums from sys_function f group by f.function_module) select * from model_nums ");
+        assert count.isExecuteCount();
+        assert count.getCountSql().equals(
+                "WITH model_nums AS (select f.function_module, count(1) as nums from sys_function f group by f.function_module) select count(1) from model_nums ");
+    }
+
+    @Test
+    public void testGetCount_withCTEAndOuterOrderBy() throws Exception {
+        Count count = invokeGetCount(
+                "with cte as (select * from t1) select * from cte where id > 0 order by id ");
+        assert count.isExecuteCount();
+        assert count.getCountSql().equals(
+                "with cte as (select * from t1) select count(1) from cte where id > 0 ");
+    }
+
+    @Test
+    public void testGetCount_withCTEAndOuterGroupBy() throws Exception {
+        Count count = invokeGetCount(
+                "with cte as (select * from t1) select dept, count(*) from cte group by dept order by dept ");
+        assert count.isExecuteCount();
+        assert count.getCountSql().equals(
+                "with cte as (select * from t1) select count(1) from (select dept, count(*) from cte group by dept ) v");
     }
 
     // ==================== getCount 引号转义测试 ====================

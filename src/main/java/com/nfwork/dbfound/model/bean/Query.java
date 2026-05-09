@@ -49,6 +49,8 @@ public class Query extends SqlEntity {
 	private static final char[] DISTINCT = "distinct".toCharArray();
 	private static final char[] UNION = "union".toCharArray();
 	private static final char[] GROUP = "group".toCharArray();
+	private static final char[] SELECT = "select".toCharArray();
+	private static final char[] WITH = "with".toCharArray();
 
 	private Integer pagerSize;
 	private Integer maxPagerSize = 10000;
@@ -463,6 +465,8 @@ public class Query extends SqlEntity {
 		int group_hold = 0;
 		int distinct_hold = 0;
 		int union_hold = 0;
+		int select_hold = 0;
+		boolean with_hold = sqlBeginMatch(sqlChars, WITH);
 
 		// 寻找from的位置
 		for (int i = 6; i < sqlChars.length - 6; i++) {
@@ -496,6 +500,8 @@ public class Query extends SqlEntity {
 						union_hold = index;
 					}else if(from_hold > 0 && order_hold == 0 && sqlMatch(sqlChars, index , ORDER)){
 						order_hold = index;
+					}else if(with_hold && select_hold == 0 && sqlMatch(sqlChars, index , SELECT)){
+						select_hold = index;
 					}
 				}
 			}
@@ -514,7 +520,20 @@ public class Query extends SqlEntity {
 		}
 
 		String cSql;
-		if(distinct_hold > 0 || union_hold > 0 || group_hold > 0){
+		if(with_hold && select_hold > 0){
+			String withSql = querySql.substring(0, select_hold);
+			if(distinct_hold > 0 || union_hold > 0 || group_hold > 0){
+				if(order_hold > 0){
+					cSql = withSql + "select count(1) from (" + querySql.substring(select_hold, order_hold) + ") v";
+				}else{
+					cSql = withSql + "select count(1) from (" + querySql.substring(select_hold) + ") v";
+				}
+			}else if(order_hold > 0){
+				cSql = withSql + "select count(1) " + querySql.substring(from_hold, order_hold);
+			}else{
+				cSql = withSql + "select count(1) " + querySql.substring(from_hold);
+			}
+		} else if(distinct_hold > 0 || union_hold > 0 || group_hold > 0){
 			if(order_hold > 0){
 				cSql = "select count(1) from (" + querySql.substring(0, order_hold) + ") v";
 			}else{
@@ -574,6 +593,14 @@ public class Query extends SqlEntity {
 			}
 		}
 		return sqls[index] == ' ' || sqls[index] == '\n' || sqls[index] == '\t' || sqls[index] == '(';
+	}
+
+	private boolean sqlBeginMatch(char[] sqls, char[] match){
+		int index = 0;
+		while(index < sqls.length && (sqls[index] == ' ' || sqls[index] == '\n' || sqls[index] == '\t')){
+			index++;
+		}
+		return sqlMatch(sqls, index, match);
 	}
 
 	private void prePager(Context context){
