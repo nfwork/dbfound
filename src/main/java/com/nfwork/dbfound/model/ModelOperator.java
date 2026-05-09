@@ -31,16 +31,18 @@ public class ModelOperator {
      * @return T
      */
     public <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging, Class<T> clazz) {
+
+        modelName = transformModelName(modelName);
+        if (DataUtil.isNull(queryName)) {
+            queryName = "_default";
+        }
+        String qName = modelName + ".query!" + queryName;
+
         try {
             if(context.onTopModelDeep()) {
-                LogUtil.info("-----------------------query begin--------------------------------------");
+                LogUtil.info("-----------------------query ("+qName+") begin-----------------------");
             }
             context.modelDeepIncrease();
-
-            modelName = transformModelName(modelName);
-            if (DataUtil.isNull(queryName)) {
-                queryName = "_default";
-            }
             if(DataUtil.isNull(sourcePath)){
                 sourcePath = ModelEngine.defaultPath;
             }
@@ -59,7 +61,7 @@ public class ModelOperator {
             context.modelDeepReduce();
             if(context.onTopModelDeep()) {
                 context.closeConns();
-                LogUtil.info("-----------------------query end----------------------------------------");
+                LogUtil.info("-----------------------query ("+qName+") end-------------------------");
             }
         }
     }
@@ -74,16 +76,18 @@ public class ModelOperator {
      * @return ResponseObject
      */
     public ResponseObject batchExecute(Context context, String modelName, String executeName, String sourcePath) {
+
+        modelName = transformModelName(modelName);
+        if (DataUtil.isNull(executeName)) {
+            executeName = "addOrUpdate";
+        }
+        String eName = modelName + ".execute!" + executeName;
+
         try {
             if(context.onTopModelDeep()) {
-                LogUtil.info("-----------------------batch execute begin------------------------------");
+                LogUtil.info("-----------------------batchExecute ("+eName+") begin-----------------------");
             }
             context.modelDeepIncrease();
-
-            modelName = transformModelName(modelName);
-            if (DataUtil.isNull(executeName)) {
-                executeName = "addOrUpdate";
-            }
 
             // 批量执行查找客户端数据的路径
             String batchExecutePath;
@@ -142,7 +146,7 @@ public class ModelOperator {
             context.modelDeepReduce();
             if(context.onTopModelDeep()) {
                 context.closeConns();
-                LogUtil.info("-----------------------batch execute end--------------------------------");
+                LogUtil.info("-----------------------batchExecute ("+eName+") end-------------------------");
             }
         }
     }
@@ -157,16 +161,19 @@ public class ModelOperator {
      * @return ResponseObject
      */
     public ResponseObject execute(Context context, String modelName, String executeName, String sourcePath) {
+
+        modelName = transformModelName(modelName);
+        if (DataUtil.isNull(executeName)) {
+            executeName = "_default";
+        }
+        String eName = modelName + ".execute!" + executeName;
+
         try {
             if(context.onTopModelDeep()) {
-                LogUtil.info("-----------------------execute begin------------------------------------");
+                LogUtil.info("-----------------------execute ("+eName+") begin-----------------------");
             }
             context.modelDeepIncrease();
 
-            modelName = transformModelName(modelName);
-            if (DataUtil.isNull(executeName)) {
-                executeName = "_default";
-            }
             if(DataUtil.isNull(sourcePath)){
                 sourcePath = ModelEngine.defaultPath;
             }
@@ -187,7 +194,7 @@ public class ModelOperator {
             context.modelDeepReduce();
             if(context.onTopModelDeep()) {
                 context.closeConns();
-                LogUtil.info("-----------------------execute end--------------------------------------");
+                LogUtil.info("-----------------------execute ("+eName+") end-------------------------");
             }
         }
     }
