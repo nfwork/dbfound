@@ -35,6 +35,7 @@ public class Context {
 
 	private String currentPath;
 	private String currentModel;
+	private String currentModelChild;
 	private ConnectionManager connectionManager;
 	private final Map<String, Object> rootDatas;
 	private Map<String, Object> paramDatas;
@@ -673,6 +674,14 @@ public class Context {
 
 	public void setExport(boolean export) {
 		isExport = export;
+	}
+
+	public String getCurrentModelChild() {
+		return currentModelChild;
+	}
+
+	public void setCurrentModelChild(String currentModelChild) {
+		this.currentModelChild = currentModelChild;
 	}
 
 	public void setTransaction(Transaction transaction) {

@@ -749,6 +749,7 @@ public class Query extends SqlEntity {
 		}
 		final String currentPath = context.getCurrentPath();
 		final String currentModel = context.getCurrentModel();
+		final String currentModelChild = context.getCurrentModelChild();
 
 		String exePath = this.currentPath;
 		if(DataUtil.isNotNull(exePath)){
@@ -770,6 +771,7 @@ public class Query extends SqlEntity {
 		}finally {
 			context.setCurrentPath(currentPath);
 			context.setCurrentModel(currentModel);
+			context.setCurrentModelChild(currentModelChild);
 		}
 	}
 
