@@ -46,12 +46,13 @@ public class ModelOperator {
             if(DataUtil.isNull(sourcePath)){
                 sourcePath = ModelEngine.defaultPath;
             }
-            Model model = modelCache.getModel(modelName);
 
-            // 把model、currentPath对象放入到 当前线程里
+            // 把model、currentPath对象放入到 当前context里
             context.setCurrentModel(modelName);
             context.setCurrentModelChild(queryName);
             context.setCurrentPath(sourcePath);
+
+            Model model = modelCache.getModel(modelName);
 
             Query query = model.getQuery(queryName);
             if (query == null) {
@@ -104,10 +105,10 @@ public class ModelOperator {
             int size =  DataUtil.getDataLength(rootData);
 
             if (size > 0) {
+                // 把modelName对象放入到 当前context里
+                context.setCurrentModel(modelName);
                 Model model = modelCache.getModel(modelName);
 
-                // 把modelName对象放入到 当前线程里
-                context.setCurrentModel(modelName);
                 Map<String, Object> elCache = new HashMap<>();
 
                 for (int j = 0; j < size; j++) {
@@ -180,15 +181,16 @@ public class ModelOperator {
                 sourcePath = ModelEngine.defaultPath;
             }
 
+            // 把model、currentPath对象放入到 当前context里
+            context.setCurrentPath(sourcePath);
+            context.setCurrentModel(modelName);
+            context.setCurrentModelChild(executeName);
+
             Model model = modelCache.getModel(modelName);
             Execute execute = model.getExecute(executeName);
             if (execute == null) {
                 throw new ExecuteNotFoundException("cannot find execute '" + executeName + "' for model '" + modelName+"'");
             }
-            // 把model、currentPath对象放入到 当前线程里
-            context.setCurrentPath(sourcePath);
-            context.setCurrentModel(modelName);
-            context.setCurrentModelChild(executeName);
 
             Map<String, Object> elCache = new HashMap<>();
             Object currentData = context.getData(sourcePath);
