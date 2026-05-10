@@ -49,7 +49,7 @@ public class ModelOperator {
 
             // 把model、currentPath对象放入到 当前context里
             context.setCurrentModel(modelName);
-            context.setCurrentModelChild(queryName);
+            context.setCurrentModelAction(queryName);
             context.setCurrentPath(sourcePath);
 
             Model model = modelCache.getModel(modelName);
@@ -132,7 +132,7 @@ public class ModelOperator {
                         en = executeName;
                     }
                     Execute execute = model.getExecute(en);
-                    context.setCurrentModelChild(en);
+                    context.setCurrentModelAction(en);
                     if (execute == null) {
                         throw new ExecuteNotFoundException("cannot find execute '" + executeName + "' for model '" + modelName+"'");
                     }
@@ -184,7 +184,7 @@ public class ModelOperator {
             // 把model、currentPath对象放入到 当前context里
             context.setCurrentPath(sourcePath);
             context.setCurrentModel(modelName);
-            context.setCurrentModelChild(executeName);
+            context.setCurrentModelAction(executeName);
 
             Model model = modelCache.getModel(modelName);
             Execute execute = model.getExecute(executeName);
