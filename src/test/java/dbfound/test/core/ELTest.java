@@ -77,6 +77,101 @@ public class ELTest {
     }
 
     @Test
+    public void testListIndex(){
+        Map<String,Object> data = new HashMap<>();
+        List<String> linkedList = new LinkedList<>();
+        linkedList.add("hello");
+        linkedList.add("world");
+        data.put("list", linkedList);
+
+        assert "hello".equals(DBFoundEL.getData("list[0]",data));
+        assert "world".equals(DBFoundEL.getData("list[1]",data));
+        assert DBFoundEL.getData("list[2]",data) == null;
+    }
+
+    @Test
+    public void testExpressSplitCompatibility(){
+        Map<String,Object> data = new HashMap<>();
+        Map<String,Object> param = new HashMap<>();
+        List<String> list = new ArrayList<>();
+        list.add("hello");
+        param.put("list", list);
+        data.put("param", param);
+
+        assert list == DBFoundEL.getData("param.list.",data);
+        assert list == DBFoundEL.getData("param.list..",data);
+        assert "hello".equals(DBFoundEL.getData("param.list[0]..",data));
+        assert DBFoundEL.getData("param..list",data) == null;
+        assert DBFoundEL.getData("...",data) == null;
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void testIndexOverflow(){
+        Map<String,Object> data = new HashMap<>();
+        data.put("list", new ArrayList<>());
+        DBFoundEL.getData("list[2147483648]",data);
+    }
+
+    @Test
+    public void testIndexMaxValue(){
+        Map<String,Object> data = new HashMap<>();
+        data.put("list", new ArrayList<>());
+        assert DBFoundEL.getData("list[2147483647]",data) == null;
+    }
+
+    @Test
+    public void testArrayIndex(){
+        Map<String,Object> data = new HashMap<>();
+        data.put("arr", new String[]{"a","b","c"});
+        data.put("nums", new int[]{10,20,30});
+
+        assert "a".equals(DBFoundEL.getData("arr[0]",data));
+        assert "c".equals(DBFoundEL.getData("arr[2]",data));
+        assert DBFoundEL.getData("arr[3]",data) == null;
+        assert (Integer) DBFoundEL.getData("nums[1]",data) == 20;
+    }
+
+    @Test
+    public void testSetDataTrailingDot(){
+        Map<String,Object> root = new HashMap<>();
+        DBFoundEL.setData("a.b.", root, 1);
+        DBFoundEL.setData("a.c..", root, 2);
+
+        assert ((Integer) DBFoundEL.getData("a.b", root)) == 1;
+        assert ((Integer) DBFoundEL.getData("a.c", root)) == 2;
+    }
+
+    @Test
+    public void testMapNullValueDistinguished(){
+        Map<String,Object> root = new HashMap<>();
+        Map<String,Object> param = new HashMap<>();
+        param.put("user_name", null);
+        param.put("userName", "wrong");
+        root.put("param", param);
+
+        assert DBFoundEL.getData("param.user_name", root) == null;
+    }
+
+    @Test
+    public void testInvalidIndexFallback(){
+        Map<String,Object> data = new HashMap<>();
+        List<String> list = new ArrayList<>();
+        list.add("hello");
+        data.put("list", list);
+
+        assert DBFoundEL.getData("list[]",data) == null;
+        assert DBFoundEL.getData("list[abc]",data) == null;
+        assert "hello".equals(DBFoundEL.getData("list[0][abc]",data));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void testBlankIndexCompatibility(){
+        Map<String,Object> data = new HashMap<>();
+        data.put("list", new ArrayList<>());
+        DBFoundEL.getData("list[ ]",data);
+    }
+
+    @Test
     public void testElCache(){
         Context context = new Context();
 
