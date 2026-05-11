@@ -31,35 +31,39 @@ public class ModelOperator {
      * @return T
      */
     public <T> QueryResponseObject<T> query(Context context, String modelName, String queryName, String sourcePath, boolean autoPaging, Class<T> clazz) {
+
+        modelName = transformModelName(modelName);
+        if (DataUtil.isNull(queryName)) {
+            queryName = "_default";
+        }
+        String qName = modelName + ".query!" + queryName;
+
         try {
             if(context.onTopModelDeep()) {
-                LogUtil.info("-----------------------query begin--------------------------------------");
+                LogUtil.info("-----------------------query ("+qName+") begin-----------------------");
             }
             context.modelDeepIncrease();
-
-            modelName = transformModelName(modelName);
-            if (DataUtil.isNull(queryName)) {
-                queryName = "_default";
-            }
             if(DataUtil.isNull(sourcePath)){
                 sourcePath = ModelEngine.defaultPath;
             }
-            Model model = modelCache.getModel(modelName);
 
-            // 把model、currentPath对象放入到 当前线程里
+            // 把model、currentPath对象放入到 当前context里
             context.setCurrentModel(modelName);
+            context.setCurrentModelAction(queryName);
             context.setCurrentPath(sourcePath);
+
+            Model model = modelCache.getModel(modelName);
 
             Query query = model.getQuery(queryName);
             if (query == null) {
-                throw new QueryNotFoundException("cannot find Query:" + queryName + ", on Model:" + modelName);
+                throw new QueryNotFoundException("cannot find query '" + queryName + "' for model '" + modelName +"'");
             }
             return query.doQuery(context, sourcePath, autoPaging, clazz);
         } finally {
             context.modelDeepReduce();
             if(context.onTopModelDeep()) {
                 context.closeConns();
-                LogUtil.info("-----------------------query end----------------------------------------");
+                LogUtil.info("-----------------------query ("+qName+") end-------------------------");
             }
         }
     }
@@ -74,16 +78,18 @@ public class ModelOperator {
      * @return ResponseObject
      */
     public ResponseObject batchExecute(Context context, String modelName, String executeName, String sourcePath) {
+
+        modelName = transformModelName(modelName);
+        if (DataUtil.isNull(executeName)) {
+            executeName = "addOrUpdate";
+        }
+        String eName = modelName + ".execute!" + executeName;
+
         try {
             if(context.onTopModelDeep()) {
-                LogUtil.info("-----------------------batch execute begin------------------------------");
+                LogUtil.info("-----------------------batchExecute ("+eName+") begin-----------------------");
             }
             context.modelDeepIncrease();
-
-            modelName = transformModelName(modelName);
-            if (DataUtil.isNull(executeName)) {
-                executeName = "addOrUpdate";
-            }
 
             // 批量执行查找客户端数据的路径
             String batchExecutePath;
@@ -99,10 +105,10 @@ public class ModelOperator {
             int size =  DataUtil.getDataLength(rootData);
 
             if (size > 0) {
+                // 把modelName对象放入到 当前context里
+                context.setCurrentModel(modelName);
                 Model model = modelCache.getModel(modelName);
 
-                // 把modelName对象放入到 当前线程里
-                context.setCurrentModel(modelName);
                 Map<String, Object> elCache = new HashMap<>();
 
                 for (int j = 0; j < size; j++) {
@@ -120,14 +126,15 @@ public class ModelOperator {
                         } else if ("OLD".equals(status)) {
                             en = "update";
                         } else {
-                            throw new ExecuteNotFoundException("cannot find (_status) field, cannot find Execute");
+                            throw new ExecuteNotFoundException("cannot find (_status) field, so cannot find Execute");
                         }
                     } else {
                         en = executeName;
                     }
                     Execute execute = model.getExecute(en);
+                    context.setCurrentModelAction(en);
                     if (execute == null) {
-                        throw new ExecuteNotFoundException("cannot find Execute:" + executeName + ", on Model:" + modelName);
+                        throw new ExecuteNotFoundException("cannot find execute '" + executeName + "' for model '" + modelName+"'");
                     }
                     ro = execute.doExecute(context, currentPath, currentData, elCache);
                 }
@@ -142,7 +149,7 @@ public class ModelOperator {
             context.modelDeepReduce();
             if(context.onTopModelDeep()) {
                 context.closeConns();
-                LogUtil.info("-----------------------batch execute end--------------------------------");
+                LogUtil.info("-----------------------batchExecute ("+eName+") end-------------------------");
             }
         }
     }
@@ -157,28 +164,33 @@ public class ModelOperator {
      * @return ResponseObject
      */
     public ResponseObject execute(Context context, String modelName, String executeName, String sourcePath) {
+
+        modelName = transformModelName(modelName);
+        if (DataUtil.isNull(executeName)) {
+            executeName = "_default";
+        }
+        String eName = modelName + ".execute!" + executeName;
+
         try {
             if(context.onTopModelDeep()) {
-                LogUtil.info("-----------------------execute begin------------------------------------");
+                LogUtil.info("-----------------------execute ("+eName+") begin-----------------------");
             }
             context.modelDeepIncrease();
 
-            modelName = transformModelName(modelName);
-            if (DataUtil.isNull(executeName)) {
-                executeName = "_default";
-            }
             if(DataUtil.isNull(sourcePath)){
                 sourcePath = ModelEngine.defaultPath;
             }
 
+            // 把model、currentPath对象放入到 当前context里
+            context.setCurrentPath(sourcePath);
+            context.setCurrentModel(modelName);
+            context.setCurrentModelAction(executeName);
+
             Model model = modelCache.getModel(modelName);
             Execute execute = model.getExecute(executeName);
             if (execute == null) {
-                throw new ExecuteNotFoundException("cannot find Execute:" + executeName + ", on Model:" + modelName);
+                throw new ExecuteNotFoundException("cannot find execute '" + executeName + "' for model '" + modelName+"'");
             }
-            // 把model、currentPath对象放入到 当前线程里
-            context.setCurrentPath(sourcePath);
-            context.setCurrentModel(modelName);
 
             Map<String, Object> elCache = new HashMap<>();
             Object currentData = context.getData(sourcePath);
@@ -187,7 +199,7 @@ public class ModelOperator {
             context.modelDeepReduce();
             if(context.onTopModelDeep()) {
                 context.closeConns();
-                LogUtil.info("-----------------------execute end--------------------------------------");
+                LogUtil.info("-----------------------execute ("+eName+") end-------------------------");
             }
         }
     }

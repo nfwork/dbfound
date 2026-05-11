@@ -8,6 +8,7 @@ import com.nfwork.dbfound.model.bean.SqlEntity;
 import com.nfwork.dbfound.util.CollectionUtil;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LocalDateUtil;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.Proxy;
@@ -160,6 +161,44 @@ public class SqlEntityTest extends SqlEntity {
         assert result.equals("date find_in_set ('2024-09-06,2024-09-07,2024-09-08')");
         result = getExecuteSql("date find_in_set ('#{@dates}')",params, new ArrayList<>());
         assert result.equals("date find_in_set ('2024-09-06,2024-09-07,2024-09-08')");
+    }
+
+    @Test
+    public void testInitNumberParamValue() {
+        Param param = new Param();
+        param.setDataType(DataType.NUMBER);
+
+        param.setValue("123");
+        initParamValue(param);
+        Assert.assertEquals(123L, param.getValue());
+
+        param.setValue("123.00");
+        initParamValue(param);
+        Assert.assertEquals(123L, param.getValue());
+
+        param.setValue("1.2E3");
+        initParamValue(param);
+        Assert.assertEquals(1200L, param.getValue());
+
+        param.setValue("12.9");
+        initParamValue(param);
+        Assert.assertEquals(new BigDecimal("12.9"), param.getValue());
+
+        param.setValue("-12");
+        initParamValue(param);
+        Assert.assertEquals(-12L, param.getValue());
+
+        param.setValue("-12.9");
+        initParamValue(param);
+        Assert.assertEquals(new BigDecimal("-12.9"), param.getValue());
+
+        param.setValue("9223372036854775808");
+        initParamValue(param);
+        Assert.assertEquals(new BigDecimal("9223372036854775808"), param.getValue());
+
+        param.setValue("");
+        initParamValue(param);
+        Assert.assertNull(param.getValue());
     }
 
     @Test

@@ -52,7 +52,7 @@ public class DataUtil {
 		} else if (o instanceof Short) {
 			return (Short) o;
 		} else {
-			return Short.parseShort(o.toString());
+			return new BigDecimal(o.toString()).toBigIntegerExact().shortValueExact();
 		}
 	}
 
@@ -93,7 +93,7 @@ public class DataUtil {
 		} else if (o instanceof Long) {
 			return (Long) o;
 		} else {
-			return Long.parseLong(o.toString());
+			return new BigDecimal(o.toString()).toBigIntegerExact().longValueExact();
 		}
 	}
 
@@ -103,7 +103,7 @@ public class DataUtil {
 		} else if (o instanceof Integer) {
 			return (Integer) o;
 		} else {
-			return Integer.parseInt(o.toString());
+			return new BigDecimal(o.toString()).toBigIntegerExact().intValueExact();
 		}
 	}
 
@@ -112,6 +112,8 @@ public class DataUtil {
 			return null;
 		} else if (o instanceof Double) {
 			return (Double) o;
+		} else if(o instanceof Number){
+			return ((Number)o).doubleValue();
 		} else {
 			return Double.parseDouble(o.toString());
 		}
@@ -142,6 +144,8 @@ public class DataUtil {
 			return null;
 		} else if (o instanceof Float) {
 			return (Float) o;
+		} else if(o instanceof Number){
+			return ((Number)o).floatValue();
 		} else {
 			return Float.parseFloat(o.toString());
 		}

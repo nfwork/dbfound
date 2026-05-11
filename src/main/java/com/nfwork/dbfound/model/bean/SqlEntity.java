@@ -50,6 +50,9 @@ public abstract class SqlEntity extends Entity {
 
 	protected final static Pattern timeMillisPattern = Pattern.compile("[0-9]+");
 
+	private static final BigDecimal LONG_MIN_VALUE = BigDecimal.valueOf(Long.MIN_VALUE);
+	private static final BigDecimal LONG_MAX_VALUE = BigDecimal.valueOf(Long.MAX_VALUE);
+
 	@Override
 	public void doEndTag() {
 		Entity entity = getParent();
@@ -416,13 +419,16 @@ public abstract class SqlEntity extends Entity {
 					String paramValue = nfParam.getValue().toString().trim();
 					if (paramValue.isEmpty()) {
 						nfParam.setValue(null);
-					} else if (!paramValue.contains(".")) {
-						nfParam.setValue(Long.parseLong(paramValue));
-					} else if (paramValue.endsWith(".0")) {
-						paramValue = paramValue.substring(0, paramValue.length() - 2);
-						nfParam.setValue(Long.parseLong(paramValue));
 					} else {
-						nfParam.setValue(Double.parseDouble(paramValue));
+						BigDecimal number = new BigDecimal(paramValue);
+						BigDecimal normalizedNumber = number.stripTrailingZeros();
+						if (normalizedNumber.scale() <= 0
+								&& number.compareTo(LONG_MIN_VALUE) >= 0
+								&& number.compareTo(LONG_MAX_VALUE) <= 0) {
+							nfParam.setValue(number.longValue());
+						} else {
+							nfParam.setValue(number);
+						}
 					}
 				} else {
 					throw new DBFoundRuntimeException("cannot cast "+ nfParam.getValue().getClass() +" to number");

@@ -3,10 +3,9 @@ package com.nfwork.dbfound.el;
 import java.lang.reflect.Array;
 import java.time.temporal.Temporal;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
+import com.nfwork.dbfound.model.reflector.Invoker;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.LogUtil;
@@ -82,18 +81,31 @@ public class DBFoundEL extends PropertyTransfer{
 			return null;
 		}
 
-		String[] d;
-		if(express.contains(".")) {
-			d = express.split("\\.");
-		}else{
-			d = new String[]{express};
+		int length = express.length();
+		while (length > 0 && express.charAt(length - 1) == '.') {
+			length--;
+		}
+		if (length == 0) {
+			if (express.isEmpty()) {
+				return getDataByProperty(currentObject, "");
+			}
+			return null;
 		}
 
-		for (int i = 0; i < d.length; i++) {
+		int start = 0;
+		while (start < length) {
 			if (currentObject == null) {
 				return null;
 			}
-			String currentExpress = d[i].trim();
+			int end = express.indexOf('.', start);
+			boolean isLast;
+			if (end == -1 || end >= length) {
+				end = length;
+				isLast = true;
+			} else {
+				isLast = false;
+			}
+			String currentExpress = express.substring(start, end).trim();
 			List<Integer> indexList = findIndex(currentExpress);
 			if (indexList != null) {
 				currentExpress = currentExpress.substring(0, currentExpress.indexOf("["));
@@ -115,10 +127,11 @@ public class DBFoundEL extends PropertyTransfer{
 			}
 
 			// 判断是否终止
-			if (i == d.length - 1) {
+			if (isLast) {
 				return nextObject;
 			} else {
 				currentObject = nextObject;
+				start = end + 1;
 			}
 		}
 
@@ -127,14 +140,35 @@ public class DBFoundEL extends PropertyTransfer{
 
 	public static void setData(String express, Map<String, Object> root, Object value){
 		if (express == null) {
-			return ;
+			return;
 		}
-		String[] expArray = express.split("\\.");
+
+		int length = express.length();
+		while (length > 0 && express.charAt(length - 1) == '.') {
+			length--;
+		}
+		if (length == 0) {
+			if (express.isEmpty()) {
+				setDataByProperty(root, "", value);
+			}
+			return;
+		}
 
 		Object currentObj = root;
-		Object nextObj ;
-		for (int i =0;i<expArray.length;i++){
-			String exp = expArray[i].trim();
+		Object nextObj;
+		int start = 0;
+		while (start < length) {
+			int dot = express.indexOf('.', start);
+			boolean isLast;
+			int end;
+			if (dot == -1 || dot >= length) {
+				end = length;
+				isLast = true;
+			} else {
+				end = dot;
+				isLast = false;
+			}
+			String exp = express.substring(start, end).trim();
 
 			int index = -1;
 			List<Integer> indexList = findIndex(exp);
@@ -149,7 +183,7 @@ public class DBFoundEL extends PropertyTransfer{
 				exp = exp.substring(0, exp.indexOf("["));
 			}
 
-			if (i == expArray.length - 1) {
+			if (isLast) {
 				if (index == -1) {
 					setDataByProperty(currentObj, exp, value);
 				} else {
@@ -211,11 +245,13 @@ public class DBFoundEL extends PropertyTransfer{
 				}
 				currentObj = nextObj;
 			}
+
+			start = end + 1;
 		}
 	}
 
 	public static Object getDataByIndex(int index,Object object){
-		if (object instanceof ArrayList) {
+		if (object instanceof List) {
 			List<?> l = (List<?>) object;
 			if (index < l.size()) {
 				return l.get(index);
@@ -243,9 +279,11 @@ public class DBFoundEL extends PropertyTransfer{
 
 		if(currentObj instanceof Map){
 			Map<?,?> currentMap = (Map<?,?>) currentObj;
-			if (currentMap.containsKey(property)) {
-				return currentMap.get(property);
-			}else if(property.contains("_") ){
+			Object value = currentMap.get(property);
+			if (value != null || currentMap.containsKey(property)) {
+				return value;
+			}
+			if (property.contains("_")) {
 				property = underscoreToCamelCase(property);
 				return currentMap.get(property);
 			}
@@ -271,13 +309,16 @@ public class DBFoundEL extends PropertyTransfer{
 			try {
 				Reflector reflector = Reflector.forClass(currentObj.getClass());
 				property = reflector.getFieldName(property);
-				if (reflector.hasGetter(property)) {
-					return reflector.getGetInvoker(property).invoke(currentObj, null);
+				Map<String, Invoker> getMethods = reflector.getGetMethods();
+				Invoker invoker = getMethods.get(property);
+				if (invoker != null) {
+					return invoker.invoke(currentObj, null);
 				}
 				if (property.contains("_")) {
 					property = underscoreToCamelCase(property);
-					if (reflector.hasGetter(property)) {
-						return reflector.getGetInvoker(property).invoke(currentObj, null);
+					invoker = getMethods.get(property);
+					if (invoker != null) {
+						return invoker.invoke(currentObj, null);
 					}
 				}
 				return null;
@@ -316,21 +357,53 @@ public class DBFoundEL extends PropertyTransfer{
 				|| object instanceof String || object instanceof Enum || object instanceof Boolean;
 	}
 
-	private final static Pattern p = Pattern.compile("\\[[0-9 ]+]");
-
 	private static List<Integer> findIndex(String value) {
-		if(!value.contains("[")){
+		int start = value.indexOf("[");
+		if(start == -1){
 			return null;
 		}
 		List<Integer> list = null;
-		Matcher m = p.matcher(value);
-		while (m.find()) {
-			String text = m.group();
-			text = text.substring(1, text.length() - 1);
+		while (start != -1) {
+			int end = value.indexOf("]", start + 1);
+			if(end == -1){
+				break;
+			}
+			int number = 0;
+			boolean hasNumber = false;
+			boolean valid = true;
+			for(int i = start + 1; i < end; i++){
+				char c = value.charAt(i);
+				if(c == ' '){
+					continue;
+				}
+				if(c >= '0' && c <= '9'){
+					hasNumber = true;
+					int digit = c - '0';
+					if(number > (Integer.MAX_VALUE - digit) / 10){
+						throw new NumberFormatException("For input string: \"" + value.substring(start + 1, end).trim() + "\"");
+					}
+					number = number * 10 + digit;
+				}else{
+					valid = false;
+					break;
+				}
+			}
+			if(!valid){
+				start = value.indexOf("[", end + 1);
+				continue;
+			}
+			if(!hasNumber){
+				if(end > start + 1){
+					throw new NumberFormatException("For input string: \"" + value.substring(start + 1, end).trim() + "\"");
+				}
+				start = value.indexOf("[", end + 1);
+				continue;
+			}
 			if(list == null){
 				list = new ArrayList<>();
 			}
-			list.add(Integer.parseInt(text.trim()));
+			list.add(number);
+			start = value.indexOf("[", end + 1);
 		}
 		return list;
 	}

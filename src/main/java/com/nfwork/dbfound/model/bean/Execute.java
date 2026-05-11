@@ -112,6 +112,7 @@ public class Execute extends SqlEntity {
 	public void execute(Context context, Map<String, Param> params,String provideName){
 		final String currentPath = context.getCurrentPath();
 		final String currentModel = context.getCurrentModel();
+		final String currentModelAction = context.getCurrentModelAction();
 
 		String mName = DataUtil.isNull(modelName) ? currentModel : modelName;
 
@@ -128,6 +129,7 @@ public class Execute extends SqlEntity {
 		}finally {
 			context.setCurrentPath(currentPath);
 			context.setCurrentModel(currentModel);
+			context.setCurrentModelAction(currentModelAction);
 		}
 	}
 

@@ -14,8 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import com.nfwork.dbfound.db.dialect.SqlDialect;
-import com.nfwork.dbfound.el.DBFoundEL;
-import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.base.CountType;
 import com.nfwork.dbfound.model.bean.Param;
@@ -35,14 +33,9 @@ public class Context {
 
 	private String currentPath;
 	private String currentModel;
+	private String currentModelAction;
 	private ConnectionManager connectionManager;
-	private final Map<String, Object> rootDatas;
-	private Map<String, Object> paramDatas;
-	private Map<String, Object> outParamDatas;
-	private Map<String, Object> requestDatas;
-	private Map<String, Object> sessionDatas;
-	private Map<String, Object> cookieDatas;
-	private Map<String, Object> headerDatas;
+	private final ContextData data;
 
 	private Transaction transaction;
 	private final long createThread = Thread.currentThread().getId();
@@ -73,7 +66,7 @@ public class Context {
 	}
 
 	public Context() {
-		rootDatas = new HashMap<>();
+		data = new ContextData();
 		response = null;
 		request = null;
 	}
@@ -84,16 +77,13 @@ public class Context {
 	 * @param datas  map data
 	 */
 	public Context(Map<String, Object> datas) {
-		if (datas == null) {
-			datas = new HashMap<>();
-		}
-		rootDatas = datas;
+		data = new ContextData(datas);
 		response = null;
 		request = null;
 	}
 
 	private Context(HttpServletRequest request, HttpServletResponse response) {
-		rootDatas = new HashMap<>();
+		data = new ContextData(new HashMap<>(), request);
 
 		cloneParamData(request);
 		cloneRequestData(request);
@@ -257,6 +247,7 @@ public class Context {
 	/**
 	 * 复制requestBody数据
 	 */
+	@SuppressWarnings("unchecked")
 	public void cloneRequestBodyData(HttpServletRequest request) {
 		try {
 			String contentType = request.getHeader("Content-Type");
@@ -272,7 +263,7 @@ public class Context {
 							setParamData(entry.getKey(), entry.getValue());
 						}
 					} else if (payload.charAt(0)=='[') {
-						List list = JsonUtil.jsonToList(payload);
+						List<?> list = JsonUtil.jsonToList(payload);
 						setParamData("dataList", list);
 					}
 				}
@@ -283,24 +274,15 @@ public class Context {
 	}
 
 	public Object getData(String express) {
-		if(ELEngine.isRootPath(express)){
-			return rootDatas.get(express);
-		}else {
-			return DBFoundEL.getData(express, rootDatas);
-		}
+		return data.getData(express);
 	}
 
 	public Object getData(String express, Map<String, Object> elCache) {
-		return DBFoundEL.getData(express, rootDatas, elCache);
+		return data.getData(express, elCache);
 	}
 
 	public int getDataLength(String express){
-		int dataSize = -1;
-		Object data = this.getData(express);
-		if(data != null) {
-			dataSize = DataUtil.getDataLength(data);
-		}
-		return dataSize;
+		return data.getDataLength(express);
 	}
 
 	/**
@@ -311,99 +293,51 @@ public class Context {
 	 * @return T
 	 */
 	public <T> T getData(String express, Class<T> class1) {
-		Object object = getData(express);
-		if (object != null && !class1.isAssignableFrom(object.getClass())) {
-			if (class1.equals(String.class)) {
-				object = DataUtil.stringValue(object);
-			} else if (class1.equals(Integer.class) || class1.equals(int.class)) {
-				object = DataUtil.intValue(object);
-			} else if (class1.equals(Long.class) || class1.equals(long.class)) {
-				object = DataUtil.longValue(object);
-			} else if (class1.equals(Float.class) || class1.equals(float.class)) {
-				object = DataUtil.floatValue(object);
-			} else if (class1.equals(Double.class) || class1.equals(double.class)) {
-				object = DataUtil.doubleValue(object);
-			} else if (class1.equals(Boolean.class) || class1.equals(boolean.class)) {
-				object = DataUtil.booleanValue(object);
-			} else if (class1.equals(BigDecimal.class)) {
-				object = DataUtil.bigDecimalValue(object);
-			} else if (class1.equals(Date.class)) {
-				object = DataUtil.dateValue(object);
-			} else if (class1.equals(Short.class) || class1.equals(short.class)) {
-				object = DataUtil.shortValue(object);
-			} else if (class1.equals(Byte.class) || class1.equals(byte.class)) {
-				object = DataUtil.byteValue(object);
-			}
-		}
-		return (T) object;
+		return data.getData(express, class1);
 	}
 
 	public Map<String, Object> getDatas() {
-		return rootDatas;
+		return data.getDatas();
 	}
 
 	public String getString(String express) {
-		Object object = getData(express);
-		return DataUtil.stringValue(object);
+		return data.getString(express);
 	}
 
 	public Integer getInt(String express){
-		Object object = getData(express);
-		return DataUtil.intValue(object);
+		return data.getInt(express);
 	}
 
 	public Long getLong(String express){
-		Object object = getData(express);
-		return DataUtil.longValue(object);
+		return data.getLong(express);
 	}
 
 	public Float getFloat(String express){
-		Object object = getData(express);
-		return DataUtil.floatValue(object);
+		return data.getFloat(express);
 	}
 
 	public Double getDouble(String express){
-		Object object = getData(express);
-		return DataUtil.doubleValue(object);
+		return data.getDouble(express);
 	}
 
 	public BigDecimal getBigDecimal(String express){
-		Object object = getData(express);
-		return DataUtil.bigDecimalValue(object);
+		return data.getBigDecimal(express);
 	}
 
 	public Boolean getBoolean(String express){
-		Object object = getData(express);
-		return DataUtil.booleanValue(object);
+		return data.getBoolean(express);
 	}
 
 	public <K,V> Map<K,V> getMap(String express){
-		return (Map<K, V>) getData(express);
+		return data.getMap(express);
 	}
 
 	public <T> List<T> getList(String express){
-		return (List<T>) getData(express);
+		return data.getList(express);
 	}
 
 	public void setData(String name, Object object) {
-		if(DataUtil.isNull(name)){
-			throw new DBFoundRuntimeException("name cannot be null");
-		}
-		if (name.startsWith(ELEngine.paramScope)) {
-			name = name.substring(6);
-			setParamData(name, object);
-		} else if (name.startsWith(ELEngine.outParamScope)) {
-			name = name.substring(9);
-			setOutParamData(name, object);
-		} else if (name.startsWith(ELEngine.requestScope)) {
-			name = name.substring(8);
-			setRequestData(name, object);
-		} else if (name.startsWith(ELEngine.sessionScope)) {
-			name = name.substring(8);
-			setSessionData(name, object);
-		} else  {
-			throw new DBFoundRuntimeException("context only in (param,request,session,outParam) can set data");
-		}
+		data.setData(name, object);
 	}
 
 	/**
@@ -413,11 +347,7 @@ public class Context {
 	 * @param value value
 	 */
 	public void setParamData(String name, Object value) {
-		if (name.contains(".") || name.contains("[")) {
-			DBFoundEL.setData(name,getParamDatas(),value);
-		}else{
-			getParamDatas().put(name, value);
-		}
+		data.setParamData(name, value);
 	}
 
 	/**
@@ -427,11 +357,7 @@ public class Context {
 	 * @param value value
 	 */
 	public void setOutParamData(String name, Object value) {
-		if (name.contains(".") || name.contains("[")) {
-			DBFoundEL.setData(name,getOutParamDatas(),value);
-		}else{
-			getOutParamDatas().put(name, value);
-		}
+		data.setOutParamData(name, value);
 	}
 
 	/**
@@ -441,13 +367,7 @@ public class Context {
 	 * @param value value
 	 */
 	public void setRequestData(String name, Object value) {
-		if (name.contains(".") || name.contains("[")) {
-			throw new DBFoundRuntimeException("on request scope, the name cannot contain '.' or '[' :" + name);
-		}
-		if (request != null) {
-			request.setAttribute(name, value);
-		}
-		getRequestDatas().put(name, value);
+		data.setRequestData(name, value);
 	}
 
 	/**
@@ -457,16 +377,7 @@ public class Context {
 	 * @param value value
 	 */
 	public void setSessionData(String name, Object value) {
-		if (!DBFoundConfig.isOpenSession()) {
-			throw new DBFoundRuntimeException("session is not opened, cannot set data to session ");
-		}
-		if (name.contains(".") || name.contains("[")) {
-			throw new DBFoundRuntimeException("on session scope, the name cannot contain '.' or '[' :" + name);
-		}
-		if (request != null) {
-			request.getSession().setAttribute(name, value);
-		}
-		getSessionDatas().put(name, value);
+		data.setSessionData(name, value);
 	}
 
 	/**
@@ -543,84 +454,27 @@ public class Context {
 	}
 
 	public Map<String, Object> getOutParamDatas() {
-		if (outParamDatas == null) {
-			Object o = rootDatas.get("outParam");
-			if (o instanceof Map) {
-				outParamDatas = (Map) o;
-			}else{
-				outParamDatas = new HashMap<>();
-				rootDatas.put("outParam",outParamDatas);
-			}
-		}
-		return outParamDatas;
+		return data.getOutParamDatas();
 	}
 
 	public Map<String, Object> getParamDatas() {
-		if (paramDatas == null) {
-			Object o = rootDatas.get("param");
-			if (o instanceof Map) {
-				paramDatas = (Map) o;
-			} else {
-				paramDatas = new HashMap<String, Object>();
-				rootDatas.put("param", paramDatas);
-			}
-		}
-		return paramDatas;
+		return data.getParamDatas();
 	}
 
 	public Map<String, Object> getRequestDatas() {
-		if (requestDatas == null) {
-			Object o = rootDatas.get("request");
-			if (o instanceof Map) {
-				requestDatas = (Map) o;
-			} else {
-				requestDatas = new HashMap<String, Object>();
-				rootDatas.put("request", requestDatas);
-			}
-		}
-		return requestDatas;
+		return data.getRequestDatas();
 	}
 
 	public Map<String, Object> getSessionDatas() {
-		if (!DBFoundConfig.isOpenSession()) {
-			throw new DBFoundRuntimeException("session is not opened, cannot get data from session ");
-		}
-		if (sessionDatas == null) {
-			Object o = rootDatas.get("session");
-			if (o instanceof Map) {
-				sessionDatas = (Map) o;
-			} else {
-				sessionDatas = new HashMap<String, Object>();
-				rootDatas.put("session", sessionDatas);
-			}
-		}
-		return sessionDatas;
+		return data.getSessionDatas();
 	}
 
 	public Map<String, Object> getCookieDatas() {
-		if (cookieDatas == null) {
-			Object o = rootDatas.get("cookie");
-			if (o instanceof Map) {
-				cookieDatas = (Map) o;
-			} else {
-				cookieDatas = new HashMap<String, Object>();
-				rootDatas.put("cookie", cookieDatas);
-			}
-		}
-		return cookieDatas;
+		return data.getCookieDatas();
 	}
 
 	public Map<String, Object> getHeaderDatas() {
-		if (headerDatas == null) {
-			Object o = rootDatas.get("header");
-			if (o instanceof Map) {
-				headerDatas = (Map) o;
-			} else {
-				headerDatas = new HashMap<String, Object>();
-				rootDatas.put("header", headerDatas);
-			}
-		}
-		return headerDatas;
+		return data.getHeaderDatas();
 	}
 
 	public int getPageLimit() {
@@ -673,6 +527,14 @@ public class Context {
 
 	public void setExport(boolean export) {
 		isExport = export;
+	}
+
+	public String getCurrentModelAction() {
+		return currentModelAction;
+	}
+
+	public void setCurrentModelAction(String currentModelAction) {
+		this.currentModelAction = currentModelAction;
 	}
 
 	public void setTransaction(Transaction transaction) {
