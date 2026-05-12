@@ -1,15 +1,11 @@
 package dbfound.test.core;
 
 import com.nfwork.dbfound.core.Context;
-import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.ModelEngine;
-import com.nfwork.dbfound.model.bean.Param;
 import com.nfwork.dbfound.model.bean.SetContextData;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CaseWhenTest {
 
@@ -106,38 +102,6 @@ public class CaseWhenTest {
         setContextData.execute(context, Collections.emptyMap(), "_default");
 
         assert "".equals(context.getData("outParam.emptyValue"));
-    }
-
-    @Test
-    public void testSetContextDataFromParam(){
-        Context context = new Context();
-        ModelEngine.execute(context,"test/case","setContextDataFromParam");
-        assert "paramValue".equals(context.getData("outParam.paramValue"));
-    }
-
-    @Test
-    public void testSetContextDataFromParamDirectly(){
-        Context context = new Context();
-        Param param = new Param();
-        param.setValue("paramValue");
-        Map<String, Param> params = new HashMap<>();
-        params.put("sourceParam", param);
-
-        SetContextData setContextData = new SetContextData();
-        setContextData.setTargetPath("outParam.paramValue");
-        setContextData.setParam("sourceParam");
-        setContextData.execute(context, params, "_default");
-
-        assert "paramValue".equals(context.getData("outParam.paramValue"));
-    }
-
-    @Test(expected = DBFoundRuntimeException.class)
-    public void testSetContextDataValueSourceParamCannotBeMixed(){
-        SetContextData setContextData = new SetContextData();
-        setContextData.setTargetPath("outParam.result");
-        setContextData.setValue("value");
-        setContextData.setSourcePath("param.source");
-        setContextData.execute(new Context(), Collections.emptyMap(), "_default");
     }
 
     @Test
