@@ -439,9 +439,31 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="setContextData_type">
-		<xsd:attribute name="targetPath" />
+		<xsd:attribute name="name" />
 		<xsd:attribute name="value" />
+		<xsd:attribute name="param" />
 		<xsd:attribute name="sourcePath" />
+		<xsd:attribute name="valueTemplate" />
+		<xsd:attribute name="scope" >
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="session" />
+					<xsd:enumeration value="request" />
+					<xsd:enumeration value="param" />
+					<xsd:enumeration value="cookie" />
+					<xsd:enumeration value="header" />
+					<xsd:enumeration value="outParam" />
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="inCurrentPath" >
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="true" />
+					<xsd:enumeration value="false" />
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="batchExecuteSql_type" mixed="true">
