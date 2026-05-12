@@ -145,11 +145,15 @@ public class ELTest {
     public void testMapNullValueDistinguished(){
         Map<String,Object> root = new HashMap<>();
         Map<String,Object> param = new HashMap<>();
-        param.put("user_name", null);
+
         param.put("userName", "wrong");
         root.put("param", param);
+        assert DBFoundEL.getData("param.user_name", root).equals("wrong");
+        assert DBFoundEL.getData("param.userName", root).equals("wrong");
 
+        param.put("user_name", null);
         assert DBFoundEL.getData("param.user_name", root) == null;
+        assert DBFoundEL.getData("param.userName", root).equals("wrong");
     }
 
     @Test
@@ -190,9 +194,16 @@ public class ELTest {
         Map<String, Object> elCache = new HashMap<>();
 
         assert (int)context.getData("param.users[0].user_id.value", elCache) == 10;
+        assert (int)context.getData("param.users[0].userId.value", elCache) == 10;
         assert context.getData("param.users[0].userName", elCache).toString().equals("john");
+        assert context.getData("param.users[0].user_name", elCache).toString().equals("john");
         assert (Boolean) context.getData("param.users[0].flag", elCache);
         assert context.getData("param.users[0].role", elCache) == Role.ADMIN;
+
+        context.setData("param.user.userName", "lily");
+        assert context.getData("param.users[0].user_name", elCache).toString().equals("lily");
+        assert context.getData("param.users[0]") instanceof User;
+
     }
 
     @Test
