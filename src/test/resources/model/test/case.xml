@@ -4,10 +4,10 @@
 	<execute name="whenAndOtherwise">
 		<sqls>
 			<whenSql when="${@flag} = 0">
-				<setContextData name="result0" value="0" scope="outParam"/>
+				<setContextData targetPath="outParam.result0" value="0"/>
 			</whenSql>
 			<otherwiseSql>
-				<setContextData name="result1" value="1" scope="outParam"/>
+				<setContextData targetPath="outParam.result1" value="1"/>
 			</otherwiseSql>
 		</sqls>
 	</execute>
@@ -16,18 +16,24 @@
 		<sqls>
 			<caseSql>
 				<whenSql when="${@flag} = 0">
-					<setContextData name="result0" value="0" scope="outParam"/>
+					<setContextData targetPath="outParam.result0" value="0"/>
 				</whenSql>
 				<whenSql when="${@flag} = 1">
-					<setContextData name="result1" value="1" scope="outParam"/>
+					<setContextData targetPath="outParam.result1" value="1"/>
 				</whenSql>
 				<whenSql when="${@flag} = 2">
-					<setContextData name="result2" value="2" scope="outParam"/>
+					<setContextData targetPath="outParam.result2" value="2"/>
 				</whenSql>
 				<otherwiseSql>
-					<setContextData name="result3" value="3" scope="outParam"/>
+					<setContextData targetPath="outParam.result3" value="3"/>
 				</otherwiseSql>
 			</caseSql>
+		</sqls>
+	</execute>
+
+	<execute name="setContextDataFromSourcePath">
+		<sqls>
+			<setContextData targetPath="outParam.result" sourcePath="param.source"/>
 		</sqls>
 	</execute>
 </model>

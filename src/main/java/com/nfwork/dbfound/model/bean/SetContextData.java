@@ -3,76 +3,52 @@ package com.nfwork.dbfound.model.bean;
 import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.exception.ParamNotFoundException;
 import com.nfwork.dbfound.util.DataUtil;
 
 import java.util.Map;
 
 public class SetContextData extends SqlEntity{
 
-    private String name;
-
-    private String scope;
-
-    private boolean inCurrentPath = false;
+    private String targetPath;
 
     private String value;
 
-    private String param;
-
     private String sourcePath;
-
-    private String valueTemplate;
 
     @Override
     public void execute(Context context, Map<String, Param> params, String provideName) {
-        if(DataUtil.isNull(name)){
-            throw new DBFoundRuntimeException("attribute name cannot be null in setContextData tag");
+        if(DataUtil.isNull(targetPath)){
+            throw new DBFoundRuntimeException("attribute targetPath cannot be null in setContextData tag");
         }
 
-        String setPath = scope;
-        if(inCurrentPath){
-            setPath = context.getCurrentPath();
-        }
-        if(DataUtil.isNull(setPath)){
-            throw new DBFoundRuntimeException("path cannot be null in setContextData tag");
+        boolean hasValue = value != null;
+        boolean hasSourcePath = DataUtil.isNotNull(sourcePath);
+        if(hasValue == hasSourcePath){
+            throw new DBFoundRuntimeException("setContextData tag must specify either value or sourcePath");
         }
 
-        Object valueObj = value;
-        if(DataUtil.isNotNull(param)){
-            Param paramObj = params.get(param);
-            if(paramObj == null) {
-                throw new ParamNotFoundException("param: " + param + " not defined");
-            }
-            valueObj = paramObj.getValue();
-        }
-        if(DataUtil.isNotNull(sourcePath)){
-            String exePath = sourcePath;
-            if(!ELEngine.isAbsolutePath(exePath)){
-                exePath = context.getCurrentPath() + "." +exePath;
-            }
-            if(exePath.contains("[index]")){
-                String index = getIndex(context.getCurrentPath());
-                exePath = exePath.replace("[index]",index);
-            }
-            valueObj = context.getData(exePath);
-        }
-
-        if(DataUtil.isNotNull(valueTemplate)){
-            valueObj = valueTemplate.replace("#{@"+name+"}",valueObj==null?"":valueObj.toString());
-        }
-
-        if(name.contains("[index]")){
-            String index = getIndex(context.getCurrentPath());
-            setPath = setPath+"." + name.replace("[index]",index);
-        }else{
-            setPath = setPath + "." + name;
-        }
+        String setPath = resolvePath(context, targetPath);
+        Object valueObj = hasSourcePath ? context.getData(resolvePath(context, sourcePath)) : value;
         context.setData(setPath,valueObj);
     }
 
+    private String resolvePath(Context context, String path){
+        String exePath = path;
+        if(!ELEngine.isAbsolutePath(exePath)){
+            String currentPath = context.getCurrentPath();
+            if(DataUtil.isNull(currentPath)){
+                throw new DBFoundRuntimeException("currentPath cannot be null when path is not absolute in setContextData tag");
+            }
+            exePath = currentPath + "." + exePath;
+        }
+        if(exePath.contains("[index]")){
+            exePath = exePath.replace("[index]",getIndex(context.getCurrentPath()));
+        }
+        return exePath;
+    }
+
     private String getIndex(String currentPath){
-        if(currentPath.endsWith("]")){
+        if(currentPath != null && currentPath.endsWith("]")){
             int index = currentPath.lastIndexOf("[");
             if(index != -1) {
                 return currentPath.substring(index);
@@ -89,36 +65,12 @@ public class SetContextData extends SqlEntity{
         this.value = value;
     }
 
-    public String getParam() {
-        return param;
+    public String getTargetPath() {
+        return targetPath;
     }
 
-    public void setParam(String param) {
-        this.param = param;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
-    public boolean isInCurrentPath() {
-        return inCurrentPath;
-    }
-
-    public void setInCurrentPath(boolean inCurrentPath) {
-        this.inCurrentPath = inCurrentPath;
+    public void setTargetPath(String targetPath) {
+        this.targetPath = targetPath;
     }
 
     public String getSourcePath() {
@@ -127,13 +79,5 @@ public class SetContextData extends SqlEntity{
 
     public void setSourcePath(String sourcePath) {
         this.sourcePath = sourcePath;
-    }
-
-    public String getValueTemplate() {
-        return valueTemplate;
-    }
-
-    public void setValueTemplate(String valueTemplate) {
-        this.valueTemplate = valueTemplate;
     }
 }
