@@ -657,6 +657,98 @@ dbfound 4.3.1 2025年05月09日
 dbfound 3.6.2 2025年05月22日
 —————————————————————————————
 
+1、excel导入支持定义columns
+2、修改默认导出大小为20w
+
+
+dbfound 3.6.3 2025年06月05日
+—————————————————————————————
+
+1、context复制session数据时不再主动创建session
+
+
+dbfound 4.3.2 2025年06月12日
+—————————————————————————————
+
+1、dsql function模块重构
+2、添加substring、substring_index、find_in_set、instr、locate、upper、lower函数支持
+
+
+dbfound 3.6.4 2025年06月23日
+—————————————————————————————
+
+1、修复StringUtil在下划线转驼峰时，因连续下划线(或以下划线结尾)出现异常问题
+
+
+dbfound 4.3.3 2025年07月17日
+—————————————————————————————
+
+1、修复modelName兼容问题（以反斜杠开头）
+
+
+dbfound 3.6.5 2025年09月23日
+—————————————————————————————
+
+1、优化excel导出title或name为空时报错
+
+
+dbfound 3.6.6 2025年12月17日
+dbfound 4.3.4 2025年12月17日
+—————————————————————————————
+
+1、query添加printContext属性，在query执行之前打印Context数据到控制台
+
+dbfound 3.6.7 2026年04月24日
+dbfound 4.3.5 2026年04月24日
+
+—————————————————————————————
+
+1、新增FIFOCache，dsql换成改为fifoCache方式，提升性能
+
+dbfound 3.6.8 2026年04月27日
+dbfound 4.3.6 2026年04月28日
+—————————————————————————————
+
+1、添加api-allow-urls参数，配置需要暴露的model  http api接口地址
+2、CollisionException http状态码改为422
+3、优化modelCache逻辑，在正式环境modelModifyCheck关闭后，错误的model文件，不再检查更新。
+4、升级mysql 9.5.0和poi 5.4.1版本
+5、dbfound3.7后，jdk要求变为java 11
+
+
+dbfound 3.7.0 2026年05月01日
+dbfound 4.4.0 2026年05月01日
+—————————————————————————————
+
+1、dbfound项目参数支持从jvm参数获取，对于datasource参数可使用dbfound.datasource.{provideName}.password
+2、dbfound异常处理模块优化
+3、basePath设置默认值为${@contextPath}
+4、DBFoundConfig逻辑优化 ${@projectRoot}推算逻辑调整
+5、优化context相关代码与Transaction事物管理相关逻辑
+6、model相关代码优化，Types.DECIMAL、Types.NUMERIC 采用BigDecimal来接收数据
+7、优化StringUtil中sql的处理
+8、优化query代码并补充相应的测试用例
+9、优化adpter功能添加handle功能支持
+10、优化各个版本数据方言并添加测试用例
+
+dbfound 3.7.1 2026年05月08日
+dbfound 4.4.1 2026年05月08日
+—————————————————————————————
+
+1、优化model日志输出，begin和end日志加上query、execute标识
+2、修复countSql不支持sql with语法问题
+3、优化DataUtil方法，intValue，longValue，shortValue 支持 1.0 转化 1
+4、优化SqlEntity参数number类型处理，字符串转number类型时，使用BigDecimal代替double
+5、优化printContext相关代码
+6、context添加currentModelAction参数
+7、优化context数据相关，添加ContextData独立管理数据
+8、优化dbfoundEL
+
+dbfound 3.7.2 2026年05月11日
+dbfound 4.4.2 2026年05月11日
+—————————————————————————————
+
+
 
 
 ———— 注意事项 ————
@@ -672,3 +764,8 @@ dbfound 3.6.2 2025年05月22日
 3.5.8 和 4.2.5 优化countSql执行逻辑；在调用beforeCount前 就将sql生成好，并生成相应的exeParam，该逻辑与原逻辑存在一定兼容问题；
 
 3.6.2 在Context.withBeanParam方法 和 JsonUtil.ResponseObjectSerializer  不支持 @column；
+
+3.6.4 后实现的instr、locate函数 区分大小写，建议使用者 调用upper 或者lower函数兼容；
+
+
+
