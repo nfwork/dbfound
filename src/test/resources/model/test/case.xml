@@ -36,15 +36,4 @@
 			<setContextData targetPath="outParam.result" sourcePath="param.source"/>
 		</sqls>
 	</execute>
-
-	<execute name="setContextDataFromCurrentPath">
-		<sqls>
-			<setContextData targetPath="name" value="xiaoming"/>
-			<setContextData targetPath="age" value="18"/>
-			<setContextData targetPath="desc" value=""/>
-			<setContextData targetPath="tags" sourcePath="request.tags"/>
-			<setContextData targetPath="school" sourcePath="csh"/>
-		</sqls>
-	</execute>
-
 </model>
