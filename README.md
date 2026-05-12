@@ -184,6 +184,7 @@ List<Map<String, Object>> users = modelExecutor.queryList(context, "sys/user", n
 
 ### 其他文档
 
+- [版本变更记录](doc/CHANGELOG.md)
 - [dbfound mvc api](https://github.com/nfwork/dbfound/wiki/dbfound-mvc-api)
 - [dbfound ui api](https://github.com/nfwork/dbfound/wiki/dbfound-ui-api)
 
@@ -210,6 +211,8 @@ List<Map<String, Object>> users = modelExecutor.queryList(context, "sys/user", n
 - Spring Boot 3.x / Jakarta EE 体系，优先关注 `4.x`
 
 具体最新版本请以仓库 release 或实际发布版本为准。
+
+各版本的详细变更、兼容性说明和升级注意事项，请查看 [版本变更记录](doc/CHANGELOG.md)。
 
 `jdk`版本说明：
 

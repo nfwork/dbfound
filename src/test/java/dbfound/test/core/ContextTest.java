@@ -46,6 +46,13 @@ public class ContextTest {
         assert Objects.equals(context.getString("param.user.userDescription"), "john desc");
         assert Objects.equals(context.getString("param.user.user_description"), "john desc");
         assert Objects.equals(context.getString("param.user.user_desc"), "john desc");
+
+        context.setData("param.user.user_desc","john asc");
+        assert Objects.equals(context.getString("param.user.user_desc"), "john asc");
+        context.setData("param.user.userDescription","john 123");
+        assert Objects.equals(context.getString("param.user.userDescription"), "john 123");
+        context.setData("param.user.user_description","john 456");
+        assert Objects.equals(context.getString("param.user.user_description"), "john 456");
     }
 
     @Test
