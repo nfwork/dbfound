@@ -37,6 +37,13 @@
 		</sqls>
 	</execute>
 
+	<execute name="setContextDataFromParam">
+		<param name="sourceParam" value="paramValue"/>
+		<sqls>
+			<setContextData targetPath="outParam.paramValue" param="sourceParam"/>
+		</sqls>
+	</execute>
+
 	<execute name="setContextDataFromCurrentPath">
 		<sqls>
 			<setContextData targetPath="name" value="xiaoming"/>
