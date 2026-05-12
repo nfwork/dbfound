@@ -67,6 +67,19 @@ public class CaseWhenTest {
     }
 
     @Test
+    public void testSetContextDataFromCurrentPath(){
+        Context context = new Context().withParam("csh","hello");
+        context.setRequestData("tags","123");
+
+        ModelEngine.execute(context,"test/case","setContextDataFromCurrentPath");
+        assert "xiaoming".equals(context.getData("param.name"));
+        assert "18".equals(context.getData("param.age"));
+        assert "".equals(context.getData("param.desc"));
+        assert "123".equals(context.getData("param.tags"));
+        assert "hello".equals(context.getData("param.school"));
+    }
+
+    @Test
     public void testSetContextDataWithRelativePath(){
         Context context = new Context();
         context.setCurrentPath("outParam");

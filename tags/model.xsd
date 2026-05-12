@@ -439,7 +439,7 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="setContextData_type">
-		<xsd:attribute name="targetPath" />
+		<xsd:attribute name="targetPath" use="required" />
 		<xsd:attribute name="value" />
 		<xsd:attribute name="sourcePath" />
 	</xsd:complexType>
