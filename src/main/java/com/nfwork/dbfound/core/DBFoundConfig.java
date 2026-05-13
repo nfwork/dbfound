@@ -9,7 +9,9 @@ import java.util.*;
 import jakarta.servlet.ServletContext;
 import javax.sql.DataSource;
 
+import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
+import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.CollectionUtil;
 import com.nfwork.dbfound.web.ExceptionHandlerFacade;
@@ -64,19 +66,21 @@ public class DBFoundConfig {
 	private static List<String> apiAllowUrls = Collections.emptyList();
 
 	public static void destroy() {
-		ListenerFacade.destroy();
-		for (DataSourceConnectionProvide provide : dsp) {
+		for (DataSourceConnectionProvide provide : new ArrayList<>(dsp)) {
 			DataSource dataSource = provide.getDataSource();
 			if (dataSource != null) {
 				try {
 					LogUtil.info("dbfound close dataSource :" + provide.getProvideName());
-					Reflector reflector = Reflector.forClass(dataSource.getClass());
-					reflector.getMethodInvoker("close").invoke(dataSource, new Object[] {});
+					provide.unRegister();
 				} catch (Exception e) {
 					LogUtil.error("dbfound destroy error, "+ e.getMessage(),e);
 				}
 			}
 		}
+		ListenerFacade.destroy();
+		Reflector.clearCache();
+		EnumHandlerFactory.clearCache();
+		ModelEngine.getModelOperator().clearCache();
 	}
 
 	public static void init() {

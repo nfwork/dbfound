@@ -391,6 +391,9 @@ public class Reflector {
 
 	private static final ConcurrentMap<String, Future<Reflector>> REFLECTOR_MAP = new ConcurrentHashMap<>();
 
+	public static void clearCache(){
+		REFLECTOR_MAP.clear();
+	}
 	/**
 	 * Gets an instance of ClassInfo for the specified class.
 	 *

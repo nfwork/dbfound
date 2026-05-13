@@ -38,4 +38,8 @@ public class EnumHandlerFactory {
          }
          return result;
     }
+
+    public static void clearCache(){
+        enumClassMap.clear();
+    }
 }

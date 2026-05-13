@@ -19,6 +19,10 @@ public class ModelOperator {
 
     private static final ModelCache modelCache = new ModelCache();
 
+    public void clearCache(){
+        modelCache.clear();
+    }
+
     /**
      * 查询 可以指定当前路径、是否自动分页、返回对象的查询
      *
