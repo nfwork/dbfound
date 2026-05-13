@@ -9,6 +9,7 @@ import java.util.*;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
+import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.reflector.Reflector;
@@ -65,9 +66,6 @@ public class DBFoundConfig {
 	private static List<String> apiAllowUrls = Collections.emptyList();
 
 	public static void destroy() {
-		ListenerFacade.destroy();
-		Reflector.clearCache();
-		EnumHandlerFactory.clearCache();
 		for (DataSourceConnectionProvide provide : new ArrayList<>(dsp)) {
 			DataSource dataSource = provide.getDataSource();
 			if (dataSource != null) {
@@ -79,6 +77,10 @@ public class DBFoundConfig {
 				}
 			}
 		}
+		ListenerFacade.destroy();
+		Reflector.clearCache();
+		EnumHandlerFactory.clearCache();
+		ModelEngine.getModelOperator().clearCache();
 	}
 
 	public static void init() {
