@@ -23,7 +23,7 @@ public abstract class DSqlFunction {
     public void unRegister() {
         for (String functionName : functionNames) {
             FunctionResolver.unRegister(functionName, this);
-            functionNames.remove(functionName);
         }
+        functionNames.clear();
     }
 }

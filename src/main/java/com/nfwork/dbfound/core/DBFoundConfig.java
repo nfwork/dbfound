@@ -66,6 +66,7 @@ public class DBFoundConfig {
 	private static List<String> apiAllowUrls = Collections.emptyList();
 
 	public static void destroy() {
+		ListenerFacade.destroy();
 		for (DataSourceConnectionProvide provide : new ArrayList<>(dsp)) {
 			DataSource dataSource = provide.getDataSource();
 			if (dataSource != null) {
@@ -77,7 +78,6 @@ public class DBFoundConfig {
 				}
 			}
 		}
-		ListenerFacade.destroy();
 		Reflector.clearCache();
 		EnumHandlerFactory.clearCache();
 		ModelEngine.getModelOperator().clearCache();

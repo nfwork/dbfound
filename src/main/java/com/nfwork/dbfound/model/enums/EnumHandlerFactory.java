@@ -41,5 +41,6 @@ public class EnumHandlerFactory {
 
     public static void clearCache(){
         enumClassMap.clear();
+        cache.clear();
     }
 }
