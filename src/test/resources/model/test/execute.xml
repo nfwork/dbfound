@@ -271,4 +271,43 @@
         </sqls>
     </execute>
 
+    <execute name="setContextData">
+        <param name="fromParam" dataType="varchar" />
+        <sqls>
+            <setContextData scope="outParam" name="literal" value="literal-value" />
+            <setContextData scope="outParam" name="copiedParam" param="fromParam" />
+            <setContextData scope="outParam" name="copiedSource" sourcePath="param.source.value" />
+            <setContextData scope="outParam" name="templated" sourcePath="source.value" valueTemplate="prefix-#{@templated}-suffix" />
+            <batchSql sourcePath="items">
+                <setContextData inCurrentPath="true" name="copied" sourcePath="value" />
+                <setContextData scope="outParam" name="itemName[index]" sourcePath="name" />
+                <setContextData scope="outParam" name="label[index]" sourcePath="param.labels[index].label" valueTemplate="label=#{@label[index]}" />
+            </batchSql>
+        </sqls>
+    </execute>
+
+    <execute name="setContextDataMissingName">
+        <sqls>
+            <setContextData scope="outParam" value="missing-name" />
+        </sqls>
+    </execute>
+
+    <execute name="setContextDataMissingPath">
+        <sqls>
+            <setContextData name="missingPath" value="missing-path" />
+        </sqls>
+    </execute>
+
+    <execute name="setContextDataMissingParam">
+        <sqls>
+            <setContextData scope="outParam" name="missingParam" param="notDefined" />
+        </sqls>
+    </execute>
+
+    <execute name="setContextDataMissingIndex">
+        <sqls>
+            <setContextData scope="outParam" name="row[index]" value="missing-index" />
+        </sqls>
+    </execute>
+
 </model>
