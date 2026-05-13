@@ -47,6 +47,10 @@ public class FunctionResolver extends DSqlValueResolver {
         functionMap.put(functionName, function);
     }
 
+    static void unRegister(String functionName, DSqlFunction function) {
+        functionMap.remove(functionName, function);
+    }
+
     @Override
     public Object getValue(Expression expression, List<Object> param, String provideName, Context context) {
         ConnectionProvide provide = ConnectionProvideManager.getConnectionProvide(provideName);
