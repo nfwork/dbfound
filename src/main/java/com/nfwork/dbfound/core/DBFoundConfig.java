@@ -13,7 +13,7 @@ import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.reflector.Reflector;
-import com.nfwork.dbfound.util.CollectionUtil;
+import com.nfwork.dbfound.util.*;
 import com.nfwork.dbfound.web.ExceptionHandlerFacade;
 import com.nfwork.dbfound.web.ListenerFacade;
 import org.dom4j.Document;
@@ -24,9 +24,6 @@ import com.nfwork.dbfound.db.ConnectionProvide;
 import com.nfwork.dbfound.db.DataSourceConnectionProvide;
 import com.nfwork.dbfound.db.JdbcConnectionProvide;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
-import com.nfwork.dbfound.util.DataUtil;
-import com.nfwork.dbfound.util.LogUtil;
-import com.nfwork.dbfound.util.StringUtil;
 import com.nfwork.dbfound.web.action.ActionEngine;
 import com.nfwork.dbfound.web.DispatcherFilter;
 import com.nfwork.dbfound.web.InterceptorFacade;
@@ -121,7 +118,7 @@ public class DBFoundConfig {
 			File file = new File(getRealPath(confFile));
 			Document doc = null;
 			if (file.exists()) {
-				LogUtil.info("user config file: "+ PathFormat.format(file.getAbsolutePath()));
+				LogUtil.info("user config file: "+ PathFormatUtil.format(file.getAbsolutePath()));
 				doc = reader.read(file);
 			} else if (confFile.startsWith(CLASSPATH)) {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -133,10 +130,10 @@ public class DBFoundConfig {
 							file = new File(url.getFile());
 						}
 						if (file.exists()) {
-							LogUtil.info("user config file: "+ PathFormat.format(file.getAbsolutePath()));
+							LogUtil.info("user config file: "+ PathFormatUtil.format(file.getAbsolutePath()));
 							doc = reader.read(file);
 						} else {
-							LogUtil.info("user config file: " + PathFormat.format(url.getFile()));
+							LogUtil.info("user config file: " + PathFormatUtil.format(url.getFile()));
 							inputStream = url.openStream();
 							doc = reader.read(inputStream);
 						}
@@ -520,7 +517,7 @@ public class DBFoundConfig {
 			if (url == null) {
 				throw new DBFoundRuntimeException("classpath resource not found");
 			}
-			classpath = PathFormat.format(new File(url.getFile()).getAbsolutePath());
+			classpath = PathFormatUtil.format(new File(url.getFile()).getAbsolutePath());
 		}
 		return classpath;
 	}
@@ -530,7 +527,7 @@ public class DBFoundConfig {
 			String cp = getClasspath();
 			File file = new File(cp);
 			if (file.exists() && file.getParentFile().exists() && file.getParentFile().getParentFile().exists()) {
-				projectRoot = PathFormat.format(file.getParentFile().getParentFile().getAbsolutePath());
+				projectRoot = PathFormatUtil.format(file.getParentFile().getParentFile().getAbsolutePath());
 			}else{
 				throw new DBFoundRuntimeException(PROJECT_ROOT + " cannot resolve by classpath, this classpath is '" + cp +"'");
 			}
@@ -542,7 +539,7 @@ public class DBFoundConfig {
 		try {
 			if (configFilePath == null || configFilePath.isEmpty()) {
 				configFilePath = DispatcherFilter.getConfigFilePath();
-				configFilePath = PathFormat.format(configFilePath);
+				configFilePath = PathFormatUtil.format(configFilePath);
 			}
 			return configFilePath;
 		} catch (Throwable ignored) {
@@ -551,15 +548,15 @@ public class DBFoundConfig {
 	}
 
 	public static void setConfigFilePath(String configFilePath) {
-		DBFoundConfig.configFilePath = PathFormat.format(configFilePath);
+		DBFoundConfig.configFilePath = PathFormatUtil.format(configFilePath);
 	}
 
 	public static void setClasspath(String classpath) {
-		DBFoundConfig.classpath = PathFormat.format(classpath);
+		DBFoundConfig.classpath = PathFormatUtil.format(classpath);
 	}
 
 	public static void setProjectRoot(String projectRoot) {
-		DBFoundConfig.projectRoot = PathFormat.format(projectRoot);
+		DBFoundConfig.projectRoot = PathFormatUtil.format(projectRoot);
 	}
 
 	public static List<DataSourceConnectionProvide> getDsp() {

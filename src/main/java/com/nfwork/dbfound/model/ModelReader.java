@@ -11,7 +11,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
-import com.nfwork.dbfound.core.PathFormat;
+import com.nfwork.dbfound.util.PathFormatUtil;
 import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.bean.Entity;
@@ -91,7 +91,7 @@ public class ModelReader {
 		readerChild(root, model);
 		model.doEndTag();
 
-		fileLocation = PathFormat.format(fileLocation);
+		fileLocation = PathFormatUtil.format(fileLocation);
 		model.setFileLocation(fileLocation);
 		LogUtil.info("read model success, model file location: " + fileLocation);
 		return model;
