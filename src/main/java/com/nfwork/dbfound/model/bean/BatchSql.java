@@ -101,48 +101,50 @@ public class BatchSql extends Sqls {
 			paramList.add(param);
 		}
 
-		for (int i=0 ; i < dataSize ; i++) {
-			String currentPath = exeSourcePath +"[" + i +"]";
+		try {
+			for (int i=0 ; i < dataSize ; i++) {
+				String currentPath = exeSourcePath +"[" + i +"]";
 
-			//执行过程中改变currentPath
-			context.setCurrentPath(currentPath);
+				//执行过程中改变currentPath
+				context.setCurrentPath(currentPath);
 
-			Object currentData = DBFoundEL.getDataByIndex(i,rootData);
+				Object currentData = DBFoundEL.getDataByIndex(i,rootData);
 
-			for (Param param : paramList){
-				String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
-				if (index != null && index.equals(sp)) {
-					param.setValue(i);
-					param.setSourcePathHistory("set_by_index");
-				}else {
-					String sph;
-					Object value;
-					if (item != null && item.equals(sp)) {
-						sph = currentPath;
-						value = currentData;
-					} else {
-						sph = currentPath + "." + sp;
-						value = DBFoundEL.getData(sp, currentData);
+				for (Param param : paramList){
+					String sp = DataUtil.isNull(param.getSourcePath())?param.getName():param.getSourcePath();
+					if (index != null && index.equals(sp)) {
+						param.setValue(i);
+						param.setSourcePathHistory("set_by_index");
+					}else {
+						String sph;
+						Object value;
+						if (item != null && item.equals(sp)) {
+							sph = currentPath;
+							value = currentData;
+						} else {
+							sph = currentPath + "." + sp;
+							value = DBFoundEL.getData(sp, currentData);
+						}
+						if ("".equals(value) && param.isEmptyAsNull()) {
+							value = null;
+						}
+
+						if(value == null){
+							param.setValue(param.getDefaultValue());
+						}else{
+							param.setValue(value);
+						}
+						param.setSourcePathHistory(sph);
 					}
-					if ("".equals(value) && param.isEmptyAsNull()) {
-						value = null;
-					}
-
-					if(value == null){
-						param.setValue(param.getDefaultValue());
-					}else{
-						param.setValue(value);
-					}
-					param.setSourcePathHistory(sph);
+				}
+				for (SqlEntity sql : sqlList) {
+					sql.execute(context, params, provideName);
 				}
 			}
-			for (SqlEntity sql : sqlList) {
-				sql.execute(context, params, provideName);
-			}
+		} finally {
+			//执行完成后恢复原有currentPath
+			context.setCurrentPath(inCurrentPath);
 		}
-
-		//执行完成后恢复原有currentPath
-		context.setCurrentPath(inCurrentPath);
 
 	}
 
