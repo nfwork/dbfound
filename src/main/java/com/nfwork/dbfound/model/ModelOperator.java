@@ -1,6 +1,8 @@
 package com.nfwork.dbfound.model;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.el.DBFoundEL;
@@ -19,7 +21,8 @@ public class ModelOperator {
 
     private static final ModelCache modelCache = new ModelCache();
 
-    public void clearCache(){
+    public void clearCache(DBFoundInitToken dbfoundInitToken){
+        DBFoundConfig.checkInitToken(dbfoundInitToken);
         modelCache.clear();
     }
 

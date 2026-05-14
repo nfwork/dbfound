@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.PackageScannerUtil;
@@ -23,7 +24,19 @@ public class ActionEngine {
 
 	private final static Map<String, ActionBean> actionBeans = new ConcurrentHashMap<>();
 
-	public static void initMappings(String paths){
+
+	public static void init(DBFoundInitToken dbfoundInitToken, String paths, String mvcFile){
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
+		actionBeans.clear();
+		if(DataUtil.isNotNull(paths)){
+			initMappings(paths);
+		}
+		if(DataUtil.isNotNull(mvcFile)){
+			initMvcFile(mvcFile);
+		}
+	}
+
+	private static void initMappings(String paths){
 		Set<String> classPaths = new LinkedHashSet<>();
 		List<String> pathList = StringUtil.splitToList(paths);
 		for (String path : pathList){
@@ -59,7 +72,7 @@ public class ActionEngine {
 	 * 将配置文件dbfound-mvc.xml中的Action的信息放到Map actionBeans中
 	 *
 	 */
-	public static void init(String mvcFile) {
+	private static void initMvcFile(String mvcFile) {
 		try {
 			File file = new File(DBFoundConfig.getRealPath(mvcFile));
 			if (file.exists()) {

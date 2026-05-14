@@ -41,6 +41,7 @@ public class DBFoundConfig {
 	public static final String CLASSPATH = "${@classpath}";
 	public static final String PROJECT_ROOT = "${@projectRoot}";
 	private static final String JVM_PARAM_PREFIX = "dbfound.";
+	private static final DBFoundInitToken dbfoundInitToken = new DBFoundInitToken();
 
 	private static String modelRootPath;
 
@@ -65,8 +66,14 @@ public class DBFoundConfig {
 	private static String basePath = "${@contextPath}";
 	private static List<String> apiAllowUrls = Collections.emptyList();
 
+	public static void checkInitToken(DBFoundInitToken token) {
+		if (dbfoundInitToken != token) {
+			throw new DBFoundRuntimeException("dbfound init token invalid");
+		}
+	}
+
 	public static void destroy() {
-		ListenerFacade.destroy();
+		ListenerFacade.destroy(dbfoundInitToken);
 		for (DataSourceConnectionProvide provide : new ArrayList<>(dsp)) {
 			DataSource dataSource = provide.getDataSource();
 			if (dataSource != null) {
@@ -78,9 +85,10 @@ public class DBFoundConfig {
 				}
 			}
 		}
-		Reflector.clearCache();
-		EnumHandlerFactory.clearCache();
-		ModelEngine.getModelOperator().clearCache();
+		Reflector.clearCache(dbfoundInitToken);
+		EnumHandlerFactory.clearCache(dbfoundInitToken);
+		ModelEngine.getModelOperator().clearCache(dbfoundInitToken);
+		inited = false;
 	}
 
 	public static void init() {
@@ -288,18 +296,13 @@ public class DBFoundConfig {
 
 		// dbfound mvc controller 初始化
 		String controllerPaths = getConfigValue(web, "web", "controllerPaths");
-		if (DataUtil.isNotNull(controllerPaths)) {
-			ActionEngine.initMappings(controllerPaths);
-		}
-
-		// 初始化dbfound mvc
 		String mvcFile = getConfigValue(web, "web", "mvcConfigFile");
 		if (mvcFile == null || mvcFile.isEmpty()) {
 			mvcFile = CLASSPATH + "/dbfound-mvc.xml";
 		}
-		ActionEngine.init(mvcFile);
+		ActionEngine.init(dbfoundInitToken, controllerPaths, mvcFile);
 
-		// interceptor 初始化
+		// exceptionHandler 初始化
 		String exceptionHandler = getConfigValue(web, "web", "exceptionHandler");
 		if (DataUtil.isNotNull(exceptionHandler)) {
 			ExceptionHandlerFacade.initExceptionHandler(exceptionHandler);
@@ -309,14 +312,14 @@ public class DBFoundConfig {
 		// interceptor 初始化
 		String interceptor = getConfigValue(web, "web", "interceptor");
 		if (DataUtil.isNotNull(interceptor)) {
-			InterceptorFacade.init(interceptor);
+			InterceptorFacade.init(dbfoundInitToken, interceptor);
 			appendConfigInfo(info, "interceptor", interceptor);
 		}
 
 		//listener 初始化
 		String listener = getConfigValue(web, "web", "listener");
 		if (DataUtil.isNotNull(listener)) {
-			ListenerFacade.init(listener, servletContext);
+			ListenerFacade.init(dbfoundInitToken, listener, servletContext);
 			appendConfigInfo(info, "listener", listener);
 		}
 
