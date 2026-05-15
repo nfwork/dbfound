@@ -2,6 +2,8 @@ package com.nfwork.dbfound.web.i18n;
 
 import javax.servlet.jsp.PageContext;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.LogUtil;
 
@@ -9,14 +11,15 @@ public class MultiLangUtil {
 
 	private static I18NProvide provide;
 
-	public static void init(String className) {
+	public static void init(DBFoundInitToken dbfoundInitToken, String className) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
 		try {
-			Object object = Class.forName(className.trim()).newInstance();
+			Object object = Class.forName(className.trim()).getConstructor().newInstance();
 			if (object instanceof I18NProvide) {
 				provide = (I18NProvide) object;
 			} else {
 				throw new DBFoundRuntimeException("class:" + className
-						+ ",不是I18NProvide类的实现，I18N初始化失败。");
+						+ " does not implement I18NProvide, I18N init failed.");
 			}
 		} catch (Exception e) {
 			LogUtil.error(e.getMessage(), e);

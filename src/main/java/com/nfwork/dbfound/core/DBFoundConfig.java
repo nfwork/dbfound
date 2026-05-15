@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 
 import com.nfwork.dbfound.db.ConnectionProvideManager;
 import com.nfwork.dbfound.model.ModelEngine;
+import com.nfwork.dbfound.model.ModelOperator;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
 import com.nfwork.dbfound.model.reflector.Reflector;
@@ -261,7 +262,7 @@ public class DBFoundConfig {
 		// i18n 初始化
 		String i18nProvide = getConfigValue(web, "web", "i18nProvide");
 		if (DataUtil.isNotNull(i18nProvide)) {
-			MultiLangUtil.init(i18nProvide);
+			MultiLangUtil.init(dbfoundInitToken, i18nProvide);
 			appendConfigInfo(info, "i18nProvide", i18nProvide);
 		}
 
@@ -413,6 +414,12 @@ public class DBFoundConfig {
 			appendConfigInfo(info, "modelModifyCheck", modelModifyCheck);
 		}
 
+		String modelOperator = getConfigValue(system, "system", "modelOperator");
+		if (DataUtil.isNotNull(modelOperator)) {
+			initModelOperator(modelOperator);
+			appendConfigInfo(info, "modelOperator", modelOperator);
+		}
+
 		String dateFormatConfig = getConfigValue(system, "system", "dateFormat");
 		if (DataUtil.isNotNull(dateFormatConfig)) {
 			dateFormat = dateFormatConfig;
@@ -445,6 +452,15 @@ public class DBFoundConfig {
 
 		if (!isInitSpring && info.length() > infoStartLength) {
 			LogUtil.info(info.toString());
+		}
+	}
+
+	private static void initModelOperator(String className) {
+		try {
+			Class<? extends ModelOperator> clazz = Class.forName(className).asSubclass(ModelOperator.class);
+			ModelEngine.setModelOperator(dbfoundInitToken, clazz.getConstructor().newInstance());
+		} catch (Exception e) {
+			throw new DBFoundRuntimeException("ModelOperator init failed, please check the class " + className + " exists and extends ModelOperator", e);
 		}
 	}
 
