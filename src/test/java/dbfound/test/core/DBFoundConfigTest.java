@@ -18,8 +18,12 @@ public class DBFoundConfigTest {
     public void testInitSpringBootWithDocumentInitializesAllConfigAndSkipsDatabaseInit() throws Exception {
         DBFoundConfigSnapshot dbFoundConfigSnapshot = DBFoundConfigSnapshot.take();
         DSqlConfigSnapshot dSqlConfigSnapshot = DSqlConfigSnapshot.take();
+        String oldOpenLogJvmValue = System.getProperty("dbfound.system.openLog");
+        String oldBasePathJvmValue = System.getProperty("dbfound.web.basePath");
         Document document = DocumentHelper.parseText(getSpringBootConfig());
         try {
+            System.setProperty("dbfound.system.openLog", "true");
+            System.setProperty("dbfound.web.basePath", "/jvm");
             setStaticField(DBFoundConfig.class, "inited", false);
             DBFoundInitToken initToken = DBFoundConfig.initSpringBoot(document);
             Assert.assertNotNull(initToken);
@@ -45,6 +49,8 @@ public class DBFoundConfigTest {
         } finally {
             dbFoundConfigSnapshot.restore();
             dSqlConfigSnapshot.restore();
+            restoreProperty("dbfound.system.openLog", oldOpenLogJvmValue);
+            restoreProperty("dbfound.web.basePath", oldBasePathJvmValue);
         }
     }
 
@@ -88,6 +94,14 @@ public class DBFoundConfigTest {
         Field field = type.getDeclaredField(name);
         field.setAccessible(true);
         field.set(null, value);
+    }
+
+    private static void restoreProperty(String key, String value) {
+        if (value == null) {
+            System.clearProperty(key);
+        } else {
+            System.setProperty(key, value);
+        }
     }
 
     private static class DBFoundConfigSnapshot {

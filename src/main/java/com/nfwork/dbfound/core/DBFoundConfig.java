@@ -27,7 +27,6 @@ import com.nfwork.dbfound.db.DataSourceConnectionProvide;
 import com.nfwork.dbfound.db.JdbcConnectionProvide;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.web.action.ActionEngine;
-import com.nfwork.dbfound.web.DispatcherFilter;
 import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.i18n.MultiLangUtil;
 
@@ -43,7 +42,6 @@ public class DBFoundConfig {
 	private static String modelRootPath;
 
 	private static boolean inited = false;
-	private static String configFilePath;
 	private static String classpath;
 	private static String projectRoot;
 	private static boolean underscoreToCamelCase = false;
@@ -84,14 +82,17 @@ public class DBFoundConfig {
 	}
 
 	public static DBFoundInitToken init() {
-		return init(null);
+		return init(null,null);
 	}
 
-	public static DBFoundInitToken init(ServletContext servletContext) {
+	public static DBFoundInitToken init(String configFilePath, ServletContext servletContext) {
 		if (inited) {
 			return null;
 		}
-		return doInit(getConfigFilePath(),servletContext);
+		if(servletContext !=null) {
+			DBFoundConfig.projectRoot = PathFormatUtil.format(servletContext.getRealPath(""));
+		}
+		return doInit(configFilePath,servletContext);
 	}
 
 	public static DBFoundInitToken initSpringBoot(Document document) {
@@ -110,31 +111,28 @@ public class DBFoundConfig {
 		return initSuccess();
 	}
 
-	private synchronized static DBFoundInitToken doInit(String confFile, ServletContext servletContext) {
-		if (confFile == null || confFile.isEmpty()) {
-			confFile = CLASSPATH + "/dbfound-conf.xml";
+	private synchronized static DBFoundInitToken doInit(String configFilePath, ServletContext servletContext) {
+		if (configFilePath == null || configFilePath.isEmpty()) {
+			configFilePath = CLASSPATH + "/dbfound-conf.xml";
 		}
+		configFilePath = PathFormatUtil.format(configFilePath);
 		if (inited) {
 			return null;
-		} else {
-			if (configFilePath == null) {
-				setConfigFilePath(dbfoundInitToken, confFile);
-			}
 		}
 		try {
 			LogUtil.info("**************************************************************************");
 			LogUtil.info("NFWork dbfound "+VERSION+" service init begin");
 			SAXReader reader = new SAXReader();
-			File file = new File(getRealPath(confFile));
+			File file = new File(getRealPath(configFilePath));
 			Document doc = null;
 			if (file.exists()) {
 				LogUtil.info("user config file: "+ PathFormatUtil.format(file.getAbsolutePath()));
 				doc = reader.read(file);
-			} else if (confFile.startsWith(CLASSPATH)) {
+			} else if (configFilePath.startsWith(CLASSPATH)) {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
 				InputStream inputStream = null;
 				try {
-					URL url = loader.getResource(confFile.substring(CLASSPATH.length() + 1));
+					URL url = loader.getResource(configFilePath.substring(CLASSPATH.length() + 1));
 					if (url != null) {
 						if (url.getFile() != null) {
 							file = new File(url.getFile());
@@ -260,42 +258,42 @@ public class DBFoundConfig {
 		int infoStartLength = info.length();
 
 		// i18n 初始化
-		String i18nProvide = getConfigValue(web, "web", "i18nProvide");
+		String i18nProvide = getConfigValue(web, "web", "i18nProvide", isInitSpring);
 		if (DataUtil.isNotNull(i18nProvide)) {
 			MultiLangUtil.init(dbfoundInitToken, i18nProvide);
 			appendConfigInfo(info, "i18nProvide", i18nProvide);
 		}
 
 		// 编码初始化
-		String encoding = getConfigValue(web, "web", "encoding");
+		String encoding = getConfigValue(web, "web", "encoding", isInitSpring);
 		if (DataUtil.isNotNull(encoding)) {
 			DBFoundConfig.encoding = encoding;
 			appendConfigInfo(info, "encoding", encoding);
 		}
 
 		// jsonStringAutoCover 初始化
-		String autoCover = getConfigValue(web, "web", "jsonStringAutoCover");
+		String autoCover = getConfigValue(web, "web", "jsonStringAutoCover", isInitSpring);
 		if (DataUtil.isNotNull(autoCover)) {
 			jsonStringAutoCover = "true".equals(autoCover);
 			appendConfigInfo(info, "jsonStringAutoCover", jsonStringAutoCover);
 		}
 
 		// 文件上传大小
-		String maxUploadSize = getConfigValue(web, "web", "maxUploadSize");
+		String maxUploadSize = getConfigValue(web, "web", "maxUploadSize", isInitSpring);
 		if (DataUtil.isNotNull(maxUploadSize)) {
 			DBFoundConfig.maxUploadSize = DataUtil.intValue(maxUploadSize);
 			appendConfigInfo(info, "maxUploadSize", DBFoundConfig.maxUploadSize);
 		}
 
 		// basePath 初始化
-		String basePath = getConfigValue(web, "web", "basePath");
+		String basePath = getConfigValue(web, "web", "basePath", isInitSpring);
 		if (DataUtil.isNotNull(basePath)) {
 			DBFoundConfig.basePath = basePath;
 			appendConfigInfo(info, "basePath", basePath);
 		}
 
 		// openSession 初始化
-		String open = getConfigValue(web, "web", "openSession");
+		String open = getConfigValue(web, "web", "openSession", isInitSpring);
 		if (DataUtil.isNotNull(open)) {
 			if ("true".equals(open)) {
 				DBFoundConfig.openSession = true;
@@ -307,15 +305,15 @@ public class DBFoundConfig {
 		}
 
 		// web api allow urls 初始化
-		String apiAllowUrls = getConfigValue(web, "web", "apiAllowUrls");
+		String apiAllowUrls = getConfigValue(web, "web", "apiAllowUrls", isInitSpring);
 		DBFoundConfig.apiAllowUrls = DataUtil.isNull(apiAllowUrls) ? Collections.emptyList() : StringUtil.splitToList(apiAllowUrls);
 		if (!DBFoundConfig.apiAllowUrls.isEmpty()) {
 			appendConfigInfo(info, "apiAllowUrls", DBFoundConfig.apiAllowUrls);
 		}
 
 		// dbfound mvc controller 初始化
-		String controllerPaths = getConfigValue(web, "web", "controllerPaths");
-		String mvcFile = getConfigValue(web, "web", "mvcConfigFile");
+		String controllerPaths = getConfigValue(web, "web", "controllerPaths", isInitSpring);
+		String mvcFile = getConfigValue(web, "web", "mvcConfigFile", isInitSpring);
 		if (mvcFile == null || mvcFile.isEmpty()) {
 			mvcFile = CLASSPATH + "/dbfound-mvc.xml";
 		}
@@ -324,21 +322,21 @@ public class DBFoundConfig {
 		}
 
 		// exceptionHandler 初始化
-		String exceptionHandler = getConfigValue(web, "web", "exceptionHandler");
+		String exceptionHandler = getConfigValue(web, "web", "exceptionHandler", isInitSpring);
 		if (DataUtil.isNotNull(exceptionHandler)) {
 			ExceptionHandlerFacade.initExceptionHandler(dbfoundInitToken, exceptionHandler);
 			appendConfigInfo(info, "exceptionHandler", exceptionHandler);
 		}
 
 		// interceptor 初始化
-		String interceptor = getConfigValue(web, "web", "interceptor");
+		String interceptor = getConfigValue(web, "web", "interceptor", isInitSpring);
 		if (DataUtil.isNotNull(interceptor)) {
 			InterceptorFacade.init(dbfoundInitToken, interceptor);
 			appendConfigInfo(info, "interceptor", interceptor);
 		}
 
 		//listener 初始化
-		String listener = getConfigValue(web, "web", "listener");
+		String listener = getConfigValue(web, "web", "listener", isInitSpring);
 		if (DataUtil.isNotNull(listener)) {
 			ListenerFacade.init(dbfoundInitToken, listener, servletContext);
 			appendConfigInfo(info, "listener", listener);
@@ -355,7 +353,7 @@ public class DBFoundConfig {
 		int infoStartLength = info.length();
 
 		// 设置日志开关
-		String openLog = getConfigValue(system, "system", "openLog");
+		String openLog = getConfigValue(system, "system", "openLog", isInitSpring);
 		if (DataUtil.isNotNull(openLog)) {
 			if ("false".equals(openLog)) {
 				DBFoundConfig.openLog = false;
@@ -366,7 +364,7 @@ public class DBFoundConfig {
 			}
 		}
 
-		String printParamSql = getConfigValue(system, "system", "logWithParamSql");
+		String printParamSql = getConfigValue(system, "system", "logWithParamSql", isInitSpring);
 		if (DataUtil.isNotNull(printParamSql)) {
 			if ("false".equals(printParamSql)) {
 				DBFoundConfig.logWithParamSql = false;
@@ -378,7 +376,7 @@ public class DBFoundConfig {
 		}
 
 		// 设置驼峰转化开关
-		String underscoreToCamelCase = getConfigValue(system, "system", "underscoreToCamelCase");
+		String underscoreToCamelCase = getConfigValue(system, "system", "underscoreToCamelCase", isInitSpring);
 		if (DataUtil.isNotNull(underscoreToCamelCase)) {
 			if ("false".equals(underscoreToCamelCase)) {
 				DBFoundConfig.underscoreToCamelCase = false;
@@ -390,7 +388,7 @@ public class DBFoundConfig {
 		}
 
 		// 设置下划线转化开关
-		String camelCaseToUnderscore = getConfigValue(system, "system", "camelCaseToUnderscore");
+		String camelCaseToUnderscore = getConfigValue(system, "system", "camelCaseToUnderscore", isInitSpring);
 		if (DataUtil.isNotNull(camelCaseToUnderscore)) {
 			if ("false".equals(camelCaseToUnderscore)) {
 				DBFoundConfig.camelCaseToUnderscore = false;
@@ -402,49 +400,49 @@ public class DBFoundConfig {
 		}
 
 		// 设置model根目录
-		String modelRootPath = getConfigValue(system, "system", "modelRootPath");
+		String modelRootPath = getConfigValue(system, "system", "modelRootPath", isInitSpring);
 		if (DataUtil.isNotNull(modelRootPath)) {
 			DBFoundConfig.modelRootPath = modelRootPath;
 			appendConfigInfo(info, "modelRootPath", modelRootPath);
 		}
 
-		String modelModifyCheckConfig = getConfigValue(system, "system", "modelModifyCheck");
+		String modelModifyCheckConfig = getConfigValue(system, "system", "modelModifyCheck", isInitSpring);
 		if (DataUtil.isNotNull(modelModifyCheckConfig)) {
 			modelModifyCheck = "true".equals(modelModifyCheckConfig);
 			appendConfigInfo(info, "modelModifyCheck", modelModifyCheck);
 		}
 
-		String modelOperator = getConfigValue(system, "system", "modelOperator");
+		String modelOperator = getConfigValue(system, "system", "modelOperator", isInitSpring);
 		if (DataUtil.isNotNull(modelOperator)) {
 			initModelOperator(modelOperator);
 			appendConfigInfo(info, "modelOperator", modelOperator);
 		}
 
-		String dateFormatConfig = getConfigValue(system, "system", "dateFormat");
+		String dateFormatConfig = getConfigValue(system, "system", "dateFormat", isInitSpring);
 		if (DataUtil.isNotNull(dateFormatConfig)) {
 			dateFormat = dateFormatConfig;
 			appendConfigInfo(info, "dateFormat", dateFormatConfig);
 		}
 
-		String dateTimeFormatConfig = getConfigValue(system, "system", "dateTimeFormat");
+		String dateTimeFormatConfig = getConfigValue(system, "system", "dateTimeFormat", isInitSpring);
 		if (DataUtil.isNotNull(dateTimeFormatConfig)) {
 			dateTimeFormat = dateTimeFormatConfig;
 			appendConfigInfo(info, "dateTimeFormat", dateTimeFormatConfig);
 		}
 
-		String timeFormatConfig = getConfigValue(system, "system", "timeFormat");
+		String timeFormatConfig = getConfigValue(system, "system", "timeFormat", isInitSpring);
 		if (DataUtil.isNotNull(timeFormatConfig)) {
 			timeFormat = timeFormatConfig;
 			appendConfigInfo(info, "timeFormat", timeFormatConfig);
 		}
 
-		String compareIgnoreCaseConfig = getConfigValue(system, "system", "sqlCompareIgnoreCase");
+		String compareIgnoreCaseConfig = getConfigValue(system, "system", "sqlCompareIgnoreCase", isInitSpring);
 		if (DataUtil.isNotNull(compareIgnoreCaseConfig)) {
 			DSqlConfig.init(dbfoundInitToken, "true".equals(compareIgnoreCaseConfig), null);
 			appendConfigInfo(info, "sqlCompareIgnoreCase", DSqlConfig.isCompareIgnoreCase());
 		}
 
-		String openDSqlConfig = getConfigValue(system, "system", "openDSql");
+		String openDSqlConfig = getConfigValue(system, "system", "openDSql", isInitSpring);
 		if (DataUtil.isNotNull(openDSqlConfig)) {
 			DSqlConfig.init(dbfoundInitToken, null, "true".equals(openDSqlConfig));
 			appendConfigInfo(info, "openDSql", DSqlConfig.isOpenDSql());
@@ -478,11 +476,14 @@ public class DBFoundConfig {
 		return element.attributeValue(key);
 	}
 
-	private static String getConfigValue(Element parent, String group, String key) {
+	private static String getConfigValue(Element parent, String group, String key, boolean isInitSpring) {
 		String value = null;
 		Element element = parent == null ? null : parent.element(key);
 		if (element != null) {
 			value = element.getTextTrim();
+		}
+		if (isInitSpring) {
+			return value;
 		}
 		String jvmValue = getJvmParam(group + "." + key);
 		if (DataUtil.isNotNull(jvmValue)) {
@@ -568,28 +569,6 @@ public class DBFoundConfig {
 			}
 		}
 		return projectRoot;
-	}
-
-	public static String getConfigFilePath() {
-		try {
-			if (configFilePath == null || configFilePath.isEmpty()) {
-				configFilePath = DispatcherFilter.getConfigFilePath();
-				configFilePath = PathFormatUtil.format(configFilePath);
-			}
-			return configFilePath;
-		} catch (Throwable ignored) {
-			return null;
-		}
-	}
-
-	public static void setConfigFilePath(DBFoundInitToken initToken, String configFilePath) {
-		checkInitToken(initToken);
-		DBFoundConfig.configFilePath = PathFormatUtil.format(configFilePath);
-	}
-
-	public static void setProjectRoot(DBFoundInitToken initToken, String projectRoot) {
-		checkInitToken(initToken);
-		DBFoundConfig.projectRoot = PathFormatUtil.format(projectRoot);
 	}
 
 	public static List<String> getApiAllowUrls() {

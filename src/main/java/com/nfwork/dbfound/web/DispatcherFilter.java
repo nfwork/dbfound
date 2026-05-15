@@ -63,13 +63,9 @@ public class DispatcherFilter implements Filter {
 	 */
 	public void init(FilterConfig cf) throws ServletException {
 		configFilePath = cf.getInitParameter("configFilePath");
-		dbfoundInitToken = DBFoundConfig.init(cf.getServletContext());
+		dbfoundInitToken = DBFoundConfig.init(configFilePath, cf.getServletContext());
 		if (dbfoundInitToken == null){
 			throw new DBFoundRuntimeException("dbfound init failed, because dbfoundInitToken is null");
-		}
-		DBFoundConfig.setProjectRoot(dbfoundInitToken, cf.getServletContext().getRealPath(""));
-		if (configFilePath != null && !configFilePath.isEmpty()) {
-			DBFoundConfig.setConfigFilePath(dbfoundInitToken, configFilePath);
 		}
 		WebApiPermissionChecker permissionChecker = new WebApiPermissionChecker(DBFoundConfig.getApiAllowUrls());
 		this.handlerList.add(new QueryActionHandler(permissionChecker));
