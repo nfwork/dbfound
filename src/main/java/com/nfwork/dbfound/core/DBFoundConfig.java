@@ -302,7 +302,7 @@ public class DBFoundConfig {
 		// exceptionHandler 初始化
 		String exceptionHandler = getConfigValue(web, "web", "exceptionHandler");
 		if (DataUtil.isNotNull(exceptionHandler)) {
-			ExceptionHandlerFacade.initExceptionHandler(exceptionHandler);
+			ExceptionHandlerFacade.initExceptionHandler(dbfoundInitToken, exceptionHandler);
 			appendConfigInfo(info, "exceptionHandler", exceptionHandler);
 		}
 
