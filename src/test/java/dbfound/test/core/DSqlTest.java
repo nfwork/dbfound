@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -317,21 +318,34 @@ public class DSqlTest {
         assert Boolean.TRUE.equals(result);
 
         boolean ignoreCase = DSqlConfig.isCompareIgnoreCase();
-        DSqlConfig.setCompareIgnoreCase(false);
-        result = DSqlEngine.checkWhenSql("upper('abc') = 'ABC'", list,"_default", context);
-        assert Boolean.TRUE.equals(result);
-        result = DSqlEngine.checkWhenSql("upper('abc') != 'abc'", list,"_default", context);
-        assert Boolean.TRUE.equals(result);
-        result = DSqlEngine.checkWhenSql("lower('ABc') = 'abc'", list,"_default", context);
-        assert Boolean.TRUE.equals(result);
-        result = DSqlEngine.checkWhenSql("lower('ABc') != 'ABc'", list,"_default", context);
-        assert Boolean.TRUE.equals(result);
-        result = DSqlEngine.checkWhenSql("upper(null) is null", list,"_default", context);
-        assert Boolean.TRUE.equals(result);
-        result = DSqlEngine.checkWhenSql("lower(null) is null", list,"_default", context);
-        assert Boolean.TRUE.equals(result);
-        DSqlConfig.setCompareIgnoreCase(ignoreCase);
+        setDSqlConfigField("compareIgnoreCase", false);
+        try {
+            result = DSqlEngine.checkWhenSql("upper('abc') = 'ABC'", list,"_default", context);
+            assert Boolean.TRUE.equals(result);
+            result = DSqlEngine.checkWhenSql("upper('abc') != 'abc'", list,"_default", context);
+            assert Boolean.TRUE.equals(result);
+            result = DSqlEngine.checkWhenSql("lower('ABc') = 'abc'", list,"_default", context);
+            assert Boolean.TRUE.equals(result);
+            result = DSqlEngine.checkWhenSql("lower('ABc') != 'ABc'", list,"_default", context);
+            assert Boolean.TRUE.equals(result);
+            result = DSqlEngine.checkWhenSql("upper(null) is null", list,"_default", context);
+            assert Boolean.TRUE.equals(result);
+            result = DSqlEngine.checkWhenSql("lower(null) is null", list,"_default", context);
+            assert Boolean.TRUE.equals(result);
+        } finally {
+            setDSqlConfigField("compareIgnoreCase", ignoreCase);
+        }
 
+    }
+
+    private static void setDSqlConfigField(String name, Object value) {
+        try {
+            Field field = DSqlConfig.class.getDeclaredField(name);
+            field.setAccessible(true);
+            field.set(null, value);
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Test

@@ -9,6 +9,7 @@ import java.util.*;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
+import com.nfwork.dbfound.db.ConnectionProvideManager;
 import com.nfwork.dbfound.model.ModelEngine;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
@@ -33,8 +34,6 @@ public class DBFoundConfig {
 
 	public static final String VERSION = "3.7.2" ;
 
-	private final static List<DataSourceConnectionProvide> dsp = new ArrayList<>();
-
 	public static final String CLASSPATH = "${@classpath}";
 	public static final String PROJECT_ROOT = "${@projectRoot}";
 	private static final String JVM_PARAM_PREFIX = "dbfound.";
@@ -51,7 +50,7 @@ public class DBFoundConfig {
 	private static boolean modelModifyCheck = false;
 	private static boolean jsonStringAutoCover = true;
 	private final static Set<String> jsonStringForceCoverSet = CollectionUtil.asSet("GridData","parameters","columns");
-	private final static Set<String> sensitiveParamSet = CollectionUtil.asSet("password","new_password","old_password","api_key","secret_key");
+	private final static Set<String> sensitiveParamSet = CollectionUtil.asSet("password","new_password","old_password","newPassword","oldPassword","api_key","api_secret","secret_key","apiKey","secretKey","apiSecret");
 	private static String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd";
 	private static String timeFormat = "HH:mm:ss";
@@ -69,46 +68,56 @@ public class DBFoundConfig {
 		}
 	}
 
-	public static void destroy() {
+	public static void destroy(DBFoundInitToken token) {
+		checkInitToken(token);
+		doDestroy();
+	}
+
+	private static void doDestroy() {
 		ListenerFacade.destroy(dbfoundInitToken);
-		for (DataSourceConnectionProvide provide : new ArrayList<>(dsp)) {
-			DataSource dataSource = provide.getDataSource();
-			if (dataSource != null) {
-				try {
-					LogUtil.info("dbfound close dataSource :" + provide.getProvideName());
-					provide.unRegister();
-				} catch (Exception e) {
-					LogUtil.error("dbfound destroy error, "+ e.getMessage(),e);
-				}
-			}
-		}
+		ConnectionProvideManager.destroy(dbfoundInitToken);
 		Reflector.clearCache(dbfoundInitToken);
 		EnumHandlerFactory.clearCache(dbfoundInitToken);
 		ModelEngine.getModelOperator().clearCache(dbfoundInitToken);
 		inited = false;
 	}
 
-	public static void init() {
-		init(null);
+	public static DBFoundInitToken init() {
+		return init(null);
 	}
 
-	public static void init(ServletContext servletContext) {
+	public static DBFoundInitToken init(ServletContext servletContext) {
 		if (inited) {
-			return;
+			return null;
 		}
-		doInit(getConfigFilePath(),servletContext);
+		return doInit(getConfigFilePath(),servletContext);
 	}
 
-	private synchronized static void doInit(String confFile,ServletContext servletContext) {
+	public static DBFoundInitToken initSpringBoot(Document document) {
+		return initSpringBoot(document, null);
+	}
+
+	public synchronized static DBFoundInitToken initSpringBoot(Document document, ServletContext servletContext) {
+		if (inited) {
+			return null;
+		}
+		try {
+			initDocument(document, servletContext, true);
+		} catch (Exception e) {
+			throw new DBFoundRuntimeException("dbfound init failed, please check config", e);
+		}
+		return initSuccess();
+	}
+
+	private synchronized static DBFoundInitToken doInit(String confFile, ServletContext servletContext) {
 		if (confFile == null || confFile.isEmpty()) {
 			confFile = CLASSPATH + "/dbfound-conf.xml";
 		}
 		if (inited) {
-			return;
+			return null;
 		} else {
-			inited = true;
 			if (configFilePath == null) {
-				setConfigFilePath(confFile);
+				setConfigFilePath(dbfoundInitToken, confFile);
 			}
 		}
 		try {
@@ -146,21 +155,7 @@ public class DBFoundConfig {
 			}
 
 			if (doc != null) {
-				Element root = doc.getRootElement();
-
-				// system参数初始化
-				Element system = root.element("system");
-				initSystem(system);
-
-				// 数据库初始化
-				Element database = root.element("database");
-				if (database != null) {
-					initDB(database);
-				}
-
-				// web参数初始化
-				Element web = root.element("web");
-				initWeb(web, servletContext);
+				initDocument(doc, servletContext, false);
 			} else {
 				LogUtil.info("config file init skipped, because file not found. filePath:" + file.getAbsolutePath());
 			}
@@ -171,8 +166,34 @@ public class DBFoundConfig {
 			if (e instanceof RuntimeException) {
 				throw (RuntimeException) e;
 			}
+			return null;
+		}
+		return initSuccess();
+
+	}
+
+	private static DBFoundInitToken initSuccess() {
+		inited = true;
+		return dbfoundInitToken;
+	}
+
+	private static void initDocument(Document document, ServletContext servletContext, boolean isInitSpring)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+		Element root = document.getRootElement();
+
+		// system参数初始化
+		Element system = root.element("system");
+		initSystem(system, isInitSpring);
+
+		// 数据库初始化
+		Element database = root.element("database");
+		if (database != null && !isInitSpring) {
+			initDB(database);
 		}
 
+		// web参数初始化
+		Element web = root.element("web");
+		initWeb(web, servletContext, isInitSpring);
 	}
 
 	private static void initDB(Element database)
@@ -232,7 +253,7 @@ public class DBFoundConfig {
 		}
 	}
 
-	private static void initWeb(Element web,ServletContext servletContext) {
+	private static void initWeb(Element web, ServletContext servletContext, boolean isInitSpring) {
 		StringBuilder info = new StringBuilder();
 		info.append("set web Param:");
 		int infoStartLength = info.length();
@@ -297,7 +318,9 @@ public class DBFoundConfig {
 		if (mvcFile == null || mvcFile.isEmpty()) {
 			mvcFile = CLASSPATH + "/dbfound-mvc.xml";
 		}
-		ActionEngine.init(dbfoundInitToken, controllerPaths, mvcFile);
+		if (!isInitSpring) {
+			ActionEngine.init(dbfoundInitToken, controllerPaths, mvcFile);
+		}
 
 		// exceptionHandler 初始化
 		String exceptionHandler = getConfigValue(web, "web", "exceptionHandler");
@@ -320,12 +343,12 @@ public class DBFoundConfig {
 			appendConfigInfo(info, "listener", listener);
 		}
 
-		if (info.length() > infoStartLength) {
+		if (!isInitSpring && info.length() > infoStartLength) {
 			LogUtil.info(info.toString());
 		}
 	}
 
-	private static void initSystem(Element system) {
+	private static void initSystem(Element system, boolean isInitSpring) {
 		StringBuilder info = new StringBuilder();
 		info.append("set system Param:");
 		int infoStartLength = info.length();
@@ -410,17 +433,17 @@ public class DBFoundConfig {
 
 		String compareIgnoreCaseConfig = getConfigValue(system, "system", "sqlCompareIgnoreCase");
 		if (DataUtil.isNotNull(compareIgnoreCaseConfig)) {
-			DSqlConfig.setCompareIgnoreCase("true".equals(compareIgnoreCaseConfig));
+			DSqlConfig.init(dbfoundInitToken, "true".equals(compareIgnoreCaseConfig), null);
 			appendConfigInfo(info, "sqlCompareIgnoreCase", DSqlConfig.isCompareIgnoreCase());
 		}
 
 		String openDSqlConfig = getConfigValue(system, "system", "openDSql");
 		if (DataUtil.isNotNull(openDSqlConfig)) {
-			DSqlConfig.setOpenDSql("true".equals(openDSqlConfig));
+			DSqlConfig.init(dbfoundInitToken, null, "true".equals(openDSqlConfig));
 			appendConfigInfo(info, "openDSql", DSqlConfig.isOpenDSql());
 		}
 
-		if (info.length() > infoStartLength) {
+		if (!isInitSpring && info.length() > infoStartLength) {
 			LogUtil.info(info.toString());
 		}
 	}
@@ -503,10 +526,6 @@ public class DBFoundConfig {
 		return inited;
 	}
 
-	public static void setInited(boolean inited) {
-		DBFoundConfig.inited = inited;
-	}
-
 	public static String getClasspath() {
 		if (classpath == null || classpath.isEmpty()) {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -547,20 +566,14 @@ public class DBFoundConfig {
 		}
 	}
 
-	public static void setConfigFilePath(String configFilePath) {
+	public static void setConfigFilePath(DBFoundInitToken initToken, String configFilePath) {
+		checkInitToken(initToken);
 		DBFoundConfig.configFilePath = PathFormatUtil.format(configFilePath);
 	}
 
-	public static void setClasspath(String classpath) {
-		DBFoundConfig.classpath = PathFormatUtil.format(classpath);
-	}
-
-	public static void setProjectRoot(String projectRoot) {
+	public static void setProjectRoot(DBFoundInitToken initToken, String projectRoot) {
+		checkInitToken(initToken);
 		DBFoundConfig.projectRoot = PathFormatUtil.format(projectRoot);
-	}
-
-	public static List<DataSourceConnectionProvide> getDsp() {
-		return dsp;
 	}
 
 	public static List<String> getApiAllowUrls() {
@@ -571,28 +584,12 @@ public class DBFoundConfig {
 		return underscoreToCamelCase;
 	}
 
-	public static void setUnderscoreToCamelCase(boolean underscoreToCamelCase) {
-		DBFoundConfig.underscoreToCamelCase = underscoreToCamelCase;
-	}
-
 	public static boolean isModelModifyCheck() {
 		return modelModifyCheck;
 	}
 
-	public static void setModelModifyCheck(boolean modelModifyCheck) {
-		DBFoundConfig.modelModifyCheck = modelModifyCheck;
-	}
-
 	public static String getDateTimeFormat() {
 		return dateTimeFormat;
-	}
-
-	public static void setDateTimeFormat(String dateTimeFormat) {
-		DBFoundConfig.dateTimeFormat = dateTimeFormat;
-	}
-
-	public static void setDateFormat(String dateFormat) {
-		DBFoundConfig.dateFormat = dateFormat;
 	}
 
 	public static String getDateFormat() {
@@ -601,10 +598,6 @@ public class DBFoundConfig {
 
 	public static boolean isJsonStringAutoCover() {
 		return jsonStringAutoCover;
-	}
-
-	public static void setJsonStringAutoCover(boolean jsonStringAutoCover) {
-		DBFoundConfig.jsonStringAutoCover = jsonStringAutoCover;
 	}
 
 	public static Set<String> getJsonStringForceCoverSet() {
@@ -619,24 +612,12 @@ public class DBFoundConfig {
 		return camelCaseToUnderscore;
 	}
 
-	public static void setCamelCaseToUnderscore(boolean camelCaseToUnderscore) {
-		DBFoundConfig.camelCaseToUnderscore = camelCaseToUnderscore;
-	}
-
 	public static boolean isOpenSession() {
 		return openSession;
 	}
 
-	public static void setOpenSession(boolean openSession) {
-		DBFoundConfig.openSession = openSession;
-	}
-
 	public static boolean isOpenLog() {
 		return openLog;
-	}
-
-	public static void setOpenLog(boolean openLog) {
-		DBFoundConfig.openLog = openLog;
 	}
 
 	public static String getModelLoadRoot() {
@@ -646,47 +627,23 @@ public class DBFoundConfig {
 		return modelRootPath;
 	}
 
-	public static void setModelRootPath(String modelLoadRoot) {
-		DBFoundConfig.modelRootPath = modelLoadRoot;
-	}
-
 	public static String getEncoding() {
 		return encoding;
-	}
-
-	public static void setEncoding(String encoding) {
-		DBFoundConfig.encoding = encoding;
 	}
 
 	public static Integer getMaxUploadSize() {
 		return maxUploadSize;
 	}
 
-	public static void setMaxUploadSize(Integer maxUploadSize) {
-		DBFoundConfig.maxUploadSize = maxUploadSize;
-	}
-
 	public static String getBasePath() {
 		return basePath;
-	}
-
-	public static void setBasePath(String basePath) {
-		DBFoundConfig.basePath = basePath;
 	}
 
 	public static boolean isLogWithParamSql() {
 		return logWithParamSql;
 	}
 
-	public static void setLogWithParamSql(boolean logWithParamSql) {
-		DBFoundConfig.logWithParamSql = logWithParamSql;
-	}
-
 	public static String getTimeFormat() {
 		return timeFormat;
-	}
-
-	public static void setTimeFormat(String timeFormat) {
-		DBFoundConfig.timeFormat = timeFormat;
 	}
 }
