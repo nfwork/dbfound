@@ -25,6 +25,11 @@ public final class ExceptionHandlerFacade {
 		}
 	}
 
+	public static void destroy(DBFoundInitToken dbfoundInitToken) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
+		exceptionHandler = new WebExceptionHandler();
+	}
+
 	public static void handle(Throwable throwable, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			throwable = unwrapException(throwable);

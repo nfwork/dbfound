@@ -6,7 +6,7 @@ import javax.servlet.jsp.tagext.Tag;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.exception.TagLocationException;
-import com.nfwork.dbfound.web.i18n.MultiLangUtil;
+import com.nfwork.dbfound.web.i18n.MultiLangFacade;
 
 public class Column extends EventTag {
 	private static final long serialVersionUID = 1L;
@@ -190,7 +190,7 @@ public class Column extends EventTag {
 	}
 
 	public void setPrompt(String prompt) {
-		this.prompt = MultiLangUtil.getValue(prompt, pageContext);
+		this.prompt = MultiLangFacade.getValue(prompt, pageContext);
 	}
 
 	public String getRenderer() {

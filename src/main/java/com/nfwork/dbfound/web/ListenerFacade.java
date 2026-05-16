@@ -28,13 +28,15 @@ public final class ListenerFacade {
 		}
 	}
 
-	public static void destroy(DBFoundInitToken dbfoundInitToken){
+	public static synchronized void destroy(DBFoundInitToken dbfoundInitToken){
 		DBFoundConfig.checkInitToken(dbfoundInitToken);
 		if(listener != null){
 			try {
 				listener.destroy();
 			} catch (Throwable throwable) {
 				LogUtil.error("Listener init failed", throwable);
+			} finally {
+				listener = null;
 			}
 		}
 	}

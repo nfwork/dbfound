@@ -264,9 +264,12 @@ public class ContextTest {
 
     private static void setDBFoundConfigField(String name, Object value) {
         try {
-            Field field = DBFoundConfig.class.getDeclaredField(name);
+            Field configField = DBFoundConfig.class.getDeclaredField("config");
+            configField.setAccessible(true);
+            Object config = configField.get(null);
+            Field field = config.getClass().getDeclaredField(name);
             field.setAccessible(true);
-            field.set(null, value);
+            field.set(config, value);
         } catch (ReflectiveOperationException e) {
             throw new AssertionError(e);
         }

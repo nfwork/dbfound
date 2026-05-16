@@ -6,7 +6,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.nfwork.dbfound.util.LogUtil;
-import com.nfwork.dbfound.web.i18n.MultiLangUtil;
+import com.nfwork.dbfound.web.i18n.MultiLangFacade;
 
 public class Text extends TagSupport {
 
@@ -14,7 +14,7 @@ public class Text extends TagSupport {
 
 	public int doEndTag() throws JspException {
 		try {
-			pageContext.getOut().print(MultiLangUtil.value(value, pageContext));
+			pageContext.getOut().print(MultiLangFacade.value(value, pageContext));
 		} catch (IOException e) {
 			LogUtil.error(e.getMessage(), e);
 		}

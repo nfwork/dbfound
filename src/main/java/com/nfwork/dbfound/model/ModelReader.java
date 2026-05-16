@@ -31,7 +31,7 @@ public class ModelReader {
 		Document doc ;
 		String fileLocation ;
 
-		String filePath = DBFoundConfig.getModelLoadRoot() + "/" + modelName + ".xml";
+		String filePath = DBFoundConfig.getModelRootPath() + "/" + modelName + ".xml";
 		File file = new File(DBFoundConfig.getRealPath(filePath));
 
 		boolean pkgModel = false;
@@ -78,7 +78,7 @@ public class ModelReader {
 				}
 
 			} else {
-				throw new DBFoundRuntimeException("ModelReader cannot find the file: " + DBFoundConfig.getModelLoadRoot() + "/" + modelName + ".xml , please check config");
+				throw new DBFoundRuntimeException("ModelReader cannot find the file: " + DBFoundConfig.getModelRootPath() + "/" + modelName + ".xml , please check config");
 			}
 		}
 

@@ -32,6 +32,12 @@ public final class InterceptorFacade {
 		}
 	}
 
+	public static synchronized void destroy(DBFoundInitToken dbfoundInitToken) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
+		interceptor = null;
+		inited = false;
+	}
+
 	public static void setCors(HttpServletRequest request,HttpServletResponse response){
 		if (inited) {
 			interceptor.setCors(request, response);

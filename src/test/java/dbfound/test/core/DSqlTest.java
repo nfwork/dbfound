@@ -340,9 +340,12 @@ public class DSqlTest {
 
     private static void setDSqlConfigField(String name, Object value) {
         try {
-            Field field = DSqlConfig.class.getDeclaredField(name);
+            Field configField = DSqlConfig.class.getDeclaredField("config");
+            configField.setAccessible(true);
+            Object config = configField.get(null);
+            Field field = config.getClass().getDeclaredField(name);
             field.setAccessible(true);
-            field.set(null, value);
+            field.set(config, value);
         } catch (ReflectiveOperationException e) {
             throw new AssertionError(e);
         }

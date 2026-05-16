@@ -6,7 +6,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.exception.TagLocationException;
-import com.nfwork.dbfound.web.i18n.MultiLangUtil;
+import com.nfwork.dbfound.web.i18n.MultiLangFacade;
 
 public class MenuItem extends TagSupport implements Cloneable {
 	private static final long serialVersionUID = 1L;
@@ -46,7 +46,7 @@ public class MenuItem extends TagSupport implements Cloneable {
 	}
 
 	public void setTitle(String title) {
-		this.title =MultiLangUtil.getValue(title,pageContext) ;
+		this.title = MultiLangFacade.getValue(title,pageContext) ;
 	}
 
 	public String getClick() {

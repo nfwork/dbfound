@@ -11,7 +11,7 @@ import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.exception.TagLocationException;
-import com.nfwork.dbfound.web.i18n.MultiLangUtil;
+import com.nfwork.dbfound.web.i18n.MultiLangFacade;
 
 public class Field extends EventTag {
 	private static final long serialVersionUID = 1L;
@@ -139,7 +139,7 @@ public class Field extends EventTag {
 	}
 
 	public void setPrompt(String prompt) {
-		this.prompt = MultiLangUtil.getValue(prompt, pageContext);
+		this.prompt = MultiLangFacade.getValue(prompt, pageContext);
 	}
 
 	public String getEditor() {
@@ -279,7 +279,7 @@ public class Field extends EventTag {
 	}
 
 	public void setEmptyText(String emptyText) {
-		this.emptyText = MultiLangUtil.value(emptyText, pageContext);
+		this.emptyText = MultiLangFacade.value(emptyText, pageContext);
 	}
 
 	public String getAnchor() {

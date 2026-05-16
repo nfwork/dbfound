@@ -36,6 +36,11 @@ public class ActionEngine {
 		}
 	}
 
+	public static void destroy(DBFoundInitToken dbfoundInitToken) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
+		actionBeans.clear();
+	}
+
 	private static void initMappings(String paths){
 		Set<String> classPaths = new LinkedHashSet<>();
 		List<String> pathList = StringUtil.splitToList(paths);

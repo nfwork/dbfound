@@ -161,4 +161,10 @@ public class ModelEngine {
 		DBFoundConfig.checkInitToken(dbfoundInitToken);
 		ModelEngine.modelOperator = modelOperator;
 	}
+
+	public static void destroy(DBFoundInitToken dbfoundInitToken) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
+		modelOperator.clearCache(dbfoundInitToken);
+		modelOperator = new ModelOperator();
+	}
 }

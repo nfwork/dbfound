@@ -33,7 +33,7 @@ public class DBFoundConfigTest {
             Assert.assertTrue(DBFoundConfig.isLogWithParamSql());
             Assert.assertTrue(DBFoundConfig.isUnderscoreToCamelCase());
             Assert.assertTrue(DBFoundConfig.isCamelCaseToUnderscore());
-            Assert.assertEquals("${@classpath}/spring-model", DBFoundConfig.getModelLoadRoot());
+            Assert.assertEquals("${@classpath}/spring-model", DBFoundConfig.getModelRootPath());
             Assert.assertTrue(DBFoundConfig.isModelModifyCheck());
             Assert.assertEquals("yyyy/MM/dd", DBFoundConfig.getDateFormat());
             Assert.assertEquals("yyyy/MM/dd HH:mm", DBFoundConfig.getDateTimeFormat());
@@ -96,6 +96,25 @@ public class DBFoundConfigTest {
         field.set(null, value);
     }
 
+    private static Object getField(Object target, String name) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(name);
+        field.setAccessible(true);
+        return field.get(target);
+    }
+
+    private static void setField(Object target, String name, Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(name);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    private static Object newConfigState(Class<?> type) throws ReflectiveOperationException {
+        Object config = getStaticField(type, "config");
+        java.lang.reflect.Constructor<?> constructor = config.getClass().getDeclaredConstructor();
+        constructor.setAccessible(true);
+        return constructor.newInstance();
+    }
+
     private static void restoreProperty(String key, String value) {
         if (value == null) {
             System.clearProperty(key);
@@ -122,9 +141,9 @@ public class DBFoundConfigTest {
         private final String basePath;
         private final List<String> apiAllowUrls;
 
-        private DBFoundConfigSnapshot() throws ReflectiveOperationException {
+        private DBFoundConfigSnapshot() {
             this.inited = DBFoundConfig.isInited();
-            this.modelRootPath = (String) getStaticField(DBFoundConfig.class, "modelRootPath");
+            this.modelRootPath = DBFoundConfig.getModelRootPath();
             this.underscoreToCamelCase = DBFoundConfig.isUnderscoreToCamelCase();
             this.camelCaseToUnderscore = DBFoundConfig.isCamelCaseToUnderscore();
             this.modelModifyCheck = DBFoundConfig.isModelModifyCheck();
@@ -141,27 +160,29 @@ public class DBFoundConfigTest {
             this.apiAllowUrls = DBFoundConfig.getApiAllowUrls();
         }
 
-        private static DBFoundConfigSnapshot take() throws ReflectiveOperationException {
+        private static DBFoundConfigSnapshot take() {
             return new DBFoundConfigSnapshot();
         }
 
         private void restore() throws ReflectiveOperationException {
+            Object config = newConfigState(DBFoundConfig.class);
+            setField(config, "modelRootPath", modelRootPath);
+            setField(config, "underscoreToCamelCase", underscoreToCamelCase);
+            setField(config, "camelCaseToUnderscore", camelCaseToUnderscore);
+            setField(config, "modelModifyCheck", modelModifyCheck);
+            setField(config, "jsonStringAutoCover", jsonStringAutoCover);
+            setField(config, "dateTimeFormat", dateTimeFormat);
+            setField(config, "dateFormat", dateFormat);
+            setField(config, "timeFormat", timeFormat);
+            setField(config, "openSession", openSession);
+            setField(config, "openLog", openLog);
+            setField(config, "logWithParamSql", logWithParamSql);
+            setField(config, "encoding", encoding);
+            setField(config, "maxUploadSize", maxUploadSize);
+            setField(config, "basePath", basePath);
+            setField(config, "apiAllowUrls", apiAllowUrls);
+            setStaticField(DBFoundConfig.class, "config", config);
             setStaticField(DBFoundConfig.class, "inited", inited);
-            setStaticField(DBFoundConfig.class, "modelRootPath", modelRootPath);
-            setStaticField(DBFoundConfig.class, "underscoreToCamelCase", underscoreToCamelCase);
-            setStaticField(DBFoundConfig.class, "camelCaseToUnderscore", camelCaseToUnderscore);
-            setStaticField(DBFoundConfig.class, "modelModifyCheck", modelModifyCheck);
-            setStaticField(DBFoundConfig.class, "jsonStringAutoCover", jsonStringAutoCover);
-            setStaticField(DBFoundConfig.class, "dateTimeFormat", dateTimeFormat);
-            setStaticField(DBFoundConfig.class, "dateFormat", dateFormat);
-            setStaticField(DBFoundConfig.class, "timeFormat", timeFormat);
-            setStaticField(DBFoundConfig.class, "openSession", openSession);
-            setStaticField(DBFoundConfig.class, "openLog", openLog);
-            setStaticField(DBFoundConfig.class, "logWithParamSql", logWithParamSql);
-            setStaticField(DBFoundConfig.class, "encoding", encoding);
-            setStaticField(DBFoundConfig.class, "maxUploadSize", maxUploadSize);
-            setStaticField(DBFoundConfig.class, "basePath", basePath);
-            setStaticField(DBFoundConfig.class, "apiAllowUrls", apiAllowUrls);
         }
     }
 
@@ -179,8 +200,10 @@ public class DBFoundConfigTest {
         }
 
         private void restore() throws ReflectiveOperationException {
-            setStaticField(DSqlConfig.class, "compareIgnoreCase", compareIgnoreCase);
-            setStaticField(DSqlConfig.class, "openDSql", openDSql);
+            Object config = newConfigState(DSqlConfig.class);
+            setField(config, "compareIgnoreCase", compareIgnoreCase);
+            setField(config, "openDSql", openDSql);
+            setStaticField(DSqlConfig.class, "config", config);
         }
     }
 }

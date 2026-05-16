@@ -5,25 +5,33 @@ import com.nfwork.dbfound.core.DBFoundInitToken;
 
 public class DSqlConfig {
 
-    private static boolean compareIgnoreCase = true;
-
-    private static boolean openDSql = true;
+    private static ConfigState config = new ConfigState();
 
     public static boolean isCompareIgnoreCase() {
-        return compareIgnoreCase;
+        return config.compareIgnoreCase;
     }
 
     public static boolean isOpenDSql() {
-        return openDSql;
+        return config.openDSql;
     }
 
     public static void init(DBFoundInitToken token, Boolean compareIgnoreCase, Boolean openDSql) {
         DBFoundConfig.checkInitToken(token);
         if (compareIgnoreCase != null) {
-            DSqlConfig.compareIgnoreCase = compareIgnoreCase;
+            config.compareIgnoreCase = compareIgnoreCase;
         }
         if (openDSql != null) {
-            DSqlConfig.openDSql = openDSql;
+            config.openDSql = openDSql;
         }
+    }
+
+    public static void reset(DBFoundInitToken token) {
+        DBFoundConfig.checkInitToken(token);
+        config = new ConfigState();
+    }
+
+    private static class ConfigState {
+        private boolean compareIgnoreCase = true;
+        private boolean openDSql = true;
     }
 }
