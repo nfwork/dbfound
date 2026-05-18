@@ -101,9 +101,7 @@ public class DBFoundConfig {
 		if (inited) {
 			return null;
 		}
-		if(servletContext !=null) {
-			config.projectRoot = PathFormatUtil.format(servletContext.getRealPath(""));
-		}
+		initProjectRoot(servletContext);
 		return doInit(configFilePath,servletContext);
 	}
 
@@ -116,11 +114,18 @@ public class DBFoundConfig {
 			return null;
 		}
 		try {
+			initProjectRoot(servletContext);
 			initDocument(document, servletContext, true);
 		} catch (Exception e) {
 			throw new DBFoundRuntimeException("dbfound init failed, please check config", e);
 		}
 		return initSuccess();
+	}
+
+	private static void initProjectRoot(ServletContext servletContext) {
+		if(servletContext != null) {
+			config.projectRoot = PathFormatUtil.format(servletContext.getRealPath(""));
+		}
 	}
 
 	private synchronized static DBFoundInitToken doInit(String configFilePath, ServletContext servletContext) {

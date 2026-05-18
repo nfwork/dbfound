@@ -8,7 +8,9 @@ import org.dom4j.DocumentHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.servlet.ServletContext;
 import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,6 +56,22 @@ public class DBFoundConfigTest {
         }
     }
 
+    @Test
+    public void testInitSpringBootWithServletContextInitializesProjectRoot() throws Exception {
+        DBFoundConfigSnapshot dbFoundConfigSnapshot = DBFoundConfigSnapshot.take();
+        DSqlConfigSnapshot dSqlConfigSnapshot = DSqlConfigSnapshot.take();
+        Document document = DocumentHelper.parseText(getSpringBootProjectRootConfig());
+        try {
+            setStaticField(DBFoundConfig.class, "inited", false);
+            DBFoundConfig.initSpringBoot(document, servletContext("C:\\spring-root"));
+
+            Assert.assertEquals("C:/spring-root/model", DBFoundConfig.getRealPath("${@projectRoot}/model"));
+        } finally {
+            dbFoundConfigSnapshot.restore();
+            dSqlConfigSnapshot.restore();
+        }
+    }
+
     private static String getSpringBootConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<dbfound>\n"
@@ -82,6 +100,27 @@ public class DBFoundConfigTest {
                 + "        <apiAllowUrls>/query, /execute</apiAllowUrls>\n"
                 + "    </web>\n"
                 + "</dbfound>\n";
+    }
+
+    private static String getSpringBootProjectRootConfig() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<dbfound>\n"
+                + "    <system>\n"
+                + "        <modelRootPath>${@projectRoot}/spring-model</modelRootPath>\n"
+                + "    </system>\n"
+                + "</dbfound>\n";
+    }
+
+    private static ServletContext servletContext(String realPath) {
+        return (ServletContext) Proxy.newProxyInstance(
+                ServletContext.class.getClassLoader(),
+                new Class<?>[]{ServletContext.class},
+                (proxy, method, args) -> {
+                    if ("getRealPath".equals(method.getName())) {
+                        return realPath;
+                    }
+                    throw new UnsupportedOperationException(method.getName());
+                });
     }
 
     private static Object getStaticField(Class<?> type, String name) throws ReflectiveOperationException {
@@ -140,8 +179,11 @@ public class DBFoundConfigTest {
         private final Integer maxUploadSize;
         private final String basePath;
         private final List<String> apiAllowUrls;
+        private final String classpath;
+        private final String projectRoot;
 
-        private DBFoundConfigSnapshot() {
+        private DBFoundConfigSnapshot() throws ReflectiveOperationException {
+            Object config = getStaticField(DBFoundConfig.class, "config");
             this.inited = DBFoundConfig.isInited();
             this.modelRootPath = DBFoundConfig.getModelRootPath();
             this.underscoreToCamelCase = DBFoundConfig.isUnderscoreToCamelCase();
@@ -158,9 +200,11 @@ public class DBFoundConfigTest {
             this.maxUploadSize = DBFoundConfig.getMaxUploadSize();
             this.basePath = DBFoundConfig.getBasePath();
             this.apiAllowUrls = DBFoundConfig.getApiAllowUrls();
+            this.classpath = (String) getField(config, "classpath");
+            this.projectRoot = (String) getField(config, "projectRoot");
         }
 
-        private static DBFoundConfigSnapshot take() {
+        private static DBFoundConfigSnapshot take() throws ReflectiveOperationException {
             return new DBFoundConfigSnapshot();
         }
 
@@ -181,6 +225,8 @@ public class DBFoundConfigTest {
             setField(config, "maxUploadSize", maxUploadSize);
             setField(config, "basePath", basePath);
             setField(config, "apiAllowUrls", apiAllowUrls);
+            setField(config, "classpath", classpath);
+            setField(config, "projectRoot", projectRoot);
             setStaticField(DBFoundConfig.class, "config", config);
             setStaticField(DBFoundConfig.class, "inited", inited);
         }
