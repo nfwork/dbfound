@@ -42,6 +42,9 @@ public class ConnectionProvideManager {
 	public static ConnectionProvide getConnectionProvide(String provideName) {
 		ConnectionProvide provide = provides.get(provideName);
 		if (provide == null) {
+			if (!DBFoundConfig.isInited() && provides.isEmpty()) {
+				throw new DBFoundRuntimeException("dbfound is not initialized, please init dbfound before using ConnectionProvide");
+			}
 			throw new DBFoundRuntimeException("cannot find ConnectionProvide: "
 					+ provideName + ", please check config");
 		}

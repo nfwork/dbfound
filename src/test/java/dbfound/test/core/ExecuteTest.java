@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-public class ExecuteTest {
+public class ExecuteTest extends DBFoundTestBase {
 
     @Test
     public void test() {

@@ -2,6 +2,7 @@ package dbfound.test.core;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.core.DBFoundInitToken;
+import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.dsql.DSqlConfig;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -53,6 +54,27 @@ public class DBFoundConfigTest {
             dSqlConfigSnapshot.restore();
             restoreProperty("dbfound.system.openLog", oldOpenLogJvmValue);
             restoreProperty("dbfound.web.basePath", oldBasePathJvmValue);
+        }
+    }
+
+    @Test
+    public void testInitSpringBootFailsWhenAlreadyInitialized() throws Exception {
+        DBFoundConfigSnapshot dbFoundConfigSnapshot = DBFoundConfigSnapshot.take();
+        DSqlConfigSnapshot dSqlConfigSnapshot = DSqlConfigSnapshot.take();
+        Document document = DocumentHelper.parseText(getSpringBootConfig());
+        try {
+            setStaticField(DBFoundConfig.class, "inited", false);
+            DBFoundConfig.initSpringBoot(document);
+
+            try {
+                DBFoundConfig.initSpringBoot(document);
+                Assert.fail("Expected DBFoundRuntimeException");
+            } catch (DBFoundRuntimeException exception) {
+                Assert.assertEquals("dbfound already initialized, please destroy before init again", exception.getMessage());
+            }
+        } finally {
+            dbFoundConfigSnapshot.restore();
+            dSqlConfigSnapshot.restore();
         }
     }
 

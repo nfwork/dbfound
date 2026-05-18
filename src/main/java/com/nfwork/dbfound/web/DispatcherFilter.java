@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.core.DBFoundInitToken;
-import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.URLUtil;
 import com.nfwork.dbfound.web.handler.*;
@@ -64,9 +63,6 @@ public class DispatcherFilter implements Filter {
 	public void init(FilterConfig cf) throws ServletException {
 		configFilePath = cf.getInitParameter("configFilePath");
 		dbfoundInitToken = DBFoundConfig.init(configFilePath, cf.getServletContext());
-		if (dbfoundInitToken == null){
-			throw new DBFoundRuntimeException("dbfound init failed, because dbfoundInitToken is null");
-		}
 		WebApiPermissionChecker permissionChecker = new WebApiPermissionChecker(DBFoundConfig.getApiAllowUrls());
 		this.handlerList.add(new QueryActionHandler(permissionChecker));
 		this.handlerList.add(new ExecuteActionHandler(permissionChecker));

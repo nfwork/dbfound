@@ -98,9 +98,7 @@ public class DBFoundConfig {
 	}
 
 	public static DBFoundInitToken init(String configFilePath, ServletContext servletContext) {
-		if (inited) {
-			return null;
-		}
+		checkNotInited();
 		initProjectRoot(servletContext);
 		return doInit(configFilePath,servletContext);
 	}
@@ -110,9 +108,7 @@ public class DBFoundConfig {
 	}
 
 	public synchronized static DBFoundInitToken initSpringBoot(Document document, ServletContext servletContext) {
-		if (inited) {
-			return null;
-		}
+		checkNotInited();
 		try {
 			initProjectRoot(servletContext);
 			initDocument(document, servletContext, true);
@@ -120,6 +116,12 @@ public class DBFoundConfig {
 			throw new DBFoundRuntimeException("dbfound init failed, please check config", e);
 		}
 		return initSuccess();
+	}
+
+	private static void checkNotInited() {
+		if (inited) {
+			throw new DBFoundRuntimeException("dbfound already initialized, please destroy before init again");
+		}
 	}
 
 	private static void initProjectRoot(ServletContext servletContext) {
@@ -133,9 +135,7 @@ public class DBFoundConfig {
 			configFilePath = CLASSPATH + "/dbfound-conf.xml";
 		}
 		configFilePath = PathFormatUtil.format(configFilePath);
-		if (inited) {
-			return null;
-		}
+		checkNotInited();
 		try {
 			LogUtil.info("**************************************************************************");
 			LogUtil.info("NFWork dbfound "+VERSION+" service init begin");
