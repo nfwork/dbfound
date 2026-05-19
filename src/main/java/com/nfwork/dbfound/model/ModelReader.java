@@ -11,7 +11,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
-import com.nfwork.dbfound.core.PathFormat;
+import com.nfwork.dbfound.util.PathFormatUtil;
 import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.bean.Entity;
@@ -31,7 +31,7 @@ public class ModelReader {
 		Document doc ;
 		String fileLocation ;
 
-		String filePath = DBFoundConfig.getModelLoadRoot() + "/" + modelName + ".xml";
+		String filePath = DBFoundConfig.getModelRootPath() + "/" + modelName + ".xml";
 		File file = new File(DBFoundConfig.getRealPath(filePath));
 
 		boolean pkgModel = false;
@@ -78,7 +78,7 @@ public class ModelReader {
 				}
 
 			} else {
-				throw new DBFoundRuntimeException("ModelReader cannot find the file: " + DBFoundConfig.getModelLoadRoot() + "/" + modelName + ".xml , please check config");
+				throw new DBFoundRuntimeException("ModelReader cannot find the file: " + DBFoundConfig.getModelRootPath() + "/" + modelName + ".xml , please check config");
 			}
 		}
 
@@ -91,7 +91,7 @@ public class ModelReader {
 		readerChild(root, model);
 		model.doEndTag();
 
-		fileLocation = PathFormat.format(fileLocation);
+		fileLocation = PathFormatUtil.format(fileLocation);
 		model.setFileLocation(fileLocation);
 		LogUtil.info("read model success, model file location: " + fileLocation);
 		return model;

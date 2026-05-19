@@ -3,6 +3,8 @@ package com.nfwork.dbfound.web;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.JsonUtil;
 import com.nfwork.dbfound.util.LogUtil;
@@ -14,12 +16,18 @@ public final class ExceptionHandlerFacade {
 
 	private static WebExceptionHandler exceptionHandler = new WebExceptionHandler();
 
-	public static void initExceptionHandler(String name){
+	public static void initExceptionHandler(DBFoundInitToken dbfoundInitToken, String name){
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
 		try {
 			exceptionHandler = (WebExceptionHandler) Class.forName(name).getConstructor().newInstance();
 		} catch (Exception e) {
 			throw new DBFoundRuntimeException("init exceptionHandler failed, "+ e.getMessage(),e);
 		}
+	}
+
+	public static void destroy(DBFoundInitToken dbfoundInitToken) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
+		exceptionHandler = new WebExceptionHandler();
 	}
 
 	public static void handle(Throwable throwable, HttpServletRequest request, HttpServletResponse response) {

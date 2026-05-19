@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.model.enums.EnumHandlerFactory;
@@ -391,7 +393,8 @@ public class Reflector {
 
 	private static final ConcurrentMap<String, Future<Reflector>> REFLECTOR_MAP = new ConcurrentHashMap<>();
 
-	public static void clearCache(){
+	public static void clearCache(DBFoundInitToken dbfoundInitToken){
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
 		REFLECTOR_MAP.clear();
 	}
 	/**

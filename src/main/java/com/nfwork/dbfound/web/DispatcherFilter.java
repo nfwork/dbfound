@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.URLUtil;
 import com.nfwork.dbfound.web.handler.*;
@@ -23,6 +24,7 @@ public class DispatcherFilter implements Filter {
 	private static String configFilePath;
 
 	private final List<ActionHandler> handlerList = new ArrayList<>();
+	private DBFoundInitToken dbfoundInitToken;
 
 	/**
 	 * 处理请求
@@ -60,11 +62,7 @@ public class DispatcherFilter implements Filter {
 	 */
 	public void init(FilterConfig cf) throws ServletException {
 		configFilePath = cf.getInitParameter("configFilePath");
-		DBFoundConfig.setProjectRoot(cf.getServletContext().getRealPath(""));
-		if (configFilePath != null && !configFilePath.isEmpty()) {
-			DBFoundConfig.setConfigFilePath(configFilePath);
-		}
-		DBFoundConfig.init(cf.getServletContext());
+		dbfoundInitToken = DBFoundConfig.init(configFilePath, cf.getServletContext());
 		WebApiPermissionChecker permissionChecker = new WebApiPermissionChecker(DBFoundConfig.getApiAllowUrls());
 		this.handlerList.add(new QueryActionHandler(permissionChecker));
 		this.handlerList.add(new ExecuteActionHandler(permissionChecker));
@@ -77,7 +75,11 @@ public class DispatcherFilter implements Filter {
 	 */
 	public void destroy() {
 		LogUtil.info("NFWork dbfound " + DBFoundConfig.VERSION +", closing dbfound service");
-		DBFoundConfig.destroy();
+		if (dbfoundInitToken != null) {
+			DBFoundConfig.destroy(dbfoundInitToken);
+		} else {
+			LogUtil.info("dbfound destroy skipped, because init token is null");
+		}
 		LogUtil.info("NFWork dbfound " + DBFoundConfig.VERSION +", dbfound service closed");
 	}
 

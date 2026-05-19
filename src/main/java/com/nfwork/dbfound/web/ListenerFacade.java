@@ -1,5 +1,7 @@
 package com.nfwork.dbfound.web;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.web.base.Listener;
@@ -10,7 +12,8 @@ public final class ListenerFacade {
 
 	private static Listener listener;
 
-	public static synchronized void init(String className, ServletContext servletContext) {
+	public static synchronized void init(DBFoundInitToken dbfoundInitToken, String className, ServletContext servletContext) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
 		try {
 			Object object = Class.forName(className).getConstructor().newInstance();
 			if (object instanceof Listener) {
@@ -25,12 +28,15 @@ public final class ListenerFacade {
 		}
 	}
 
-	public static void destroy(){
+	public static synchronized void destroy(DBFoundInitToken dbfoundInitToken){
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
 		if(listener != null){
 			try {
 				listener.destroy();
 			} catch (Throwable throwable) {
 				LogUtil.error("Listener init failed", throwable);
+			} finally {
+				listener = null;
 			}
 		}
 	}

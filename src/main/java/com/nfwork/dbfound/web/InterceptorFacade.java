@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.web.base.Interceptor;
 
@@ -13,7 +15,8 @@ public final class InterceptorFacade {
 
 	static boolean inited = false;
 
-	public static synchronized void init(String className) {
+	public static synchronized void init(DBFoundInitToken dbfoundInitToken, String className) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
 		try {
 			Object object = Class.forName(className).getConstructor().newInstance();
 			if (object instanceof Interceptor) {
@@ -27,6 +30,12 @@ public final class InterceptorFacade {
 		} catch (Exception e) {
 			throw new DBFoundRuntimeException("Interceptor init failed", e);
 		}
+	}
+
+	public static synchronized void destroy(DBFoundInitToken dbfoundInitToken) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
+		interceptor = null;
+		inited = false;
 	}
 
 	public static void setCors(HttpServletRequest request,HttpServletResponse response){

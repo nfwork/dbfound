@@ -1,13 +1,23 @@
 package com.nfwork.dbfound.db;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 
 public class ConnectionProvideManager {
 
 	private static final Map<String, ConnectionProvide> provides = new ConcurrentHashMap<>();
+
+	public static void destroy(DBFoundInitToken dbfoundInitToken) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
+		for (ConnectionProvide provide : new ArrayList<>(provides.values())) {
+			provide.unRegister();
+		}
+	}
 
 	// 注册数据源
 	static void registerSource(ConnectionProvide provide) {
@@ -32,6 +42,9 @@ public class ConnectionProvideManager {
 	public static ConnectionProvide getConnectionProvide(String provideName) {
 		ConnectionProvide provide = provides.get(provideName);
 		if (provide == null) {
+			if (!DBFoundConfig.isInited() && provides.isEmpty()) {
+				throw new DBFoundRuntimeException("dbfound is not initialized, please init dbfound before using ConnectionProvide");
+			}
 			throw new DBFoundRuntimeException("cannot find ConnectionProvide: "
 					+ provideName + ", please check config");
 		}

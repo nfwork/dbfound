@@ -15,7 +15,7 @@ import jakarta.servlet.jsp.tagext.TagSupport;
 
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
-import com.nfwork.dbfound.web.i18n.MultiLangUtil;
+import com.nfwork.dbfound.web.i18n.MultiLangFacade;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -133,7 +133,7 @@ public class Form extends TagSupport {
 	}
 
 	public void setTitle(String title) {
-		this.title = MultiLangUtil.getValue(title, pageContext);
+		this.title = MultiLangFacade.getValue(title, pageContext);
 	}
 
 	public String getWidth() {

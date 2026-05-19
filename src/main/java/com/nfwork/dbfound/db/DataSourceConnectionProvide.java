@@ -7,11 +7,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
-import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.exception.DBFoundWrappedException;
 import com.nfwork.dbfound.model.reflector.Reflector;
 import com.nfwork.dbfound.util.DBUtil;
+import com.nfwork.dbfound.util.LogUtil;
 
 public class DataSourceConnectionProvide extends ConnectionProvide {
 
@@ -61,19 +60,19 @@ public class DataSourceConnectionProvide extends ConnectionProvide {
 
 	/**
 	 * 初始化外部连接池
-	 * 
-	 * @param dataSource
+	 *
 	 */
 	public synchronized void init(String dataSource) {
 		Context initContext = null;
-		Object object = null;
+		Object object;
 		try {
 			initContext = new InitialContext();
 			Context envContext = (Context) initContext.lookup("java:/comp/env");
 			object = envContext.lookup(dataSource);
 		} catch (Exception e) {
 			try {
-				object = initContext.lookup(dataSource);
+                assert initContext != null;
+                object = initContext.lookup(dataSource);
 			} catch (NamingException e1) {
 				throw new RuntimeException(e1);
 			}
@@ -87,19 +86,16 @@ public class DataSourceConnectionProvide extends ConnectionProvide {
 			init(jndiName);
 		}
 		super.register();
-		if(dataSource != null){
-			DBFoundConfig.getDsp().add(this);
-		}
 	}
 
 	@Override
 	public void unRegister() {
 		super.unRegister();
 		if(dataSource != null){
-			DBFoundConfig.getDsp().remove(this);
 			try {
 				Reflector reflector = Reflector.forClass(dataSource.getClass());
 				reflector.getMethodInvoker("close").invoke(dataSource, new Object[] {});
+				LogUtil.info("dbfound close dataSource connectionProvide : " + provideName);
 			}catch (Exception ignore){}
 		}
 	}

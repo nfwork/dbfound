@@ -549,8 +549,4 @@ public class Context {
 		}
 	}
 
-
-	static {
-		DBFoundConfig.init();
-	}
 }

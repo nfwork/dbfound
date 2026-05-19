@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -141,7 +142,7 @@ public class ContextTest {
     @Test
     public void testSetDataScopeRouting() {
         boolean openSession = DBFoundConfig.isOpenSession();
-        DBFoundConfig.setOpenSession(true);
+        setDBFoundConfigField("openSession", true);
         try {
             Context context = new Context();
 
@@ -155,7 +156,7 @@ public class ContextTest {
             Assert.assertEquals("ok", context.getData("request.message"));
             Assert.assertEquals("session-token", context.getData("session.token"));
         } finally {
-            DBFoundConfig.setOpenSession(openSession);
+            setDBFoundConfigField("openSession", openSession);
         }
     }
 
@@ -242,22 +243,35 @@ public class ContextTest {
     @Test(expected = DBFoundRuntimeException.class)
     public void testSetSessionDataRejectsIndexedName() {
         boolean openSession = DBFoundConfig.isOpenSession();
-        DBFoundConfig.setOpenSession(true);
+        setDBFoundConfigField("openSession", true);
         try {
             new Context().setData("session.tokens[0]", "value");
         } finally {
-            DBFoundConfig.setOpenSession(openSession);
+            setDBFoundConfigField("openSession", openSession);
         }
     }
 
     @Test(expected = DBFoundRuntimeException.class)
     public void testSessionDataRequiresOpenSession() {
         boolean openSession = DBFoundConfig.isOpenSession();
-        DBFoundConfig.setOpenSession(false);
+        setDBFoundConfigField("openSession", false);
         try {
             new Context().setData("session.token", "value");
         } finally {
-            DBFoundConfig.setOpenSession(openSession);
+            setDBFoundConfigField("openSession", openSession);
+        }
+    }
+
+    private static void setDBFoundConfigField(String name, Object value) {
+        try {
+            Field configField = DBFoundConfig.class.getDeclaredField("config");
+            configField.setAccessible(true);
+            Object config = configField.get(null);
+            Field field = config.getClass().getDeclaredField(name);
+            field.setAccessible(true);
+            field.set(config, value);
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError(e);
         }
     }
 }

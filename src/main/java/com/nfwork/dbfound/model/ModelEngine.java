@@ -3,6 +3,8 @@ package com.nfwork.dbfound.model;
 import java.util.*;
 
 import com.nfwork.dbfound.core.Context;
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.dto.QueryResponseObject;
 import com.nfwork.dbfound.dto.ResponseObject;
 
@@ -155,7 +157,14 @@ public class ModelEngine {
 		return modelOperator;
 	}
 
-	public static void setModelOperator(ModelOperator modelOperator) {
+	public static void setModelOperator(DBFoundInitToken dbfoundInitToken, ModelOperator modelOperator) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
 		ModelEngine.modelOperator = modelOperator;
+	}
+
+	public static void destroy(DBFoundInitToken dbfoundInitToken) {
+		DBFoundConfig.checkInitToken(dbfoundInitToken);
+		modelOperator.clearCache(dbfoundInitToken);
+		modelOperator = new ModelOperator();
 	}
 }

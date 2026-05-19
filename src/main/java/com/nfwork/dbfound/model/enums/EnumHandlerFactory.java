@@ -1,5 +1,7 @@
 package com.nfwork.dbfound.model.enums;
 
+import com.nfwork.dbfound.core.DBFoundConfig;
+import com.nfwork.dbfound.core.DBFoundInitToken;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 
 import java.util.Map;
@@ -39,7 +41,8 @@ public class EnumHandlerFactory {
          return result;
     }
 
-    public static void clearCache(){
+    public static void clearCache(DBFoundInitToken dbfoundInitToken){
+        DBFoundConfig.checkInitToken(dbfoundInitToken);
         enumClassMap.clear();
         cache.clear();
     }

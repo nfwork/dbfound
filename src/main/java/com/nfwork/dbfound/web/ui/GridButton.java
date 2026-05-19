@@ -7,7 +7,7 @@ import jakarta.servlet.jsp.tagext.TagSupport;
 import com.nfwork.dbfound.util.LogUtil;
 import com.nfwork.dbfound.util.UUIDUtil;
 import com.nfwork.dbfound.exception.TagLocationException;
-import com.nfwork.dbfound.web.i18n.MultiLangUtil;
+import com.nfwork.dbfound.web.i18n.MultiLangFacade;
 
 public class GridButton extends TagSupport implements Cloneable {
 	private static final long serialVersionUID = 1L;
@@ -73,7 +73,7 @@ public class GridButton extends TagSupport implements Cloneable {
 	}
 
 	public void setTitle(String title) {
-		this.title =MultiLangUtil.getValue(title,pageContext) ;
+		this.title = MultiLangFacade.getValue(title,pageContext) ;
 	}
 
 	public boolean isShowConfirm() {
@@ -89,7 +89,7 @@ public class GridButton extends TagSupport implements Cloneable {
 	}
 
 	public void setComfirmMessage(String comfirmMessage) {
-		this.comfirmMessage = MultiLangUtil.getValue(comfirmMessage,pageContext) ;;
+		this.comfirmMessage = MultiLangFacade.getValue(comfirmMessage,pageContext) ;;
 	}
 
 	public String getBeforeAction() {
