@@ -74,11 +74,11 @@ public class ModelReader {
 						}
 					}
 				} else {
-					throw new DBFoundRuntimeException("ModelReader cannot find the file: " + modelName + ".xml, please check config");
+					throw new DBFoundRuntimeException("ModelReader cannot find the file: " + file + ", please check config");
 				}
 
 			} else {
-				throw new DBFoundRuntimeException("ModelReader cannot find the file: " + DBFoundConfig.getModelRootPath() + "/" + modelName + ".xml , please check config");
+				throw new DBFoundRuntimeException("ModelReader cannot find the file: " + file + ", please check config");
 			}
 		}
 
