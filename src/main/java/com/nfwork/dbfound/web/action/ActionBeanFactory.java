@@ -17,15 +17,15 @@ public class ActionBeanFactory {
 	protected BaseController getControl(String className, boolean singleton) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
 		if (singleton) {
-			BaseController baseControl = controlMap.get(className);
-			if (baseControl == null) {
-				baseControl = controlMap.get(className);
-				if (baseControl == null) {
-					baseControl = instance(className);
-					controlMap.put(className, baseControl);
+			return controlMap.computeIfAbsent(className, key -> {
+				try {
+					return instance(key);
+				} catch (DBFoundRuntimeException e) {
+					throw e;
+				} catch (Exception e) {
+					throw new DBFoundRuntimeException("Action controller init failed, className: " + key, e);
 				}
-			}
-			return baseControl;
+			});
 		} else {
 			return instance(className);
 		}
