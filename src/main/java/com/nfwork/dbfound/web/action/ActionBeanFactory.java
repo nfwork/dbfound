@@ -37,7 +37,7 @@ public class ActionBeanFactory {
 		if (object instanceof BaseController) {
             return (BaseController) object;
 		} else {
-			throw new DBFoundRuntimeException("Control必须要实现BaseControl接口");
+			throw new DBFoundRuntimeException("Action controller must implement BaseController");
 		}
 	}
 }
