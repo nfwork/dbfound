@@ -147,6 +147,9 @@ public class DBFoundConfig {
 				doc = reader.read(file);
 			} else if (configFilePath.startsWith(CLASSPATH)) {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
+				if (loader == null) {
+					loader = DBFoundConfig.class.getClassLoader();
+				}
 				InputStream inputStream = null;
 				try {
 					URL url = loader.getResource(configFilePath.substring(CLASSPATH.length() + 1));
@@ -579,7 +582,7 @@ public class DBFoundConfig {
 		if (config.projectRoot == null || config.projectRoot.isEmpty()) {
 			String cp = getClasspath();
 			File file = new File(cp);
-			if (file.exists() && file.getParentFile().exists() && file.getParentFile().getParentFile().exists()) {
+			if (file.exists() && file.isDirectory() && file.getParentFile().exists() && file.getParentFile().getParentFile().exists()) {
 				config.projectRoot = PathFormatUtil.format(file.getParentFile().getParentFile().getAbsolutePath());
 			}else{
 				throw new DBFoundRuntimeException(PROJECT_ROOT + " cannot resolve by classpath, this classpath is '" + cp +"'");

@@ -30,62 +30,65 @@ public class ModelReader {
 
 		Document doc ;
 		String fileLocation ;
+		File file;
 
 		String filePath = DBFoundConfig.getModelRootPath() + "/" + modelName + ".xml";
-		File file = new File(DBFoundConfig.getRealPath(filePath));
 
 		boolean pkgModel = false;
 
-		if (file.exists()) {
-			fileLocation = file.getAbsolutePath();
-			try (FileInputStream inputStream = new FileInputStream(file)){
-				doc = reader.read(inputStream);
-			} catch (Exception e) {
-				String message = "modelReader exception, file: " + fileLocation;
-				throw new DBFoundWrappedException(message, e);
-			}
-		} else {
-			if (filePath.startsWith(DBFoundConfig.CLASSPATH)) {
-				String cPath = filePath.substring(DBFoundConfig.CLASSPATH.length() + 1);
-
-				ClassLoader loader = Thread.currentThread().getContextClassLoader();
-				URL url = loader.getResource(cPath);
-
-				if (url != null) {
-					if (url.getFile() != null) {
-						file = new File(url.getFile());
-					}
-					if (file.exists()) {
-						fileLocation = file.getAbsolutePath();
-						try (FileInputStream inputStream = new FileInputStream(file)){
-							doc = reader.read(inputStream);
-						} catch (Exception e) {
-							String message = "modelReader exception, file: " + fileLocation;
-							throw new DBFoundWrappedException(message, e);
-						}
-					} else {
-						fileLocation = url.getFile();
-						pkgModel = true;
-						try (InputStream inputStream = url.openStream()){
-							doc = reader.read(inputStream);
-						} catch (Exception e) {
-							String message = "modelReader exception, url: " + fileLocation;
-							throw new DBFoundWrappedException(message, e);
-						}
-					}
-				} else {
-					throw new DBFoundRuntimeException("ModelReader cannot find the file: " + file + ", please check config");
+		if (!filePath.startsWith(DBFoundConfig.CLASSPATH)) {
+			file = new File(DBFoundConfig.getRealPath(filePath));
+			if(file.exists()) {
+				fileLocation = file.getAbsolutePath();
+				try (FileInputStream inputStream = new FileInputStream(file)) {
+					doc = reader.read(inputStream);
+				} catch (Exception e) {
+					String message = "modelReader exception, file: " + fileLocation;
+					throw new DBFoundWrappedException(message, e);
 				}
-
 			} else {
 				throw new DBFoundRuntimeException("ModelReader cannot find the file: " + file + ", please check config");
+			}
+		} else {
+			String cPath = filePath.substring(DBFoundConfig.CLASSPATH.length() + 1);
+
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			if (loader == null) {
+				loader = ModelReader.class.getClassLoader();
+			}
+			URL url = loader.getResource(cPath);
+
+			if (url == null) {
+				throw new DBFoundRuntimeException("ModelReader cannot find the file classpath:/" + cPath + ", please check config");
+			}
+
+			file = DBFoundConfig.isModelModifyCheck() ? getClasspathFile(url) : null;
+			if (file != null && file.exists()) {
+				fileLocation = file.getAbsolutePath();
+				try (FileInputStream inputStream = new FileInputStream(file)){
+					doc = reader.read(inputStream);
+				} catch (Exception e) {
+					String message = "modelReader exception, file: " + fileLocation;
+					throw new DBFoundWrappedException(message, e);
+				}
+			} else {
+				fileLocation = url.toExternalForm();
+				pkgModel = true;
+				try (InputStream inputStream = url.openStream()){
+					doc = reader.read(inputStream);
+				} catch (Exception e) {
+					String message = "modelReader exception, url: " + fileLocation;
+					throw new DBFoundWrappedException(message, e);
+				}
 			}
 		}
 
 		Element root = doc.getRootElement();
 		Model model = new Model(modelName);
-		model.setFileLastModify(file.lastModified());
 		model.setPkgModel(pkgModel);
+		if(!pkgModel){
+			model.setFileLastModify(file.lastModified());
+		}
 
 		model.doStartTag(root);
 		readerChild(root, model);
@@ -135,6 +138,14 @@ public class ModelReader {
 		}
 		String name = element.getName();
 		return path + name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
+
+	private File getClasspathFile(URL url) {
+		try {
+			return new File(url.toURI());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }

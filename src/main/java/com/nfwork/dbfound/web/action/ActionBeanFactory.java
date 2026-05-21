@@ -14,18 +14,18 @@ public class ActionBeanFactory {
 
 	private final Map<String, BaseController> controlMap = new ConcurrentHashMap<>();
 
-	protected BaseController getControl(String className, boolean singleton) throws InstantiationException,
+	BaseController getController(String className, boolean singleton) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
 		if (singleton) {
-			BaseController baseControl = controlMap.get(className);
-			if (baseControl == null) {
-				baseControl = controlMap.get(className);
-				if (baseControl == null) {
-					baseControl = instance(className);
-					controlMap.put(className, baseControl);
+			return controlMap.computeIfAbsent(className, key -> {
+				try {
+					return instance(key);
+				} catch (DBFoundRuntimeException e) {
+					throw e;
+				} catch (Exception e) {
+					throw new DBFoundRuntimeException("Action controller init failed, className: " + key, e);
 				}
-			}
-			return baseControl;
+			});
 		} else {
 			return instance(className);
 		}
@@ -37,7 +37,11 @@ public class ActionBeanFactory {
 		if (object instanceof BaseController) {
             return (BaseController) object;
 		} else {
-			throw new DBFoundRuntimeException("Control必须要实现BaseControl接口");
+			throw new DBFoundRuntimeException("Action controller must implement BaseController");
 		}
+	}
+
+	void clear() {
+		controlMap.clear();
 	}
 }
