@@ -14,7 +14,7 @@ public class ActionBeanFactory {
 
 	private final Map<String, BaseController> controlMap = new ConcurrentHashMap<>();
 
-	protected BaseController getControl(String className, boolean singleton) throws InstantiationException,
+	BaseController getController(String className, boolean singleton) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
 		if (singleton) {
 			return controlMap.computeIfAbsent(className, key -> {
@@ -39,5 +39,9 @@ public class ActionBeanFactory {
 		} else {
 			throw new DBFoundRuntimeException("Action controller must implement BaseController");
 		}
+	}
+
+	void clear() {
+		controlMap.clear();
 	}
 }

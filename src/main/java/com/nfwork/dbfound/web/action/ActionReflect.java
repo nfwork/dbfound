@@ -21,9 +21,9 @@ public class ActionReflect {
 
 	private final ActionBeanFactory actionBeanFactory = new ActionBeanFactory();
 
-	public ResponseObject reflect(Context context, String className, String method, boolean singleton) throws Exception {
+	ResponseObject reflect(Context context, String className, String method, boolean singleton) throws Exception {
 		try {
-			BaseController baseControl = actionBeanFactory.getControl(className, singleton);
+			BaseController baseControl = actionBeanFactory.getController(className, singleton);
 
 			Reflector reflector = Reflector.forClass(baseControl.getClass());
 			MethodInvoker methodInvoker = reflector.getMethodInvoker(method, Context.class);
@@ -67,5 +67,9 @@ public class ActionReflect {
 			}
 			throw e;
 		}
+	}
+
+	void clear() {
+		actionBeanFactory.clear();
 	}
 }

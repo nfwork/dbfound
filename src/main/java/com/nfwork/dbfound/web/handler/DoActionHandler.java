@@ -7,13 +7,10 @@ import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.web.InterceptorFacade;
 import com.nfwork.dbfound.web.action.ActionBean;
 import com.nfwork.dbfound.web.action.ActionEngine;
-import com.nfwork.dbfound.web.action.ActionReflect;
 import com.nfwork.dbfound.web.file.FileDownloadUtil;
 
 
 public class DoActionHandler extends ActionHandler {
-
-    private final ActionReflect actionReflect = new ActionReflect();
 
     public DoActionHandler(WebApiPermissionChecker permissionChecker) {
         super(permissionChecker);
@@ -41,7 +38,7 @@ public class DoActionHandler extends ActionHandler {
         ActionBean actionBean = ActionEngine.findActionBean(modelName); // 得到对应的class类的名字
         if (actionBean != null) {
             if (InterceptorFacade.doInterceptor(context, actionBean.getClassName(), methodName)) {
-                object = actionReflect.reflect(context, actionBean.getClassName(), methodName, actionBean.isSingleton());
+                object = ActionEngine.reflect(context, actionBean.getClassName(), methodName, actionBean.isSingleton());
             }
         } else {
             String message = "cannot find url:" + requestPath.substring(1) + " mapping class, please check config";

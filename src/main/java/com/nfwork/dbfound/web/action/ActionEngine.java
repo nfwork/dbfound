@@ -5,8 +5,10 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.nfwork.dbfound.core.Context;
 import com.nfwork.dbfound.core.DBFoundConfig;
 import com.nfwork.dbfound.core.DBFoundInitToken;
+import com.nfwork.dbfound.dto.ResponseObject;
 import com.nfwork.dbfound.exception.DBFoundRuntimeException;
 import com.nfwork.dbfound.util.DataUtil;
 import com.nfwork.dbfound.util.PackageScannerUtil;
@@ -23,15 +25,14 @@ import com.nfwork.dbfound.util.LogUtil;
 public class ActionEngine {
 
 	private final static Map<String, ActionBean> actionBeans = new ConcurrentHashMap<>();
+	private final static ActionReflect actionReflect = new ActionReflect();
 
-
-	public static void init(DBFoundInitToken dbfoundInitToken, String paths, String mvcFile){
+	public static void init(DBFoundInitToken dbfoundInitToken, String paths, String mvcFile) {
 		DBFoundConfig.checkInitToken(dbfoundInitToken);
-		actionBeans.clear();
-		if(DataUtil.isNotNull(paths)){
+		if (DataUtil.isNotNull(paths)) {
 			initMappings(paths);
 		}
-		if(DataUtil.isNotNull(mvcFile)){
+		if (DataUtil.isNotNull(mvcFile)) {
 			initMvcFile(mvcFile);
 		}
 	}
@@ -39,38 +40,39 @@ public class ActionEngine {
 	public static void destroy(DBFoundInitToken dbfoundInitToken) {
 		DBFoundConfig.checkInitToken(dbfoundInitToken);
 		actionBeans.clear();
+		actionReflect.clear();
 	}
 
-	private static void initMappings(String paths){
+	private static void initMappings(String paths) {
 		Set<String> classPaths = new LinkedHashSet<>();
 		List<String> pathList = StringUtil.splitToList(paths);
-		for (String path : pathList){
+		for (String path : pathList) {
 			classPaths.addAll(PackageScannerUtil.getClassPaths(path));
 		}
-		int count =0;
-		for (String classPath : classPaths){
+		int count = 0;
+		for (String classPath : classPaths) {
 			try {
 				Class<?> clazz = Class.forName(classPath);
 				ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
 				if (mapping != null && DataUtil.isNotNull(mapping.value())) {
-					if(!ActionController.class.isAssignableFrom(clazz)){
+					if (!ActionController.class.isAssignableFrom(clazz)) {
 						throw new DBFoundRuntimeException("@ActionMapping can only be used in subclasses of ActionController");
 					}
 					ActionBean actionBean = new ActionBean();
 					actionBean.setName(mapping.value());
 					actionBean.setClassName(classPath);
 					actionBean.setSingleton(true);
-					if(actionBeans.get(actionBean.getName()) != null){
-						throw new DBFoundRuntimeException("actionEngine initMvcMappings failed, because path: '" + actionBean.getName() +"' already exists");
+					if (actionBeans.get(actionBean.getName()) != null) {
+						throw new DBFoundRuntimeException("actionEngine initMvcMappings failed, because path: '" + actionBean.getName() + "' already exists");
 					}
 					actionBeans.put(actionBean.getName(), actionBean);
-					count ++;
+					count++;
 				}
-			}catch (ClassNotFoundException exception){
+			} catch (ClassNotFoundException exception) {
 				throw new DBFoundRuntimeException(exception);
 			}
 		}
-		LogUtil.info("actionEngine initMvcMappings success, paths: "+paths+", init ActionBeans size: "+ count);
+		LogUtil.info("actionEngine initMvcMappings success, paths: " + paths + ", init ActionBeans size: " + count);
 	}
 
 	/**
@@ -84,7 +86,7 @@ public class ActionEngine {
 				SAXReader reader = new SAXReader();
 				Document doc = reader.read(file);
 				readDocument(doc, file.toString());
-			}else if (mvcFile.startsWith(DBFoundConfig.CLASSPATH)) {
+			} else if (mvcFile.startsWith(DBFoundConfig.CLASSPATH)) {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
 				URL url = loader.getResource(mvcFile.substring(DBFoundConfig.CLASSPATH.length() + 1));
 				if (url != null) {
@@ -94,15 +96,15 @@ public class ActionEngine {
 				}
 			}
 		} catch (DocumentException e) {
-			throw new DBFoundRuntimeException("actionEngine init mvcFile failed, caused by "+ e.getMessage(),e);
-        }
-    }
+			throw new DBFoundRuntimeException("actionEngine init mvcFile failed, caused by " + e.getMessage(), e);
+		}
+	}
 
 	private static void readDocument(Document doc, String filePath) {
 		Element root = doc.getRootElement();
 
 		List<Element> actionElements = root.elements("action");
-		if(actionElements == null){
+		if (actionElements == null) {
 			return;
 		}
 		for (Element element : actionElements) {
@@ -110,12 +112,12 @@ public class ActionEngine {
 			actionBean.setName(element.attributeValue("name"));
 			actionBean.setClassName(element.attributeValue("class"));
 			actionBean.setSingleton("true".equals(element.attributeValue("singleton")));
-			if(actionBeans.get(actionBean.getName()) != null){
-				throw new DBFoundRuntimeException("actionEngine initMvcFile failed, because path: '" + actionBean.getName() +"' already exists");
+			if (actionBeans.get(actionBean.getName()) != null) {
+				throw new DBFoundRuntimeException("actionEngine initMvcFile failed, because path: '" + actionBean.getName() + "' already exists");
 			}
 			actionBeans.put(actionBean.getName(), actionBean);
 		}
-		LogUtil.info("actionEngine initMvcFile success, file: "+ filePath +", init ActionBeans size: "+ actionElements.size());
+		LogUtil.info("actionEngine initMvcFile success, file: " + filePath + ", init ActionBeans size: " + actionElements.size());
 	}
 
 	/**
@@ -123,6 +125,10 @@ public class ActionEngine {
 	 */
 	public static ActionBean findActionBean(String key) {
 		return actionBeans.get(key);
+	}
+
+	public static ResponseObject reflect(Context context, String className, String method, boolean singleton) throws Exception {
+		return actionReflect.reflect(context, className, method, singleton);
 	}
 
 }
