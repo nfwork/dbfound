@@ -88,6 +88,9 @@ public class ActionEngine {
 				readDocument(doc, file.toString());
 			} else if (mvcFile.startsWith(DBFoundConfig.CLASSPATH)) {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
+				if (loader == null) {
+					loader = ActionEngine.class.getClassLoader();
+				}
 				URL url = loader.getResource(mvcFile.substring(DBFoundConfig.CLASSPATH.length() + 1));
 				if (url != null) {
 					SAXReader reader = new SAXReader();
