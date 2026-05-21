@@ -147,6 +147,9 @@ public class DBFoundConfig {
 				doc = reader.read(file);
 			} else if (configFilePath.startsWith(CLASSPATH)) {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
+				if (loader == null) {
+					loader = DBFoundConfig.class.getClassLoader();
+				}
 				InputStream inputStream = null;
 				try {
 					URL url = loader.getResource(configFilePath.substring(CLASSPATH.length() + 1));
