@@ -57,16 +57,14 @@ public class ModelCache {
 	 
 	    try {
 	        return future.get();
-	    } catch (Exception e) {
-	    	if(DBFoundConfig.isModelModifyCheck()){
-	    		models.remove(modelName, future);
-	    	}
-			if(e instanceof DBFoundRuntimeException){
-				throw (DBFoundRuntimeException)e;
-			}else if(e.getCause() instanceof DBFoundRuntimeException){
-				throw (DBFoundRuntimeException)e.getCause();
+	    } catch (Throwable throwable) {
+	    	models.remove(modelName, future);
+			if(throwable instanceof DBFoundRuntimeException){
+				throw (DBFoundRuntimeException)throwable;
+			}else if(throwable.getCause() instanceof DBFoundRuntimeException){
+				throw (DBFoundRuntimeException)throwable.getCause();
 			}else{
-				throw new DBFoundWrappedException(e);
+				throw new DBFoundWrappedException(throwable);
 			}
 	    }
 	}
