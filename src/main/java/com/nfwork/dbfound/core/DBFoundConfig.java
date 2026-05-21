@@ -579,7 +579,7 @@ public class DBFoundConfig {
 		if (config.projectRoot == null || config.projectRoot.isEmpty()) {
 			String cp = getClasspath();
 			File file = new File(cp);
-			if (file.exists() && file.getParentFile().exists() && file.getParentFile().getParentFile().exists()) {
+			if (file.exists() && file.isDirectory() && file.getParentFile().exists() && file.getParentFile().getParentFile().exists()) {
 				config.projectRoot = PathFormatUtil.format(file.getParentFile().getParentFile().getAbsolutePath());
 			}else{
 				throw new DBFoundRuntimeException(PROJECT_ROOT + " cannot resolve by classpath, this classpath is '" + cp +"'");
