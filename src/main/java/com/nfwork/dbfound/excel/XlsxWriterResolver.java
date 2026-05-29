@@ -103,6 +103,9 @@ public class XlsxWriterResolver extends WriterResolver {
         } else if (o instanceof Float) {
             cell.setCellValue((Float)o);
             cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
+        } else if (o instanceof Number) {
+            cell.setCellValue(((Number) o).doubleValue());
+            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Temporal) {
             if(o instanceof LocalDate){
                 cell.setCellValue((LocalDate) o);
