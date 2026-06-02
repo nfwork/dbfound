@@ -91,18 +91,6 @@ public class XlsxWriterResolver extends WriterResolver {
             String content = o.toString();
             cell.setCellValue(content);
             cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
-        } else if (o instanceof Integer) {
-            cell.setCellValue((Integer)o);
-            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
-        } else if (o instanceof Double) {
-            cell.setCellValue((Double) o);
-            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
-        } else if (o instanceof Long) {
-            cell.setCellValue((Long)o);
-            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
-        } else if (o instanceof Float) {
-            cell.setCellValue((Float)o);
-            cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
         } else if (o instanceof Number) {
             cell.setCellValue(((Number) o).doubleValue());
             cell.setCellStyle(userStyle==null?dataStyles.getDefaultStyle():userStyle);
