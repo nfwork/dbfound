@@ -145,7 +145,7 @@ public class XlsxReaderResolver extends ReaderResolver{
     }
 
     private boolean isNotBlankValue(Object value){
-        return value != null && (!(value instanceof String) || !((String) value).trim().isEmpty());
+        return value != null && (!(value instanceof String) || !((String) value).isBlank());
     }
 
     public Cell getMergedRegionCell(Sheet sheet, int mergeNum, int row , int column){
