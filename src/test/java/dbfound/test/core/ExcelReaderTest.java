@@ -39,6 +39,14 @@ public class ExcelReaderTest {
         Assert.assertNull(new TestWriterResolver().map(null, new HashMap<>()));
     }
 
+    @Test
+    public void testReadXlsxWithoutHeaderReturnsEmptyData() throws Exception {
+        List<List<Map<String, Object>>> sheets = ExcelReader.readExcel(createWorkbookWithoutHeader(), "xlsx");
+
+        Assert.assertEquals(1, sheets.size());
+        Assert.assertTrue(sheets.get(0).isEmpty());
+    }
+
     private ExcelColumn statusColumn() {
         ExcelColumn column = new ExcelColumn("status", "Status");
         Map<String, Object> mapper = new HashMap<>();
@@ -70,6 +78,16 @@ public class ExcelReaderTest {
             Row secondDataRow = sheet.createRow(5);
             secondDataRow.createCell(0).setCellValue("Bob");
             secondDataRow.createCell(1).setBlank();
+
+            workbook.write(output);
+            return output.toByteArray();
+        }
+    }
+
+    private byte[] createWorkbookWithoutHeader() throws Exception {
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("sheet1");
+            sheet.createRow(1).createCell(0).setBlank();
 
             workbook.write(output);
             return output.toByteArray();
