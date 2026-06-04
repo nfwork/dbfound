@@ -3,7 +3,6 @@ package com.nfwork.dbfound.excel;
 import com.nfwork.dbfound.util.DataUtil;
 
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +17,9 @@ public abstract class ReaderResolver {
     protected abstract Map<String, List<Map<String,Object>>> readForMap(InputStream input, List<ExcelColumn> columns);
 
     protected Object getMapperValue(Object values, Map<String,Object> mapper){
+        if(values == null){
+            return null;
+        }
         if(values instanceof String && ((String) values).contains(",")){
             values = values.toString().split(",");
             StringBuilder valueBuilder = new StringBuilder();
