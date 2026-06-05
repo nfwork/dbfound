@@ -19,6 +19,9 @@ public abstract class WriterResolver {
     }
 
     protected Object getMapperValue(Object values, Map<String,Object> mapper){
+        if(values == null){
+            return null;
+        }
         if(values instanceof Collection){
             values = ((Collection<?>)values).toArray();
         }else if(values instanceof String && ((String) values).contains(",")){

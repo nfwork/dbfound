@@ -56,7 +56,13 @@ public class XlsxReaderResolver extends ReaderResolver{
             return new ArrayList<>();
         }
         Row header = sheet.getRow(0);
+        if(header == null){
+            return new ArrayList<>();
+        }
         int colSize = header.getLastCellNum();
+        if(colSize <= 0){
+            return new ArrayList<>();
+        }
 
         Map<String, ExcelColumn> columnMap = new HashMap<>();
         if (columns != null) {
@@ -65,7 +71,8 @@ public class XlsxReaderResolver extends ReaderResolver{
 
         String[] metaData = new String[colSize];
         for (int j = 0; j < colSize; j++) {
-            metaData[j] = header.getCell(j).getStringCellValue().trim();
+            Cell cell = header.getCell(j);
+            metaData[j] = cell == null ? "" : cell.getStringCellValue().trim();
         }
         List<Map<String,Object>> result = new ArrayList<>();
 
@@ -78,12 +85,11 @@ public class XlsxReaderResolver extends ReaderResolver{
 
         for (int i = 1; i < rowSize; i++) {
             Map<String, Object> data = new HashMap<>();
-            result.add(data);
-
+            boolean emptyRow = true;
             Row line = sheet.getRow(i);
 
             for (int j = 0; j < colSize; j++) {
-                Cell cell  = line.getCell(j);
+                Cell cell = line == null ? null : line.getCell(j);
                 if(margeNum > 0 && (cell == null || cell.getCellType() == CellType.BLANK)) {
                     cell = getMergedRegionCell(sheet,margeNum ,i, j);
                 }
@@ -134,9 +140,19 @@ public class XlsxReaderResolver extends ReaderResolver{
                     }
                 }
                 data.put(name, cellValue);
+                if(emptyRow && isNotBlankValue(cellValue)){
+                    emptyRow = false;
+                }
+            }
+            if(!emptyRow){
+                result.add(data);
             }
         }
         return result;
+    }
+
+    private boolean isNotBlankValue(Object value){
+        return value != null && (!(value instanceof String) || !((String) value).isBlank());
     }
 
     public Cell getMergedRegionCell(Sheet sheet, int mergeNum, int row , int column){
@@ -149,7 +165,7 @@ public class XlsxReaderResolver extends ReaderResolver{
             if(row >= firstRow && row <= lastRow){
                 if(column >= firstColumn && column <= lastColumn){
                     Row fRow = sheet.getRow(firstRow);
-                    return fRow.getCell(firstColumn);
+                    return fRow == null ? null : fRow.getCell(firstColumn);
                 }
             }
         }
