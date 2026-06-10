@@ -22,6 +22,29 @@
 
 ---
 
+## dbfound 3.7.7 - 2026-06-05 / dbfound 4.4.5 - 2026-06-09
+
+- 优化 Excel 导入功能，自动去掉空白行，增强兼容性，解决空文件或第一行为空白行时空指针异常
+
+## dbfound 3.7.6 - 2026-05-28 / dbfound 4.4.4 - 2026-06-02
+
+- 修复 Excel 导出 format 失效问题
+
+## dbfound 3.7.5 - 2026-05-26 / dbfound 4.4.3 - 2026-05-22
+
+- 优化 modelCache 异常处理，异常 model 不再进行缓存，避免过多异常 model 导致内存溢出
+- 优化 modelReader 逻辑，优先使用 URL 方式读取 model，不轻易做 `file.exists()` 判断，提升性能
+- 优化 ActionEngine 逻辑，添加 ActionReflect 清空逻辑
+
+## dbfound 3.7.4 - 2026-05-20
+
+- 优化 ModelReader 异常信息
+- 优化 Spring Boot init 方式，解决因传入 servlet context 导致 projectRoot 错乱问题
+
+## dbfound 3.7.3 - 2026-05-19
+
+- `DBFoundConfig` 重构配置去静态化，添加 `initToken` 机制进行访问鉴权
+
 ## dbfound 3.7.2 - 2026-05-11 / dbfound 4.4.2 - 2026-05-11
 
 - 优化 model 日志输出，begin 和 end 日志增加 query、execute 标识
