@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.nfwork.dbfound.el.ELEngine;
 import com.nfwork.dbfound.exception.ModelCompileException;
-import com.nfwork.dbfound.model.base.DataType;
 import com.nfwork.dbfound.util.DataUtil;
 import org.dom4j.Element;
 import com.nfwork.dbfound.core.Context;
@@ -34,13 +33,13 @@ public class Model extends Entity {
 		for (Param param : params.values()){
 			for (Execute execute : executes.values()){
 				Param exeParam = execute.getParams().get(param.getName());
-				if (exeParam == null ||  exeParam.getDataType() == DataType.UNKNOWN){
+				if (exeParam == null || exeParam.isAutoCreated()){
 					execute.getParams().put(param.getName(),param);
 				}
 			}
 			for (Query query : querys.values()){
 				Param queryParam = query.getParams().get(param.getName());
-				if (queryParam == null ||  queryParam.getDataType() == DataType.UNKNOWN){
+				if (queryParam == null || queryParam.isAutoCreated()){
 					query.getParams().put(param.getName(),param);
 				}
 			}
