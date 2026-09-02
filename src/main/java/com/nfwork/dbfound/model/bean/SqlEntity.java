@@ -156,10 +156,7 @@ public abstract class SqlEntity extends Entity {
 			String paramName = m.group();
 			String name = paramName.substring(2, paramName.length() - 1).trim();
 			if(params.get(name)==null && globalParams.get(name)==null) {
-				Param nfParam = new Param();
-				nfParam.setName(name);
-				nfParam.setDataType(DataType.UNKNOWN);
-				params.put(name, nfParam);
+				params.put(name, new Param(name, true));
 			}
 		}
 	}

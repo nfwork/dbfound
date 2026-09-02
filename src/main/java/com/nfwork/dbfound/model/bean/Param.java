@@ -31,6 +31,16 @@ public class Param extends Entity implements Cloneable{
 
 	private boolean emptyAsNull = true;
 
+	private boolean autoCreated = false;
+
+	public Param() {
+	}
+
+	public Param(String name, boolean autoCreated) {
+		this.name = name;
+		this.autoCreated = autoCreated;
+	}
+
 	@Override
 	public void doEndTag() {
 		if (getParent() instanceof Model) {
@@ -224,5 +234,9 @@ public class Param extends Entity implements Cloneable{
 
 	public Object getDefaultValue() {
 		return defaultValue;
+	}
+
+	public boolean isAutoCreated() {
+		return autoCreated;
 	}
 }
