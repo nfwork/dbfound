@@ -22,7 +22,7 @@
 
 ---
 
-## dbfound 3.7.8 - 待补充 / dbfound 4.4.6 - 待发布
+## dbfound 3.7.8 - 2026-09-08 / dbfound 4.4.6 - 2026-09-08
 
 - 修复 Model 级 `param` 会错误覆盖 Query/Execute 中已显式声明、但未指定 `dataType` 的同名参数的问题
 
